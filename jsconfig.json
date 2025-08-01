@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "baseUrl": ".",
+    "jsx": "react-jsx",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@/*":["./src/"],
+      "@Components/*": ["./src/components/*"],
+      "@Constants/*": ["./src/constants/*"],
+      "@Containers/*": ["./src/containers/*"],
+      "@Helpers/*": ["./src/helpers/*"],
+      "@Hooks/*": ["./src/hooks/*"],
+      "@Layouts/*": ["./src/layouts/*"],
+      "@Redux/*": ["./src/redux/*"],
+      "@Router/*": ["./src/router/*"],
+      "@Views/*": ["./src/views/*"],
+    },
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "public", "build", "dist"]
+}

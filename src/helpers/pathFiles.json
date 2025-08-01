@@ -1,0 +1,16 @@
+{
+  "PATH_FILES":{
+    "GET":{
+      "FILES": "uploads/files/",
+      "PICTURES": "assets/pictures/",
+      "LOGOS": "assets/logos/",
+      "PROFILES": "assets/profiles/"
+    },
+    "POST":{
+      "FILES": "uploads/single/files/",
+      "PICTURES": "uploads/single/pictures",
+      "LOGOS": "uploads/single/logos",
+      "PROFILES": "uploads/single/profiles"
+    }
+  }
+}

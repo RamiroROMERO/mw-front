@@ -1,0 +1,4 @@
+{
+  "urlAPI": "http://system.hiper-limpieza.com:3011/",
+  "urlPublic": ["login", "getCompanyList", "getModuleList"]
+}
