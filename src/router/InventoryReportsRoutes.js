@@ -9,7 +9,7 @@ const InventoryReport = React.lazy(() => import('@/views/app/inventory/reports/i
 const PurchaseMemo = React.lazy(() => import('@/views/app/inventory/reports/purchaseMemo'));
 const InventoryMemo = React.lazy(() => import('@/views/app/inventory/reports/inventoryMemo'));
 
-export const InventoryReportsRoutes = (props) => {
+const InventoryReportsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -35,3 +35,5 @@ export const InventoryReportsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default InventoryReportsRoutes;

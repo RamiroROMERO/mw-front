@@ -11,7 +11,7 @@ const BillingSettings = React.lazy(() =>
   import('@/views/app/billing/settings')
 );
 
-export const BillingSettingsRoutes = (props) => {
+const BillingSettingsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -37,3 +37,5 @@ export const BillingSettingsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default BillingSettingsRoutes;

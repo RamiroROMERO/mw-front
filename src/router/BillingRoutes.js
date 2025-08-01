@@ -1,12 +1,12 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom"
-import Billing from "@/views//app/billing"
-import { BillingSettingsRoutes } from "./BillingSettingsRoutes";
-import { BillingProcessRoutes } from "./BillingProcessRoutes";
-import { BillingReportsRoutes } from "./BillingReportsRoutes";
-import PageNotFound from "@/views//pageNotFound";
+const Billing = React.lazy(() => import("@Views/app/billing"));
+const BillingSettingsRoutes = React.lazy(() => import("@Router/BillingSettingsRoutes"));
+const BillingProcessRoutes = React.lazy(() => import("@Router/BillingProcessRoutes"));
+const BillingReportsRoutes = React.lazy(() => import("@Router/BillingReportsRoutes"));
+const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
 
-export const BillingRoutes = (props) => {
+const BillingRoutes = (props) => {
   const { setLoading } = props
   return <Routes>
     <Route
@@ -26,3 +26,5 @@ export const BillingRoutes = (props) => {
       path={`/*`} element={<PageNotFound />} />
   </Routes >
 }
+
+export default BillingRoutes;

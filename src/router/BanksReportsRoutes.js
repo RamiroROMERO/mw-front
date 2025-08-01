@@ -9,7 +9,7 @@ const BankConciliation = React.lazy(() => import('@/views/app/banks/reports/bank
 const BankReports = React.lazy(() => import('@/views/app/banks/reports/bankReports'));
 const Payments = React.lazy(() => import('@/views/app/banks/reports/payments'));
 
-export const BanksReportsRoutes = (props) => {
+const BanksReportsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -35,3 +35,5 @@ export const BanksReportsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default BanksReportsRoutes;

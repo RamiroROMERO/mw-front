@@ -1,12 +1,12 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom"
-import FA from "@/views//app/fixedAssets"
-import { FASettingsRoutes } from "./FASettingsRoutes";
-import { FAProcessRoutes } from "./FAProcessRoutes";
-import { FAReportsRoutes } from "./FAReportsRoutes";
-import PageNotFound from "@/views//pageNotFound";
+const FA = React.lazy(() => import("@Views/app/fixedAssets"));
+const FASettingsRoutes = React.lazy(() => import('@Router/FASettingsRoutes'));
+const FAProcessRoutes = React.lazy(() => import('@Router/FAProcessRoutes'));
+const FAReportsRoutes = React.lazy(() => import('@Router/FAReportsRoutes'));
+const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
 
-export const FARoutes = (props) => {
+const FARoutes = (props) => {
   const { setLoading } = props
   return <Routes>
     <Route
@@ -26,3 +26,5 @@ export const FARoutes = (props) => {
       path={`/*`} element={<PageNotFound />} />
   </Routes >
 }
+
+export default FARoutes;

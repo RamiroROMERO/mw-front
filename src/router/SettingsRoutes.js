@@ -1,8 +1,8 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom"
-import Settings from "@/views/app/settings"
-import PageNotFound from "@/views/pageNotFound";
-import Format from "@Views/app/Format";
+const Settings = React.lazy(() => import("@Views/app/settings"));
+const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
+const Format = React.lazy(() => import("@Views/app/Format"));
 
 const BillingInternalDocuments = React.lazy(() => import('@/views/app/settings/internalDocuments'));
 const BillingTaxDocuments = React.lazy(() => import('@/views/app/settings/taxDocuments'));
@@ -16,7 +16,7 @@ const Users = React.lazy(() => import('@/views/app/settings/userAccounts/users')
 const UserProfile = React.lazy(() => import('@/views/app/settings/userAccounts/users/userProfile'));
 const Modules = React.lazy(() => import('@/views/app/settings/userAccounts/modules'));
 
-export const SettingsRoutes = (props) => {
+const SettingsRoutes = (props) => {
   const { setLoading } = props
   return <Routes>
     <Route
@@ -62,3 +62,5 @@ export const SettingsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes >
 }
+
+export default SettingsRoutes;

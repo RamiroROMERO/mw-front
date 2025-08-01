@@ -12,7 +12,7 @@ const BillingProcess = React.lazy(() =>
   import('@/views/app/billing/process')
 );
 
-export const BillingProcessRoutes = (props) => {
+const BillingProcessRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -42,3 +42,5 @@ export const BillingProcessRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default BillingProcessRoutes;

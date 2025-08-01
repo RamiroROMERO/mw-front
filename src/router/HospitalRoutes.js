@@ -1,11 +1,13 @@
 import React from 'react';
 import { Route, Routes } from "react-router-dom";
-import HospitalManagement from '@/views//app/hospitalManagement';
-import PageNotFound from "@/views//pageNotFound";
-import { HospitalSettingsRoutes } from './HospitalSettingsRoutes';
-import { HospitalProcessRoutes } from './HospitalProcessRoutes';
 
-export const HospitalRoutes = (props) => {
+const HospitalSettingsRoutes = React.lazy(() => import('@Router/HospitalSettingsRoutes'));
+const HospitalProcessRoutes = React.lazy(() => import('@Router/HospitalProcessRoutes'));
+
+const HospitalManagement = React.lazy(() => import('@Views/app/hospitalManagement'));
+const PageNotFound = React.lazy(() => import('@Views/pageNotFound'));
+
+const HospitalRoutes = (props) => {
   const { setLoading } = props
   return (
     <Routes>
@@ -25,3 +27,5 @@ export const HospitalRoutes = (props) => {
     </Routes >
   )
 }
+
+export default HospitalRoutes;

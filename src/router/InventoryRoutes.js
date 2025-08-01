@@ -1,12 +1,12 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom"
-import Inventory from "@/views//app/inventory"
-import { InventorySettingsRoutes } from "./InventorySettingsRoutes";
-import { InventoryProcessRoutes } from "./InventoryProcessRoutes";
-import { InventoryReportsRoutes } from "./InventoryReportsRoutes";
-import PageNotFound from "@/views//pageNotFound";
+const Inventory = React.lazy(() => import("@Views/app/inventory"));
+const InventorySettingsRoutes = React.lazy(() => import('@Router/InventorySettingsRoutes'));
+const InventoryProcessRoutes = React.lazy(() => import('@Router/InventoryProcessRoutes'));
+const InventoryReportsRoutes = React.lazy(() => import('@Router/InventoryReportsRoutes'));
+const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
 
-export const InventoryRoutes = (props) => {
+const InventoryRoutes = (props) => {
   const { setLoading } = props
   return <Routes>
     <Route
@@ -26,3 +26,5 @@ export const InventoryRoutes = (props) => {
       path={`/*`} element={<PageNotFound />} />
   </Routes >
 }
+
+export default InventoryRoutes;

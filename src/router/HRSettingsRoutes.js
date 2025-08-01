@@ -16,7 +16,7 @@ const Biweeklys = React.lazy(() => import('@/views/app/humanResources/settings/b
 const DeductionTypes = React.lazy(() => import('@/views/app/humanResources/settings/deductionTypes'));
 const DaysTypes = React.lazy(() => import('@/views/app/humanResources/settings/daysTypes'));
 
-export const HRSettingsRoutes = (props) => {
+const HRSettingsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -74,3 +74,5 @@ export const HRSettingsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default HRSettingsRoutes;

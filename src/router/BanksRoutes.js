@@ -1,12 +1,12 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom"
-import Banks from "@/views//app/banks"
-import { BanksSettingsRoutes } from "./BanksSettingsRoutes";
-import { BanksProcessRoutes } from "./BanksProcessRoutes";
-import { BanksReportsRoutes } from "./BanksReportsRoutes";
-import PageNotFound from "@/views//pageNotFound";
+const Banks = React.lazy(() => import("@/views//app/banks"));
+const BanksSettingsRoutes = React.lazy(() => import('@Router/BanksSettingsRoutes'));
+const BanksProcessRoutes = React.lazy(() => import('@Router/BanksProcessRoutes'));
+const BanksReportsRoutes = React.lazy(() => import('@Router/BanksReportsRoutes'));
+const PageNotFound = React.lazy(() => import("@/views/pageNotFound"));
 
-export const BanksRoutes = (props) => {
+const BanksRoutes = (props) => {
   const { setLoading } = props
   return <Routes>
     <Route
@@ -26,3 +26,5 @@ export const BanksRoutes = (props) => {
       path={`/*`} element={<PageNotFound />} />
   </Routes >
 }
+
+export default BanksRoutes;

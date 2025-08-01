@@ -7,7 +7,7 @@ const TypesTaxes = React.lazy(() => import('@/views/app/taxes/settings/typesTaxe
 const TypesRetention = React.lazy(() => import('@/views/app/taxes/settings/typesRetention'));
 const TaxSettings = React.lazy(() => import('@/views/app/taxes/settings'));
 
-export const TaxSettingsRoutes = (props) => {
+const TaxSettingsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -29,3 +29,5 @@ export const TaxSettingsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default TaxSettingsRoutes;

@@ -6,7 +6,7 @@ const BanksSettings = React.lazy(() => import('@/views/app/banks/settings'));
 const BanksAccounts = React.lazy(() => import('@/views/app/banks/settings/banksAccounts'));
 const Scheduling = React.lazy(() => import('@/views/app/banks/settings/scheduling'));
 
-export const BanksSettingsRoutes = (props) => {
+const BanksSettingsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -24,3 +24,5 @@ export const BanksSettingsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default BanksSettingsRoutes;

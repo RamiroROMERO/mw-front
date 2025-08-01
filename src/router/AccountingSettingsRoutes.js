@@ -10,7 +10,7 @@ const BudgetStructure = React.lazy(() => import('@/views/app/accounting/settings
 const IncomeStatement = React.lazy(() => import('@/views/app/accounting/settings/incomeStatement'));
 const RecurringItems = React.lazy(() => import('@/views/app/accounting/settings/recurringItems'));
 
-export const AccountingSettingsRoutes = (props) => {
+const AccountingSettingsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -40,3 +40,5 @@ export const AccountingSettingsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default AccountingSettingsRoutes;

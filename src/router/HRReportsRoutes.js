@@ -12,7 +12,7 @@ const Salaries = React.lazy(() => import('@/views/app/humanResources/reports/sal
 const StaffDepartures = React.lazy(() => import('@/views/app/humanResources/reports/staffDepartures'));
 const ProjectTransfers = React.lazy(() => import('@/views/app/humanResources/reports/projectTransfers'));
 
-export const HRReportsRoutes = (props) => {
+const HRReportsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -50,3 +50,5 @@ export const HRReportsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default HRReportsRoutes;

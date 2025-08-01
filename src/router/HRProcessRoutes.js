@@ -26,7 +26,7 @@ const VacationPayroll = React.lazy(() => import('@/views/app/humanResources/proc
 const NeighborhoodTaxPayroll = React.lazy(() => import('@/views/app/humanResources/process/neighborhoodTax'));
 const AttendanceControl = React.lazy(() => import('@/views/app/humanResources/process/attendanceControl'));
 
-export const HRProcessRoutes = (props) => {
+const HRProcessRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -128,3 +128,5 @@ export const HRProcessRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default HRProcessRoutes;

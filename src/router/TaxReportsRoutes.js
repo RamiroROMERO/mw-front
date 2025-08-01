@@ -9,7 +9,7 @@ const SalesReportTax = React.lazy(() => import('@/views/app/taxes/reports/salesR
 const RetentionReport = React.lazy(() => import('@/views/app/taxes/reports/retentionReport'));
 const TaxReports = React.lazy(() => import('@/views/app/taxes/reports'));
 
-export const TaxReportsRoutes = (props) => {
+const TaxReportsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -39,3 +39,5 @@ export const TaxReportsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default TaxReportsRoutes;

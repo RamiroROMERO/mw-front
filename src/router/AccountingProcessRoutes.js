@@ -13,7 +13,7 @@ const Ledger = React.lazy(() => import('@/views/app/accounting/process/ledger'))
 const CashFlow = React.lazy(() => import('@/views/app/accounting/process/cashFlow'));
 const AdminExpenses = React.lazy(() => import('@/views/app/accounting/process/adminExpenses'));
 
-export const AccountingProcessRoutes = (props) => {
+const AccountingProcessRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -55,3 +55,5 @@ export const AccountingProcessRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default AccountingProcessRoutes;

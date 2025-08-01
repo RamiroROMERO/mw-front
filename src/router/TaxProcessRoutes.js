@@ -5,7 +5,7 @@ const PageNotFound = React.lazy(() => import("@/views/pageNotFound"));
 const RetentionReceipt = React.lazy(() => import('@/views/app/taxes/process/retentionReceipt'));
 const TaxProcess = React.lazy(() => import('@/views/app/taxes/process'));
 
-export const TaxProcessRoutes = (props) => {
+const TaxProcessRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -19,3 +19,5 @@ export const TaxProcessRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default TaxProcessRoutes;

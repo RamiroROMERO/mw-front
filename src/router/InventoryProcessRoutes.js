@@ -19,7 +19,7 @@ const InventoryAdjustment = React.lazy(() => import('@/views/app/inventory/proce
 const ChangeCode = React.lazy(() => import('@/views/app/inventory/process/changeCode'));
 const CostAdjustment = React.lazy(() => import('@/views/app/inventory/process/costAdjustment'));
 
-export const InventoryProcessRoutes = (props) => {
+const InventoryProcessRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -89,3 +89,5 @@ export const InventoryProcessRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default InventoryProcessRoutes;

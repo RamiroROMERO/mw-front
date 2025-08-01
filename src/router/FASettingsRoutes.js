@@ -7,7 +7,7 @@ const FixedAssetsSettingsTypes = React.lazy(() => import('@/views/app/fixedAsset
 const FixedAssetsSettingsAreas = React.lazy(() => import('@/views/app/fixedAssets/settings/areas'));
 const FixedAssetsSettingsResponsibles = React.lazy(() => import('@/views/app/fixedAssets/settings/responsibles'));
 
-export const FASettingsRoutes = (props) => {
+const FASettingsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -29,3 +29,5 @@ export const FASettingsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default FAReportsRoutes;

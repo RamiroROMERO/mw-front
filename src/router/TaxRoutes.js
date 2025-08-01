@@ -1,12 +1,12 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom"
 import Tax from "@/views/app/taxes"
-import { TaxSettingsRoutes } from "./TaxSettingsRoutes";
-import { TaxProcessRoutes } from "./TaxProcessRoutes";
-import { TaxReportsRoutes } from "./TaxReportsRoutes";
-import PageNotFound from "@/views/pageNotFound";
+const TaxSettingsRoutes = React.lazy(() => import('@Router/TaxSettingsRoutes'));
+const TaxProcessRoutes = React.lazy(() => import("@Router/TaxProcessRoutes"));
+const TaxReportsRoutes = React.lazy(() => import("@Router/TaxReportsRoutes"));
+const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
 
-export const TaxRoutes = (props) => {
+const TaxRoutes = (props) => {
   const { setLoading } = props
   return <Routes>
     <Route
@@ -26,3 +26,5 @@ export const TaxRoutes = (props) => {
       path={`/*`} element={<PageNotFound />} />
   </Routes >
 }
+
+export default TaxRoutes;

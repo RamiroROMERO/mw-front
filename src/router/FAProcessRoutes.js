@@ -6,7 +6,7 @@ const FAProcess = React.lazy(() => import('@/views/app/fixedAssets/process'));
 const FixedAssetsProcessRegister = React.lazy(() => import('@/views/app/fixedAssets/process/register'));
 
 
-export const FAProcessRoutes = (props) => {
+const FAProcessRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -20,3 +20,5 @@ export const FAProcessRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default FAProcessRoutes;

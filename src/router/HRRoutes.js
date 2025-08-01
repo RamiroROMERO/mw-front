@@ -1,12 +1,12 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom"
-import HR from "@/views//app/humanResources"
-import { HRSettingsRoutes } from "./HRSettingsRoutes";
-import { HRProcessRoutes } from "./HRProcessRoutes";
-import { HRReportsRoutes } from "./HRReportsRoutes";
-import PageNotFound from "@/views//pageNotFound";
+const HR = React.lazy(() => import("@Views/app/humanResources"));
+const HRSettingsRoutes = React.lazy(() => import('@Router/HRSettingsRoutes'));
+const HRProcessRoutes = React.lazy(() => import('@Router/HRProcessRoutes'));
+const HRReportsRoutes = React.lazy(() => import('@Router/HRReportsRoutes'));
+const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
 
-export const HRRoutes = (props) => {
+const HRRoutes = (props) => {
   const { setLoading } = props
   return <Routes>
     <Route
@@ -26,3 +26,5 @@ export const HRRoutes = (props) => {
       path={`/*`} element={<PageNotFound />} />
   </Routes >
 }
+
+export default HRRoutes;

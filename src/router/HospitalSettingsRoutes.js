@@ -1,17 +1,17 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
-const PageNotFound = React.lazy(() => import("@/views/pageNotFound"));
+const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
 
-const HospitalSettings = React.lazy(() => import('@/views/app/hospitalManagement/settings'));
-const GeneralSettings = React.lazy(() => import('@/views/app/hospitalManagement/settings/generalSettings'));
-const Specialties = React.lazy(() => import('@/views/app/hospitalManagement/settings/specialties'));
-const Specialists = React.lazy(() => import('@/views/app/hospitalManagement/settings/specialists'));
-const AreasIncome = React.lazy(() => import('@/views/app/hospitalManagement/settings/areasIncome'));
-const ReasonsAdmission = React.lazy(() => import("@/views/app/hospitalManagement/settings/reasonsAdmission"));
-const Rooms = React.lazy(() => import("@/views/app/hospitalManagement/settings/rooms"));
+const HospitalSettings = React.lazy(() => import('@Views/app/hospitalManagement/settings'));
+const GeneralSettings = React.lazy(() => import('@Views/app/hospitalManagement/settings/generalSettings'));
+const Specialties = React.lazy(() => import('@Views/app/hospitalManagement/settings/specialties'));
+const Specialists = React.lazy(() => import('@Views/app/hospitalManagement/settings/specialists'));
+const AreasIncome = React.lazy(() => import('@Views/app/hospitalManagement/settings/areasIncome'));
+const ReasonsAdmission = React.lazy(() => import("@Views/app/hospitalManagement/settings/reasonsAdmission"));
+const Rooms = React.lazy(() => import("@Views/app/hospitalManagement/settings/rooms"));
 
-export const HospitalSettingsRoutes = (props) => {
+const HospitalSettingsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -51,3 +51,5 @@ export const HospitalSettingsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default HospitalSettingsRoutes;

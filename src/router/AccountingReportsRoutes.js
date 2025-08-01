@@ -9,7 +9,7 @@ const ModuleOpeningClosing = React.lazy(() => import('@/views/app/accounting/rep
 const AccountingClosures = React.lazy(() => import('@/views/app/accounting/reports/accountingClosures'));
 const AccountingReport = React.lazy(() => import('@/views/app/accounting/reports/accountingReports'));
 
-export const AccountingReportsRoutes = (props) => {
+const AccountingReportsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -35,3 +35,5 @@ export const AccountingReportsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default AccountingReportsRoutes;

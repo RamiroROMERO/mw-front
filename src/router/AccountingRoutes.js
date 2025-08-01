@@ -1,12 +1,12 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom"
-import Accounting from "@/views//app/accounting"
-import { AccountingSettingsRoutes } from "./AccountingSettingsRoutes";
-import { AccountingProcessRoutes } from "./AccountingProcessRoutes";
-import { AccountingReportsRoutes } from "./AccountingReportsRoutes";
-import PageNotFound from "@/views//pageNotFound";
+const Accounting = React.lazy(() => import("@Views/app/accounting"));
+const AccountingSettingsRoutes = React.lazy(() => import('@Router/AccountingSettingsRoutes'));
+const AccountingProcessRoutes = React.lazy(() => import('@Router/AccountingProcessRoutes'));
+const AccountingReportsRoutes = React.lazy(() => import('@Router/AccountingReportsRoutes'));
+const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
 
-export const AccountingRoutes = (props) => {
+const AccountingRoutes = (props) => {
   const { setLoading } = props
   return <Routes>
     <Route
@@ -26,3 +26,5 @@ export const AccountingRoutes = (props) => {
       path={`/*`} element={<PageNotFound />} />
   </Routes >
 }
+
+export default AccountingRoutes;

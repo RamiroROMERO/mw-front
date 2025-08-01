@@ -7,7 +7,7 @@ const FAReports = React.lazy(() =>
   import('@/views/app/fixedAssets/reports')
 );
 
-export const FAReportsRoutes = (props) => {
+const FAReportsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -17,3 +17,5 @@ export const FAReportsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default FAReportsRoutes;

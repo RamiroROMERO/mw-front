@@ -6,7 +6,7 @@ const SalesReports = React.lazy(() => import("@Views/app/billing/reports/salesRe
 const CashReports = React.lazy(() => import("@Views/app/billing/reports/boxesReport"));
 const BillingReports = React.lazy(() => import('@Views/app/billing/reports'));
 
-export const BillingReportsRoutes = (props) => {
+const BillingReportsRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -24,3 +24,5 @@ export const BillingReportsRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default BillingReportsRoutes;

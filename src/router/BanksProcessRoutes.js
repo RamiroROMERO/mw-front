@@ -14,7 +14,7 @@ const CashWithdrawal = React.lazy(() => import('@/views/app/banks/process/cashWi
 const AffiliateDeposits = React.lazy(() => import('@/views/app/banks/process/affiliateDeposits'));
 const DebCredNotes = React.lazy(() => import('@/views/app/banks/process/debCredNotes'));
 
-export const BanksProcessRoutes = (props) => {
+const BanksProcessRoutes = (props) => {
   const { setLoading } = props;
   return <Routes>
     <Route
@@ -64,3 +64,5 @@ export const BanksProcessRoutes = (props) => {
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
+
+export default BanksProcessRoutes;
