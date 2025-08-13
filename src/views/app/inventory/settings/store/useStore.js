@@ -53,11 +53,6 @@ export const useStore = ({ setLoading }) => {
       icon: 'pencil',
       toolTip: IntlMessages('button.edit'),
       onClick: fnEditItem
-    }, {
-      color: 'danger',
-      icon: 'trash',
-      toolTip: IntlMessages('button.delete'),
-      onClick: fnDeleteItem
     }]
   });
 

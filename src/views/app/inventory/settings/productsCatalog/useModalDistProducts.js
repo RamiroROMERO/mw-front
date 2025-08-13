@@ -11,7 +11,7 @@ const UseModalDistProducts = (props) => {
   const [detaDist, setDetaDist] = useState([]);
 
   const productDistValid = {
-    undOut: [(val) => val !== "", "msg.required.input.undOut"],
+    undCode: [(val) => val !== "", "msg.required.input.undOut"],
     valChange: [(val) => validInt(val) >= 0, "msg.required.input.valChange"],
     localMinPrice: [(val) => validInt(val) >= 0, "msg.required.input.valChange"],
     localMedPrice: [(val) => validInt(val) >= 0, "msg.required.input.valChange"],
@@ -25,19 +25,22 @@ const UseModalDistProducts = (props) => {
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
     idFather: productCode,
-    undOut: '',
+    undCode: "",
+    undOut: "",
     valChange: 0,
     localMinPrice: 0,
     localMedPrice: 0,
     localMaxPrice: 0,
+    localOtherPrice: 0,
     foranMinPrice: 0,
     foranMedPrice: 0,
     foranMaxPrice: 0,
+    foranOtherPrice: 0,
     isDefault: false,
     status: true,
   }, productDistValid);
 
-  const { id, undOut, valChange, localMinPrice, localMedPrice, localMaxPrice, foranMinPrice, foranMedPrice, foranMaxPrice, isDefault, status } = formState;
+  const { id, undOut, undCode, valChange, localMinPrice, localMedPrice, localMaxPrice, foranMinPrice, foranMedPrice, foranMaxPrice, foranOtherPrice, isDefault, status } = formState;
 
   const fnEditDetaItem = (item) => {
     setBulkForm(item);
@@ -81,6 +84,7 @@ const UseModalDistProducts = (props) => {
     }
     const data = {
       idFather: productCode,
+      undCode,
       undOut, valChange, localMinPrice, localMedPrice, localMaxPrice, foranMaxPrice, foranMedPrice, foranMinPrice, isDefault, status
     };
     setLoading(true);
@@ -110,7 +114,7 @@ const UseModalDistProducts = (props) => {
     columns: [
       {
         text: IntlMessages("page.productsCatalog.modal.distProduct.table.column.measureUnit"),
-        dataField: "undOut",
+        dataField: "measureName",
         headerStyle: { 'width': '15%' }
       }, {
         text: IntlMessages("page.productsCatalog.modal.distProduct.table.column.baseValue"),

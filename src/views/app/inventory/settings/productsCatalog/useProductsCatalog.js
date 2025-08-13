@@ -5,6 +5,7 @@ import ModalViewProd from "./ModalViewProd";
 import ModalDistProducts from "./ModalDistProducts";
 import ModalAddTrademarks from "./ModalAddTrademarks";
 import { useForm } from "@Hooks/useForms";
+import { ModalCompProduct } from "./ModalCompProduct";
 
 const useProductsCatalog = ({ setLoading }) => {
 
@@ -25,11 +26,12 @@ const useProductsCatalog = ({ setLoading }) => {
   const [openMsgDeleteProd, setOpenMsgDeleteProd] = useState(false);
   const [openModalDistProduct, setOpenModalDistProduct] = useState(false);
   const [openModalAddTrademark, setOpenModalAddTrademark] = useState(false);
+  const [openModalCompProduct, setOpenModalCompProduct] = useState(false);
 
   const productsCatalogValid = {
     code: [(val) => val !== "", "msg.required.input.code"],
     name: [(val) => val !== "", "msg.required.input.name"],
-    classification: [(val) => val !== "", "msg.required.select.classification2"],
+    typeId: [(val) => validInt(val) > 0, "msg.required.select.classification2"],
     type: [(val) => validInt(val) > 0, "msg.required.radio.type"],
     undinId: [(val) => validInt(val) > 0, "msg.required.select.units"],
     undoutId: [(val) => validInt(val) > 0, "msg.required.select.units"],
@@ -96,7 +98,7 @@ const useProductsCatalog = ({ setLoading }) => {
 
   const { id, code, name, status, description, submConversion, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
     typeCalculatePrice, typeCalculateCost, percentLocalPriceMin, valuePercentLocalPriceMin, priceLocalMin, percentLocalPriceMid,
-    valuePercentLocalPriceMid, priceLocalMid, percentLocalPriceMax, valuePercentLocalPriceMax, priceLocalMax, percentOutsidePriceMin, valuePercentOutsidePriceMin, priceOutsideMin, percentOutsidePriceMid, valuePercentOutsidePriceMid,priceOutsideMid, percentOutsidePriceMax, valuePercentOutsidePriceMax, priceOutsideMax, parentProduct, notes, enableForPurchase, enableForSale, paymentTax, requireExpLot, validToSale, paymentComiss, priceIncludeTax, dateLastPurchase, numLastPurchase, provLastPurchase, classification, submission, inputUnit, outputUnit, tradeMark, typeId, undinId, undoutId, packId, tradeId } = formState;
+    valuePercentLocalPriceMid, priceLocalMid, percentLocalPriceMax, valuePercentLocalPriceMax, priceLocalMax, percentOutsidePriceMin, valuePercentOutsidePriceMin, priceOutsideMin, percentOutsidePriceMid, valuePercentOutsidePriceMid, priceOutsideMid, percentOutsidePriceMax, valuePercentOutsidePriceMax, priceOutsideMax, parentProduct, notes, enableForPurchase, enableForSale, paymentTax, requireExpLot, validToSale, paymentComiss, priceIncludeTax, dateLastPurchase, numLastPurchase, provLastPurchase, classification, submission, inputUnit, outputUnit, tradeMark, typeId, undinId, undoutId, packId, tradeId } = formState;
 
   const fnGenerateCode = () => {
     if (classification === "") {
@@ -220,6 +222,7 @@ const useProductsCatalog = ({ setLoading }) => {
   const fnSaveProduct = () => {
     setSendForm(true);
     if (!isFormValid) {
+      console.log("faltan datos!", formValidation, formState);
       return;
     }
 
@@ -312,7 +315,10 @@ const useProductsCatalog = ({ setLoading }) => {
     }
   }
 
-  const fnComposed = () => { }
+  const fnComposed = () => {
+    if (code === "" || validInt(id) === 0) return;
+    setOpenModalCompProduct(true);
+  }
 
   const fnDistribution = () => {
     if (code === '' || validInt(id) === 0) return;
@@ -413,6 +419,22 @@ const useProductsCatalog = ({ setLoading }) => {
     }
   }
 
+  const propsToModalCompProduct = {
+    ModalContent: ModalCompProduct,
+    title: "page.productsCatalog.modal.compProduct.title",
+    open: openModalCompProduct,
+    setOpen: setOpenModalCompProduct,
+    maxWidth: 'lg',
+    data: {
+      setLoading,
+      productId: id,
+      productCode: code,
+      productName: name,
+      listProducts
+    }
+  }
+
+
 
   const propsToModalAddTrademarks = {
     ModalContent: ModalAddTrademarks,
@@ -466,6 +488,7 @@ const useProductsCatalog = ({ setLoading }) => {
     propsToModalViewProd,
     propsToModalDistProduct,
     propsToModalAddTrademarks,
+    propsToModalCompProduct,
   }
 
 };

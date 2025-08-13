@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { IntlMessages } from '@Helpers/Utils';
 
-export const useDetailTable = ({onBulkForm, setOpenMsgQuestion, tableData}) => {
+export const useDetailTable = ({ onBulkForm, setOpenMsgQuestion, tableData }) => {
 
   const fnDeleteItem = (item) => {
-    onBulkForm({id:item.id});
+    onBulkForm({ id: item.id });
     setOpenMsgQuestion(true);
   }
 
@@ -26,16 +26,16 @@ export const useDetailTable = ({onBulkForm, setOpenMsgQuestion, tableData}) => {
       onClick: fnEditItem
     }, {
       color: 'danger',
-      icon: 'trash',
-      toolTip: IntlMessages('button.delete'),
+      icon: 'ban',
+      toolTip: IntlMessages('button.disable'),
       onClick: fnDeleteItem
     }]
   });
 
-  useEffect(()=>{
-    const dataTable = {...table, data: tableData};
+  useEffect(() => {
+    const dataTable = { ...table, data: tableData };
     setTable(dataTable);
-  },[tableData]);
+  }, [tableData]);
 
   return (
     {

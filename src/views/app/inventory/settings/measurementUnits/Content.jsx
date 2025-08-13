@@ -1,6 +1,5 @@
-import React from 'react';
 import { Card, CardBody, Row, Form, Button } from 'reactstrap';
-import { IntlMessages } from "@/helpers/Utils";
+import { IntlMessages, validInt } from "@/helpers/Utils";
 import { Colxx } from '@/components/common/CustomBootstrap';
 import { InputField } from '@/components/inputFields';
 import { Checkbox } from '@/components/checkbox';
@@ -11,9 +10,9 @@ import { useMeasurementUnits } from './useMeasurementUnits';
 const MeasurementUnits = (props) => {
   const { setLoading } = props;
 
-  const {formState, formValidation, sendForm, table, propsToMsgDelete, onInputChange, fnClearInputs, fnSave} = useMeasurementUnits({setLoading});
+  const { formState, formValidation, sendForm, table, propsToMsgDelete, onInputChange, fnClearInputs, fnSave } = useMeasurementUnits({ setLoading });
 
-  const { code, name, description, type, status } = formState;
+  const { id, code, name, description, type, status } = formState;
 
   const { codeValid, nameValid } = formValidation;
 
@@ -34,6 +33,7 @@ const MeasurementUnits = (props) => {
                       label="page.measurementUnits.input.code"
                       invalid={sendForm && !!codeValid}
                       feedbackText={sendForm && (codeValid || null)}
+                      disabled={validInt(id) === 0 ? false : true}
                     />
                   </Colxx>
                   <Colxx xxs="12" sm="6" lg="12">

@@ -4,7 +4,7 @@ import { IntlMessages } from "@/helpers/Utils";
 import { request } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 
-export const useMeasurementUnits = ({setLoading}) => {
+export const useMeasurementUnits = ({ setLoading }) => {
 
   const [currentItem, setCurrentItem] = useState({});
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -30,6 +30,7 @@ export const useMeasurementUnits = ({setLoading}) => {
   };
 
   const fnDeleteItem = (item) => {
+    return;
     setCurrentItem(item);
     setOpenMsgQuestion(true);
   };

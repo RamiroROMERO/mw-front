@@ -3,14 +3,14 @@ import { useForm } from '@Hooks/useForms';
 import { IntlMessages } from "@/helpers/Utils";
 import { request } from '@Helpers/core';
 
-export const useTypeProducts = ({setLoading}) => {
+export const useTypeProducts = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
 
   const typeProductsValid = {
     name: [(val) => val !== "", "msg.required.input.name"],
-    codeInit: [(val) => val !== "" || val.length < 3, "msg.required.input.codeInit"]
+    codeInit: [(val) => val !== "" || val.length > 3, "msg.required.input.codeInit"]
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
@@ -23,6 +23,7 @@ export const useTypeProducts = ({setLoading}) => {
   }, typeProductsValid);
 
   const fnEditItem = (item) => {
+    request.moveScrollTop();
     setBulkForm(item);
   };
 

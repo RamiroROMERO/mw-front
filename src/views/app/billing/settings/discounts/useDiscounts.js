@@ -47,7 +47,7 @@ const useDiscounts = ({ setLoading }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET('admin/discounts', (resp) => {
+    request.GET('admin/discounts?status=1', (resp) => {
       const data = resp.data.map((item) => {
         item.description = item.name
         item.amount = item.percentValue

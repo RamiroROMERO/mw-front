@@ -4,7 +4,7 @@ import { IntlMessages } from "@/helpers/Utils";
 import { request } from '@Helpers/core';
 import { validFloat } from '@Helpers/Utils';
 
-export const useConversionFactors = ({setLoading}) => {
+export const useConversionFactors = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
   const [listMUnits, setMUnits] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -27,6 +27,7 @@ export const useConversionFactors = ({setLoading}) => {
   const fnEditItem = (item) => {
     setCurrentItem(item);
     setBulkForm(item);
+    window.scrollTo(0, 0);
   };
 
   const fnDeleteItem = (item) => {
@@ -37,10 +38,10 @@ export const useConversionFactors = ({setLoading}) => {
   const [table, setTable] = useState({
     title: IntlMessages("page.conversionFactors.table.title"),
     columns: [
-      { text: IntlMessages("page.conversionFactors.table.inputUnit"), dataField: "inputUnit", headerStyle: { 'width': '20%' } },
-      { text: IntlMessages("page.conversionFactors.table.outputUnit"), dataField: "outputUnit", headerStyle: { 'width': '20%' } },
+      { text: IntlMessages("page.conversionFactors.table.inputUnit"), dataField: "inputUnitName", headerStyle: { 'width': '25%' } },
+      { text: IntlMessages("page.conversionFactors.table.outputUnit"), dataField: "outputUnitName", headerStyle: { 'width': '25%' } },
       {
-        text: IntlMessages("page.conversionFactors.table.valueFactors"), dataField: "valueFactor", headerStyle: { 'width': '30%' },
+        text: IntlMessages("page.conversionFactors.table.valueFactors"), dataField: "valueFactor", headerStyle: { 'width': '20%' },
         classes: 'd-xxs-none-table-cell', headerClasses: 'd-xxs-none-table-cell', style: { textAlign: 'right' }
       },
       { text: IntlMessages("page.conversionFactors.table.status"), dataField: "status", type: 'boolean', headerStyle: { 'width': '10%' } }
@@ -137,7 +138,7 @@ export const useConversionFactors = ({setLoading}) => {
       const listUnits = resp.data.map((item) => {
         return {
           label: item.name,
-          value: item.name
+          value: item.code
         }
       });
       setMUnits(listUnits);

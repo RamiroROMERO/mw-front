@@ -10,7 +10,7 @@ import { useTypeProducts } from './useTypeProducts';
 const TypeProducts = (props) => {
   const { setLoading } = props;
 
-  const {formState, formValidation, sendForm, table, propsToMsgDelete, onInputChange, fnClearInputs, fnSave} = useTypeProducts({setLoading});
+  const { formState, formValidation, sendForm, table, propsToMsgDelete, onInputChange, fnClearInputs, fnSave } = useTypeProducts({ setLoading });
 
   const { name, description, codeInit, codeSeq, status } = formState;
 

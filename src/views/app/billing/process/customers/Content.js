@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Row, Card, CardBody, FormGroup, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import { IntlMessages, validInt } from "@/helpers/Utils";
 import { Colxx, Separator } from '@/components/common/CustomBootstrap';
@@ -7,309 +7,42 @@ import { RadioGroup } from '@/components/radioGroup';
 import { Checkbox } from '@/components/checkbox';
 import { InputField } from '@/components/inputFields';
 import { ContainerWithLabel } from '@/components/containerWithLabel';
-import { request } from '@/helpers/core';
-import { useForm } from '@/hooks';
+
 import classnames from 'classnames';
 import ControlPanel from '@/components/controlPanel';
 import SearchSelect from '@/components/SearchSelect/SearchSelect';
 import DateCalendar from '@/components/dateCalendar';
-import notification from '@/containers/ui/Notifications';
 import Confirmation from '@/containers/ui/confirmationMsg';
 import Modal from "@/components/modal";
 import ModalViewCust from './ModalViewCust';
+import { useCustomers } from './useCustomers';
 
 const Customers = (props) => {
+
   const { setLoading } = props;
   const [activeTab, setActiveTab] = useState('1');
+
+  const { formState,
+    formValidation,
+    setOpenModalViewCust,
+    listLedgerAccounts,
+    listTypeCustomers,
+    dataCustomers,
+    sendForm,
+    propsToControlPanel,
+    openModalViewCust,
+    isFarmControl,
+    isHospital, fnDelete, fnViewCustomer, onInputChange, listDepartments, listMunicipalities, onDeptoChange } = useCustomers({ setLoading });
+
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
-  const [openModalViewCust, setOpenModalViewCust] = useState(false);
-  const [listLedgerAccounts, setListLedgerAccounts] = useState([]);
-  const [listTypeCustomers, setListTypeCustomers] = useState([]);
-  const [dataCustomers, setDataCustomers] = useState([]);
-  const [sendForm, setSendForm] = useState(false);
-  const [isFarmControl, setIsFarmControl] = useState(false);
-  const [isHospital, setIsHospital] = useState(false);
-
-  const customersValid = {
-    idTypeCont: [(val) => validInt(val) > 0, "msg.required.input.typeCustomer"],
-    rtn: [(val) => val !== "", "msg.required.input.dni"],
-    nomcli: [(val) => val !== "", "msg.required.input.name"],
-    fechai: [(val) => val !== "", "msg.required.input.date"],
-    solcredi: [(val) => validInt(val) > 0, "msg.required.radio.creditRequest"],
-    numccxc: [(val) => val !== "", "msg.required.select.receivable"],
-    numcdes: [(val) => val !== "", "msg.required.select.discountAccount"],
-    numcimp: [(val) => val !== "", "msg.required.select.taxAccount"]
-  }
-
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
-    id: 0,
-    idTypeCont: 0,
-    tipocli: 0,
-    rtn: '',
-    nomcli: '',
-    fechai: '',
-    tel: '',
-    email: '',
-    direcc: '',
-    solcredi: 0,
-    diascre: 0,
-    limcred: 0,
-    payter: '',
-    isInter: false,
-    isPartner: false,
-    pagaiva: false,
-    defaPos: false,
-    nombrec: '',
-    cargoc: '',
-    telec: '',
-    celuc: '',
-    correoc: '',
-    nombrep: '',
-    cargop: '',
-    telep: '',
-    celup: '',
-    correop: '',
-    numccxc: '',
-    numcdes: '',
-    numcimp: '',
-    numcfle: '',
-    numcbon: '',
-    exoneratedNumber: '',
-    persem: false,
-    permen: false,
-    perqui: false,
-    pertri: false,
-    status: true,
-    productor: false,
-    prod_cert: false,
-    defaHosp: false,
-    type: 1,
-    billOuts: false
-  }, customersValid);
 
   const { id, idTypeCont, tipocli, rtn, nomcli, fechai, tel, email, direcc, solcredi, diascre, limcred, payter, isInter, isPartner,
     pagaiva, defaPos, nombrec, cargoc, telec, celuc, correoc, nombrep, cargop, telep, celup, correop, numccxc, numcdes, numcimp,
-    numcfle, numcbon, persem, permen, perqui, pertri, status, productor, prod_cert, exoneratedNumber, defaHosp, type, billOuts } = formState;
+    numcfle, numcbon, persem, permen, perqui, pertri, status, productor, prod_cert, exoneratedNumber, defaHosp, type, billOuts, deptoCode, municCode } = formState;
 
-  const { idTypeContValid, rtnValid, nomcliValid, fechaiValid, solcrediValid, numccxcValid, numcdesValid, numcimpValid } = formValidation;
+  const { idTypeContValid, rtnValid, nomcliValid, fechaiValid, solcrediValid, numccxcValid, numcdesValid, numcimpValid, deptoCodeContValid, municCodeContValid } = formValidation;
 
-  const fnViewCustomer = (item) => {
-    if (!item.payter) item.payter = '';
-    setBulkForm(item);
-    setOpenModalViewCust(false);
-  }
-
-  const fnGetData = () => {
-    setLoading(true);
-    request.GET('facCustomers', (resp) => {
-      const data = resp.data.map((item) => {
-        item.typeCustomer = item.setCustomerType ? item.setCustomerType.name : ""
-        // item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
-        //   <i className="medium-icon bi bi-square" />
-        // item.options = <TableButton color='primary' icon='eye' fnOnClick={() => fnViewCustomer(item)} />
-        return item;
-      });
-      setDataCustomers(data);
-      setOpenModalViewCust(true);
-      setLoading(false);
-    }, (err) => {
-      console.error(err);
-      setLoading(false);
-    });
-  }
-
-  useEffect(() => {
-    setLoading(true);
-    request.GET('contAccountants/getSL', (resp) => {
-      const listAccounts = resp.data.map((item) => {
-        return {
-          label: `${item.cta} - ${item.nombre}`,
-          value: item.cta
-        }
-      });
-      setListLedgerAccounts(listAccounts);
-      setLoading(false);
-    }, (err) => {
-      console.error(err);
-      setLoading(false);
-    });
-
-    request.GET('admin/customerTypes', (resp) => {
-      const listCustomersTypes = resp.data;
-      setListTypeCustomers(listCustomersTypes);
-      setLoading(false);
-    }, (err) => {
-      console.error(err);
-      setLoading(false);
-    });
-
-    const companyData = JSON.parse(localStorage.getItem("mw_current_company"));
-    if (companyData) {
-      setIsFarmControl(companyData.isFarmControl);
-      setIsHospital(companyData.isHospital);
-    }
-
-  }, []);
-
-  const fnNewCustomer = () => {
-    setSendForm(false);
-    onResetForm();
-  }
-
-  const fnSearchCustomer = () => {
-    fnGetData();
-  }
-
-  const fnSaveCustomer = () => {
-    setSendForm(true);
-    if (!isFormValid) {
-      return;
-    }
-
-    if (validInt(solcredi) === 1) {
-      if (validInt(diascre) === 0) {
-        notification('warning', 'msg.required.input.creditDays', 'alert.warning.title');
-        return;
-      }
-      if (validInt(limcred) === 0) {
-        notification('warning', 'msg.required.input.creditLimit', 'alert.warning.title');
-        return;
-      }
-    }
-
-    const newData = {
-      fechai,
-      rtn,
-      nomcli,
-      idTypeCont,
-      tel,
-      direcc,
-      email,
-      nombrec,
-      cargoc,
-      telec,
-      celuc,
-      correoc,
-      nombrep,
-      cargop,
-      telep,
-      celup,
-      correop,
-      solcredi,
-      persem,
-      perqui,
-      permen,
-      pertri,
-      diascre,
-      limcred,
-      tipocli,
-      defaPos,
-      isPartner,
-      isInter,
-      pagaiva,
-      numccli: numccxc,
-      numccxc,
-      numcdes,
-      numcimp,
-      numcfle,
-      numcbon,
-      payter,
-      status,
-      productor,
-      prod_cert,
-      exoneratedNumber,
-      defaHosp,
-      type,
-      billOuts
-    }
-
-    if (id > 0) {
-      setLoading(true);
-      request.PUT(`facCustomers/${id}`, newData, (resp) => {
-        console.log(resp);
-        setSendForm(false);
-        setLoading(false);
-      }, (err) => {
-        console.error(err);
-        setLoading(false);
-      });
-    } else {
-      setLoading(true);
-      request.POST('facCustomers', newData, (resp) => {
-        console.log(resp);
-        setSendForm(false);
-        onInputChange({ target: { name: 'id', value: resp.data.id } });
-        setLoading(false);
-      }, (err) => {
-        console.error(err);
-        setLoading(false);
-      });
-    }
-  }
-
-  const fnPrintCustomer = () => { }
-
-  const fnDeleteCustomer = () => {
-    if (id > 0) {
-      setOpenMsgQuestion(true);
-    }
-  }
-
-  const fnDelete = () => {
-    setOpenMsgQuestion(false);
-    setLoading(true);
-    request.DELETE(`facCustomers/${id}`, (resp) => {
-      console.log(resp);
-      fnNewCustomer();
-      setLoading(false);
-    }, (err) => {
-      console.error(err);
-      setLoading(false);
-    });
-  }
-
-  const fnLedgerAccounts = () => {
-    const selectFilter = listTypeCustomers.filter(item => {
-      return item.id === validInt(idTypeCont);
-    });
-    if (selectFilter.length > 0) {
-      const accounts = {
-        numccli: selectFilter[0].idCtaCxp,
-        numccxc: selectFilter[0].idCtaCxp,
-        numcdes: selectFilter[0].idCtaDesc,
-        numcimp: selectFilter[0].idCtaIva,
-        numcfle: selectFilter[0].idCtaFlete,
-        numcbon: selectFilter[0].idCtaBon
-      }
-      setBulkForm(accounts);
-    } else {
-      notification('warning', 'msg.required.input.typeCustomer', 'alert.warning.title');
-    }
-  }
-
-  const fnExportToExcel = () => { }
-
-  const propsToControlPanel = {
-    fnNew: fnNewCustomer,
-    fnSearch: fnSearchCustomer,
-    fnSave: fnSaveCustomer,
-    fnPrint: fnPrintCustomer,
-    fnDelete: fnDeleteCustomer,
-    buttonsHome: [
-      {
-        title: "button.ledgerAccounts",
-        icon: "bi bi-journal-text",
-        onClick: fnLedgerAccounts
-      },
-      {
-        title: "button.export",
-        icon: "bi bi-file-earmark-excel",
-        onClick: fnExportToExcel
-      }
-    ],
-    buttonsOptions: [],
-    buttonsAdmin: []
-  }
+  const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDelete, title: "alert.question.title" }
 
   const propsToModalViewCust = {
     ModalContent: ModalViewCust,
@@ -322,8 +55,6 @@ const Customers = (props) => {
       fnViewItem: fnViewCustomer
     }
   }
-
-  const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDelete, title: "alert.question.title" }
 
   return (
     <>
@@ -441,13 +172,43 @@ const Customers = (props) => {
                       </Row>
                       <Row>
                         <Colxx xxs="12">
-                          <InputField
-                            value={direcc}
-                            name="direcc"
-                            onChange={onInputChange}
-                            type="textarea"
-                            label="page.customers.modal.modalNew.input.address"
-                          />
+                          <ContainerWithLabel label="page.customers.modal.modalNew.input.address">
+                            <Row>
+                              <Colxx xxs="12" md={6} lg={12}>
+                                <SimpleSelect
+                                  label="select.department"
+                                  name="deptoCode"
+                                  value={deptoCode}
+                                  onChange={onDeptoChange}
+                                  options={listDepartments}
+                                  invalid={sendForm && !!deptoCodeContValid}
+                                  feedbackText={sendForm && (deptoCodeContValid || null)}
+                                />
+                              </Colxx>
+                              <Colxx xxs="12" md={6} lg={12}>
+                                <SimpleSelect
+                                  label="select.municipality"
+                                  name="municCode"
+                                  value={municCode}
+                                  onChange={onInputChange}
+                                  options={listMunicipalities}
+                                  invalid={sendForm && !!municCodeContValid}
+                                  feedbackText={sendForm && (municCodeContValid || null)}
+                                />
+                              </Colxx>
+                            </Row>
+                            <Row>
+                              <Colxx xxs={12}>
+                                <InputField
+                                  value={direcc}
+                                  name="direcc"
+                                  onChange={onInputChange}
+                                  type="textarea"
+                                  label="label.title.exactAddress"
+                                />
+                              </Colxx>
+                            </Row>
+                          </ContainerWithLabel>
                         </Colxx>
                       </Row>
                       <Row>
