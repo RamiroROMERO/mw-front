@@ -33,6 +33,12 @@ const fnGetToken = () => {
 }
 
 const request = {
+  moveScrollTop: () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  },
   GET: (url, fnSuccess, fnError) => {
     const baseUrl = url.split('?')[0];
     const token = urlPublic.includes(baseUrl) ? '' : fnGetToken();
