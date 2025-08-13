@@ -844,11 +844,11 @@ const data = [
             label: 'menu.paymentPlans',
             to: `${adminRoot}/humanResources/process/paymentPlans`,
           },
-          {
-            icon: 'bi bi-calendar-check',
-            label: 'menu.attendanceControl',
-            to: `${adminRoot}/humanResources/process/attendanceControl`,
-          },
+          // {
+          //   icon: 'bi bi-calendar-check',
+          //   label: 'menu.attendanceControl',
+          //   to: `${adminRoot}/humanResources/process/attendanceControl`,
+          // },
           {
             icon: 'bi bi-cash-stack',
             label: 'menu.resumePayroll',

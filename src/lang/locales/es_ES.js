@@ -639,6 +639,7 @@ const esLang = {
   "check.paidVacation": "Vacaciones Pagadas",
   "check.markAssistance": "Marca Asistencia",
   "modal.viewDocument.title": "Documento",
+  "modal.viewDocument.invoice": "Factura #",
   "modal.confirm.title": "Confirmar",
   "modal.printDocument.title": "Imprimir Documento",
   'pages.select.documentCode': "Documento",

@@ -1,9 +1,9 @@
 import React from "react";
-import { Modal, ModalBody } from "reactstrap";
+import { Modal } from "reactstrap";
 import Header from './Header';
 
 const ModalMW = (props)=>{
-  const {title, ModalContent, open, setOpen, maxWidth, data }= props;
+  const {title, valueTitle="", ModalContent, open, setOpen, maxWidth, data }= props;
   return (
   <>
     <Modal
@@ -14,7 +14,7 @@ const ModalMW = (props)=>{
       backdrop="static"
       scrollable
     >
-      <Header title={title} fnClose={setOpen} />
+      <Header title={title} valueTitle={valueTitle} fnClose={setOpen} />
       <ModalContent data={data} setOpen={setOpen} />
     </Modal>
   </>

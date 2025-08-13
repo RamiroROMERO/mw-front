@@ -637,6 +637,7 @@ const enLang = {
   "check.paidVacation": "Paid Vacations",
   "check.markAssistance": "Mark Assistance",
   "modal.viewDocument.title": "Document",
+  "modal.viewDocument.invoice": "Invoice #",
   "modal.confirm.title": "Confirm",
   "modal.printDocument.title": "Print Document",
   'pages.select.documentCode': "Document",

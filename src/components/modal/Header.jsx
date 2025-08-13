@@ -2,7 +2,7 @@ import React from "react";
 import { IntlMessagesFn } from "@/helpers/Utils";
 import { ModalHeader } from "reactstrap";
 
-const Header = ({ title, fnClose }) => {
+const Header = ({ title, valueTitle, fnClose }) => {
   const noRefCheck = () => { fnClose(false) };
   const closeBtn = (
     <button className="close" onClick={noRefCheck} type="button" aria-label="Close">
@@ -11,7 +11,7 @@ const Header = ({ title, fnClose }) => {
   );
   return (
     <ModalHeader toggle={noRefCheck} close={closeBtn}  >
-      {IntlMessagesFn(title)}
+      {`${IntlMessagesFn(title)} ${valueTitle}`}
     </ModalHeader>
   )
 }

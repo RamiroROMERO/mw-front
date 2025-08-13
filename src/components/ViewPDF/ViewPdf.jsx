@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
-import { IntlMessages } from '@/helpers/Utils'
+import { ModalBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 
 const ViewPdf = ({setOpen, data}) => {
@@ -14,18 +13,12 @@ const ViewPdf = ({setOpen, data}) => {
           <iframe title='Cargando pdf...'
             type="application/pdf"
             src={documentPath}
-            style={{width:"100%",minHeight:"450px", height:"100%"}}
+            style={{width:"100%",minHeight:"500px", height:"100%"}}
             frameBorder="0"
           />
         </Colxx>
       </Row>
     </ModalBody>
-    <ModalFooter>
-      <Button color="danger" onClick={()=>{setOpen(false)}} >
-        <i className="bi bi-box-arrow-right"/>
-        {` ${IntlMessages('button.exit')}`}
-      </Button>
-    </ModalFooter>
     </>
   )
 }
