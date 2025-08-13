@@ -20,6 +20,7 @@ import ModalDeliveryDoc from './ModalDeliveryDoc';
 import InvoicingForm from './InvoicingForm';
 import InvoicingDetail from './InvoicingDetail';
 import InvoicingTable from './InvoicingTableProd';
+import ViewPdf from '@/components/ViewPDF/ViewPdf';
 
 const Invoicing = (props) => {
   const { setLoading } = props;
@@ -47,6 +48,11 @@ const Invoicing = (props) => {
 
   const [recordSelected, setRecordSelected] = useState({});
 
+  //print invoice
+  const userData = JSON.parse(localStorage.getItem('mw_current_user'));
+  const [openViewFile, setOpenViewFile] = useState(false);
+  const [documentPath, setDocumentPath] = useState("");
+
   const invoicingValid = {
     documentCode: [(val) => val !== "0" && val !== "", "msg.required.select.typeDocument"],
     customerId: [(val) => validInt(val) > 0, "msg.required.select.customer"],
@@ -60,8 +66,7 @@ const Invoicing = (props) => {
     price: [(val) => validInt(val) > 0, "msg.required.input.price"],
   }
 
-  const { formState: formIndex, formValidation: formValidationIndex, isFormValid: isFormValidIndex, onInputChange: onInputChangeIndex,
-    onResetForm: onResetFormIndex, setBulkForm: setBulkFormIndex } = useForm({
+  const { formState: formIndex, formValidation: formValidationIndex, isFormValid: isFormValidIndex, onInputChange: onInputChangeIndex, onResetForm: onResetFormIndex, setBulkForm: setBulkFormIndex } = useForm({
       id: 0,
       customerId: 0,
       customerDNI: '',
@@ -84,8 +89,7 @@ const Invoicing = (props) => {
       total: 0
     }, invoicingValid);
 
-  const { formState: formDetail, formValidation: formValidationDetail, isFormValid: isFormValidDetail, onInputChange: onInputDetaChange,
-    onResetForm: onResetFormDetail, setBulkForm: setBulkFormDetail } = useForm({
+  const { formState: formDetail, formValidation: formValidationDetail, isFormValid: isFormValidDetail, onInputChange: onInputDetaChange, onResetForm: onResetFormDetail, setBulkForm: setBulkFormDetail } = useForm({
       productCode: '',
       description: '',
       areaId: 0,
@@ -381,7 +385,13 @@ const Invoicing = (props) => {
 
   const fnPrintInvoicing = () => {
     if (id > 0) {
-      setOpenModalPrint(true);
+      request.GETPdfUrl('billing/process/invoices/exportPDF', { id, userName: userData.name }, (resp) =>{
+        setDocumentPath(resp);
+        setOpenViewFile(true);
+      }, (err) => {
+        console.error(err);
+        setLoading(false);
+      });
     }
   }
 
@@ -917,6 +927,18 @@ const Invoicing = (props) => {
     title: "alert.question.title"
   }
 
+  const propsToViewPDF = {
+    ModalContent: ViewPdf,
+    title: "modal.viewDocument.invoice",
+    valueTitle: documentId,
+    open: openViewFile,
+    setOpen: setOpenViewFile,
+    maxWidth: 'xl',
+    data: {
+      documentPath
+    }
+  }
+
   return (
     <>
       <Row>
@@ -939,6 +961,7 @@ const Invoicing = (props) => {
       <Modal {...propsToModalGenerate} />
       <Modal {...propsToModalQuotation} />
       <Modal {...propsToModalDeliveryDoc} />
+      <Modal {...propsToViewPDF}/>
       <Confirmation {...propsToMsgDelete} />
       <Confirmation {...propsToMsgCancelInvoice} />
       <Confirmation {...propsToMsgGenerateInvoice} />

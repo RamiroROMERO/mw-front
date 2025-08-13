@@ -143,6 +143,39 @@ const request = {
         return err;
       });
   },
+  GETPdfUrl: (url, data, fnSuccess, fnError) => {
+    const token = fnGetToken();
+    fetch(`${urlAPI}${url}`, {
+      async: true,
+      crossDomain: true,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      contentType: 'JSON',
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        return response.blob();
+      })
+      .then((response) => {
+        const url = URL.createObjectURL(response);
+        if (typeof fnSuccess === 'function') {
+          fnSuccess(url);
+        } else {
+          console.log(url);
+        }
+      })
+      .catch((err) => {
+        if (typeof fnError === 'function') {
+          fnError(err);
+        } else {
+          console.error(err);
+        }
+        return err;
+      });
+  },
   fnExportToXLSX: (url, data = {}, fileName) => {
     return new Promise(function (resolve, reject) {
       const token = fnGetToken();

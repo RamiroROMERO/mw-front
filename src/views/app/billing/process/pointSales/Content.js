@@ -22,6 +22,7 @@ import ModalPayment from './ModalPayment';
 import InvoicingForm from '../invoicing/InvoicingForm';
 import InvoicingDetail from '../invoicing/InvoicingDetail';
 import InvoicingTable from '../invoicing/InvoicingTableProd';
+import ViewPdf from '@/components/ViewPDF/ViewPdf';
 
 const PointSales = (props) => {
   const { setLoading } = props;
@@ -54,6 +55,10 @@ const PointSales = (props) => {
   const [sendFormIndex, setSendFormIndex] = useState(false);
   const [sendFormDetail, setSendFormDetail] = useState(false);
 
+  //print invoice
+  const [openViewFile, setOpenViewFile] = useState(false);
+  const [documentPath, setDocumentPath] = useState("");
+
   const invoicingValid = {
     documentCode: [(val) => val !== "0", "msg.required.select.typeDocument"],
     customerId: [(val) => validInt(val) > 0, "msg.required.select.customer"],
@@ -67,8 +72,7 @@ const PointSales = (props) => {
     price: [(val) => validInt(val) > 0, "msg.required.input.price"],
   }
 
-  const { formState: formIndex, formValidation: formValidationIndex, isFormValid: isFormValidIndex, onInputChange: onInputChangeIndex,
-    onResetForm: onResetFormIndex, setBulkForm: setBulkFormIndex } = useForm({
+  const { formState: formIndex, formValidation: formValidationIndex, isFormValid: isFormValidIndex, onInputChange: onInputChangeIndex, onResetForm: onResetFormIndex, setBulkForm: setBulkFormIndex } = useForm({
       id: 0,
       customerId: 1,
       customerDNI: '00000000000000',
@@ -77,7 +81,7 @@ const PointSales = (props) => {
       documentCode: dataCashBox ? dataCashBox.documentCode : '',
       documentType: 1,
       currency: 1,
-      printType: dataCashBox ? dataCashBox.printType : 0,
+      printType: dataCashBox ? dataCashBox.printType : 1,
       date: '',
       dateInProcess: moment(new Date()).format("YYYY-MM-DD"),
       cashierId: 0,
@@ -94,8 +98,7 @@ const PointSales = (props) => {
       valueRestore: 0
     }, invoicingValid);
 
-  const { formState: formDetail, formValidation: formValidationDetail, isFormValid: isFormValidDetail, onInputChange: onInputDetaChange,
-    onResetForm: onResetFormDetail, setBulkForm: setBulkFormDetail } = useForm({
+  const { formState: formDetail, formValidation: formValidationDetail, isFormValid: isFormValidDetail, onInputChange: onInputDetaChange, onResetForm: onResetFormDetail, setBulkForm: setBulkFormDetail } = useForm({
       productCode: '',
       description: '',
       areaId: dataCashBox ? dataCashBox.areaId : 0,
@@ -120,13 +123,9 @@ const PointSales = (props) => {
       haveComiss: 0
     }, invoiceDetailValid);
 
-  const { id, customerId, customerDNI, customerName, notes, documentCode, documentType, currency, printType, date, dateInProcess, cashierId, documentExo,
-    documentId, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue: taxValueInvoice,
-    total, valueCustomer, valueRestore } = formIndex;
+  const { id, customerId, customerDNI, customerName, notes, documentCode, documentType, currency, printType, date, dateInProcess, cashierId, documentExo, documentId, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue: taxValueInvoice, total, valueCustomer, valueRestore } = formIndex;
 
-  const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
-    total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, qtyDist,
-    haveComiss, areaId, storeId } = formDetail;
+  const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue, total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, qtyDist, haveComiss, areaId, storeId } = formDetail;
 
   const handleAreaChange = e => {
     let valueStore = "0";
@@ -250,7 +249,7 @@ const PointSales = (props) => {
       return;
     }
     setLoading(true);
-    request.GET('billing/process/invoices?isPos=1', (resp) => {
+    request.GET('billing/process/invoices', (resp) => {
       const invoices = resp.data.map((item) => {
         item.value = formatNumber(item.total);
         item.options = <TableButton color='primary' icon='eye' fnOnClick={() => fnViewInvoice(item)} />
@@ -413,7 +412,11 @@ const PointSales = (props) => {
       const dataPrint = {
         id, userName: userData.name, typePrint: printType
       }
-      request.GETPdf('billing/process/invoices/exportInvoicePDF', dataPrint, 'Factura Detallada.pdf', (err) => {
+
+      request.GETPdfUrl('billing/process/invoices/exportInvoicePDF', dataPrint, (resp) =>{
+        setDocumentPath(resp);
+        setOpenViewFile(true);
+      }, (err) => {
         console.error(err);
         setLoading(false);
       });
@@ -1033,6 +1036,18 @@ const PointSales = (props) => {
     title: "msg.question.cancelInvoice.title"
   }
 
+  const propsToViewPDF = {
+    ModalContent: ViewPdf,
+    title: "modal.viewDocument.invoice",
+    valueTitle: documentId,
+    open: openViewFile,
+    setOpen: setOpenViewFile,
+    maxWidth: 'xl',
+    data: {
+      documentPath
+    }
+  }
+
   return (
     <>
       <Row>
@@ -1057,6 +1072,7 @@ const PointSales = (props) => {
       <Modal {...propsToModalCancellations} />
       <Modal {...propsToModalQuotation} />
       <Modal {...propsToPayment} />
+      <Modal {...propsToViewPDF} />
       <Confirmation {...propsToMsgCancelInvoice} />
     </>
   );
