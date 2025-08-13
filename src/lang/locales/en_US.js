@@ -249,7 +249,7 @@ const enLang = {
   "msg.required.input.birthDay": "Please select the birthday!",
   "msg.required.input.type": "Please select a type!",
   "msg.required.input.salary": "Please enter the salary!",
-  "msg.required.input.userName" : "Please enter the user name!",
+  "msg.required.input.userName": "Please enter the user name!",
   "msg.required.input.valueInterest": "Please enter the interest!",
   "msg.required.input.valueCapital": "Please enter the capital!",
   /* Require Others */
@@ -2645,6 +2645,10 @@ const enLang = {
   "page.home.modal.addScheduling.title": "Add/Edit Work Scheduling",
   "page.home.table.detail.title": "Detail",
   "page.home.alert.question.title": "Are you sure you want to generate the details with the shift employees?",
+  "button.disable": "Disable",
+  "label.title.exactAddress": "Direccion Exacta",
+  "page.productsCatalog.modal.distProduct.table.column.otherPrice": "Other Price",
+  "page.productsCatalog.modal.compProduct.title": "Compound Product",
 };
 
 export default enLang;

@@ -1357,7 +1357,6 @@ const esLang = {
   "page.productsCatalog.modal.newProduct.input.numLastPurchase": "Número",
   "page.productsCatalog.modal.newProduct.input.provLastPurchase": "Proveedor",
   "page.productsCatalog.modal.viewProduct.title": "Catálogo de Productos",
-  "page.productsCatalog.modal.distProduct.title": "Units of Measurement and Prices",
   "page.productsCatalog.modal.distProduct.undOut": "Unidades de Salida",
   "page.productsCatalog.modal.distProduct.table.title": " ",
   "page.productsCatalog.modal.distProduct.table.column.measureUnit": "Unidad de Medida",
@@ -2655,6 +2654,11 @@ const esLang = {
   "page.home.modal.addScheduling.title": "Agregar/Editar Horario de Trabajo",
   "page.home.table.detail.title": "Detalle",
   "page.home.alert.question.title": "Esta seguro que desea generar el detalle con los empleados del turno?",
+  "button.disable": "Desactivar",
+  "label.title.exactAddress": "Direccion Exacta",
+  "page.productsCatalog.modal.distProduct.title": "Unidades de Medida para Venta y Precios",
+  "page.productsCatalog.modal.distProduct.table.column.otherPrice": "Otro Precio",
+  "page.productsCatalog.modal.compProduct.title": "Producto Compuesto",
 };
 
 export default esLang;
