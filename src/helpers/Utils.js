@@ -165,7 +165,7 @@ export const getCurrentUser = () => {
   return user;
 };
 
-export const setCurrentUser = (user, companyData) => {
+export const setCurrentUser = (user, companyData, dataUserModules) => {
   try {
     if (user) {
       localStorage.removeItem("mw_current_user");
@@ -178,6 +178,12 @@ export const setCurrentUser = (user, companyData) => {
       localStorage.setItem("mw_current_company", JSON.stringify(companyData))
     } else {
       localStorage.removeItem("mw_current_company")
+    }
+    if (dataUserModules) {
+      localStorage.removeItem("mw_current_userModules");
+      localStorage.setItem("mw_current_userModules", JSON.stringify(dataUserModules))
+    } else {
+      localStorage.removeItem("mw_current_userModules")
     }
   } catch (error) {
     console.log('>>>>: src/helpers/Utils.js : setCurrentUser -> error', error);
@@ -420,4 +426,15 @@ export const getExcelData = (data, requiredColumns, priceCalculateColumns, start
     }
   }
   return { data: formattedData };
+}
+
+export const getPrivilegeData = (privilegeCode) => {
+  const privileges = JSON.parse(localStorage.getItem('mw_current_userModules'));
+  let detaPrivilege = privileges.find(elem => elem.code === privilegeCode);
+  if (detaPrivilege?.id) {
+    detaPrivilege = detaPrivilege;
+  } else {
+    detaPrivilege = { fnCreate: 0, fnUpdate: 0, fnDelete: 0, id: 0, name: '', status: 0 };
+  }
+  return detaPrivilege;
 }

@@ -244,7 +244,7 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     const percentVal = e.target.value;
 
     const payByHour = validFloat(incWeekly) / 15 / 8;
-    const valHours = validFloat(payByHour, 2) * hoursInc;
+    const valHours = validFloat(payByHour, 4) * hoursInc;
     const valHoursOver = (validFloat(percentVal) / 100) * valHours;
     const totalPay = valHoursOver>0? valHours + valHoursOver : 0;
 
@@ -261,7 +261,7 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     const hoursValue = e.target.value;
 
     const payByHour = validFloat(incWeekly) / 15 / 8;
-    const valHours = validFloat(payByHour, 2) * hoursValue;
+    const valHours = validFloat(payByHour, 4) * hoursValue;
     const valHoursOver = (validFloat(percent) / 100) * valHours;
     const totalPay = valHoursOver>0? valHours + valHoursOver : 0;
 

@@ -7,6 +7,8 @@ const HRReports = React.lazy(() => import('@/views/app/humanResources/reports'))
 const InputOutputs = React.lazy(() => import('@/views/app/humanResources/reports/inputOutputs'));
 const EmployeesByCust = React.lazy(() => import('@/views/app/humanResources/reports/employeesByCust'));
 const ControlVacations = React.lazy(() => import('@/views/app/humanResources/reports/controlVacations'));
+const ControlPermissions = React.lazy(() => import('@/views/app/humanResources/reports/controlPermissions'));
+const ControlIncapacities = React.lazy(() => import('@/views/app/humanResources/reports/controlIncapacities'));
 const PendingPayments = React.lazy(() => import('@/views/app/humanResources/reports/pendingPayments'));
 const Salaries = React.lazy(() => import('@/views/app/humanResources/reports/salaries'));
 const StaffDepartures = React.lazy(() => import('@/views/app/humanResources/reports/staffDepartures'));
@@ -35,6 +37,14 @@ const HRReportsRoutes = (props) => {
       index
       path="/controlVacations"
       element={<ControlVacations setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/controlPermissions"
+      element={<ControlPermissions setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/controlIncapacities"
+      element={<ControlIncapacities setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
       path="/pendingPayments"

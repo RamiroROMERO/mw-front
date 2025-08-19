@@ -3,28 +3,25 @@ import { useDispatch } from 'react-redux';
 import { onTitleEdit, onBreadcrumbEdit } from '@Redux/actions';
 import { adminRoot } from '@Constants/defaultValues';
 import Breadcrumb from '@Containers/navs/Breadcrumb';
-import { getPrivilegeData } from '@/helpers/Utils';
 
 const Content = React.lazy(() =>
   import('./Content')
 );
-const ResumePayroll = (props) => {
+
+const ControlIncapacities = (props) => {
   const dispatch = useDispatch();
 
-  const PRIVILEGE_CODE = "07.02.001";
-  const screenControl = getPrivilegeData(PRIVILEGE_CODE);
-
   useEffect(() => {
-    dispatch(onTitleEdit("menu.resumePayroll"))
-    dispatch(onBreadcrumbEdit(`${adminRoot}/humanResources/process/resumePayroll`))
-  }, [])
+    dispatch(onTitleEdit("menu.controlIncapacities"))
+    dispatch(onBreadcrumbEdit(`${adminRoot}/humanResources/reports/controlIncapacities`))
+  }, []);
 
   return (
     <Suspense fallback={<div className="loading" />}>
       <Breadcrumb />
-      <Content screenControl = {screenControl} {...props} />
+      <Content {...props} />
     </Suspense>
   )
-};
+}
 
-export default ResumePayroll;
+export default ControlIncapacities

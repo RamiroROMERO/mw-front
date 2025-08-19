@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { formatNumber, IntlMessages } from '@Helpers/Utils';
+import { IntlMessages } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 
-export const useControlVacations = ({setLoading}) => {
+export const useControlPermissions = ({setLoading}) => {
   const [listEmployees, setListEmployees] = useState([]);
 
   const [table, setTable] = useState({
-    title: IntlMessages("page.vacations.table.vacationsTaken.title"),
+    title: IntlMessages("page.permissions.table.controlPermissions.title"),
     columns: [
       {
         text: IntlMessages("select.employee"),
         dataField: "employee",
-        headerStyle: { width: "30%" }
+        headerStyle: { width: "45%" }
       },
       {
         text: IntlMessages("select.project"),
         dataField: "projectName",
-        headerStyle: { width: "11%" }
+        headerStyle: { width: "15%" }
       },
       {
         text: IntlMessages("table.column.dateIn"),
@@ -24,39 +24,20 @@ export const useControlVacations = ({setLoading}) => {
         headerStyle: { width: "10%" },
       },
       {
-        text: IntlMessages("table.column.daysGained"),
-        dataField: "daysGained",
-        headerStyle: { width: "8%" }
+        text: IntlMessages("table.column.year"),
+        dataField: "year",
+        headerStyle: { width: "10%" }
       },
       {
-        text: IntlMessages("table.column.daysTakenPaid"),
-        dataField: "daysTakenPaid",
-        headerStyle: { width: "8%" }
-      },
-      {
-        text: IntlMessages("table.column.daysTakenOff"),
-        dataField: "daysTakenOff",
-        headerStyle: { width: "8%" }
+        text: IntlMessages("table.column.month"),
+        dataField: "monthLetter",
+        headerStyle: { width: "10%" }
       },
       {
         text: IntlMessages("table.column.totalDays"),
-        dataField: "daysTaken",
-        headerStyle: { width: "8%" }
-      },
-      {
-        text: IntlMessages("table.column.daysPending"),
-        dataField: "daysPending",
-        headerStyle: { width: "8%" }
-      },
-      {
-        text: IntlMessages("table.column.payDaysPending"),
-        dataField: "payDaysPending",
-        headerStyle: { width: "9%" },
-        style: { textAlign: 'right' },
-        cell: ({row}) => {
-          return (formatNumber(row.original.payDaysPending, '', 2));
-        }
-      },
+        dataField: "daysPermissions",
+        headerStyle: { width: "10%" }
+      }
     ],
     data: [],
     options: {
@@ -65,13 +46,6 @@ export const useControlVacations = ({setLoading}) => {
     },
     actions: []
   });
-
-  const propsToHeader = {
-    listEmployees,
-    setLoading,
-    table,
-    setTable
-  }
 
   useEffect(()=>{
     setLoading(true);
@@ -88,7 +62,14 @@ export const useControlVacations = ({setLoading}) => {
       console.error(err);
       setLoading(false);
     });
-  },[])
+  },[]);
+
+  const propsToHeader = {
+    listEmployees,
+    setLoading,
+    table,
+    setTable
+  }
 
   return (
     {

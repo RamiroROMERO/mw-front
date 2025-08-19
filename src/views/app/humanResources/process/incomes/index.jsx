@@ -7,13 +7,14 @@ import Breadcrumb from '@Containers/navs/Breadcrumb';
 const Content = React.lazy(() =>
   import('./Content')
 );
-const Areas = (props) => {
+
+const Incomes = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(onTitleEdit("menu.areas"))
-    dispatch(onBreadcrumbEdit(`${adminRoot}/humanResources/settings/areas`))
-  }, [])
+    dispatch(onTitleEdit("menu.incomes"));
+    dispatch(onBreadcrumbEdit(`${adminRoot}/humanResources/process/incomes`));
+  }, []);
 
   return (
     <Suspense fallback={<div className="loading" />}>
@@ -21,6 +22,6 @@ const Areas = (props) => {
       <Content {...props} />
     </Suspense>
   )
-};
+}
 
-export default Areas;
+export default Incomes

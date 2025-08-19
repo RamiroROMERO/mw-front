@@ -6,7 +6,6 @@ const HRSettings = React.lazy(() => import('@/views/app/humanResources/settings'
 const DefaultValues = React.lazy(() => import('@/views/app/humanResources/settings/defaultValues'));
 const JobPositions = React.lazy(() => import('@/views/app/humanResources/settings/jobpositions'));
 const Schedules = React.lazy(() => import('@/views/app/humanResources/settings/schedules'));
-const Areas = React.lazy(() => import('@/views/app/humanResources/settings/areas'));
 const TaxCalculation = React.lazy(() => import('@/views/app/humanResources/settings/taxCalculation'));
 const NeighborhoodTax = React.lazy(() => import('@/views/app/humanResources/settings/neighborhoodTax'));
 const Overtime = React.lazy(() => import('@/views/app/humanResources/settings/overtime'));
@@ -35,10 +34,6 @@ const HRSettingsRoutes = (props) => {
       index
       path="/schedules"
       element={<Schedules setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
-    <Route
-      index
-      path="/areas"
-      element={<Areas setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
       path="/taxCalculation"

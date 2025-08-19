@@ -2,6 +2,7 @@ import React from 'react'
 import { Colxx, Separator } from '@Components/common/CustomBootstrap'
 import { Card, CardBody, Row } from 'reactstrap'
 import ControlPanel from '@Components/controlPanel'
+import Confirmation from '@Containers/ui/confirmationMsg';
 import Modal from '@Components/modal';
 import ModalTypeSheet from '@Components/modalTypeSheet';
 import HeaderPayroll from './HeaderPayroll'
@@ -12,10 +13,10 @@ import ModalDeducctions from './ModalDeductions';
 import { useResumePayroll } from './useResumePayroll';
 import ModalIncomes from './ModalIncomes';
 
-const BiweeklyPayroll = ({ setLoading }) => {
+const BiweeklyPayroll = ({ setLoading, screenControl }) => {
   const typePayroll = 1;
 
-  const { openModalPayrolls, openModalPrint, openModalDeductions, openModalIncomes, setOpenModalPayrolls, setOpenModalPrint, setOpenModalDeductions, setOpenModalIncomes, propsToControlPanel, propsToDetailTable, propsToHeaderPayroll, propsToModalViewPayroll, propsToModalPrint, propsToModalDeductions, propsToModalIncomes, dataTotals } = useResumePayroll({ setLoading, typePayroll });
+  const { openModalPayrolls, openModalPrint, openModalDeductions, openModalIncomes, setOpenModalPayrolls, setOpenModalPrint, setOpenModalDeductions, setOpenModalIncomes, propsToControlPanel, propsToDetailTable, propsToHeaderPayroll, propsToModalViewPayroll, propsToModalPrint, propsToModalDeductions, propsToModalIncomes, dataTotals, propsToMsgDelete } = useResumePayroll({ setLoading, typePayroll, screenControl });
 
   const propsToModalPayrolls = {
     ModalContent: ModalViewPayroll,
@@ -77,6 +78,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
         <Modal {...propsToModalAddDeductions} />
         <Modal {...propsToModalAddIncomes} />
       </Row>
+      <Confirmation {...propsToMsgDelete}/>
     </>
   )
 }

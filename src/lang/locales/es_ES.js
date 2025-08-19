@@ -766,6 +766,7 @@ const esLang = {
   "table.column.timeWorked": "Tiempo Trabajado",
   "table.column.breakTimeOut": "Salida Receso",
   "table.column.breakTimeIn": "Entrada Receso",
+  "table.column.month": "Mes",
 
   /* 02.Inicio de sesión de usuario, cierre de sesión, registro */
   'user.login-title': 'Iniciar sesión',
@@ -974,6 +975,8 @@ const esLang = {
   "menu.thirteenthMonth": "Décimo Tercer Mes",
   "menu.fourteenthMonth": "Décimo Cuarto Mes",
   "menu.controlVacations": "Control de Vacaciones",
+  "menu.controlPermissions": "Control de Permisos",
+  "menu.controlIncapacities": "Control de Incapacidades",
   "menu.pendingPayments": "Planes de Pago Pendientes",
   "menu.vacationPayroll": "Planilla de Vacaciones",
   "menu.salaries": "Salarios y Cuentas Bancarias",
@@ -981,6 +984,7 @@ const esLang = {
   "menu.projectTransfers": "Traslado de Proyectos",
   "menu.neighborhoodTaxPayroll": "Planilla de Impuesto Vecinal",
   "menu.attendanceControl": "Control de Asistencia",
+  "menu.incomes": "Ingresos",
   /* 04.Error  */
   'pages.error-title': 'Vaya, parece que ha ocurrido un error!',
   'pages.error-code': 'Código de error',
@@ -2095,6 +2099,7 @@ const esLang = {
   "page.permission.modal.viewPermission.title": "Permisos",
   "page.permission.modal.table.column.time": "Tiempo",
   "page.permission.modal.table.column.authorizedBy": "Autorizado Por",
+  "page.permissions.table.controlPermissions.title": "Permisos Tomados",
   /* 43. Vacations page in human resources module */
   "page.vacations.modal.viewVacation.title": "Vacaciones",
   /* 44. Accidents page in human resources module */
@@ -2385,6 +2390,7 @@ const esLang = {
   /* 71. Incapacities page in humanResources */
   "page.incapacities.label.documents": "Documentos",
   "page.incapacities.modal.viewIncapacity.title": "Incapacidades",
+  "page.incapacities.table.controlIncapacities.title": "Incapacidades",
   /* 72. Order Detail page in inventory */
   "page.fuelPurchases.title.orderDetail": "Detalle de Orden",
   "page.fuelPurchases.title.invoiceDetail": "Detalle de Factura",
@@ -2659,6 +2665,8 @@ const esLang = {
   "page.productsCatalog.modal.distProduct.title": "Unidades de Medida para Venta y Precios",
   "page.productsCatalog.modal.distProduct.table.column.otherPrice": "Otro Precio",
   "page.productsCatalog.modal.compProduct.title": "Producto Compuesto",
+  // 94. Incomes RRHH
+  "page.incomes.table.title": "Ingresos"
 };
 
 export default esLang;

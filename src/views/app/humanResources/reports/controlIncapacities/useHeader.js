@@ -19,18 +19,15 @@ export const useHeader = ({setLoading, table, setTable}) => {
         { title: 'Proyecto', field: 'projectName', type: 'String', length: 100 },
         { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 70},
         { title: 'Estado', field: 'statusName', type: 'String', length: 50 },
-        { title: 'Dias Ganados', field: 'daysGained', type: 'String', length: 70},
-        { title: 'Dias Pagados', field: 'daysTakenPaid', type: 'String', length: 70},
-        { title: 'Dias Descansados', field: 'daysTakenOff', type: 'String', length: 70},
-        { title: 'Total Dias Tomados', field: 'daysTaken', type: 'String', length: 70},
-        { title: 'Dias Pendientes', field: 'daysPending', type: 'String', length: 70},
-        { title: 'Pago Dias Pendientes', field: 'payDaysPending', type: 'decimal', currency: true, length: 70}
+        { title: 'Año', field: 'year', type: 'String', length: 70},
+        { title: 'Mes', field: 'monthLetter', type: 'String', length: 70},
+        { title: 'Dias de Incapacidad', field: 'daysIncapacities', type: 'String', length: 70}
       ],
       headerData: [],
-      reportTitle: "Control de Vacaciones",
-      nameXLSXFile: "ControlDeVacaciones.xlsx",
+      reportTitle: "Control de Incapacidades",
+      nameXLSXFile: "ControlDeIncapacidades.xlsx",
     };
-    await request.fnExportToXLSX("rrhh/process/vacations/exportReportXLXS", data, "ControlDeVacaciones.xlsx");
+    await request.fnExportToXLSX("rrhh/reports/exportIncapacitiesXLXS", data, "ControlDeIncapacidades.xlsx");
     setLoading(false);
   }
 
@@ -44,8 +41,6 @@ export const useHeader = ({setLoading, table, setTable}) => {
       isFreeAction: true
     }
 
-    // let url = `rrhh/process/vacations/getVacations`;
-
     let url = `rrhh/reports/getIncapacitiesByMonth`;
 
     if(employeeId>0){
@@ -54,11 +49,11 @@ export const useHeader = ({setLoading, table, setTable}) => {
 
     setLoading(true);
     request.GET(url, (resp) => {
-      const vacations = resp.data.map((item) => {
+      const data = resp.data.map((item) => {
         item.employee = item.employeeName
         return item;
       });
-      setTable({ ...table, data: vacations, actions: [newActions] });
+      setTable({ ...table, data, actions: [newActions] });
       setLoading(false);
     }, (err) => {
       console.error(err);

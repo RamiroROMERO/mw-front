@@ -520,10 +520,6 @@ const Schedules = React.lazy(() =>
   import('./humanResources/settings/schedules')
 );
 
-const Areas = React.lazy(() =>
-  import('./humanResources/settings/areas')
-);
-
 const TaxCalculation = React.lazy(() =>
   import('./humanResources/settings/taxCalculation')
 );
@@ -1289,11 +1285,6 @@ const App = ({ match }) => {
               path={`${match.url}/humanResources/settings/schedules`}
               exact
               render={(props) => <Schedules setLoading={setLoading} {...props} />}
-            />
-            <Route
-              path={`${match.url}/humanResources/settings/areas`}
-              exact
-              render={(props) => <Areas setLoading={setLoading} {...props} />}
             />
             <Route
               path={`${match.url}/humanResources/settings/taxCalculation`}

@@ -49,7 +49,7 @@ const Settings = (props) => {
       title: "menu.areas",
       fnOnclick: () => {
         history(
-          `${adminRoot}/humanResources/settings/areas`,
+          `${adminRoot}/billing/settings/billingAreas`,
           { replace: true }
         );
       }

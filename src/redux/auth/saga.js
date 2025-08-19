@@ -52,6 +52,7 @@ function* loginWithEmailPassword({ payload }) {
     if (loginUser.data) {
       const dataUser = loginUser.data[0];
       const companyData = loginUser.dataCompany;
+      const dataUserModules = loginUser.dataUserModules;
       const item = {
         uid: dataUser.id,
         token: loginUser.token,
@@ -61,7 +62,7 @@ function* loginWithEmailPassword({ payload }) {
         ...dataUser
       };
       const lastUrl = adminRoot;
-      setCurrentUser(item, companyData);
+      setCurrentUser(item, companyData, dataUserModules);
       yield put(loginUserSuccess(item));
       <Navigate to={lastUrl} />
     } else {

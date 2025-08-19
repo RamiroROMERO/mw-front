@@ -835,6 +835,11 @@ const data = [
           //   to: `${adminRoot}/humanResources/process/seventhDay`,
           // },
           {
+            icon: 'bi bi-plus-circle',
+            label: 'menu.incomes',
+            to: `${adminRoot}/humanResources/process/incomes`,
+          },
+          {
             icon: 'bi bi-dash-circle',
             label: 'menu.deductions',
             to: `${adminRoot}/humanResources/process/deductions`,
@@ -911,6 +916,16 @@ const data = [
             icon: 'bi bi-calendar4-week',
             label: 'menu.controlVacations',
             to: `${adminRoot}/humanResources/reports/controlVacations`,
+          },
+          {
+            icon: 'bi bi-file-earmark-check',
+            label: 'menu.controlPermissions',
+            to: `${adminRoot}/humanResources/reports/controlPermissions`,
+          },
+          {
+            icon: 'bi bi-file-earmark-medical',
+            label: 'menu.controlIncapacities',
+            to: `${adminRoot}/humanResources/reports/controlIncapacities`,
           },
           {
             icon: 'bi bi-card-heading',

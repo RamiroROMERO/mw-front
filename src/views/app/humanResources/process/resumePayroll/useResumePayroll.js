@@ -4,9 +4,10 @@ import { request } from '@Helpers/core'
 import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import createNotification from '@Containers/ui/Notifications'
 
-export const useResumePayroll = ({ setLoading, typePayroll }) => {
+export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => {
   const currentYear = new Date().getFullYear();
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
+  const { fnCreate, fnUpdate, fnDelete, status } = screenControl;
   const [employeeId, setEmployeeId] = useState(0);
   const [typeSheet, setTypeSheet] = useState(1);
   const [customerName, setCustomerName] = useState('');
@@ -30,6 +31,7 @@ export const useResumePayroll = ({ setLoading, typePayroll }) => {
   const [openModalDeductions, setOpenModalDeductions] = useState(false);
   const [openModalIncomes, setOpenModalIncomes] = useState(false);
   const [openModalSelectEmployees, setOpenModalSelectEmployees] = useState(false);
+  const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
 
   const formValidations = {
     date: [(val) => val !== "", "msg.required.input.date"],
@@ -124,9 +126,7 @@ export const useResumePayroll = ({ setLoading, typePayroll }) => {
     if (id > 0) {
       setLoading(true);
 
-      const dataDayVacation = listTypeIncomes.find(item => {
-        return item.label.includes("Vacaciones") || item.label.includes("Vacacion");
-      });
+      const dataDayVacation = listTypeIncomes.find(item => item.isVacationDay === 1);
 
       const otherFields = []
 
@@ -141,13 +141,15 @@ export const useResumePayroll = ({ setLoading, typePayroll }) => {
           currency: true
         });
 
-        if(item.value === dataDayVacation.value){
-          otherFields.push({
-            title: "Dias Vacaciones",
-            field: `daysVacations`,
-            type: 'decimal',
-            length: 70
-          });
+        if(dataDayVacation){
+          if(item.value === dataDayVacation.value){
+            otherFields.push({
+              title: "Dias Vacaciones",
+              field: `daysVacations`,
+              type: 'decimal',
+              length: 70
+            });
+          }
         }
       });
 
@@ -303,6 +305,32 @@ export const useResumePayroll = ({ setLoading, typePayroll }) => {
     }
   }
 
+  const fnCancelPayroll = () => {
+    if (fnDelete === false) {
+      return;
+    }
+    if(id>0){
+      setOpenMsgQuestion(true);
+    }
+  }
+
+  const fnDisableDocument = () => {
+    setOpenMsgQuestion(false);
+    const data = {
+      status: 0
+    }
+    if (formState.id && formState.id > 0) {
+      setLoading(true);
+      request.PUT(`rrhh/process/weeklyPayrolls/${formState.id}`, data, () => {
+        fnNewPayroll();
+        setLoading(false);
+      }, (err) => {
+        console.error(err);
+        setLoading(false);
+      });
+    }
+  }
+
   useEffect(() => {
     setLoading(true);
     request.GET('facCustomers?status=1', (resp) => {
@@ -429,6 +457,7 @@ export const useResumePayroll = ({ setLoading, typePayroll }) => {
     fnNew: fnNewPayroll,
     fnSearch: fnGetPayrolls,
     fnPrint: fnPrintPayrollPdf,
+    fnCancel: fnCancelPayroll,
     buttonsHome: [
       {
         title: "button.generatePayroll",
@@ -551,6 +580,14 @@ export const useResumePayroll = ({ setLoading, typePayroll }) => {
     fnViewDetailPayroll
   }
 
+  const propsToMsgDelete = {
+    title: "alert.question.title",
+    open: openMsgQuestion,
+    setOpen: setOpenMsgQuestion,
+    fnOnOk: fnDisableDocument,
+    fnOnNo: () => onResetForm
+  };
+
   return (
     {
       dataTotals,
@@ -571,7 +608,8 @@ export const useResumePayroll = ({ setLoading, typePayroll }) => {
       propsToModalPrint,
       propsToModalDeductions,
       propsToModalIncomes,
-      propsToModalEmployees
+      propsToModalEmployees,
+      propsToMsgDelete
     }
   )
 }

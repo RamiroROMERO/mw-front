@@ -1,3 +1,4 @@
+import React from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { Button, Card, CardBody, Row } from 'reactstrap'
 import { InputField } from '@Components/inputFields'
@@ -5,13 +6,13 @@ import { IntlMessages } from '@Helpers/Utils'
 import DateCalendar from '@Components/dateCalendar'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import ReactTable from '@Components/reactTable';
-import { useDetailDeductions } from './useDetailDeductions'
+import { useDetailIncomes } from './useDetailIncomes';
 
-const DetailDeductions = ({id, date, employeeName, typeId, value, description, projectId, setProjectId, onProjectChange, onResetForm, listEmployeesByProject, listTypeDeductions, listProjects, onInputChange, fnGetData, setLoading, formValidation, isFormValid}) => {
+export const DetailIncomes = ({id, date, employeeName, typeId, value, days, hours, description, projectId, setProjectId, onProjectChange, onResetForm, listEmployeesByProject, listTypeIncomes, listProjects, onInputChange, fnGetData, setLoading, formValidation, isFormValid}) => {
 
   const {dateValid, typeIdValid, valueValid, descriptionValid} = formValidation;
 
-  const {table, sendForm, fnSave, fnClearInputs} = useDetailDeductions({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value});
+  const {table, sendForm, fnSave, fnClearInputs} = useDetailIncomes({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, days, hours});
 
   return (
     <Card>
@@ -57,6 +58,24 @@ const DetailDeductions = ({id, date, employeeName, typeId, value, description, p
               </Colxx>
               <Colxx xxs="12" sm="6" md="12" lg="6" xxl="12">
                 <InputField
+                  name="days"
+                  label='input.days'
+                  value={days}
+                  onChange={onInputChange}
+                  type="text"
+                />
+              </Colxx>
+              <Colxx xxs="12" sm="6" md="12" lg="6" xxl="12">
+                <InputField
+                  name="hours"
+                  label='input.hours'
+                  value={hours}
+                  onChange={onInputChange}
+                  type="text"
+                />
+              </Colxx>
+              <Colxx xxs="12" sm="6" md="12" lg="6" xxl="12">
+                <InputField
                   name="value"
                   label='input.value'
                   value={value}
@@ -71,7 +90,7 @@ const DetailDeductions = ({id, date, employeeName, typeId, value, description, p
                   label='select.typeId'
                   name='typeId'
                   inputValue={typeId}
-                  options={listTypeDeductions}
+                  options={listTypeIncomes}
                   onChange={onInputChange}
                   invalid={sendForm && !!typeIdValid}
                   feedbackText={sendForm && (typeIdValid || null)}
@@ -103,5 +122,3 @@ const DetailDeductions = ({id, date, employeeName, typeId, value, description, p
     </Card>
   )
 }
-
-export default DetailDeductions

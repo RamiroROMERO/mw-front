@@ -763,6 +763,7 @@ const enLang = {
   "table.column.timeWorked": "Time Worked",
   "table.column.breakTimeOut": "BreakTime Out",
   "table.column.breakTimeIn": "BreakTime In",
+  "table.column.month": "Month",
 
   /* 02.User Login, Logout, Register */
   "user.login-title": "Login",
@@ -971,6 +972,8 @@ const enLang = {
   "menu.thirteenthMonth": "Thirteenth Month",
   "menu.fourteenthMonth": "Fourteenth Month",
   "menu.controlVacations": "Vacation Control",
+  "menu.controlPermissions": "Permissions Control",
+  "menu.controlIncapacities": "Incapacities Control",
   "menu.pendingPayments": "Payment Plans Pending",
   "menu.vacationPayroll": "Vacation Payroll",
   "menu.salaries": "Salaries and Bank Accounts",
@@ -978,6 +981,7 @@ const enLang = {
   "menu.projectTransfers": "Project Transfers",
   "menu.neighborhoodTaxPayroll": "Neighborhood Tax Payroll",
   "menu.attendanceControl": "Attendance Control",
+  "menu.incomes": "Incomes",
   /* 04.Error Page */
   "pages.error-title": "Ooops... looks like an error occurred!",
   "pages.error-code": "Error code",
@@ -2085,6 +2089,7 @@ const enLang = {
   "page.permission.modal.viewPermission.title": "Permissions",
   "page.permission.modal.table.column.time": "Time",
   "page.permission.modal.table.column.authorizedBy": "Authorized By",
+  "page.permissions.table.controlPermissions.title": "Permissions Taken",
   /* 43. Vacations page in human resources module */
   "page.vacations.modal.viewVacation.title": "Vacations",
   /* 44. Accidents page in human resources module */
@@ -2375,6 +2380,7 @@ const enLang = {
   /* 71. Incapacities page in humanResources */
   "page.incapacities.label.documents": "Documents",
   "page.incapacities.modal.viewIncapacity.title": "Incapacities",
+  "page.incapacities.table.controlIncapacities.title": "Incapacities",
   /* 72. Order Detail page in inventory */
   "page.fuelPurchases.title.orderDetail": "Order Detail",
   "page.fuelPurchases.title.invoiceDetail": "Invoice Detail",
@@ -2649,6 +2655,8 @@ const enLang = {
   "label.title.exactAddress": "Direccion Exacta",
   "page.productsCatalog.modal.distProduct.table.column.otherPrice": "Other Price",
   "page.productsCatalog.modal.compProduct.title": "Compound Product",
+  // 94. Incomes RRHH
+  "page.incomes.table.title": "Incomes"
 };
 
 export default enLang;

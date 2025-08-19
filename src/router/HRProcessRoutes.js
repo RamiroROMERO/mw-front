@@ -25,6 +25,7 @@ const FourteenthMonth = React.lazy(() => import('@/views/app/humanResources/proc
 const VacationPayroll = React.lazy(() => import('@/views/app/humanResources/process/vacationPayroll'));
 const NeighborhoodTaxPayroll = React.lazy(() => import('@/views/app/humanResources/process/neighborhoodTax'));
 const AttendanceControl = React.lazy(() => import('@/views/app/humanResources/process/attendanceControl'));
+const Incomes = React.lazy(() => import('@/views/app/humanResources/process/incomes'));
 
 const HRProcessRoutes = (props) => {
   const { setLoading } = props;
@@ -125,6 +126,10 @@ const HRProcessRoutes = (props) => {
       index
       path="/attendanceControl"
       element={<AttendanceControl setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/incomes"
+      element={<Incomes setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
