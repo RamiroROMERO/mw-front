@@ -45,7 +45,7 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     employeeId: currentItemDeta?.employeeId || 0,
     jobPositionId: currentItemDeta?.jobPositionId || 0,
     methodPaymentId: currentItemDeta?.methodPaymentId || 0,
-    daysWorked: currentItemDeta?.daysWorked || 15,
+    daysWorked: currentItemDeta?.daysWorked || 0,
     daysVacationTaken: currentItemDeta?.daysVacationTaken || 0,
     hoursWorked: currentItemDeta?.hoursWorked || 0,
     excusedAbsence: currentItemDeta?.excusedAbsence || 0,
