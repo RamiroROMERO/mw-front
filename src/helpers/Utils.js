@@ -430,11 +430,22 @@ export const getExcelData = (data, requiredColumns, priceCalculateColumns, start
 
 export const getPrivilegeData = (privilegeCode) => {
   const privileges = JSON.parse(localStorage.getItem('mw_current_userModules'));
-  let detaPrivilege = privileges.find(elem => elem.code === privilegeCode);
+  const dataPrivileges = Object.values(privileges);
+  let detaPrivilege = dataPrivileges.find(elem => elem.code === privilegeCode);
   if (detaPrivilege?.id) {
     detaPrivilege = detaPrivilege;
   } else {
-    detaPrivilege = { fnCreate: 0, fnUpdate: 0, fnDelete: 0, id: 0, name: '', status: 0 };
+    detaPrivilege = { fnCreate: false, fnUpdate: false, fnDelete: false, id: 0, name: '', status: false };
   }
+  return detaPrivilege;
+}
+
+export const getPrivilegeAdmin = () => {
+  const privileges = JSON.parse(localStorage.getItem('mw_current_userModules'));
+  let dataPrivileges = [];
+  if (privileges) {
+    dataPrivileges = Object.values(privileges);
+  }
+  let detaPrivilege = dataPrivileges.filter(elem => validInt(elem.type) === 2);
   return detaPrivilege;
 }
