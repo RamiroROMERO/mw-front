@@ -432,7 +432,7 @@ export const getPrivilegeData = (privilegeCode) => {
   const privileges = JSON.parse(localStorage.getItem('mw_current_userModules'));
   const dataPrivileges = Object.values(privileges);
   let detaPrivilege = dataPrivileges.find(elem => elem.code === privilegeCode);
-  if (detaPrivilege?.id) {
+  if (detaPrivilege) {
     detaPrivilege = detaPrivilege;
   } else {
     detaPrivilege = { fnCreate: false, fnUpdate: false, fnDelete: false, id: 0, name: '', status: false };
