@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from '@Hooks'
 import { request } from '@Helpers/core'
 import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
-import createNotification from '@Containers/ui/Notifications'
+import notification from '@Containers/ui/Notifications'
 
 export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => {
   const currentYear = new Date().getFullYear();
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
-  const { fnCreate, fnUpdate, fnDelete, status } = screenControl;
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [employeeId, setEmployeeId] = useState(0);
   const [typeSheet, setTypeSheet] = useState(1);
   const [customerName, setCustomerName] = useState('');
@@ -67,12 +67,16 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
   }
 
   const fnGetPayrolls = () => {
+    // if (fnCreate === false) {
+    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+    //   return;
+    // }
     if (validInt(customerId) === 0) {
-      createNotification('warning', 'msg.required.select.customer', 'alert.warning.title');
+      notification('warning', 'msg.required.select.customer', 'alert.warning.title');
       return
     }
     if (validInt(projectId) === 0) {
-      createNotification('warning', 'msg.required.select.project', 'alert.warning.title');
+      notification('warning', 'msg.required.select.project', 'alert.warning.title');
       return
     }
 
@@ -123,6 +127,10 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
   }
 
   const fnPrintPayroll = async () => {
+    // if (fnCreate === false) {
+    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+    //   return;
+    // }
     if (id > 0) {
       setLoading(true);
 
@@ -170,6 +178,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
           id
         },
         fields: [
+          { title: 'Identidad', field: 'dni', type: 'String', length: 50 },
           { title: 'Empleado', field: 'employeeName', type: 'String', length: 120 },
           { title: 'Cargo', field: 'positionName', type: 'String', length: 70, isSum: false, curreny: false },
           { title: 'Forma de Pago', field: 'paymentMethod', type: 'String', length: 70, isSum: false, curreny: false },
@@ -195,6 +204,10 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
   }
 
   const fnPrintPayrollPdf = () => {
+    // if (fnCreate === false) {
+    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+    //   return;
+    // }
     if (id > 0) {
       setLoading(true);
 
@@ -228,8 +241,13 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
       userId: userData.id
     }
 
-    setLoading(true);
     if(typePayroll===1){
+      // if (fnCreate === false) {
+      //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      //   setSendForm(false);
+      //   return;
+      // }
+      setLoading(true);
       request.POST('rrhh/process/weeklyPayrolls/generatePayroll', newData, (resp) => {
         if (validInt(resp.data.id) > 0) {
           onInputChange({ target: { name: 'id', value: resp.data.id } });
@@ -242,6 +260,12 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
         setLoading(false);
       });
     }else if(typePayroll===2 || typePayroll===3){
+      // if (fnCreate === false) {
+      //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      //   setSendForm(false);
+      //   return;
+      // }
+      setLoading(true);
       request.POST('rrhh/process/weeklyPayrolls/generateOtherPayroll', newData, (resp) => {
         if (validInt(resp.data.id) > 0) {
           onInputChange({ target: { name: 'id', value: resp.data.id } });
@@ -274,6 +298,10 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
   }
 
   const fnPrintPaymentReceipt = () => {
+    // if (fnCreate === false) {
+    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+    //   return;
+    // }
     if (id > 0) {
       setEmployeeId(0);
       setOpenModalPrint(true);
@@ -281,6 +309,10 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
   }
 
   const fnPrintDocument = () => {
+    // if (fnCreate === false) {
+    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+    //   return;
+    // }
     const dataPrint = {
       id,
       typeSheet,
@@ -294,12 +326,20 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
   }
 
   const fnAddDeductions = ()=>{
+    // if (fnCreate === false) {
+    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+    //   return;
+    // }
     if (id > 0) {
       setOpenModalDeductions(true);
     }
   }
 
   const fnAddIncomes = ()=>{
+    // if (fnCreate === false) {
+    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+    //   return;
+    // }
     if(id>0){
       setOpenModalIncomes(true);
     }
@@ -526,7 +566,9 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
     setOpenModalPrint,
     setEmployeeId,
     setLoading,
-    fnViewDetailPayroll
+    fnViewDetailPayroll,
+    fnUpdate,
+    fnDelete
   }
 
   const propsToModalViewPayroll = {
