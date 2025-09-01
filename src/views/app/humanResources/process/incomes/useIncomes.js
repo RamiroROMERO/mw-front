@@ -3,7 +3,8 @@ import { useForm } from '@Hooks'
 import { request } from '@Helpers/core';
 import { validFloat, validInt } from '@Helpers/Utils';
 
-export const useIncomes = ({setLoading}) => {
+export const useIncomes = ({setLoading, screenControl}) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [projectId, setProjectId] = useState(0);
   const [listEmployees, setListEmployees] = useState([]);
   const [listEmployeesByProject, setListEmployeesByProject] = useState([]);
@@ -11,6 +12,8 @@ export const useIncomes = ({setLoading}) => {
   const [dataIncomes, setDataIncomes] = useState([]);
   const [listProjects, setListProjects] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
+  const [percent, setPercent] = useState(0);
+  const [incWeekly, setIncWeekly] = useState(0);
 
   const incomesValid = {
     date: [(val) => val !== "", "msg.required.input.date"],
@@ -19,7 +22,7 @@ export const useIncomes = ({setLoading}) => {
     description: [(val) => val !== "", "msg.required.input.description"]
   }
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
+  const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
     id: 0,
     date: '',
     typeId: 0,
@@ -31,11 +34,60 @@ export const useIncomes = ({setLoading}) => {
     description: ''
   }, incomesValid);
 
-  const { id } = formState;
+  const { id, hours } = formState;
 
   const onProjectChange = e =>{
     const project = e.target.value;
     setProjectId(project);
+  }
+
+  const onPercentChange = e =>{
+    const percentVal = e.target.value;
+
+    const payByHour = validFloat(incWeekly) / 30 / 8;
+    const valHours = validFloat(payByHour, 4) * hours;
+    const valHoursOver = (validFloat(percentVal) / 100) * valHours;
+    const totalPay = valHoursOver>0? valHours + valHoursOver : 0;
+
+    const newValue = {
+      value: validFloat(totalPay,2),
+      days: 0
+    }
+
+    onBulkForm(newValue);
+    setPercent(percentVal);
+  }
+
+  const onHoursChange = e =>{
+    const hoursValue = e.target.value;
+
+    const payByHour = validFloat(incWeekly) / 30 / 8;
+    const valHours = validFloat(payByHour, 4) * hoursValue;
+    const valHoursOver = (validFloat(percent) / 100) * valHours;
+    const totalPay = valHoursOver>0? valHours + valHoursOver : 0;
+
+    const newValue = {
+      hours: hoursValue,
+      value: validFloat(totalPay,2),
+      days: 0
+    }
+
+    onBulkForm(newValue);
+  }
+
+  const onDaysIncChange = e =>{
+    const daysValue = e.target.value;
+
+    const valDay = validFloat(incWeekly)/30;
+    const totalPay = valDay * validFloat(daysValue);
+
+    const newValue = {
+      days: daysValue,
+      value: validFloat(totalPay,2),
+      hours: 0
+    }
+
+    onBulkForm(newValue);
   }
 
   const fnGetData = () => {
@@ -56,7 +108,7 @@ export const useIncomes = ({setLoading}) => {
     });
   }
 
-  const fnDelete = () =>{
+  const fnConfirmDelete = () =>{
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/incomes/${id}`, () => {
@@ -78,7 +130,8 @@ export const useIncomes = ({setLoading}) => {
         return {
           value: item.employeeId,
           label: `${item.rrhhEmployee.firstName} ${item.rrhhEmployee.secondName} ${item.rrhhEmployee.lastName} ${item.rrhhEmployee.secondLastName}`,
-          projectId: item.projectId
+          projectId: item.projectId,
+          defaultSalary: validFloat(item?.rrhhEmployee?.defaultSalary) || 0
         }
       });
       setListEmployees(employees);
@@ -128,6 +181,7 @@ export const useIncomes = ({setLoading}) => {
 
   const propsToDetailIncomes = {
     ...formState,
+    percent,
     projectId,
     listEmployeesByProject,
     listTypeIncomes,
@@ -137,22 +191,29 @@ export const useIncomes = ({setLoading}) => {
     setLoading,
     formValidation,
     isFormValid,
+    fnCreate,
+    fnUpdate,
+    setIncWeekly,
     setProjectId,
     onProjectChange,
+    onPercentChange,
+    onHoursChange,
+    onDaysIncChange,
     fnGetData
   }
 
   const propsToMsgDelete = {
     open: openMsgQuestion,
     setOpen: setOpenMsgQuestion,
-    fnOnOk: fnDelete,
+    fnOnOk: fnConfirmDelete,
     title: "alert.question.title",
     fnOnNo: onResetForm
   }
 
   const propsToDetailTable = {
     dataIncomes,
-    setBulkForm,
+    onBulkForm,
+    fnDelete,
     setOpenMsgQuestion
   }
 

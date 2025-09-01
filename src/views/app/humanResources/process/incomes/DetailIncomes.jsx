@@ -2,17 +2,17 @@ import React from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { Button, Card, CardBody, Row } from 'reactstrap'
 import { InputField } from '@Components/inputFields'
-import { IntlMessages } from '@Helpers/Utils'
+import { IntlMessages, validFloat } from '@Helpers/Utils'
 import DateCalendar from '@Components/dateCalendar'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import ReactTable from '@Components/reactTable';
 import { useDetailIncomes } from './useDetailIncomes';
 
-export const DetailIncomes = ({id, date, employeeName, typeId, value, days, hours, description, projectId, setProjectId, onProjectChange, onResetForm, listEmployeesByProject, listTypeIncomes, listProjects, onInputChange, fnGetData, setLoading, formValidation, isFormValid}) => {
+export const DetailIncomes = ({id, date, employeeName, typeId, value, days, hours, description, projectId, percent, setProjectId, onProjectChange, onResetForm, listEmployeesByProject, listTypeIncomes, listProjects, onInputChange, fnGetData, setLoading, formValidation, isFormValid, fnCreate, fnUpdate, onPercentChange, onHoursChange, onDaysIncChange, setIncWeekly}) => {
 
   const {dateValid, typeIdValid, valueValid, descriptionValid} = formValidation;
 
-  const {table, sendForm, fnSave, fnClearInputs} = useDetailIncomes({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, days, hours});
+  const {table, sendForm, fnSave, fnClearInputs} = useDetailIncomes({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, days, hours, fnCreate, fnUpdate, setIncWeekly});
 
   return (
     <Card>
@@ -61,7 +61,7 @@ export const DetailIncomes = ({id, date, employeeName, typeId, value, days, hour
                   name="days"
                   label='input.days'
                   value={days}
-                  onChange={onInputChange}
+                  onChange={onDaysIncChange}
                   type="text"
                 />
               </Colxx>
@@ -70,8 +70,18 @@ export const DetailIncomes = ({id, date, employeeName, typeId, value, days, hour
                   name="hours"
                   label='input.hours'
                   value={hours}
-                  onChange={onInputChange}
+                  onChange={onHoursChange}
                   type="text"
+                />
+              </Colxx>
+              <Colxx xxs="12" sm="6" md="12" lg="6" xxl="12">
+                <InputField
+                  name="percent"
+                  label='input.percent'
+                  value={percent}
+                  onChange={onPercentChange}
+                  type="text"
+                  disabled={validFloat(hours)===0?true:false}
                 />
               </Colxx>
               <Colxx xxs="12" sm="6" md="12" lg="6" xxl="12">

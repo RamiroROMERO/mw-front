@@ -1,15 +1,20 @@
 import React, {useState, useEffect} from 'react'
 import { IntlMessages, formatDate } from '@Helpers/Utils'
+import notification from '@/containers/ui/Notifications';
 
-export const useDetailTable = ({dataIncomes, setBulkForm, setOpenMsgQuestion}) => {
+export const useDetailTable = ({dataIncomes, onBulkForm, setOpenMsgQuestion, fnDelete}) => {
 
   const fnEditIncomes = (item)=>{
     item.employeeName = `${item.rrhhEmployee.firstName} ${item.rrhhEmployee.secondName} ${item.rrhhEmployee.lastName} ${item.rrhhEmployee.secondLastName}`
-    setBulkForm(item);
+    onBulkForm(item);
   }
 
   const fnDeleteIncomes = (item)=>{
-    setBulkForm({id:item.id});
+    if (fnDelete === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
+    onBulkForm({id:item.id});
     setOpenMsgQuestion(true);
   }
 

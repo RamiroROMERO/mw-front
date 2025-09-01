@@ -3,7 +3,7 @@ import { request } from '@/helpers/core';
 import { IntlMessages } from '@Helpers/Utils'
 import notification from '@/containers/ui/Notifications';
 
-export const useDetailIncomes = ({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, days, hours}) => {
+export const useDetailIncomes = ({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, days, hours, fnCreate, fnUpdate, setIncWeekly}) => {
 
   const [sendForm, setSendForm] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -65,6 +65,11 @@ export const useDetailIncomes = ({id, projectId, setProjectId, onResetForm, list
     });
 
     if(id === 0){
+      // if (fnCreate === false) {
+      //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      //   setSendForm(false);
+      //   return;
+      // }
       setLoading(true);
       request.POST('rrhh/process/incomes/createMany', newData, () => {
         fnGetData();
@@ -77,6 +82,11 @@ export const useDetailIncomes = ({id, projectId, setProjectId, onResetForm, list
         setLoading(false);
       });
     }else{
+      // if (fnUpdate === false) {
+      //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      //   setSendForm(false);
+      //   return;
+      // }
       setLoading(true);
       request.PUT(`rrhh/process/incomes/${id}`, updateData, () => {
         fnGetData();
@@ -93,6 +103,10 @@ export const useDetailIncomes = ({id, projectId, setProjectId, onResetForm, list
     const dataTable = {...table, data: listEmployeesByProject};
     setTable(dataTable);
   },[listEmployeesByProject, projectId]);
+
+  useEffect(()=>{
+    setIncWeekly(selectedItems[0]?.defaultSalary || 0);
+  },[selectedItems]);
 
   return (
     {

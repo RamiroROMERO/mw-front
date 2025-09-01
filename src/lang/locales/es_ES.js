@@ -284,6 +284,7 @@ const esLang = {
   "msg.alert.invoice.saved": "Este documento ya ha sido procesado!",
   "msg.alert.payroll.generate": "Esta planilla ya ha sido generada!",
   "msg.alert.selectPayroll": "Seleccione una planilla o guarde la planilla actual para agregar el detalle!",
+  "msg.alert.unauthorizedUser": "Usuario no Autorizado!",
   "msg.purchaseOrder.processed": "No se puede eliminar esta orden de compra porque ya ha sido procesada!",
   "msg.employeeRepeat": "Este empleado ya ha sido agregado!",
   "msg.required.documentDetail": "Por favor agregue el detalle al documento!",

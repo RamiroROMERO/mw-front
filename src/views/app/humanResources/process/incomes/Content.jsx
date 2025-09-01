@@ -7,9 +7,9 @@ import { DetailIncomes } from './DetailIncomes';
 import { useDetailTable } from './useDetailTable';
 import { useIncomes } from './useIncomes';
 
-const Content = ({ setLoading }) => {
+const Content = ({ setLoading, screenControl }) => {
 
-  const {propsToDetailIncomes, propsToDetailTable, propsToMsgDelete} = useIncomes({setLoading});
+  const {propsToDetailIncomes, propsToDetailTable, propsToMsgDelete} = useIncomes({setLoading, screenControl});
 
   const {table} = useDetailTable({...propsToDetailTable});
 

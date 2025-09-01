@@ -283,6 +283,7 @@ const enLang = {
   "msg.alert.invoice.saved": "This document has already been processed!",
   "msg.alert.payroll.generate": "This payroll has already been generated!",
   "msg.alert.selectPayroll": "Select a payroll or save current payroll to add detail!",
+  "msg.alert.unauthorizedUser": "Unauthorized User!",
   "msg.purchaseOrder.processed": "This purchase order cannot be deleted because it has already been processed!",
   "msg.employeeRepeat": "This employee has already been added!",
   "msg.required.documentDetail": "Please add the detail to the document!",
