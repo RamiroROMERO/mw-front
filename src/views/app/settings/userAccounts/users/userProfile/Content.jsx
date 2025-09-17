@@ -198,53 +198,62 @@ const UserProfile = (props) => {
   const fnFilterByType = (modulesFilter) => {
     // filtrar permisos generales asignados al usuario
     const generalPriv = modulesFilter.filter((item) => {
-      return item.adminModulesDetail.typeId === 1
+      return item?.adminModulesDetail?.typeId === 1
     });
-    const dataGenPriv = generalPriv.map((item) => {
-      item.code = item.adminModulesDetail.code
-      item.name = item.adminModulesDetail.name
-      item.createIcon = item.fnCreate === true ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
-      item.updateIcon = item.fnUpdate === true ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
-      item.deleteIcon = item.fnDelete === true ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
-      item.statusIcon = item.active === true ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
-      return item;
-    });
-    const tableData = {
-      ...tableGeneralPriv, data: dataGenPriv
+    if(generalPriv && generalPriv.length>0){
+      const dataGenPriv = generalPriv.map((item) => {
+        item.code = item.code
+        item.name = item?.adminModulesDetail?.name || ""
+        item.createIcon = item.fnCreate === true ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
+        item.updateIcon = item.fnUpdate === true ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
+        item.deleteIcon = item.fnDelete === true ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
+        item.statusIcon = item.active === true ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
+        return item;
+      });
+      const tableData = {
+        ...tableGeneralPriv, data: dataGenPriv
+      }
+      setTableGeneralPriv(tableData);
+    }else{
+      const tableData = {
+        ...tableGeneralPriv, data: []
+      }
+      setTableGeneralPriv(tableData);
     }
-    setTableGeneralPriv(tableData);
     // filtrar permisos administrativos asignados al usuario
     const adminPriv = modulesFilter.filter((item) => {
-      return item.adminModulesDetail.typeId === 2
+      return item?.adminModulesDetail?.typeId === 2
     });
-    const dataAdminPriv = adminPriv.map((item) => {
-      item.code = item.adminModulesDetail.code
-      item.name = item.adminModulesDetail.name
-      item.statusIcon = item.active === 1 ? <i className="medium-icon bi bi-check2-square" /> :
-        <i className="medium-icon bi bi-square" />
-      return item;
-    });
-    const tableDataAdmin = {
-      ...tableAdminPriv, data: dataAdminPriv
+    if(adminPriv && adminPriv.length>0){
+      const dataAdminPriv = adminPriv.map((item) => {
+        item.code = item.code
+        item.name = item?.adminModulesDetail?.name || ""
+        item.statusIcon = item.active === true ? <i className="medium-icon bi bi-check2-square" /> :
+          <i className="medium-icon bi bi-square" />
+        return item;
+      });
+      const tableDataAdmin = {
+        ...tableAdminPriv, data: dataAdminPriv
+      }
+      setTableAdminPriv(tableDataAdmin);
+    }else{
+      const tableDataAdmin = {
+        ...tableAdminPriv, data: []
+      }
+      setTableAdminPriv(tableDataAdmin);
     }
-    setTableAdminPriv(tableDataAdmin);
   }
 
   const fnFilterByModule = (id, modulesUser) => {
-    const filterUserModule = modulesUser.filter((item) => {
-      return item.adminModulesDetail.moduleId === id
-    });
-    setUserModulesFilter(filterUserModule);
-    fnFilterByType(filterUserModule);
-
-    request.GET(`adminModulesDetail?moduleId=${id}`, (resp) => {
+    setLoading(true);
+    request.GET(`admin/moduleDetail?moduleId=${id}`, (resp) => {
       const modulesDetail = resp.data.map((item) => {
         item.checked = true
         return item;
       });
       const filterPriv = modulesDetail.filter((item) => {
         const filter = modulesUser.filter((item2) => {
-          return item.id === item2.moduleId
+          return item.code === item2.code
         });
         return filter.length === 0;
       });
@@ -254,6 +263,10 @@ const UserProfile = (props) => {
       console.error(err);
       setLoading(false);
     });
+
+    const filterUserModule = modulesUser.filter(item => item.moduleId === id);
+    setUserModulesFilter(filterUserModule);
+    fnFilterByType(filterUserModule);
   }
 
   const fnUpdateUser = () => {
@@ -268,7 +281,7 @@ const UserProfile = (props) => {
     }
 
     setLoading(true);
-    request.PUT(`adminUsers/${userData.id}`, data, (resp) => {
+    request.PUT(`admin/users/${userData.id}`, data, (resp) => {
       setSendForm(false);
       console.log(resp);
       setLoading(false);
@@ -279,16 +292,14 @@ const UserProfile = (props) => {
   }
 
   const fnGetData = () => {
-    request.GET('adminModules', (resp) => {
+    request.GET('admin/modules', (resp) => {
       const modules = resp.data;
-      const idModule = modules[0].id;
-      setModuleName(modules[0].name);
       setListModules(modules);
-      request.GET(`adminUserModules?userId=${userData.id}`, (resp2) => {
+      request.GET(`admin/userModules?userId=${userData.id}`, (resp2) => {
         const userModules = resp2.data.filter(elem => validInt(elem.moduleId) !== 0);
         setListUserModules(userModules);
 
-        fnFilterByModule(idModule, userModules);
+        fnFilterByModule(activeFirstTab, userModules);
         setLoading(false);
       }, (err) => {
         console.error(err);
@@ -305,7 +316,6 @@ const UserProfile = (props) => {
       onBulkFormSettings({
         isCashier, isSeller, isLogIn, cashierEditInvoice, cashierNullInvoice, cashierRePrintInvoice, cashierEditPrice, cashierType, sellerIsSupervisor, sellerCode, sellerMinPercentCommiss, sellerMedPercentCommiss, sellerMaxPercentCommiss, sellerApplyCommiss
       })
-      // onBulkFormSettings(data);
     }, err => {
       console.error(err);
     })
@@ -313,7 +323,7 @@ const UserProfile = (props) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('adminUsersTypes', (resp) => {
+    request.GET('admin/userTypes', (resp) => {
       const listUserTypes = resp.data.map((item) => {
         return {
           label: item.name,
@@ -365,10 +375,6 @@ const UserProfile = (props) => {
     }
   }
 
-  const handleClick = event => {
-    hiddenFileInput.current.click();
-  };
-
   const fnUploadFiles = event => {
     const fileUploaded = event.target.files[0];
     const data = [{
@@ -381,7 +387,7 @@ const UserProfile = (props) => {
       const dataImage = {
         img: nameImg
       }
-      request.PUT(`adminUsers/${userData.id}`, dataImage, (resp2) => {
+      request.PUT(`admin/users/${userData.id}`, dataImage, (resp2) => {
         fnGetProfileImage(nameImg);
 
         setLoading(false);
@@ -413,7 +419,7 @@ const UserProfile = (props) => {
       newPassword,
       validNewPassword
     }
-    request.PUT(`adminUsers/changePassword/${userData.id}`, dataPass, (resp) => {
+    request.PUT(`admin/users/changePassword/${userData.id}`, dataPass, (resp) => {
       console.log(resp);
       setSendFormPass(false);
       onResetFormPass();
@@ -427,7 +433,7 @@ const UserProfile = (props) => {
   const fnDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
-    request.DELETE(`adminUserModules/${currentItemPriv.id}`, (resp) => {
+    request.DELETE(`admin/userModules/${currentItemPriv.id}`, (resp) => {
       console.log(resp);
       fnGetData();
       setCurrentItemPriv({});

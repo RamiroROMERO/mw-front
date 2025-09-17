@@ -56,10 +56,9 @@ const ModalPrivileges = (props) => {
     title: IntlMessages("page.modules.privileges.table.title"),
     columns: [
       { text: IntlMessages("page.modules.privileges.table.code"), dataField: "code", headerStyle: { 'width': '20%' } },
-      { text: IntlMessages("page.modules.privileges.table.name"), dataField: "name", headerStyle: { 'width': '30%' } },
+      { text: IntlMessages("page.modules.privileges.table.name"), dataField: "name", headerStyle: { 'width': '35%' } },
       { text: IntlMessages("page.modules.privileges.table.typePrivilege"), dataField: "typePrivilege", headerStyle: { 'width': '30%' } },
-      { text: IntlMessages("page.modules.table.status"), dataField: "statusIcon", headerStyle: { 'width': '15%' } },
-      { text: IntlMessages("table.column.options"), dataField: "options", headerStyle: { 'width': '15%' } }
+      { text: IntlMessages("page.modules.table.status"), dataField: "statusIcon", headerStyle: { 'width': '15%' } }
     ],
     data: [],
     options: {
@@ -72,18 +71,18 @@ const ModalPrivileges = (props) => {
         toolTip: IntlMessages("button.edit"),
         onClick: fnEditItem,
       },
-      {
-        color: "danger",
-        icon: "trash",
-        toolTip: IntlMessages("button.delete"),
-        onClick: fnDeleteItem,
-      }
+      // {
+      //   color: "danger",
+      //   icon: "trash",
+      //   toolTip: IntlMessages("button.delete"),
+      //   onClick: fnDeleteItem,
+      // }
     ]
   });
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`adminModulesDetail?moduleId=${currentItem.id}`, (resp) => {
+    request.GET(`admin/moduleDetail?moduleId=${currentItem.id}`, (resp) => {
       const dataDetail = resp.data.map((item) => {
         item.typePrivilege = item.typeId === 1 ? "General" : "Administrativo"
         item.statusIcon = item.active === 1 ? <i className="medium-icon bi bi-check2-square" /> :
@@ -107,7 +106,6 @@ const ModalPrivileges = (props) => {
       return;
     }
 
-    console.log(currentItem.code);
     const dataPrivileges = {
       moduleId: currentItem.id,
       moduleCode: currentItem.code,
@@ -117,11 +115,9 @@ const ModalPrivileges = (props) => {
       active
     }
 
-    console.log(dataPrivileges);
-
     if (id > 0) {
       setLoading(true);
-      request.PUT(`adminModulesDetail/${id}`, dataPrivileges, (resp) => {
+      request.PUT(`admin/moduleDetail/${id}`, dataPrivileges, (resp) => {
         console.log(resp);
         fnClearInputs();
         fnGetData();
@@ -132,7 +128,7 @@ const ModalPrivileges = (props) => {
       });
     } else {
       setLoading(true);
-      request.POST('adminModulesDetail', dataPrivileges, (resp) => {
+      request.POST('admin/moduleDetail', dataPrivileges, (resp) => {
         console.log(resp);
         fnClearInputs();
         fnGetData();
@@ -147,8 +143,7 @@ const ModalPrivileges = (props) => {
   const fnDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
-    request.DELETE(`adminModulesDetail/${currentItemDeta.id}`, (resp) => {
-      console.log(resp);
+    request.DELETE(`admin/moduleDetail/${currentItemDeta.id}`, () => {
       fnGetData();
       setCurrentItemDeta({});
       setLoading(false);
@@ -160,7 +155,6 @@ const ModalPrivileges = (props) => {
 
   useEffect(() => {
     fnGetData();
-    console.log(currentItem);
   }, []);
 
   const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDelete, title: "alert.question.title", setCurrentItem: setCurrentItemDeta }

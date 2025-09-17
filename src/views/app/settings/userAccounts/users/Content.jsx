@@ -104,10 +104,10 @@ const Users = (props) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET('adminUsers', (resp) => {
+    request.GET('admin/users', (resp) => {
       const data = resp.data.map((item) => {
         item.typeUser = item.adminUsersType ? item.adminUsersType.name : ""
-        item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
+        item.statusIcon = item.status === true ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />
         return item;
       });
@@ -144,7 +144,7 @@ const Users = (props) => {
 
     if (id > 0) {
       setLoading(true);
-      request.PUT(`adminUsers/${id}`, data, (resp) => {
+      request.PUT(`admin/users/${id}`, data, (resp) => {
         console.log(resp);
         fnClearInputs();
         fnGetData();
@@ -155,7 +155,7 @@ const Users = (props) => {
       });
     } else {
       setLoading(true);
-      request.POST('adminUsers', data, (resp) => {
+      request.POST('admin/users', data, (resp) => {
         console.log(resp);
         fnClearInputs();
         fnGetData();
@@ -170,7 +170,7 @@ const Users = (props) => {
   useEffect(() => {
     fnGetData();
 
-    request.GET('adminUsersTypes', (resp) => {
+    request.GET('admin/userTypes', (resp) => {
       const listUserTypes = resp.data.map((item) => {
         return {
           label: item.name,
@@ -188,7 +188,7 @@ const Users = (props) => {
   const fnDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
-    request.DELETE(`adminUsers/${currentItem.id}`, (resp) => {
+    request.DELETE(`admin/users/${currentItem.id}`, (resp) => {
       console.log(resp);
       fnGetData();
       setCurrentItem({});

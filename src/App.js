@@ -26,6 +26,7 @@ const HRRoutes = React.lazy(() => import('@Router/HRRoutes'));
 const FARoutes = React.lazy(() => import('@Router/FARoutes'));
 const SettingsRoutes = React.lazy(() => import('@Router/SettingsRoutes'));
 const HospitalRoutes = React.lazy(() => import('@Router/HospitalRoutes'));
+const DashboardsRoutes = React.lazy(() => import('@Router/DashboardsRoutes'));
 
 // const Production = React.lazy(() => import('@/views/app/production'));
 // const ProductionSettings = React.lazy(() => import('@/views/app/production/settings'));
@@ -59,6 +60,9 @@ const App = (props) => {
             <Routes >
               <Route element={<AppLayout {...props} />}>
                 {/* <Route index path='/' element={<Navigate to={`${adminRoot}/`} replace />} /> */}
+                <Route
+                  path={`${adminRoot}/dashboards/*`}
+                  element={<DashboardsRoutes setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
                 <Route
                   index path='/'
                   element={<Home {...props} setLoading={setLoading} match={{ isExact: true, params: {} }} />} />

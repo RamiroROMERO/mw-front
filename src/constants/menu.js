@@ -65,6 +65,20 @@ const data = [
   //     }
   //   ],
   // },
+    {
+    id: 'dashboards',
+    icon: 'bi bi-bar-chart',
+    label: 'menu.dashboards',
+    to: `${adminRoot}/dashboards`,
+    subs: [
+      {
+        id: 'dashboards-billingSales',
+        icon: 'simple-icon-list',
+        label: 'menu.submenu.billingSales',
+        to: `${adminRoot}/dashboards/billingSales`,
+      },
+    ]
+  },
   {
     id: 'hospitalManagement',
     icon: 'bi bi-hospital',
@@ -223,6 +237,26 @@ const data = [
             to: `${adminRoot}/billing/reports/salesReports`,
           },
           {
+            icon: 'simple-icon-chart',
+            label: 'menu.generalInvoice',
+            to: `${adminRoot}/billing/reports/generalInvoice`,
+          },
+          {
+            icon: 'simple-icon-chart',
+            label: 'menu.summaryByProduct',
+            to: `${adminRoot}/billing/reports/summaryByProduct`,
+          },
+          {
+            icon: 'simple-icon-chart',
+            label: 'menu.salesBySalesperson',
+            to: `${adminRoot}/billing/reports/salesBySalesperson`,
+          },
+          {
+            icon: 'simple-icon-chart',
+            label: 'menu.monthlySalesCustomer',
+            to: `${adminRoot}/billing/reports/monthlySalesCustomer`,
+          },
+          {
             icon: 'bi bi-bar-chart',
             label: 'menu.boxesReport',
             to: `${adminRoot}/billing/reports/cashReports`,
@@ -368,6 +402,21 @@ const data = [
             icon: 'simple-icon-chart',
             label: 'menu.purchaseReport',
             to: `${adminRoot}/inventory/reports/purchaseReport`,
+          },
+          {
+            icon: 'simple-icon-chart',
+            label: 'menu.purchaseForStore',
+            to: `${adminRoot}/inventory/reports/purchaseForStore`,
+          },
+          {
+            icon: 'simple-icon-chart',
+            label: 'menu.purchaseForProvider',
+            to: `${adminRoot}/inventory/reports/purchaseForProvider`,
+          },
+          {
+            icon: 'simple-icon-chart',
+            label: 'menu.expensesServices',
+            to: `${adminRoot}/inventory/reports/expensesServices`,
           },
           {
             icon: 'bi bi-bar-chart',

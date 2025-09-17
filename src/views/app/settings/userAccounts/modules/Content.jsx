@@ -77,18 +77,18 @@ const Modules = (props) => {
         toolTip: IntlMessages("button.edit"),
         onClick: fnEditItem,
       },
-      {
-        color: "danger",
-        icon: "trash",
-        toolTip: IntlMessages("button.delete"),
-        onClick: fnDeleteItem,
-      }
+      // {
+      //   color: "danger",
+      //   icon: "trash",
+      //   toolTip: IntlMessages("button.delete"),
+      //   onClick: fnDeleteItem,
+      // }
     ]
   });
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET('adminModules', (resp) => {
+    request.GET('admin/modules', (resp) => {
       const data = resp.data.map((item) => {
         item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />
@@ -119,7 +119,7 @@ const Modules = (props) => {
 
     if (id > 0) {
       setLoading(true);
-      request.PUT(`adminModules/${id}`, data, (resp) => {
+      request.PUT(`admin/modules/${id}`, data, (resp) => {
         console.log(resp);
         fnClearInputs();
         fnGetData();
@@ -130,7 +130,7 @@ const Modules = (props) => {
       });
     } else {
       setLoading(true);
-      request.POST('adminModules', data, (resp) => {
+      request.POST('admin/modules', data, (resp) => {
         console.log(resp);
         fnClearInputs();
         fnGetData();
@@ -145,7 +145,7 @@ const Modules = (props) => {
   const fnDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
-    request.DELETE(`adminModules/${currentItem.id}`, (resp) => {
+    request.DELETE(`admin/modules/${currentItem.id}`, (resp) => {
       console.log(resp);
       fnGetData();
       setCurrentItem({});

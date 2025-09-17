@@ -2,38 +2,17 @@ import React from 'react'
 import { Button, Row } from 'reactstrap'
 import { Colxx } from '@/components/common/CustomBootstrap'
 import DateCalendar from '@/components/dateCalendar'
-import { RadioGroup } from '@/components/radioGroup'
-import { Checkbox } from '@/components/checkbox'
 import SearchSelect from '@/components/SearchSelect/SearchSelect'
 import { IntlMessages } from '@/helpers/Utils'
 
-const HeaderReport = ({formState, onInputChange, listCustomers, listBillers, listSellers, fnPrintReport, fnOtherReport, onTypeChange, showCustomer, showBiller, showSeller}) => {
-  const {dateStart, dateEnd, exportToXls, typeReport, customerId, billerId, sellerId} = formState;
+const HeaderReport = ({formState, onInputChange, listCustomers, listSellers, listStores, listProducts, fnSearchReport }) => {
+  const { customerId, storeId, productCode, sellerId, startDate, endDate } = formState;
   return (
     <>
       <Row>
-        <Colxx xxs="12" sm="7" xl="6">
+        <Colxx xxs="12" md="8" xl="9">
           <Row>
-            <Colxx xxs="12">
-              <RadioGroup
-                label="select.type"
-                name="typeReport"
-                value={typeReport}
-                onChange={onTypeChange}
-                options={[
-                  {id:1, label: 'page.salesReport.radio.generalInvoices'},
-                  {id:2, label: 'page.salesReport.radio.productDetail'},
-                  {id:3, label: 'page.salesReport.radio.summaryByArea'},
-                  {id:4, label: 'page.salesReport.radio.detailedByArea'},
-                  {id:5, label: 'page.salesReport.radio.salesByCustomer'},
-                  {id:6, label: 'page.salesReport.radio.salesByBiller'},
-                  {id:7, label: 'page.salesReport.radio.salesByVendor'},
-                  {id:8, label: 'page.salesReport.radio.cashExpenses'}
-                ]}
-                display="flex"
-              />
-            </Colxx>
-            <Colxx xxs="12" style={{display: showCustomer}}>
+            <Colxx xxs="12" xl="8">
               <SearchSelect
                 label='select.customer'
                 name='customerId'
@@ -42,16 +21,25 @@ const HeaderReport = ({formState, onInputChange, listCustomers, listBillers, lis
                 options={listCustomers}
               />
             </Colxx>
-            <Colxx xxs="12" style={{display: showBiller}}>
+            <Colxx xxs="12" xl="4">
               <SearchSelect
-                label='page.salesReport.select.billerId'
-                name='billerId'
-                inputValue={billerId}
+                label='select.storeId'
+                name='storeId'
+                inputValue={storeId}
                 onChange={onInputChange}
-                options={listBillers}
+                options={listStores}
               />
             </Colxx>
-            <Colxx xxs="12" style={{display: showSeller}}>
+            <Colxx xxs="12" xl="7">
+              <SearchSelect
+                label='select.productId'
+                name='productCode'
+                inputValue={productCode}
+                onChange={onInputChange}
+                options={listProducts}
+              />
+            </Colxx>
+            <Colxx xxs="12" xl="5">
               <SearchSelect
                 label='page.salesReport.select.sellerId'
                 name='sellerId'
@@ -62,42 +50,31 @@ const HeaderReport = ({formState, onInputChange, listCustomers, listBillers, lis
             </Colxx>
           </Row>
         </Colxx>
-        <Colxx xxs="12" sm="5" xl="6">
+        <Colxx xxs="12" md="4" xl="3">
           <Row>
-            <Colxx xxs="12" xs="6" sm="12" lg="6">
+            <Colxx xxs="12" xs="6" md="12">
               <DateCalendar
-                name="dateStart"
+                name="startDate"
                 label='select.dateStart'
-                value={dateStart}
+                value={startDate}
                 onChange={onInputChange}
               />
             </Colxx>
-            <Colxx xxs="12" xs="6" sm="12" lg="6">
+            <Colxx xxs="12" xs="6" md="12">
               <DateCalendar
-                name="dateEnd"
+                name="endDate"
                 label='select.dateEnd'
-                value={dateEnd}
-                onChange={onInputChange}
-              />
-            </Colxx>
-            <Colxx xxs="12" xs="12">
-              <Checkbox
-                name="exportToXls"
-                label='check.exportToXls'
-                value={exportToXls}
+                value={endDate}
                 onChange={onInputChange}
               />
             </Colxx>
           </Row>
         </Colxx>
       </Row>
-      <Row>
+      <Row className='mb-3'>
         <Colxx xxs="12" className="div-action-button-container">
-          <Button color="info" onClick={() => {fnPrintReport()}}>
-            <i className='bi bi-printer' /> {IntlMessages("button.print")}
-          </Button>
-          <Button color="success" onClick={() => {fnOtherReport()}}>
-            <i className='bi bi-file-earmark-bar-graph' /> {IntlMessages("button.otherReports")}
+          <Button color="primary" onClick={() => { fnSearchReport() }}>
+            <i className='bi bi-search' /> {IntlMessages("button.search")}
           </Button>
         </Colxx>
       </Row>

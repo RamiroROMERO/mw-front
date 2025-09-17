@@ -1,14 +1,13 @@
 import React from 'react'
 import { Colxx } from '@/components/common/CustomBootstrap'
-import { RadioGroup } from '@/components/radioGroup'
 import { Button, Row } from 'reactstrap';
 import DateCalendar from '@/components/dateCalendar';
 import SearchSelect from '@/components/SearchSelect/SearchSelect';
 import { IntlMessages } from '@/helpers/Utils';
 
-const HeaderReport = ({formState, onTypeChange, onInputChange, listCashiers, listPaymentMethods, showCashier, showPaymentMethod, fnExportToExcel, fnPrintReport}) => {
+const HeaderReport = ({formState, onInputChange, listCashiers, listPaymentMethods, listCashRegisters, fnSearchReport, fnViewSummary}) => {
 
-  const {typeReport, dateStart, dateEnd, cashierId, paymentMethodId} = formState;
+  const {startDate, endDate, cashierId, cashId, paymentTypeId} = formState;
 
   return (
     <>
@@ -16,21 +15,15 @@ const HeaderReport = ({formState, onTypeChange, onInputChange, listCashiers, lis
       <Colxx xxs="12" sm="7" xl="6">
         <Row>
           <Colxx xxs="12">
-            <RadioGroup
-              label="select.type"
-              name="typeReport"
-              value={typeReport}
-              onChange={onTypeChange}
-              options={[
-                {id:1, label: 'page.boxesReport.radio.generalBilling'},
-                {id:2, label: 'page.boxesReport.radio.cashierCharges'},
-                {id:3, label: 'page.boxesReport.radio.chargesPayMethods'},
-                {id:4, label: 'page.boxesReport.radio.closingSummary'}
-              ]}
-              display="flex"
+            <SearchSelect
+              label='select.cashId'
+              name='cashId'
+              inputValue={cashId}
+              onChange={onInputChange}
+              options={listCashRegisters}
             />
           </Colxx>
-          <Colxx xxs="12" style={{display: showCashier}}>
+          <Colxx xxs="12">
             <SearchSelect
               label='page.boxesReport.select.cashierId'
               name='cashierId'
@@ -39,11 +32,11 @@ const HeaderReport = ({formState, onTypeChange, onInputChange, listCashiers, lis
               options={listCashiers}
             />
           </Colxx>
-          <Colxx xxs="12" style={{display: showPaymentMethod}}>
+          <Colxx xxs="12">
             <SearchSelect
               label='select.paymentMethod'
-              name='paymentMethodId'
-              inputValue={paymentMethodId}
+              name='paymentTypeId'
+              inputValue={paymentTypeId}
               onChange={onInputChange}
               options={listPaymentMethods}
             />
@@ -54,17 +47,17 @@ const HeaderReport = ({formState, onTypeChange, onInputChange, listCashiers, lis
         <Row>
           <Colxx xxs="12" xs="6" sm="12" lg="6">
             <DateCalendar
-              name="dateStart"
+              name="startDate"
               label='select.dateStart'
-              value={dateStart}
+              value={startDate}
               onChange={onInputChange}
             />
           </Colxx>
           <Colxx xxs="12" xs="6" sm="12" lg="6">
             <DateCalendar
-              name="dateEnd"
+              name="endDate"
               label='select.dateEnd'
-              value={dateEnd}
+              value={endDate}
               onChange={onInputChange}
             />
           </Colxx>
@@ -73,11 +66,11 @@ const HeaderReport = ({formState, onTypeChange, onInputChange, listCashiers, lis
     </Row>
     <Row>
       <Colxx xxs="12" className="div-action-button-container">
-        <Button color="secondary" onClick={() => {fnExportToExcel()}}>
-          <i className='bi bi-file-earmark-excel' /> {IntlMessages("button.exportXls")}
+        <Button color="primary" onClick={() => { fnSearchReport() }}>
+          <i className='bi bi-search' /> {IntlMessages("button.search")}
         </Button>
-        <Button color="info" onClick={() => {fnPrintReport()}}>
-          <i className='bi bi-printer' /> {IntlMessages("button.print")}
+        <Button color="secondary" onClick={() => { fnViewSummary() }}>
+          <i className='bi bi-list' /> {IntlMessages("button.summary")}
         </Button>
       </Colxx>
     </Row>

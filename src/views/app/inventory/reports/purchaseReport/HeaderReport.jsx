@@ -4,13 +4,14 @@ import { Colxx } from '@/components/common/CustomBootstrap'
 import SearchSelect from '@/components/SearchSelect/SearchSelect'
 import DateCalendar from '@/components/dateCalendar'
 import { IntlMessages } from '@/helpers/Utils'
+import { Checkbox } from '@/components/checkbox'
 
-const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, listProviders, listStores, listProducts, onInputChange, fnSearchReport, fnExportToExcel, fnPrintReport, fnOtherReport}) => {
+const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, isBonus, listProviders, listStores, listProducts, onInputChange, fnSearchReport}) => {
 
   return (
     <>
     <Row>
-      <Colxx xxs="12" lg="6" xxl="4">
+      <Colxx xxs="12" md="6" xl="4">
         <SearchSelect
           label='select.providerId'
           name='providerId'
@@ -19,7 +20,7 @@ const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, listP
           onChange={onInputChange}
         />
       </Colxx>
-      <Colxx xxs="12" lg="6" xxl="4">
+      <Colxx xxs="12" md="6" xl="4">
         <SearchSelect
           label='select.storeId'
           name='storeId'
@@ -28,7 +29,7 @@ const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, listP
           onChange={onInputChange}
         />
       </Colxx>
-      <Colxx xxs="12" lg="6" xxl="4">
+      <Colxx xxs="12" md="6" xl="4">
         <SearchSelect
           label='select.productId'
           name='productId'
@@ -37,7 +38,7 @@ const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, listP
           onChange={onInputChange}
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" lg="3">
+      <Colxx xxs="12" md="6" lg="3">
         <DateCalendar
           name="dateStart"
           label='select.dateStart'
@@ -45,7 +46,7 @@ const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, listP
           onChange={onInputChange}
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" lg="3">
+      <Colxx xxs="12" md="6" lg="3">
         <DateCalendar
           name="dateEnd"
           label='select.dateEnd'
@@ -53,20 +54,19 @@ const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, listP
           onChange={onInputChange}
         />
       </Colxx>
+      <Colxx xxs="12" md="6" lg="3">
+        <Checkbox
+          onChange={onInputChange}
+          name="isBonus"
+          value={isBonus}
+          label="check.isBonus"
+        />
+      </Colxx>
     </Row>
     <Row>
       <Colxx xxs="12" className="div-action-button-container">
         <Button color="primary" onClick={() => {fnSearchReport()}}>
           <i className='bi bi-search' /> {IntlMessages("button.search")}
-        </Button>
-        <Button color="secondary" onClick={() => {fnExportToExcel()}}>
-          <i className='bi bi-file-earmark-excel' /> {IntlMessages("button.exportXls")}
-        </Button>
-        <Button color="info" onClick={() => {fnPrintReport()}}>
-          <i className='bi bi-printer' /> {IntlMessages("button.print")}
-        </Button>
-        <Button color="success" onClick={() => {fnOtherReport()}}>
-          <i className='bi bi-file-earmark-bar-graph' /> {IntlMessages("button.otherReports")}
         </Button>
       </Colxx>
     </Row>

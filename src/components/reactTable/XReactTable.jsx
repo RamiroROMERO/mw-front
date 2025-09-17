@@ -17,7 +17,7 @@ import { XTable } from "./XTable";
 import { XTh } from "./XTh";
 import { XTd } from "./XTd";
 
-const DataTable = ({ title, columns = [], data = [], options = {}, actions = [] }) => {
+const DataTable = ({ title, columns = [], data = [], options = {}, actions = [], hideShowColumns={} }) => {
   let { enabledRowSelection, enabledActionButtons, setRowSelected, pageSize, pageSizeOptions, showViewColumns } = options;
 
   if (actions.length > 0) enabledActionButtons = true;
@@ -67,6 +67,13 @@ const DataTable = ({ title, columns = [], data = [], options = {}, actions = [] 
   useEffect(() => {
     tableInstance.setPageSize(pageSize || 10)
   }, [])
+
+  useEffect(() => {
+    setColumnVisibility(prev => ({
+      ...prev,
+      ...hideShowColumns
+    }));
+  }, [data]);
 
   return (
     <>

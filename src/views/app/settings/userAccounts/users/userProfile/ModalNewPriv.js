@@ -24,13 +24,8 @@ const ModalNewPriv = (props) => {
   }
 
   const fnChangePrivilegesSel = (list) => {
-    const privilegesSelected = list.reduce((acc, cur) => {
-      if (cur.checked === true) {
-        acc.push(cur.id);
-      }
-      return acc;
-    }, []);
-    setListPrivSelected(privilegesSelected);
+    const filterCheked = list.filter(item => item.checked === true);
+    setListPrivSelected(filterCheked);
   }
 
   const handlePrivilegesChange = e => {
@@ -71,7 +66,8 @@ const ModalNewPriv = (props) => {
     listPrivSelected.forEach((item) => {
       newData.push({
         userId: userData.id,
-        moduleId: item,
+        moduleId: item.moduleId,
+        code: item.code,
         fnCreate,
         fnUpdate,
         fnDelete,
@@ -80,8 +76,7 @@ const ModalNewPriv = (props) => {
     });
 
     setLoading(true);
-    request.POST('adminUserModules/createMany', newData, (resp) => {
-      console.log(resp);
+    request.POST('admin/userModules/createMany', newData, (resp) => {
       fnGetData();
       setOpen(false);
       setLoading(false);

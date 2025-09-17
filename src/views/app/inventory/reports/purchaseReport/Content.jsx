@@ -2,38 +2,18 @@ import React from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@/components/common/CustomBootstrap';
 import Modal from "@/components/modal";
+import ReactTable from '@/components/reactTable'
 import HeaderReport from './HeaderReport';
-import TableReport from './TableReport';
 import TotalsReport from './TotalsReport';
 import ModalOtherReports from './ModalOtherReports';
 import { usePurchaseReport } from './usePurchaseReport';
-import { useTotals } from './useTotals';
 
 const PurchaseReport = ({ setLoading }) => {
 
-  const { formState, onInputChange, listProviders, listStores, listProducts, dataPurchases, openModalOtherReport, setOpenModalOtherReport, fnSearchReport, fnExportToExcel, fnPrintReport, fnOtherReport } = usePurchaseReport({ setLoading });
-
-  const { formStateTotals, onInputChangeTotals } = useTotals({});
-
-  const propsToHeaderReport = {
-    ...formState,
-    onInputChange,
-    listProviders,
-    listStores,
-    listProducts,
-    fnSearchReport,
-    fnExportToExcel,
-    fnPrintReport,
-    fnOtherReport
-  }
-
-  const propsToTableReport = {
-    dataPurchases
-  }
+  const { table, dataTotals, propsToHeaderReport, listProviders, listStores, listProducts, openModalOtherReport, setOpenModalOtherReport } = usePurchaseReport({ setLoading });
 
   const propsToTotals = {
-    ...formStateTotals,
-    onInputChangeTotals
+    ...dataTotals
   }
 
   const propsToModalOtherReports = {
@@ -60,7 +40,11 @@ const PurchaseReport = ({ setLoading }) => {
           </Card>
         </Colxx>
       </Row>
-      <TableReport {...propsToTableReport} />
+      <Row>
+        <Colxx xxs="12" className='mb-3'>
+            <ReactTable {...table}/>
+          </Colxx>
+        </Row>
       <Row>
         <Colxx xxs="12">
           <Card>

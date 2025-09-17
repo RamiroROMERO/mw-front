@@ -1,33 +1,23 @@
-import { validInt } from '@/helpers/Utils';
+import { formatDate } from '@/helpers/Utils';
 import { request } from '@Helpers/core';
 import { useForm } from '@/hooks'
 import { formatNumber, IntlMessages } from '@Helpers/Utils';
 import { useEffect, useState } from 'react'
 
 export const useSalesReport = ({ setLoading }) => {
-  const [dataSales, setDataSales] = useState([]);
   const [listCustomers, setListCustomers] = useState([]);
-  const [listBillers, setListBillers] = useState([]);
   const [listSellers, setlistSellers] = useState([]);
   const [listStores, setListStores] = useState([]);
   const [listProducts, setListProducts] = useState([]);
   const [totals, setTotals] = useState({ qty: 0, subtotal: 0, discount: 0, tax: 0, total: 0 });
-
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
     customerId: 0,
     storeId: 0,
     productCode: '',
     sellerId: 0,
-    startDate: '2025-06-01',
-    endDate: '2025-06-30'
-  });
-
-  const { formState: formStateTotals, formValidation: formValidationTotals, isFormValid: isFormValidTotals, onInputChange: onInputChangeTotals, onResetForm: onResetFormTotals, onBulkForm: onBulkFormTotals } = useForm({
-    subtotal: 0,
-    discount: 0,
-    tax: 0,
-    total: 0
+    startDate: '2024-01-01',
+    endDate: '2025-12-30'
   });
 
   const [table, setTable] = useState({
@@ -38,7 +28,10 @@ export const useSalesReport = ({ setLoading }) => {
         dataField: "date",
         headerStyle: { width: "10%" },
         classes: 'd-md-none-table-cell',
-        headerClasses: 'd-md-none-table-cell'
+        headerClasses: 'd-md-none-table-cell',
+        cell: ({row}) => {
+          return (formatDate(row.original.date));
+        }
       },
       {
         text: IntlMessages("table.column.customer"),
@@ -47,7 +40,7 @@ export const useSalesReport = ({ setLoading }) => {
       },
       {
         text: IntlMessages("table.column.noInvoice"),
-        dataField: "noInvoice",
+        dataField: "numcai",
         headerStyle: { width: "10%" },
         classes: 'd-md-none-table-cell',
         headerClasses: 'd-md-none-table-cell'
@@ -65,40 +58,64 @@ export const useSalesReport = ({ setLoading }) => {
       {
         text: IntlMessages("table.column.qty"),
         dataField: "qty",
-        headerStyle: { 'width': '7%' }
+        headerStyle: { 'width': '7%' },
+        style: { textAlign: 'right' },
+        cell: ({row}) => {
+          return (formatNumber(row.original.qty, '', 2));
+        }
       },
       {
         text: IntlMessages("table.column.price"),
         dataField: "price",
         headerStyle: { 'width': '7%' },
         classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell'
+        headerClasses: 'd-xs-none-table-cell',
+        style: { textAlign: 'right' },
+        cell: ({row}) => {
+          return (formatNumber(row.original.price, '', 2));
+        }
       },
       {
         text: IntlMessages("table.column.subtotal"),
         dataField: "subtotal",
         headerStyle: { 'width': '7%' },
         classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell'
+        headerClasses: 'd-xs-none-table-cell',
+        style: { textAlign: 'right' },
+        cell: ({row}) => {
+          return (formatNumber(row.original.subtotal, '', 2));
+        }
       },
       {
         text: IntlMessages("table.column.discount"),
         dataField: "discount",
         headerStyle: { 'width': '7%' },
         classes: 'd-sm-none-table-cell',
-        headerClasses: 'd-sm-none-table-cell'
+        headerClasses: 'd-sm-none-table-cell',
+        style: { textAlign: 'right' },
+        cell: ({row}) => {
+          return (formatNumber(row.original.discount, '', 2));
+        }
       },
       {
         text: IntlMessages("table.column.tax"),
         dataField: "tax",
         headerStyle: { 'width': '7%' },
         classes: 'd-sm-none-table-cell',
-        headerClasses: 'd-sm-none-table-cell'
+        headerClasses: 'd-sm-none-table-cell',
+        style: { textAlign: 'right' },
+        cell: ({row}) => {
+          return (formatNumber(row.original.tax, '', 2));
+        }
       },
       {
         text: IntlMessages("table.column.total"),
         dataField: "total",
-        headerStyle: { 'width': '7%' }
+        headerStyle: { 'width': '7%' },
+        style: { textAlign: 'right' },
+        cell: ({row}) => {
+          return (formatNumber(row.original.total, '', 2));
+        }
       },
       {
         text: IntlMessages("table.column.store"),
@@ -108,79 +125,36 @@ export const useSalesReport = ({ setLoading }) => {
         headerClasses: 'd-md-none-table-cell'
       }
     ],
-    data: dataSales,
+    data: [],
     actions: []
   });
 
-  useEffect(() => {
-    setTable({ ...table, data: dataSales });
-  }, [dataSales])
+  const fnExportToExcel = () => { };
+
+  const fnPrintReport = () => { };
 
   const fnSearchReport = () => {
-    setDataSales([]);
+    const newActions = [
+      {
+        color: "secondary",
+        icon: "file-earmark-excel",
+        onClick: fnExportToExcel,
+        title: "Exportar",
+        isFreeAction: true
+      }
+    ]
+
     setLoading(true);
     request.POST('billing/reports/generalSales', { ...formState, toXlSX: 0 }, resp => {
-      const { data } = resp;
-      let { details, totals } = data;
-      details = details.map(item => {
-        item.qty = formatNumber(item.qty);
-        item.price = formatNumber(item.price);
-        item.subtotal = formatNumber(item.subtotal);
-        item.discount = formatNumber(item.discount);
-        item.tax = formatNumber(item.tax);
-        item.total = formatNumber(item.total);
-        return item;
-      });
-      totals = {
-        qty: formatNumber(totals.qty),
-        subtotal: formatNumber(totals.subtotal),
-        discount: formatNumber(totals.discount),
-        tax: formatNumber(totals.tax),
-        total: formatNumber(totals.total)
-      }
-      setDataSales(details);
+      let { detail, totals } = resp;
+      setTable({ ...table, data: detail, actions: newActions });
       setTotals(totals);
       setLoading(false);
-      console.log(data);
     }, err => {
       console.log(err);
       setLoading(false);
     }, false);
-
   };
-
-  const fnExportToExcel = () => {
-    setLoading(true);
-    request.POST('billing/reports/generalSales', { ...formState, toXlSX: 1 }, resp => {
-      const { data } = resp;
-      let { details, totals } = data;
-      details = details.map(item => {
-        item.qty = formatNumber(item.qty);
-        item.price = formatNumber(item.price);
-        item.subtotal = formatNumber(item.subtotal);
-        item.discount = formatNumber(item.discount);
-        item.tax = formatNumber(item.tax);
-        item.total = formatNumber(item.total);
-        return item;
-      });
-      totals = {
-        qty: formatNumber(totals.qty),
-        subtotal: formatNumber(totals.subtotal),
-        discount: formatNumber(totals.discount),
-        tax: formatNumber(totals.tax),
-        total: formatNumber(totals.total)
-      }
-      setDataSales(details);
-      setTotals(totals);
-      setLoading(false);
-      console.log(data);
-    }, err => {
-      console.log(err);
-      setLoading(false);
-    }, false)
-  };
-
-  const fnPrintReport = () => { };
 
   useEffect(() => {
     setLoading(true);
@@ -218,7 +192,6 @@ export const useSalesReport = ({ setLoading }) => {
         return item.isCashier === 1
       });
       setlistSellers(sellers);
-      setListBillers(billers);
       setLoading(false);
     }, (err) => {
       console.error(err);
@@ -256,18 +229,21 @@ export const useSalesReport = ({ setLoading }) => {
     });
   }, []);
 
+  const propsToHeaderReport = {
+    formState,
+    onInputChange,
+    listCustomers,
+    listSellers,
+    listStores,
+    listProducts,
+    fnSearchReport
+  }
+
   return (
     {
-      formState,
-      onInputChange,
-      fnSearchReport,
-      fnExportToExcel,
-      fnPrintReport,
-      table,
-      formStateTotals,
       totals,
-      onInputChangeTotals,
-      listCustomers, listStores, listProducts, listSellers, listBillers
+      table,
+      propsToHeaderReport
     }
   )
 }

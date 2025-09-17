@@ -2,8 +2,10 @@ import React from 'react'
 
 export const XTable = ({ children }) => {
   return (
-    <table className="table table-bordered table-hover">
-      {children}
-    </table>
+    <div style={{overflowX: 'auto'}}>
+      <table className="table table-bordered table-hover">
+        {children}
+      </table>
+    </div>
   )
 }
