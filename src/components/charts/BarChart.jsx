@@ -20,14 +20,14 @@ ChartJS.register(
   Legend
 );
 
-const BarChart = ({title="", labels=[], dataChart=[], type="x"}) => {
+const BarChart = ({ title = "", labels = [], dataChart = [], type = "x" }) => {
 
-  const {data, options} = useLineChart({title, labels, dataChart, type});
+  const { data, options } = useLineChart({ title, labels, dataChart, type });
 
   return (
     <Card className='mb-3'>
       <CardBody>
-        <Bar options={options} data={data} redraw={true} updateMode='default' />
+        <Bar options={options} data={data} />
       </CardBody>
     </Card>
   )

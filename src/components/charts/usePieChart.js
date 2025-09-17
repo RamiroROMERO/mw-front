@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { colorsChart } from './config';
 import { IntlMessages } from '@/helpers/Utils';
 
-export const usePieChart = ({title, labels, dataChart}) => {
-  const [data, setData] = useState({datasets: []});
+export const usePieChart = ({ title, labels, dataChart }) => {
+  const [data, setData] = useState({ datasets: [] });
 
   const options = {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+        position: 'bottom',
+        display: true
       },
       title: {
         display: true,

@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { colorsChart } from './config';
 import { IntlMessages } from '@/helpers/Utils';
 
-export const useLineChart = ({title, labels, dataChart, type='x'}) => {
-  const [data, setData] = useState({datasets: []});
+export const useLineChart = ({ title, labels, dataChart, type = 'x' }) => {
+  const [data, setData] = useState({ datasets: [] });
 
   const options = {
     indexAxis: type,
@@ -11,6 +11,7 @@ export const useLineChart = ({title, labels, dataChart, type='x'}) => {
     plugins: {
       legend: {
         position: 'top',
+        display: false
       },
       title: {
         display: true,
@@ -23,7 +24,7 @@ export const useLineChart = ({title, labels, dataChart, type='x'}) => {
     const newData = dataChart.map((item) => {
       const numColor = Math.floor(Math.random() * 20);
       item.borderColor = colorsChart[numColor].borderColor,
-      item.backgroundColor = colorsChart[numColor].backgroundColor
+        item.backgroundColor = colorsChart[numColor].backgroundColor
       return item
     });
 
@@ -31,8 +32,6 @@ export const useLineChart = ({title, labels, dataChart, type='x'}) => {
       labels,
       datasets: newData
     });
-
-    console.log(newData);
 
   }, [dataChart]);
 

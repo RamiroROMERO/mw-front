@@ -1,5 +1,5 @@
 import { request } from '@/helpers/core';
-import { validFloat } from '@/helpers/Utils';
+import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import React, { useEffect, useState } from 'react'
 
@@ -15,14 +15,47 @@ export const useSales = ({ setLoading }) => {
   const [dataSalesForDepto, setDataSalesForDepto] = useState([]);
   const [labelSalesForDepto, setLabelSalesForDepto] = useState([]);
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
-    startDate: '2025-01-01',
-    endDate: '2025-08-31'
-  });
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [reportId, setReportId] = useState('1');
+  const [noYear, setNoYear] = useState(new Date().getFullYear());
+
+  // const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
+  //   startDate: '2025-01-01',
+  //   endDate: '2025-08-31'
+  // });
+
+  const fnSetDates = () => {
+    let currStartDate = '', currEndDate = ''
+    if (validInt(reportId) == 1) {
+      currStartDate = `${noYear}-01-01`;
+      currEndDate = `${noYear}-12-31`;
+    }
+    if (validInt(reportId) == 2) {
+      let d = new Date();
+      currEndDate = d.toJSON().substring(0, 10);
+      d.setDate(d.getDate() - 365);
+      currStartDate = d.toJSON().substring(0, 8) + "01"
+    }
+    if (validInt(reportId) == 3) {
+      let d = new Date();
+      currEndDate = d.toJSON().substring(0, 10);
+      d.setDate(d.getDate() - 180)
+      currStartDate = d.toJSON().substring(0, 8) + "01";
+    }
+    setStartDate(currStartDate);
+    setEndDate(currEndDate);
+  }
+
+  useEffect(() => {
+    fnSetDates();
+  }, [reportId, noYear])
+
+  useEffect(fnSetDates, [])
 
   const fnSearchDash = () => {
     setLoading(true);
-    request.POST('dashboard/sales', { ...formState }, resp => {
+    request.POST('dashboard/sales', { startDate, endDate }, resp => {
       let { allSales, bestSellingProducts, salesforSeller, salesForClassification, salesForDepto } = resp.data;
 
       // todas las ventas
@@ -93,8 +126,10 @@ export const useSales = ({ setLoading }) => {
   }
 
   const propsToHeaderReport = {
-    formState,
-    onInputChange,
+    reportId,
+    setReportId,
+    noYear,
+    setNoYear,
     fnSearchDash
   }
 

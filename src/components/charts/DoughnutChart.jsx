@@ -5,14 +5,14 @@ import { usePieChart } from './usePieChart';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const DoughnutChart = ({title="", labels=[], dataChart=[]}) => {
+const DoughnutChart = ({ title = "", labels = [], dataChart = [] }) => {
 
-  const {options, data} = usePieChart({title, labels, dataChart});
+  const { options, data } = usePieChart({ title, labels, dataChart });
 
   return (
     <Card className='mb-3'>
       <CardBody>
-        <Doughnut options={options} data={data} redraw={true} />
+        <Doughnut options={options} data={data} />
       </CardBody>
     </Card>
   )

@@ -2,22 +2,24 @@ import React from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import esLocale from '@fullcalendar/core/locales/es';
-import { Card, CardBody } from 'reactstrap';
+import { Card, CardBody, Row } from 'reactstrap';
 import { useHome } from './useHome';
 import Modal from '@Components/modal';
 import ModalAddSchedule from './ModalAddSchedule';
 import Header from './Header';
 import './styleCalendar.css';
 import { useHeader } from './useHeader';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { DashCard } from '@Components/cards';
 
 const Content = (props) => {
   const { setLoading } = props;
 
-  const {contentRef, currentItem, openModalAddSchedule, setopenModalAddSchedule, listProjects, listTurns, listWorkShedules, setListWorkSchedules, setCurrentItem, fnPrintSchedule} = useHome({setLoading});
+  const { contentRef, currentItem, openModalAddSchedule, setopenModalAddSchedule, listProjects, listTurns, listWorkShedules, setListWorkSchedules, setCurrentItem, fnPrintSchedule } = useHome({ setLoading });
 
-  const {projectId, onProjectChange, fnAddSchedule, fnGetData} = useHeader({setopenModalAddSchedule, setListWorkSchedules, setLoading, setCurrentItem});
+  const { projectId, onProjectChange, fnAddSchedule, fnGetData } = useHeader({ setopenModalAddSchedule, setListWorkSchedules, setLoading, setCurrentItem });
 
-  const fnViewEvent = ({event}) => {
+  const fnViewEvent = ({ event }) => {
     const detail = event.extendedProps;
 
     setCurrentItem(detail);
@@ -49,13 +51,18 @@ const Content = (props) => {
 
   return (
     <>
-      <Header {...propsToHeader}/>
+      <Header {...propsToHeader} />
+      <Row>
+        <Colxx xxs={12} sm={6} md={4} lg={3}>
+          <DashCard title='button.clear' value='L. 123,393' icon='bi bi-bank' />
+        </Colxx>
+      </Row>
       <Card>
         <CardBody>
           <div ref={contentRef}>
             <FullCalendar
-              locale= {esLocale}
-              plugins={[ dayGridPlugin ]}
+              locale={esLocale}
+              plugins={[dayGridPlugin]}
               initialView="dayGridMonth"
               events={listWorkShedules}
               eventClick={fnViewEvent}
