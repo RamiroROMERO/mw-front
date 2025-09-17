@@ -30,4 +30,4 @@ const FASettingsRoutes = (props) => {
   </Routes>
 }
 
-export default FAReportsRoutes;
+export default FASettingsRoutes;
