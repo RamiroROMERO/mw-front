@@ -12,7 +12,7 @@ const PieChart = ({title="", labels=[], dataChart=[]}) => {
   return (
     <Card className='mb-3'>
       <CardBody>
-        <Pie options={options} data={data}/>
+        <Pie options={options} data={data} style={{display: 'inline'}}/>
       </CardBody>
     </Card>
   )

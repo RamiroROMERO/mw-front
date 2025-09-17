@@ -12,7 +12,7 @@ const DoughnutChart = ({ title = "", labels = [], dataChart = [] }) => {
   return (
     <Card className='mb-3'>
       <CardBody>
-        <Doughnut options={options} data={data} />
+        <Doughnut options={options} data={data} style={{display: 'inline'}}/>
       </CardBody>
     </Card>
   )

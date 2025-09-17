@@ -27,7 +27,7 @@ const BarChart = ({ title = "", labels = [], dataChart = [], type = "x" }) => {
   return (
     <Card className='mb-3'>
       <CardBody>
-        <Bar options={options} data={data} />
+        <Bar options={options} data={data} style={{display: 'inline'}}/>
       </CardBody>
     </Card>
   )

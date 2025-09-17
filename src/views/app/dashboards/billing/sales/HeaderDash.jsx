@@ -46,7 +46,7 @@ const HeaderDash = ({ reportId, setReportId, noYear, setNoYear, fnSearchDash }) 
             onChange={onInputChange}
           />
         </Colxx> */}
-        <Colxx xxs="12" xs="6" md="4" className="div-action-button-container">
+        <Colxx xxs={12} xs={6} md={6} className="div-action-button-container" style={{height: 'fit-content'}}>
           <Button color="primary" onClick={() => { fnSearchDash() }}>
             <i className='bi bi-search' /> {IntlMessages("button.search")}
           </Button>

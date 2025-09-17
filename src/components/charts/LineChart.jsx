@@ -29,7 +29,7 @@ const LineChart = ({title="", labels=[], dataChart=[]}) => {
   return (
     <Card className='mb-3'>
       <CardBody>
-        <Line options={options} data={data}/>
+        <Line options={options} data={data} style={{display: 'inline'}}/>
       </CardBody>
     </Card>
   )
