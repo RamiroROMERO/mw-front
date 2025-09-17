@@ -14,9 +14,9 @@ const Content = () => {
             <CardTitle className="mb-4">
               <IntlMessages id="pages.unauthorized-title" />
             </CardTitle>
-            <p className="mb-0 text-muted text-small mb-0">
+            {/* <p className="mb-0 text-muted text-small mb-0">
               <IntlMessages id="pages.unauthorized-code" />
-            </p>
+            </p> */}
             <p className="display-1 font-weight-bold mb-5">403</p>
             <NavLink
               to={adminRoot}
