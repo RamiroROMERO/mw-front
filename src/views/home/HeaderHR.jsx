@@ -4,7 +4,7 @@ import { Colxx } from '@Components/common/CustomBootstrap'
 import { IntlMessages } from '@Helpers/Utils'
 import { Button, Card, CardBody, Row } from 'reactstrap'
 
-const Header = ({listProjects, projectId, onProjectChange, fnAddSchedule, fnPrintSchedule}) => {
+const HeaderHR = ({ listProjects, projectId, onProjectChange, fnAddSchedule, fnPrintSchedule }) => {
 
   return (
     <Card className='mb-3'>
@@ -19,12 +19,12 @@ const Header = ({listProjects, projectId, onProjectChange, fnAddSchedule, fnPrin
               onChange={onProjectChange}
             />
           </Colxx>
-          <Colxx xxs={12} md={4} lg={4} style={{textAlign: 'right'}}>
+          <Colxx xxs={12} md={4} lg={4} style={{ textAlign: 'right' }}>
             <Button color="secondary" onClick={fnAddSchedule} className="mr-1">
-              <i className="bi bi-plus"/> {IntlMessages("button.add")}
+              <i className="bi bi-plus" /> {IntlMessages("button.add")}
             </Button>
             <Button color="success" onClick={fnPrintSchedule}>
-              <i className="bi bi-printer"/> {IntlMessages("button.print")}
+              <i className="bi bi-printer" /> {IntlMessages("button.print")}
             </Button>
           </Colxx>
         </Row>
@@ -33,4 +33,4 @@ const Header = ({listProjects, projectId, onProjectChange, fnAddSchedule, fnPrin
   )
 }
 
-export default Header
+export default HeaderHR
