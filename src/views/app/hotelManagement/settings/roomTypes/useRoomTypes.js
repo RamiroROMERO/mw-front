@@ -1,0 +1,135 @@
+import React, { useEffect, useState } from 'react'
+import { request } from '@Helpers/core';
+import { validInt } from '@Helpers/Utils';
+import { useForm } from '@Hooks/useForms';
+import notification from '@Containers/ui/Notifications';
+
+export const useRoomTypes = ({ setLoading, screenControl }) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
+  const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
+  const [dataTypes, setDataTypes] = useState([]);
+  const [sendForm, setSendForm] = useState(false);
+
+  const validation = {
+    name: [(val) => val.length > 4, "msg.required.input.name"]
+  }
+
+  const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
+    id: 0,
+    name: '',
+    status: true
+  }, validation);
+
+  const { id } = formState;
+
+  const fnGetData = () => {
+    setLoading(true);
+    request.GET('hotel/settings/roomTypes', (resp) => {
+      const data = resp.data.map((item) => {
+        item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
+        return item;
+      });
+      setDataTypes(data);
+      setLoading(false);
+    }, err => {
+      console.log(err)
+      setLoading(false);
+    });
+  }
+
+  const fnClear = () => {
+    onResetForm();
+    setSendForm(false);
+  }
+
+  const fnSaveDocument = () => {
+    setSendForm(true);
+    if (!isFormValid) {
+      return;
+    }
+
+    if (validInt(id) === 0) {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
+      setLoading(true);
+      request.POST('hotel/settings/roomTypes', formState, () => {
+        setLoading(false);
+        fnGetData();
+        fnClear();
+      }, (err) => {
+        console.log(err);
+        setLoading(false);
+      })
+    } else {
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
+      setLoading(true);
+      request.PUT(`hotel/settings/roomTypes/${id}`, formState, () => {
+        setLoading(false);
+        fnGetData();
+        fnClear();
+      }, (err) => {
+        console.log(err);
+        setLoading(false);
+      });
+    }
+  }
+
+  const fnDisableDocument = () => {
+    setOpenMsgQuestion(false);
+    const data = {
+      status: 0
+    }
+    if (formState.id && formState.id > 0) {
+      setLoading(true);
+      request.PUT(`hotel/settings/roomTypes/${formState.id}`, data, () => {
+        fnGetData();
+        fnClear();
+        setLoading(false);
+      }, (err) => {
+        console.error(err);
+        setLoading(false);
+      });
+    }
+  }
+
+  useEffect(() => {
+    fnGetData();
+  }, []);
+
+  const propsToMsgDisable = {
+    title: "alert.question.disable",
+    open: openMsgQuestion,
+    setOpen: setOpenMsgQuestion,
+    fnOnOk: fnDisableDocument,
+    fnOnNo: () => onResetForm
+  };
+
+  const propsToDetail = {
+    formState,
+    formValidation,
+    sendForm,
+    onInputChange,
+    fnSaveDocument,
+    fnClear
+  }
+
+  const propsToDetailTable = {
+    dataTypes,
+    onBulkForm,
+    setOpenMsgQuestion,
+    fnDelete
+  }
+
+  return (
+    {
+      propsToDetail,
+      propsToDetailTable,
+      propsToMsgDisable
+    }
+  )
+}

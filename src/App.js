@@ -27,6 +27,7 @@ const FARoutes = React.lazy(() => import('@Router/FARoutes'));
 const SettingsRoutes = React.lazy(() => import('@Router/SettingsRoutes'));
 const HospitalRoutes = React.lazy(() => import('@Router/HospitalRoutes'));
 const DashboardsRoutes = React.lazy(() => import('@Router/DashboardsRoutes'));
+const HotelRoutes = React.lazy(() => import('@Router/HotelRoutes'));
 
 // const Production = React.lazy(() => import('@/views/app/production'));
 // const ProductionSettings = React.lazy(() => import('@/views/app/production/settings'));
@@ -93,6 +94,9 @@ const App = (props) => {
                 <Route
                   path={`${adminRoot}/settings/*`}
                   element={<SettingsRoutes setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+                <Route
+                  path={`${adminRoot}/hotelManagement/*`}
+                  element={<HotelRoutes setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
 
                 <Route path={`${adminRoot}/*`} element={<PageNotFound />} />
               </Route>

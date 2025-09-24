@@ -65,7 +65,7 @@ const data = [
   //     }
   //   ],
   // },
-    {
+  {
     id: 'dashboards',
     icon: 'bi bi-bar-chart',
     label: 'menu.dashboards',
@@ -77,6 +77,79 @@ const data = [
         label: 'menu.submenu.billingSales',
         to: `${adminRoot}/dashboards/billingSales`,
       },
+    ]
+  },
+  {
+    id: 'hotelManagement',
+    icon: 'bi bi-buildings',
+    label: 'menu.hotelManagement',
+    to: `${adminRoot}/hotelManagement`,
+    subs: [
+      {
+        id: 'hotelManagement-settings',
+        icon: 'simple-icon-list',
+        label: 'menu.submenu.settings',
+        to: `${adminRoot}/hotelManagement/settings`,
+        subs: [{
+          id: 'hotelManagement-settings-roomsStatus',
+          icon: 'bi bi-list-ol',
+          label: 'menu.hotelManagement.roomsStatus',
+          to: `${adminRoot}/hotelManagement/settings/roomsStatus`,
+        },{
+          id: 'hotelManagement-settings-roomsTypes',
+          icon: 'bi bi-list-ol',
+          label: 'menu.hotelManagement.roomsTypes',
+          to: `${adminRoot}/hotelManagement/settings/roomsTypes`,
+        },{
+          id: 'hotelManagement-settings-roomsLevels',
+          icon: 'bi bi-list-ol',
+          label: 'menu.hotelManagement.roomsLevels',
+          to: `${adminRoot}/hotelManagement/settings/roomsLevels`,
+        },{
+          id: 'hotelManagement-settings-services',
+          icon: 'bi bi-list-ol',
+          label: 'menu.hotelManagement.services',
+          to: `${adminRoot}/hotelManagement/settings/services`,
+        },{
+          id: 'hotelManagement-settings-roomMealTypes',
+          icon: 'bi bi-list-ol',
+          label: 'menu.hotelManagement.roomMealTypes',
+          to: `${adminRoot}/hotelManagement/settings/roomMealTypes`,
+        },{
+          id: 'hotelManagement-settings-rooms',
+          icon: 'bi bi-building',
+          label: 'menu.hotelManagement.rooms',
+          to: `${adminRoot}/hotelManagement/settings/rooms`,
+        },{
+          id: 'hotelManagement-settings-tables',
+          icon: 'bi bi-1-square',
+          label: 'menu.hotelManagement.tables',
+          to: `${adminRoot}/hotelManagement/settings/tables`,
+        },{
+          id: 'hotelManagement-settings-materials',
+          icon: 'bi bi-basket',
+          label: 'menu.hotelManagement.materials',
+          to: `${adminRoot}/hotelManagement/settings/materials`,
+        }]
+      },
+      {
+        id: 'hotelManagement-process',
+        icon: 'simple-icon-list',
+        label: 'menu.submenu.process',
+        to: `${adminRoot}/hotelManagement/process`,
+        subs: [{
+          id: 'hotelManagement-process-reservations',
+          icon: 'bi bi-card-checklist',
+          label: 'menu.hotelManagement.reservations',
+          to: `${adminRoot}/hotelManagement/process/reservations`,
+        },{
+          id: 'hotelManagement-process-restaurantOrders',
+          icon: 'bi bi-file-earmark-post',
+          label: 'menu.hotelManagement.restaurantOrders',
+          to: `${adminRoot}/hotelManagement/process/restaurantOrders`,
+        }
+        ]
+      }
     ]
   },
   {
