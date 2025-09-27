@@ -10,6 +10,12 @@ export const useRoomStatus = ({ setLoading, screenControl }) => {
   const [dataStatus, setDataStatus] = useState([]);
   const [sendForm, setSendForm] = useState(false);
 
+   // paginacion
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [search, setSearch] = useState("");
+  const pageSize = 10;
+
   const validation = {
     name: [(val) => val.length > 4, "msg.required.input.name"],
     color: [(val) => val.length > 4, "msg.required.input.color"]
@@ -24,14 +30,16 @@ export const useRoomStatus = ({ setLoading, screenControl }) => {
 
   const { id } = formState;
 
-  const fnGetData = () => {
+  const fnGetData = (page=currentPage, searchText=search) => {
     setLoading(true);
-    request.GET('hotel/settings/roomStatus', (resp) => {
+    request.GET(`hotel/settings/roomStatus/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
       const data = resp.data.map((item) => {
         item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;
       });
+      const pageTotal = resp.pagination.totalPages;
       setDataStatus(data);
+      setTotalPages(pageTotal);
       setLoading(false);
     }, err => {
       console.log(err)
@@ -100,8 +108,8 @@ export const useRoomStatus = ({ setLoading, screenControl }) => {
   }
 
   useEffect(() => {
-    fnGetData();
-  }, []);
+    fnGetData(currentPage, search);
+  }, [currentPage, search]);
 
   const propsToMsgDisable = {
     title: "alert.question.disable",
@@ -124,7 +132,11 @@ export const useRoomStatus = ({ setLoading, screenControl }) => {
     dataStatus,
     onBulkForm,
     setOpenMsgQuestion,
-    fnDelete
+    fnDelete,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    setSearch
   }
 
   return (

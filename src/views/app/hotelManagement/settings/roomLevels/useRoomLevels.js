@@ -10,6 +10,12 @@ export const useRoomLevels = ({ setLoading, screenControl }) => {
   const [dataRoomLevels, setDataRoomLevels] = useState([]);
   const [sendForm, setSendForm] = useState(false);
 
+  // paginacion
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [search, setSearch] = useState("");
+  const pageSize = 10;
+
   const validation = {
     name: [(val) => val.length > 4, "msg.required.input.name"]
   }
@@ -22,13 +28,15 @@ export const useRoomLevels = ({ setLoading, screenControl }) => {
 
   const { id } = formState;
 
-  const fnGetData = () => {
+  const fnGetData = (page=currentPage, searchText=search) => {
     setLoading(true);
-    request.GET('hotel/settings/roomLevels', (resp) => {
+    request.GET(`hotel/settings/roomLevels/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
       const data = resp.data.map((item) => {
         item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;
       });
+      const pageTotal = resp.pagination.totalPages;
+      setTotalPages(pageTotal);
       setDataRoomLevels(data);
       setLoading(false);
     }, err => {
@@ -98,8 +106,8 @@ export const useRoomLevels = ({ setLoading, screenControl }) => {
   }
 
   useEffect(() => {
-    fnGetData();
-  }, []);
+    fnGetData(currentPage, search);
+  }, [currentPage, search]);
 
   const propsToMsgDisable = {
     title: "alert.question.disable",
@@ -122,7 +130,11 @@ export const useRoomLevels = ({ setLoading, screenControl }) => {
     dataRoomLevels,
     onBulkForm,
     setOpenMsgQuestion,
-    fnDelete
+    fnDelete,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    setSearch
   }
 
   return (

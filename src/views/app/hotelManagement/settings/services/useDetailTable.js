@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { IntlMessages } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
 
-export const useDetailTable = ({ dataServices, onBulkForm, setOpenMsgQuestion, fnDelete }) => {
+export const useDetailTable = ({ dataServices, onBulkForm, setOpenMsgQuestion, fnDelete, currentPage, totalPages, setCurrentPage, setSearch }) => {
 
   const fnEditDocument = (item) => {
     onBulkForm(item);
@@ -28,7 +28,11 @@ export const useDetailTable = ({ dataServices, onBulkForm, setOpenMsgQuestion, f
     ],
     data: [],
     options: {
-      columnActions: 'options'
+      columnActions: 'options',
+      currentPage,
+      totalPages,
+      typePagination: 2,
+      setCurrentPage
     },
     actions: [{
       color: 'warning',
@@ -42,8 +46,10 @@ export const useDetailTable = ({ dataServices, onBulkForm, setOpenMsgQuestion, f
   });
 
   useEffect(()=>{
-    const dataTable = {...table, data: dataServices};
-    setTable(dataTable);
+    const tableData = {
+      ...table, data: dataServices, options: {totalPages, currentPage, setCurrentPage, typePagination: 2, setSearch}
+    }
+    setTable(tableData);
   },[dataServices]);
 
   return (
