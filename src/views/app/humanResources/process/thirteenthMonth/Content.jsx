@@ -10,10 +10,10 @@ import DetailTable from '../resumePayroll/DetailTable';
 import FooterPayroll from '../resumePayroll/FooterPayroll';
 import ModalTypeSheet from '@Components/modalTypeSheet';
 
-const ThirteenthMonth = ({setLoading}) => {
+const ThirteenthMonth = ({setLoading, screenControl, adminControl}) => {
   const typePayroll = 2;
 
-  const {openModalPayrolls, openModalPrint,  setOpenModalPayrolls, setOpenModalPrint, propsToControlPanel, propsToDetailTable, propsToHeaderPayroll, propsToModalViewPayroll, propsToModalPrint, dataTotals} = useResumePayroll({setLoading, typePayroll});
+  const {openModalPayrolls, openModalPrint,  setOpenModalPayrolls, setOpenModalPrint, propsToControlPanel, propsToDetailTable, propsToHeaderPayroll, propsToModalViewPayroll, propsToModalPrint, dataTotals} = useResumePayroll({setLoading, typePayroll, screenControl, adminControl});
 
   const propsToModalPayrolls = {
     ModalContent: ModalViewPayroll,
