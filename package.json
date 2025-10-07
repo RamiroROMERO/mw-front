@@ -9,6 +9,8 @@
     "build": "vite build",
     "build:provasa": "vite build --mode provasa",
     "build:hiper": "vite build --mode hiper",
+    "build:muna": "vite build --mode muna",
+    "build:arkitek": "vite build --mode arkitek",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

@@ -2809,7 +2809,8 @@ const enLang = {
   "page.hotel.modal.addPayment.title": "Add Payment",
   "page.hotel.modal.reservation.title.generalData": "General Data",
   "page.hotel.modal.reservation.title.otherServices": "Other Services",
-  "page.hotel.modal.reservation.title.paymentSummary": "Payment Summary"
+  "page.hotel.modal.reservation.title.paymentSummary": "Payment Summary",
+  "button.newCustomer": "New Customer",
 };
 
 export default enLang;

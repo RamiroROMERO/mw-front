@@ -21,6 +21,17 @@ const Process = (props) => {
     }
   },
   {
+    id: 4,
+    icon: "large-icon iconsminds-box-with-folders",
+    title: "menu.quotes",
+    fnOnclick: () => {
+      history(
+        `${adminRoot}/billing/process/quotes`,
+        { replace: true }
+      );
+    }
+  },
+  {
     id: 2,
     icon: "large-icon iconsminds-billing",
     title: "menu.invoicing",
