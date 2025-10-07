@@ -296,7 +296,7 @@ const ModalAddRes = ({data, setOpen}) => {
                     <Colxx xxs={12} sm={6} lg={12}>
                       <ContainerWithLabel label="page.hotel.modal.addReservations.label.statusPayment">
                         <Row>
-                          <Colxx xxs={6} sm={4} md={6} lg={6}>
+                          <Colxx xxs={6} md={6} lg={12} xl={6}>
                             <InputField
                               name="totalValServices"
                               label='Total Costo'
@@ -304,7 +304,7 @@ const ModalAddRes = ({data, setOpen}) => {
                               disabled
                             />
                           </Colxx>
-                          <Colxx xxs={6} sm={4} md={6} lg={6}>
+                          <Colxx xxs={6} md={6} lg={12} xl={6}>
                             <InputField
                               name="totalValServices"
                               label='Total Pagado'
@@ -312,7 +312,7 @@ const ModalAddRes = ({data, setOpen}) => {
                               disabled
                             />
                           </Colxx>
-                          <Colxx xxs={6} sm={4} md={6} lg={6}>
+                          <Colxx xxs={6} sm={12} md={6} lg={12} xl={6}>
                             <InputField
                               name="totalValServices"
                               label='Pago Pendiente'
@@ -320,7 +320,7 @@ const ModalAddRes = ({data, setOpen}) => {
                               disabled
                             />
                           </Colxx>
-                          <Colxx xxs={12} sm={4} md={6} lg={6}>
+                          <Colxx xxs={12} md={6} lg={12} xl={6}>
                             <SearchSelect
                               label='select.status'
                               name='paymentStatusId'

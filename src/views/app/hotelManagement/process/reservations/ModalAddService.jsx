@@ -10,7 +10,7 @@ import { useModalAddService } from './useModalAddService';
 const ModalAddService = ({data, setOpen}) => {
   const {bookingId, currentService, listServices, setLoading, fnGetDataServices} = data;
 
-  const {formState, formValidation, sendForm, onInputChange, onQtyChange, onServiceChange, onTaxPercentChange, onTaxChange, fnSave} = useModalAddService({bookingId, currentService, setLoading, fnGetDataServices, listServices, setOpen})
+  const {formState, formValidation, sendForm, onInputChange, onQtyChange, onPriceChange, onServiceChange, onTaxPercentChange, onTaxChange, fnSave} = useModalAddService({bookingId, currentService, setLoading, fnGetDataServices, listServices, setOpen})
 
   const {serviceId, date, notes, qty, price, subtotal, taxPercent, tax, total} = formState;
 
@@ -54,7 +54,7 @@ const ModalAddService = ({data, setOpen}) => {
             name="price"
             label='input.price'
             value={price}
-            onChange={onInputChange}
+            onChange={onPriceChange}
           />
         </Colxx>
         <Colxx xxs={12} sm={6} lg={4}>

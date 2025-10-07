@@ -54,10 +54,25 @@ export const useModalAddService = ({bookingId, currentService, setLoading, fnGet
     });
   }
 
+  const onPriceChange = e => {
+    const priceVal = e.target.value;
+
+    const subtotalVal = (validFloat(qty) * validFloat(priceVal));
+    const taxValue = (subtotalVal * taxPercent)/100;
+    const totalVal = subtotalVal + taxValue;
+
+    onBulkForm({
+      price: priceVal,
+      subtotal: subtotalVal,
+      tax: taxValue,
+      total: totalVal
+    });
+  }
+
   const onTaxPercentChange = e => {
     const taxPercentVal = e.target.value;
 
-    const taxValue = (qty * validFloat(taxPercentVal))/100;
+    const taxValue = (subtotal * validFloat(taxPercentVal))/100;
     const totalVal = subtotal + taxValue;
 
     onBulkForm({
@@ -119,6 +134,7 @@ export const useModalAddService = ({bookingId, currentService, setLoading, fnGet
       onInputChange,
       onServiceChange,
       onQtyChange,
+      onPriceChange,
       onTaxPercentChange,
       onTaxChange,
       fnSave
