@@ -224,7 +224,7 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
 
   const fnOkDeletePayment = () => {
     setLoading(true);
-    request.DELETE(`hotel/process/bookingPayments/${currentService.id}`, () => {
+    request.DELETE(`hotel/process/bookingPayments/${currentPayment.id}`, () => {
       fnGetDataPayments();
       setCurrentPayment({});
       setOpenMsgDeletePayment(false);
