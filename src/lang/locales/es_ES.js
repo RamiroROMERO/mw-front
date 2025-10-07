@@ -2819,7 +2819,19 @@ const esLang = {
   "page.hotel.modal.addPayment.title": "Agregar Pago",
   "page.hotel.modal.reservation.title.generalData": "Datos Generales",
   "page.hotel.modal.reservation.title.otherServices": "Otros Servicios",
-  "page.hotel.modal.reservation.title.paymentSummary": "Resumen de Pagos"
+  "page.hotel.modal.reservation.title.paymentSummary": "Resumen de Pagos",
+  "button.newCustomer": "Nuevo Cliente",
+  "button.searchCustomer": "Buscar Cliente",
+  "page.common.label.totals": "Totales",
+  "page.common.input.id": "Codigo",
+  "page.common.input.dni": "RTN",
+  "page.common.input.name": "Nombre",
+  "page.common.validation.date": "Falta Fecha del Documento!",
+  "page.common.validation.customerName": "Falta Nombre de Cliente!",
+  "page.common.validation.phone": "Falta Número de Teléfono",
+  "page.quotes.terms": "Condiciones",
+  "page.quotes.terms.deliveryTimes": "Tiempo de Entrega",
+  "page.quotes.terms.paymentMethod": "Forma de Pago",
 };
 
 export default esLang;

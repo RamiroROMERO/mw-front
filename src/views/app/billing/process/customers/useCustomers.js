@@ -343,7 +343,6 @@ export const useCustomers = ({ setLoading }) => {
     sendForm,
     fnSearchCustomer,
     fnNewCustomer,
-    fnViewCustomer,
     propsToControlPanel,
     isFarmControl,
     isHospital,
