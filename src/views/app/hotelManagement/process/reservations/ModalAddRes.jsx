@@ -299,7 +299,7 @@ const ModalAddRes = ({data, setOpen}) => {
                           <Colxx xxs={6} md={6} lg={12} xl={6}>
                             <InputField
                               name="totalValServices"
-                              label='Total Costo'
+                              label='input.totalCost'
                               value={formatNumber(totalValServices + validFloat(currentRoom.rate), 'L.', 2)}
                               disabled
                             />
@@ -307,7 +307,7 @@ const ModalAddRes = ({data, setOpen}) => {
                           <Colxx xxs={6} md={6} lg={12} xl={6}>
                             <InputField
                               name="totalValServices"
-                              label='Total Pagado'
+                              label='input.totalPaid'
                               value={formatNumber(totalValPayments, 'L.', 2)}
                               disabled
                             />
@@ -315,7 +315,7 @@ const ModalAddRes = ({data, setOpen}) => {
                           <Colxx xxs={6} sm={12} md={6} lg={12} xl={6}>
                             <InputField
                               name="totalValServices"
-                              label='Pago Pendiente'
+                              label='input.pendingPayment'
                               value={formatNumber((totalValServices + validFloat(currentRoom.rate)) - totalValPayments, 'L.', 2)}
                               disabled
                             />

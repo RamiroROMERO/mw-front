@@ -578,6 +578,9 @@ const esLang = {
   "input.qtyChild": "Niños",
   "input.nameRoom": "Habitacion",
   "input.taxPercent": "% Impuesto",
+  "input.totalCost": "Total Costo",
+  "input.totalPaid": "Total Pagado",
+  "input.pendingPayment": "Pago Pendiente",
   /* Selects */
   "select.department": "Departamento",
   "select.municipality": "Municipio",

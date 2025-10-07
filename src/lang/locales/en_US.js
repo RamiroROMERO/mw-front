@@ -577,6 +577,9 @@ const enLang = {
   "input.qtyChild": "Child",
   "input.nameRoom": "Room",
   "input.taxPercent": "Tax %",
+  "input.totalCost": "Total Cost",
+  "input.totalPaid": "Total Paid",
+  "input.pendingPayment": "Pending Payment",
   /* Selects */
   "select.department": "Department",
   "select.municipality": "Municipality",
