@@ -209,6 +209,7 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
     request.DELETE(`hotel/process/bookingCharges/${currentService.id}`, () => {
       fnGetDataServices();
       setCurrentService({});
+      setOpenMsgDeleteService(false);
       setLoading(false);
     }, (err) => {
       console.error(err);
@@ -226,6 +227,7 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
     request.DELETE(`hotel/process/bookingPayments/${currentService.id}`, () => {
       fnGetDataPayments();
       setCurrentPayment({});
+      setOpenMsgDeletePayment(false);
       setLoading(false);
     }, (err) => {
       console.error(err);
