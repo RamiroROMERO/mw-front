@@ -124,6 +124,7 @@ const esLang = {
   "msg.required.select.patient": "Por favor seleccione un paciente!",
   "msg.required.select.storeId": "Por favor seleccione un almacen!",
   "msg.required.select.turnId": "Por favor seleccione un turno!",
+  "msg.required.select.service": "Por favor seleccione un servicio!",
   /* Require Input */
   "msg.required.input.price": "Por favor ingrese un precio!",
   "msg.required.input.dni": "Por favor ingrese un número de identidad correcto!",
@@ -442,6 +443,8 @@ const esLang = {
   "button.summary": "Resumen",
   "button.newCustomers": "Clientes Nuevos",
   "button.viewReport": "Ver Reporte",
+  "button.updateStatus": "Actualizar Estado",
+  "button.updatePayment": "Actualizar Pago",
   /* Inputs */
   "input.name": "Nombre",
   "input.telePhone": "Teléfono",
@@ -570,6 +573,11 @@ const esLang = {
   "input.capacity": "Capacidad",
   "input.bedNumber": "Numero de Camas",
   "input.color": "Color",
+  "input.totalNights": "Total Noches",
+  "input.qtyAdults": "Adultos",
+  "input.qtyChild": "Niños",
+  "input.nameRoom": "Habitacion",
+  "input.taxPercent": "% Impuesto",
   /* Selects */
   "select.department": "Departamento",
   "select.municipality": "Municipio",
@@ -634,6 +642,10 @@ const esLang = {
   "select.cashId": "Caja",
   "select.levelId": "Nivel",
   "select.mealPlanId": "Plan de Comidas",
+  "select.checkInDate": "Fecha de Registro",
+  "select.checkOutDate": "Fecha de Salida",
+  "select.service": "Servicio",
+  "select.paymentType": "Tipo de Pago",
   /* Others */
   "option.yes": "Si",
   "option.no": "No",
@@ -829,6 +841,8 @@ const esLang = {
   "table.column.statusName": "Estado",
   "table.column.bedNumber": "Cama Numero",
   "table.column.color": "Color",
+  "table.column.service": "Servicio",
+  "table.column.taxPercent": "% Impuesto",
 
   /* 02.Inicio de sesión de usuario, cierre de sesión, registro */
   'user.login-title': 'Iniciar sesión',
@@ -1084,6 +1098,11 @@ const esLang = {
   "menu.services": "Servicios",
   "menu.hotelManagement.roomMealTypes": "Planes de Alimentacion",
   "menu.roomMealTypes": "Planes de Alimentacion",
+  "menu.hotelManagement.customers": "Clientes",
+  "menu.bookingStatus": "Estados de Reservacion",
+  "menu.hotelManagement.bookingStatus": "Estados de Reservacion",
+  "menu.paymentStatus": "Estados de Pagos",
+  "menu.hotelManagement.paymentStatus": "Estados de Pagos",
   /* 04.Error  */
   'pages.error-title': 'Vaya, parece que ha ocurrido un error!',
   'pages.error-code': 'Código de error',
@@ -2787,6 +2806,20 @@ const esLang = {
   "page.hotel.table.roomMealTypes": "Planes de Alimentacion",
   "page.hotel.table.services": "Servicios",
   "page.hotel.table.roomLevels": "Niveles",
+  "page.hotel.modal.addReservations.label.detailCustomer": "Detalle del Cliente",
+  "page.hotel.modal.addReservations.label.detailBooking": "Detalle de Reservacion",
+  "page.hotel.modal.addReservations.label.detailRoom": "Detalle de Habitacion",
+  "page.hotel.modal.addReservations.label.statusBooking": "Estado de la Reservacion",
+  "page.hotel.modal.addReservations.label.statusPayment": "Estado del Pago",
+  "page.hotel.modal.addReservations.label.paymentSummary": "Resumen de Pagos",
+  "page.hotel.modal.addReservations.label.others": "Otros",
+  "page.hotel.modal.addReservations.label.notes": "Notas",
+  "page.hotel.modal.addReservations.label.otherServices": "Otros Servicios",
+  "page.hotel.modal.addService.title": "Agregar Servicio",
+  "page.hotel.modal.addPayment.title": "Agregar Pago",
+  "page.hotel.modal.reservation.title.generalData": "Datos Generales",
+  "page.hotel.modal.reservation.title.otherServices": "Otros Servicios",
+  "page.hotel.modal.reservation.title.paymentSummary": "Resumen de Pagos"
 };
 
 export default esLang;

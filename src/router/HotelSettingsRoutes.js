@@ -11,6 +11,9 @@ const RoomMealTypes = React.lazy(() => import('@/views/app/hotelManagement/setti
 const Rooms = React.lazy(() => import('@/views/app/hotelManagement/settings/rooms'));
 const Tables = React.lazy(() => import('@/views/app/hotelManagement/settings/tables'));
 const Materiales = React.lazy(() => import('@/views/app/hotelManagement/settings/materials'));
+const Customers = React.lazy(() => import('@/views/app/hotelManagement/settings/customers'));
+const BookingStatus = React.lazy(() => import('@/views/app/hotelManagement/settings/bookingStatus'));
+const PaymentStatus = React.lazy(() => import('@/views/app/hotelManagement/settings/paymentStatus'));
 
 const HotelSettingsRoutes = (props) => {
   const { setLoading } = props;
@@ -51,6 +54,18 @@ const HotelSettingsRoutes = (props) => {
       index
       path="/materials"
       element={<Materiales setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/customers"
+      element={<Customers setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/bookingStatus"
+      element={<BookingStatus setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/paymentStatus"
+      element={<PaymentStatus setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }

@@ -123,6 +123,7 @@ const enLang = {
   "msg.required.select.patient": "Please select a patient!",
   "msg.required.select.storeId": "Please select a store!",
   "msg.required.select.turnId": "Please select the work shifts!",
+  "msg.required.select.service": "Please select a service!",
   /* Require Input */
   "msg.required.input.price": "Please enter a price!",
   "msg.required.input.dni": "Please enter a correct ID!",
@@ -378,7 +379,7 @@ const enLang = {
   "button.new": "New",
   "button.addEmployees": "Add Employees",
   "button.generatePayroll": "Generate Payroll",
-  "button.updates": "Update",
+  "button.update": "Update",
   "button.generateCSV": "Generate CSV",
   "button.sendPaymentReceipt": "Send Payment Receipt",
   "button.printPaymentReceipt": "Print Payment Receipt",
@@ -441,6 +442,8 @@ const enLang = {
   "button.summary": "Summary",
   "button.newCustomers": "New Customers",
   "button.viewReport": "See Report",
+  "button.updateStatus": "Update Status",
+  "button.updatePayment": "Update Payment",
   /* Inputs */
   "input.name": "Name",
   "input.telePhone": "Telephone",
@@ -569,6 +572,11 @@ const enLang = {
   "input.capacity": "Capacity",
   "input.bedNumber": "Bed Number",
   "input.color": "Color",
+  "input.totalNights": "Total Nights",
+  "input.qtyAdults": "Adults",
+  "input.qtyChild": "Child",
+  "input.nameRoom": "Room",
+  "input.taxPercent": "Tax %",
   /* Selects */
   "select.department": "Department",
   "select.municipality": "Municipality",
@@ -632,6 +640,10 @@ const enLang = {
   "select.cashId": "Cash",
   "select.levelId": "Level",
   "select.mealPlanId": "Meal Plan",
+  "select.checkInDate": "Check-in Date",
+  "select.checkOutDate": "Check-out Date",
+  "select.service": "Service",
+  "select.paymentType": "Payment Type",
   /* Others */
   "option.yes": "Yes",
   "option.no": "No",
@@ -826,6 +838,8 @@ const enLang = {
   "table.column.statusName": "Status",
   "table.column.bedNumber": "Bed Number",
   "table.column.color": "Color",
+  "table.column.service": "Service",
+  "table.column.taxPercent": "Tax %",
 
   /* 02.User Login, Logout, Register */
   "user.login-title": "Login",
@@ -1081,6 +1095,11 @@ const enLang = {
   "menu.services": "Services",
   "menu.hotelManagement.roomMealTypes": "Meal Types",
   "menu.roomMealTypes": "Meal Types",
+  "menu.hotelManagement.customers": "Customers",
+  "menu.bookingStatus": "Booking Status",
+  "menu.hotelManagement.bookingStatus": "Booking Status",
+  "menu.paymentStatus": "Payment Status",
+  "menu.hotelManagement.paymentStatus": "Payment Status",
   /* 04.Error Page */
   "pages.error-title": "Ooops... looks like an error occurred!",
   "pages.error-code": "Error code",
@@ -2777,6 +2796,20 @@ const enLang = {
   "page.hotel.table.roomMealTypes": "Meal Types",
   "page.hotel.table.services": "Services",
   "page.hotel.table.roomLevels": "Leves",
+  "page.hotel.modal.addReservations.label.detailCustomer": "Customer Detail",
+  "page.hotel.modal.addReservations.label.detailBooking": "Booking Detail",
+  "page.hotel.modal.addReservations.label.detailRoom": "Room Detail",
+  "page.hotel.modal.addReservations.label.statusBooking": "Booking Status",
+  "page.hotel.modal.addReservations.label.statusPayment": "Payment Status",
+  "page.hotel.modal.addReservations.label.paymentSummary": "Payment Summary",
+  "page.hotel.modal.addReservations.label.others": "Others",
+  "page.hotel.modal.addReservations.label.notes": "Notes",
+  "page.hotel.modal.addReservations.label.otherServices": "Other Services",
+  "page.hotel.modal.addService.title": "Add Service",
+  "page.hotel.modal.addPayment.title": "Add Payment",
+  "page.hotel.modal.reservation.title.generalData": "General Data",
+  "page.hotel.modal.reservation.title.otherServices": "Other Services",
+  "page.hotel.modal.reservation.title.paymentSummary": "Payment Summary"
 };
 
 export default enLang;

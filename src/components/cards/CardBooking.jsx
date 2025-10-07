@@ -11,12 +11,12 @@ import {
   Col,
 } from 'reactstrap';
 
-const CardBooking = ({image, status, name, type, description, capacity, bedNumber, mealType, price, statusColor, statusId }) => {
+const CardBooking = ({id, image, status, name, type, description, capacity, bedNumber, mealType, price, statusColor, statusId, fnReserve, fnViewDetail }) => {
 
   return (
     <Card className="mb-3" style={{ borderRadius: '10px', overflow: 'hidden' }}>
       <div className="position-relative">
-        <CardImg top src={image} alt={name} style={{ maxHeight: "250px", objectFit: "cover" }}/>
+        <CardImg top src={image} alt={name} style={{ maxHeight: "230px", objectFit: "cover" }}/>
         <div
           className="position-absolute"
           style={{ top: '10px', left: '10px', zIndex: 2 }}
@@ -56,12 +56,12 @@ const CardBooking = ({image, status, name, type, description, capacity, bedNumbe
           <Col xs="12" className="div-action-button-container mt-3" style={{height: 'fit-content'}}>
             {
               statusId==1?
-              <Button color="success">
+              <Button color="success" onClick={() => fnReserve(id)}>
                 <i className="bi bi-check2-circle"/>
                 Reservar
               </Button>
               :
-              <Button color="warning">
+              <Button color="warning" onClick={() => fnViewDetail(id)}>
                 <i className="bi bi-list"/>
                 Ver Detalle
               </Button>

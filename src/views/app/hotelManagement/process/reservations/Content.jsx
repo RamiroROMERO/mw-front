@@ -1,12 +1,38 @@
 import CardBooking from '@/components/cards/CardBooking'
+import Modal from '@Components/modal';
 import { Colxx } from '@/components/common/CustomBootstrap'
 import { Card, CardBody, Row } from 'reactstrap'
 import { useReservation } from './useReservation'
 import PaginationBackend from '@/components/reactTable/PaginationBackend'
+import ModalAddRes from './ModalAddRes'
 
 const Content = ({setLoading, screenControl}) => {
 
-  const {dataRooms, currentPage, totalPages, setCurrentPage} = useReservation({setLoading, screenControl});
+  const {idRoom, dataRooms, currentPage, currentReservation, totalPages, descriptionRoom, currentRoom, search, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, openModalAdd, setOpenModalAdd, setCurrentPage, fnAddReservation, fnViewDetail, fnGetData} = useReservation({setLoading, screenControl});
+
+  const propsToModalAddReservation = {
+    ModalContent: ModalAddRes,
+    title: "page.hotel.modal.viewRooms.title",
+    valueTitle: descriptionRoom,
+    open: openModalAdd,
+    setOpen: setOpenModalAdd,
+    maxWidth: 'xl',
+    data: {
+      idRoom,
+      currentRoom,
+      currentPage,
+      currentReservation,
+      search,
+      listCustomers,
+      listStatusBooking,
+      listStatusPayment,
+      listServices,
+      listPaymentTypes,
+      setLoading,
+      descriptionRoom,
+      fnGetData
+    }
+  }
 
   return (
     <>
@@ -15,6 +41,7 @@ const Content = ({setLoading, screenControl}) => {
           dataRooms.map((item, idx) =>
             <Colxx xxs={12} md={6} lg={4} key={idx}>
               <CardBooking
+                id={item.id}
                 image={item.imageSrc}
                 status={item.statusName}
                 name={item.name}
@@ -26,6 +53,8 @@ const Content = ({setLoading, screenControl}) => {
                 price={item.rate}
                 statusColor={item.statusColor}
                 statusId={item.statusId}
+                fnReserve={fnAddReservation}
+                fnViewDetail={fnViewDetail}
               />
             </Colxx>
           )
@@ -40,6 +69,7 @@ const Content = ({setLoading, screenControl}) => {
             </Card>
           </Colxx>
         </Row>
+        <Modal {...propsToModalAddReservation}/>
     </>
   )
 }

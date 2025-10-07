@@ -130,6 +130,21 @@ const data = [
           icon: 'bi bi-basket',
           label: 'menu.hotelManagement.materials',
           to: `${adminRoot}/hotelManagement/settings/materials`,
+        },{
+          id: 'hotelManagement-settings-customers',
+          icon: 'bi bi-person',
+          label: 'menu.hotelManagement.customers',
+          to: `${adminRoot}/hotelManagement/settings/customers`,
+        },{
+          id: 'hotelManagement-settings-bookingStatus',
+          icon: 'bi bi-list-ol',
+          label: 'menu.hotelManagement.bookingStatus',
+          to: `${adminRoot}/hotelManagement/settings/bookingStatus`,
+        },{
+          id: 'hotelManagement-settings-paymentStatus',
+          icon: 'bi bi-list-ol',
+          label: 'menu.hotelManagement.paymentStatus',
+          to: `${adminRoot}/hotelManagement/settings/paymentStatus`,
         }]
       },
       {
