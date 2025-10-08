@@ -2814,6 +2814,17 @@ const enLang = {
   "page.hotel.modal.reservation.title.otherServices": "Other Services",
   "page.hotel.modal.reservation.title.paymentSummary": "Payment Summary",
   "button.newCustomer": "New Customer",
+  "menu.quotes": "Quotes",
+  "common.code": "Code",
+  "common.name": "Name",
+  "common.trademark": "Trademark",
+  "common.prices": "Prices",
+  "commin.price": "Price",
+  "common.warehouse": "Warehouse",
+  "common.totalStock": "Total Stock",
+  "common.warehoused.inventory": "Warehoused Inventory",
+  "msg.dasboardProduct.notProducts": "Products not Found!"
+
 };
 
 export default enLang;

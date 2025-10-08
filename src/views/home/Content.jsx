@@ -8,8 +8,8 @@ const Content = (props) => {
 
   return (
     <>
-      {/* <ContentHR setLoading={setLoading} /> */}
-      <ContentHotel setLoading={setLoading} />
+      <ContentHR setLoading={setLoading} />
+      {/* <ContentHotel setLoading={setLoading} /> */}
 
     </>
   );
