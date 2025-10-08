@@ -2818,6 +2818,17 @@ const enLang = {
   "page.hotel.table.bookingStatus": "Booking Status",
   "page.hotel.table.paymentStatus": "Payment Status",
   "button.newCustomer": "New Customer",
+  "menu.quotes": "Quotes",
+  "common.code": "Code",
+  "common.name": "Name",
+  "common.trademark": "Trademark",
+  "common.prices": "Prices",
+  "commin.price": "Price",
+  "common.warehouse": "Warehouse",
+  "common.totalStock": "Total Stock",
+  "common.warehoused.inventory": "Warehoused Inventory",
+  "msg.dasboardProduct.notProducts": "Products not Found!"
+
 };
 
 export default enLang;

@@ -77,6 +77,12 @@ const data = [
         label: 'menu.submenu.billingSales',
         to: `${adminRoot}/dashboards/billingSales`,
       },
+      {
+        id: 'dashboards-productCatalog',
+        icon: 'bi bi-briefcase',
+        label: 'menu.productsCatalog',
+        to: `${adminRoot}/dashboards/productCatalog`,
+      },
     ]
   },
   {

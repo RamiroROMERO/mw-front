@@ -2839,6 +2839,16 @@ const esLang = {
   "page.quotes.terms": "Condiciones",
   "page.quotes.terms.deliveryTimes": "Tiempo de Entrega",
   "page.quotes.terms.paymentMethod": "Forma de Pago",
+  "menu.quotes": "Cotizaciones",
+  "common.code": "Código",
+  "common.name": "Nombre",
+  "common.trademark": "Marca",
+  "common.prices": "Precios",
+  "common.price": "Precio",
+  "common.warehouse": "Almacén",
+  "common.totalStock": "Total Existencias",
+  "common.warehoused.inventory": "Existencias por Almacen",
+  "msg.dasboardProduct.notProducts": "No se Encontraron Productos"
 };
 
 export default esLang;

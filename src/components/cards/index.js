@@ -1,3 +1,4 @@
 export * from './DashCard';
 export * from './IconCard';
 export * from './CardHotel';
+export * from './CardProduct';
