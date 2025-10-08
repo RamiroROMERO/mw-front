@@ -846,6 +846,7 @@ const esLang = {
   "table.column.color": "Color",
   "table.column.service": "Servicio",
   "table.column.taxPercent": "% Impuesto",
+  "table.column.email": "Correo",
 
   /* 02.Inicio de sesión de usuario, cierre de sesión, registro */
   'user.login-title': 'Iniciar sesión',
@@ -1091,8 +1092,8 @@ const esLang = {
   "menu.hotelManagement.schedules": "Horarios",
   "menu.materiales": "Materiales e Insumos",
   "menu.hotelManagement.materials": "Materiales e Insumos",
-  "menu.hotelManagement.roomsStatus": "Estados",
-  "menu.roomsStatus": "Estados",
+  "menu.hotelManagement.roomsStatus": "Estados de Habitaciones",
+  "menu.roomsStatus": "Estados de Habitaciones",
   "menu.hotelManagement.roomsTypes": "Tipos de Habitaciones",
   "menu.roomsTypes": "Tipos de Habitaciones",
   "menu.hotelManagement.roomsLevels": "Nivel",
@@ -2823,6 +2824,9 @@ const esLang = {
   "page.hotel.modal.reservation.title.generalData": "Datos Generales",
   "page.hotel.modal.reservation.title.otherServices": "Otros Servicios",
   "page.hotel.modal.reservation.title.paymentSummary": "Resumen de Pagos",
+  "page.hotel.modal.addCustomer.title": "Agregar/Editar Cliente",
+  "page.hotel.table.bookingStatus": "Estados de Reservacion",
+  "page.hotel.table.paymentStatus": "Estados de Pago",
   "button.newCustomer": "Nuevo Cliente",
   "button.searchCustomer": "Buscar Cliente",
   "page.common.label.totals": "Totales",

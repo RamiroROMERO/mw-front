@@ -843,6 +843,7 @@ const enLang = {
   "table.column.color": "Color",
   "table.column.service": "Service",
   "table.column.taxPercent": "Tax %",
+  "table.column.email": "Email",
 
   /* 02.User Login, Logout, Register */
   "user.login-title": "Login",
@@ -1088,8 +1089,8 @@ const enLang = {
   "menu.hotelManagement.schedules": "Schedules",
   "menu.materiales": "Materials and Supplies",
   "menu.hotelManagement.materials": "Materials and Supplies",
-  "menu.hotelManagement.roomsStatus": "Status",
-  "menu.roomsStatus": "Status",
+  "menu.hotelManagement.roomsStatus": "Room Status",
+  "menu.roomsStatus": "Room Status",
   "menu.hotelManagement.roomsTypes": "Room Types",
   "menu.roomsTypes": "Room Types",
   "menu.hotelManagement.roomsLevels": "Level",
@@ -2813,6 +2814,9 @@ const enLang = {
   "page.hotel.modal.reservation.title.generalData": "General Data",
   "page.hotel.modal.reservation.title.otherServices": "Other Services",
   "page.hotel.modal.reservation.title.paymentSummary": "Payment Summary",
+  "page.hotel.modal.addCustomer.title": "Add/Edit Customer",
+  "page.hotel.table.bookingStatus": "Booking Status",
+  "page.hotel.table.paymentStatus": "Payment Status",
   "button.newCustomer": "New Customer",
 };
 
