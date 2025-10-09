@@ -1,8 +1,10 @@
 import { request } from '@/helpers/core';
 import { IntlMessages, validInt } from '@/helpers/Utils';
 import { useEffect, useState } from 'react'
+import notification from '@Containers/ui/Notifications';
 
-export const useCustomer = ({ setLoading }) => {
+export const useCustomer = ({ setLoading, screenControl }) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [openModalNew, setOpenModalNew] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [currentItem, setCurrentItem] = useState({});
@@ -10,20 +12,28 @@ export const useCustomer = ({ setLoading }) => {
   const [listMunicipalities, setListMunicipalities] = useState([]);
 
   const fnNewDocument = () => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     setCurrentItem({});
     setOpenModalNew(true);
   }
 
   const fnEditDocument = (item) => {
+    if (fnUpdate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     setCurrentItem(item);
     setOpenModalNew(true);
   }
 
   const fnDisableDocument = (item) => {
-    // if (fnDelete === false) {
-    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-    //   return;
-    // }
+    if (fnDelete === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     setCurrentItem({id:item.id});
     setOpenMsgQuestion(true);
   }

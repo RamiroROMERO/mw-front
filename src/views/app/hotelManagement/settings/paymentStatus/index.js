@@ -12,7 +12,7 @@ const Content = React.lazy(() =>
 const PaymentStatus = (props) => {
   const dispatch = useDispatch();
 
-  const PRIVILEGE_CODE = "07.01.002";
+  const PRIVILEGE_CODE = "08.01.009";
   const screenControl = getPrivilegeData(PRIVILEGE_CODE);
 
   useEffect(() => {

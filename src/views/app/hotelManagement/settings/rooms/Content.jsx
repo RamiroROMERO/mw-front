@@ -6,9 +6,9 @@ import { Colxx } from '@/components/common/CustomBootstrap';
 import ModalNewRooms from './ModalNewRooms';
 import ModalViewRooms from "./ModalViewRooms";
 
-const Content = ({setLoading}) => {
+const Content = ({setLoading, screenControl}) => {
 
-  const {table, currentItem, listLevels, listTypes, listServices, listStatus, listMealPlan, dataRoomServices, dataRoomImages, descriptionRoom, openModalNew, openModalViewRoom, setOpenModalNew, setOpenModalViewRoom, fnGetData, fnGetRoomImages} = useRooms({setLoading});
+  const {table, currentItem, listLevels, listTypes, listServices, listStatus, listMealPlan, dataRoomServices, dataRoomImages, descriptionRoom, openModalNew, openModalViewRoom, setOpenModalNew, setOpenModalViewRoom, fnGetData, fnGetRoomImages} = useRooms({setLoading, screenControl});
 
   const propsToModalNewRooms = {
     ModalContent: ModalNewRooms,

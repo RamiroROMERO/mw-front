@@ -20,7 +20,8 @@ export const useDetailTable = ({ dataServices, onBulkForm, setOpenMsgQuestion, f
   const [table, setTable] = useState({
     title: IntlMessages("page.hotel.table.services"),
     columns: [
-      { text: IntlMessages("table.column.name"), dataField: "name", headerStyle: { 'width': '90%' } },
+      { text: IntlMessages("table.column.name"), dataField: "name", headerStyle: { 'width': '80%' } },
+      { text: IntlMessages("table.column.price"), dataField: "price", headerStyle: { 'width': '10%' } },
       {
         text: IntlMessages("table.column.status"), dataField: "statusIcon", headerStyle: { 'width': '10%' },
         classes: 'd-sm-none-table-cell', headerClasses: 'd-sm-none-table-cell'

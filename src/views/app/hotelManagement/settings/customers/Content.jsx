@@ -6,9 +6,9 @@ import { Row } from 'reactstrap';
 import { Colxx } from '@/components/common/CustomBootstrap';
 import ModalNewCust from "./ModalNewCust";
 
-const Content = ({setLoading}) => {
+const Content = ({setLoading, screenControl}) => {
 
-  const {table, currentItem, listDepartments, listMunicipalities, propsToMsgDisable, openModalNew, setOpenModalNew, setListMunicipalities, fnGetData} = useCustomer({setLoading});
+  const {table, currentItem, listDepartments, listMunicipalities, propsToMsgDisable, openModalNew, setOpenModalNew, setListMunicipalities, fnGetData} = useCustomer({setLoading, screenControl});
 
   const propsToModalNewCustomer = {
     ModalContent: ModalNewCust,

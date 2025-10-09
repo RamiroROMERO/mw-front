@@ -23,6 +23,7 @@ export const useServices = ({ setLoading, screenControl }) => {
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
     id: 0,
     name: '',
+    price: 0,
     status: true
   }, validation);
 
@@ -35,6 +36,7 @@ export const useServices = ({ setLoading, screenControl }) => {
         item.typeName = item?.typeData?.name || ""
         item.levelName = item?.levelData?.name || ""
         item.statusName = item?.statusData?.name || ""
+        item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item
       });
       const pageTotal = resp.pagination.totalPages;

@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { onTitleEdit, onBreadcrumbEdit } from '@/redux/actions';
 import { adminRoot } from '@/constants/defaultValues';
 import Breadcrumb from '@/containers/navs/Breadcrumb';
+import { getPrivilegeData } from '@/helpers/Utils';
 
 const Content = React.lazy(() =>
   import('./Content')
@@ -10,6 +11,9 @@ const Content = React.lazy(() =>
 
 const Rooms = (props) => {
   const dispatch = useDispatch();
+
+  const PRIVILEGE_CODE = "08.01.006";
+  const screenControl = getPrivilegeData(PRIVILEGE_CODE);
 
   useEffect(() => {
     dispatch(onTitleEdit("menu.rooms"))
@@ -19,7 +23,7 @@ const Rooms = (props) => {
   return (
     <Suspense fallback={<div className="loading" />}>
       <Breadcrumb />
-      <Content {...props} />
+      <Content screenControl={screenControl} {...props} />
     </Suspense>
   )
 }

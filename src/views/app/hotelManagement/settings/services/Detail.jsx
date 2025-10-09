@@ -6,7 +6,7 @@ import { Checkbox } from '@Components/checkbox';
 import { IntlMessages } from '@Helpers/Utils'
 
 const Detail = ({formState, formValidation, onInputChange, sendForm, fnClear, fnSaveDocument}) => {
-  const {name, status} = formState;
+  const {name, price, status} = formState;
 
   const {nameValid} = formValidation;
 
@@ -14,7 +14,7 @@ const Detail = ({formState, formValidation, onInputChange, sendForm, fnClear, fn
     <Card className='mb-3'>
       <CardBody>
         <Row>
-          <Colxx xxs={12}>
+          <Colxx xxs={12} md={8}>
             <InputField
               name="name"
               label="input.name"
@@ -22,6 +22,14 @@ const Detail = ({formState, formValidation, onInputChange, sendForm, fnClear, fn
               value={name}
               invalid={sendForm && !!nameValid}
               feedbackText={sendForm && (nameValid || null)}
+            />
+          </Colxx>
+          <Colxx xxs={12} md={4}>
+            <InputField
+              name="name"
+              label="input.price"
+              onChange={onInputChange}
+              value={price}
             />
           </Colxx>
           <Colxx xxs={12} align="right">

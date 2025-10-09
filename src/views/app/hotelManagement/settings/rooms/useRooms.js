@@ -3,8 +3,10 @@ import { request } from '@Helpers/core';
 import { IntlMessages } from '@Helpers/Utils';
 import { PATH_FILES } from '/src/helpers/pathFiles';
 import { Badge } from 'reactstrap';
+import notification from '@Containers/ui/Notifications';
 
-export const useRooms = ({ setLoading }) => {
+export const useRooms = ({ setLoading, screenControl }) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [openModalNew, setOpenModalNew] = useState(false);
   const [openModalViewRoom, setOpenModalViewRoom] = useState(false);
   const [currentItem, setCurrentItem] = useState({});
@@ -23,6 +25,10 @@ export const useRooms = ({ setLoading }) => {
   const pageSize = 2;
 
   const fnNewDocument = () => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     setCurrentItem({});
     setDataRoomServices([]);
     setDataRoomImages([]);
@@ -76,12 +82,20 @@ export const useRooms = ({ setLoading }) => {
   }
 
   const fnEditDocument = (item) => {
+    if (fnUpdate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     fnGetRoomImages(item);
     fnGetRoomServices(item.id);
     setCurrentItem(item);
   }
 
   const fnViewDocument = (item) => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     fnGetRoomImages(item);
     setOpenModalViewRoom(true);
   }

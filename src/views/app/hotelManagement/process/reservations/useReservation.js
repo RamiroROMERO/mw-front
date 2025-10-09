@@ -1,8 +1,10 @@
 import { request } from '@/helpers/core';
 import { useEffect, useState } from 'react'
 import { PATH_FILES } from '/src/helpers/pathFiles';
+import notification from '@Containers/ui/Notifications';
 
-export const useReservation = ({setLoading}) => {
+export const useReservation = ({setLoading, screenControl}) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataRooms, setDataRooms] = useState([]);
   const [openModalAdd, setOpenModalAdd] = useState(false);
   const [idRoom, setIdRoom] = useState(0);
@@ -22,6 +24,10 @@ export const useReservation = ({setLoading}) => {
   const pageSize = 3;
 
   const fnAddReservation = (id) => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     const findRoom = dataRooms.find(item => item.id === id);
     const description = `${findRoom?.name || ""} ${findRoom?.typeName || ""}`;
     setCurrentRoom(findRoom);
@@ -32,6 +38,10 @@ export const useReservation = ({setLoading}) => {
   }
 
   const fnViewDetail = (id) => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     const findRoom = dataRooms.find(item => item.id === id);
     const description = `${findRoom?.name || ""} ${findRoom?.typeName || ""}`;
     setCurrentRoom(findRoom);

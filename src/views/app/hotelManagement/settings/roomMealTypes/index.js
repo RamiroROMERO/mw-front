@@ -12,7 +12,7 @@ const Content = React.lazy(() =>
 const RoomMealTypes = (props) => {
   const dispatch = useDispatch();
 
-  const PRIVILEGE_CODE = "07.01.002";
+  const PRIVILEGE_CODE = "08.01.005";
   const screenControl = getPrivilegeData(PRIVILEGE_CODE);
 
   useEffect(() => {
