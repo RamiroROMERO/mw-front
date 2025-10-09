@@ -200,7 +200,7 @@ const UserProfile = (props) => {
     const generalPriv = modulesFilter.filter((item) => {
       return item?.adminModulesDetail?.typeId === 1
     });
-    if(generalPriv && generalPriv.length>0){
+    if (generalPriv && generalPriv.length > 0) {
       const dataGenPriv = generalPriv.map((item) => {
         item.code = item.code
         item.name = item?.adminModulesDetail?.name || ""
@@ -214,7 +214,7 @@ const UserProfile = (props) => {
         ...tableGeneralPriv, data: dataGenPriv
       }
       setTableGeneralPriv(tableData);
-    }else{
+    } else {
       const tableData = {
         ...tableGeneralPriv, data: []
       }
@@ -224,7 +224,7 @@ const UserProfile = (props) => {
     const adminPriv = modulesFilter.filter((item) => {
       return item?.adminModulesDetail?.typeId === 2
     });
-    if(adminPriv && adminPriv.length>0){
+    if (adminPriv && adminPriv.length > 0) {
       const dataAdminPriv = adminPriv.map((item) => {
         item.code = item.code
         item.name = item?.adminModulesDetail?.name || ""
@@ -236,7 +236,7 @@ const UserProfile = (props) => {
         ...tableAdminPriv, data: dataAdminPriv
       }
       setTableAdminPriv(tableDataAdmin);
-    }else{
+    } else {
       const tableDataAdmin = {
         ...tableAdminPriv, data: []
       }
@@ -467,7 +467,7 @@ const UserProfile = (props) => {
             <CardBody>
               <Row>
                 <Colxx xxs="12" xs="12" sm="12" md="12" lg="4" style={{ marginBottom: "16px" }}>
-                  <ProfileImage initialImage={imgUser} uploadFiles={fnUploadFiles} />
+                  <ProfileImage initialImage={imgUser} onUploadFiles={fnUploadFiles} />
                 </Colxx>
                 <Colxx xxs="12" xs="12" sm="12" md="12" lg="8">
                   <Row>

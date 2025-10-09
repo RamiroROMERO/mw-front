@@ -7,7 +7,7 @@ import {
   Input,
 } from 'reactstrap';
 
-const ProfileImage = ({ initialImage, onUploadFiles }) => {
+const ProfileImage = ({ initialImage, onUploadFiles = null }) => {
   const fileInputRef = useRef(null);
   const [image, setImage] = useState(initialImage);
 
@@ -23,7 +23,7 @@ const ProfileImage = ({ initialImage, onUploadFiles }) => {
       setImage(reader.result); // Base64 image preview
     };
     reader.readAsDataURL(file);
-    onUploadFiles(e);
+    onUploadFiles && onUploadFiles(e);
   };
 
   return (

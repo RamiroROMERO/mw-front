@@ -6,8 +6,6 @@ const Dashboards = React.lazy(() => import("@Views/app/dashboards"));
 const BillingSales = React.lazy(() => import("@/views/app/dashboards/billing/sales"));
 const ProductCatalog = React.lazy(() => import('@/views/app/dashboards/productCatalog'));
 
-console.log(ProductCatalog);
-
 const DashboardsRoutes = (props) => {
   const { setLoading } = props
   return <Routes>

@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { injectIntl } from 'react-intl';
 import { setCurrentUser } from '@Helpers/Utils';
 import { useNavigate } from 'react-router-dom';
+import envs from '@Helpers/envs';
 
 import {
   UncontrolledDropdown,
@@ -39,7 +40,7 @@ import { getDirection, setDirection } from '@Helpers/Utils';
 import TopnavNotifications from './Topnav.Notifications';
 import TopnavDarkSwitch from './Topnav.DarkSwitch';
 import { request } from '@Helpers/core';
-import { PATH_FILES } from '/src/helpers/pathFiles';
+import { PATH_FILES } from '@Helpers/pathFiles';
 
 const TopNav = ({
   intl,
@@ -187,13 +188,13 @@ const TopNav = ({
       });
   }
 
-  const getProfileImage = async ()=>{
-    const imageUrl = `${urlGetProfiles}${userData.img}`;
+  const getProfileImage = async () => {
+    const imageUrl = `assets/profiles/${userData.img}`;
     const imageObjectURL = await request.getFile(imageUrl);
     setUserImage(imageObjectURL);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     getProfileImage();
   }, [])
 
@@ -272,7 +273,8 @@ const TopNav = ({
             <DropdownToggle className="p-0" color="empty">
               <span className="name mr-1">{userData.name}</span>
               <span>
-                <img src={`${userImage || 'uploads/profiles/usuario.png'}`} />
+                <img src={`${userImage || 'assets/users/user.png'}`} />
+                {/* <img src={`${'assets/users/user.png'}`} /> */}
               </span>
             </DropdownToggle>
             <DropdownMenu className="mt-3" end>

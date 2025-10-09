@@ -34,7 +34,7 @@ const BreadcrumbContainer = ({ heading, match }) => {
   return (
     <>
       <Row className='row justify-content-between'>
-        <Colxx xs={12} sm={9} md={10}>
+        <Colxx xs={12} sm={8} md={9}>
           {screenTitle && (
             <h1>
               <IntlMessages id={screenTitle} />
@@ -42,9 +42,8 @@ const BreadcrumbContainer = ({ heading, match }) => {
           )}
           <BreadcrumbItems path={path} />
         </Colxx>
-        <Colxx sm={3} md={2} className="d-none d-sm-block text-right">
-          {companyLogo !== "" && <img width="40px" height="40px" className='breadcrumb-logo' src={companyLogo} alt="Logo" />}
-          {/* Derecha */}
+        <Colxx sm={4} md={3} className="d-none d-sm-block text-right">
+          {companyLogo !== "" && <img className='breadcrumb-logo' src={companyLogo} alt="Logo" />}
         </Colxx>
       </Row>
       <Separator className="mb-4" />

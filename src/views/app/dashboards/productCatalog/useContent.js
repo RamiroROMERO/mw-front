@@ -31,6 +31,7 @@ export const useContent = ({ setLoading }) => {
       });
       setTotalPages(pagination.totalPages || 1)
       setProductList(data);
+      window.scrollTo(0, 0);
       setLoading(false);
     }, err => {
       console.error(err);
