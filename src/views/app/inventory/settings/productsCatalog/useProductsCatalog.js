@@ -5,7 +5,9 @@ import ModalViewProd from "./ModalViewProd";
 import ModalDistProducts from "./ModalDistProducts";
 import ModalAddTrademarks from "./ModalAddTrademarks";
 import { useForm } from "@Hooks/useForms";
+import { PATH_FILES } from '/src/helpers/pathFiles';
 import { ModalCompProduct } from "./ModalCompProduct";
+import ModalImages from "./ModalImages";
 
 const useProductsCatalog = ({ setLoading }) => {
 
@@ -18,6 +20,7 @@ const useProductsCatalog = ({ setLoading }) => {
   const [activeTab, setActiveTab] = useState('1');
   const [activeTabPrices, setActiveTabPrices] = useState('1');
   const [dataStock, setDataStock] = useState([]);
+  const [dataImages, setDataImages] = useState([]);
   const listTaxPercent = [{ id: "0.00", name: "0.00" }, { id: "15.00", name: "15.00" }, { id: "18.00", name: "18.00" }];
   const [sendForm, setSendForm] = useState(false);
 
@@ -27,6 +30,7 @@ const useProductsCatalog = ({ setLoading }) => {
   const [openModalDistProduct, setOpenModalDistProduct] = useState(false);
   const [openModalAddTrademark, setOpenModalAddTrademark] = useState(false);
   const [openModalCompProduct, setOpenModalCompProduct] = useState(false);
+  const [openModalImages, setOpenModalImages] = useState(false);
 
   const productsCatalogValid = {
     code: [(val) => val !== "", "msg.required.input.code"],
@@ -129,15 +133,15 @@ const useProductsCatalog = ({ setLoading }) => {
     item.taxValue = tax;
     setBulkForm(item);
     setOpenModalProducts(false);
-    request.GET(`inventory/settings/products/getLastPurchase/${item.code}`, res => {
-      const { data } = res;
-      const { date, providerName, numCai } = data;
-      const purchaseData = { dateLastPurchase: date, provLastPurchase: providerName, numLastPurchase: numCai }
-      const itemData = { ...item, ...purchaseData };
-      setBulkForm(itemData);
-    }, err => {
-      setBulkForm({});
-    });
+    // request.GET(`inventory/settings/products/getLastPurchase/${item.code}`, res => {
+    //   const { data } = res;
+    //   const { date, providerName, numCai } = data;
+    //   const purchaseData = { dateLastPurchase: date, provLastPurchase: providerName, numLastPurchase: numCai }
+    //   const itemData = { ...item, ...purchaseData };
+    //   setBulkForm(itemData);
+    // }, err => {
+    //   setBulkForm({});
+    // });
   }
 
   useEffect(() => {
@@ -325,6 +329,35 @@ const useProductsCatalog = ({ setLoading }) => {
     setOpenModalDistProduct(true)
   };
 
+  const fnImages = () => {
+    if (validInt(id) === 0) return;
+    fnGetImages();
+    setOpenModalImages(true);
+  }
+
+  const fnGetImages = () => {
+    const id = code;
+    setDataImages([]);
+
+    setLoading(true);
+    request.GET(`inventory/settings/productPictures?productCode=${id}`, (resp)=>{
+      const {data} = resp;
+
+      if(data.length>0){
+        data.map(async (item) => {
+          const imageUrl = `${PATH_FILES.GET.PICTURES}${item.name}`;
+          const imageObjectURL = await request.getFile(imageUrl);
+          item.src = imageObjectURL
+          setDataImages((prev) => [...prev, item]);
+        });
+      }
+      setLoading(false);
+    }, (err)=>{
+      console.error(err);
+      setLoading(false);
+    });
+  }
+
   const fnCodes = () => { }
 
   const fnCosts = () => { }
@@ -355,6 +388,11 @@ const useProductsCatalog = ({ setLoading }) => {
         title: "button.distribution",
         icon: "bi bi-diagram-3",
         onClick: fnDistribution
+      },
+      {
+        title: "button.images",
+        icon: "bi bi-image",
+        onClick: fnImages
       }
     ],
     buttonsOptions: [
@@ -434,8 +472,6 @@ const useProductsCatalog = ({ setLoading }) => {
     }
   }
 
-
-
   const propsToModalAddTrademarks = {
     ModalContent: ModalAddTrademarks,
     title: "page.storesProducts.modal.tademarks",
@@ -445,6 +481,21 @@ const useProductsCatalog = ({ setLoading }) => {
     data: {
       setLoading,
       setListTrademarks: setListMarks
+    }
+  }
+
+  const propsToModalImagesProduct = {
+    ModalContent: ModalImages,
+    title: "page.productsCatalog.modal.imageProduct.title",
+    open: openModalImages,
+    setOpen: setOpenModalImages,
+    valueTitle: `${code} - ${name}`,
+    maxWidth: 'md',
+    data: {
+      productCode: code,
+      dataImages,
+      fnGetImages,
+      setLoading
     }
   }
 
@@ -481,6 +532,7 @@ const useProductsCatalog = ({ setLoading }) => {
     setActiveTabPrices,
     sendForm,
     fnConfirmGenerateCode,
+
     dataStock,
     propsToControlPanel,
     propsToMsgDeleteProduct,
@@ -489,6 +541,7 @@ const useProductsCatalog = ({ setLoading }) => {
     propsToModalDistProduct,
     propsToModalAddTrademarks,
     propsToModalCompProduct,
+    propsToModalImagesProduct
   }
 
 };

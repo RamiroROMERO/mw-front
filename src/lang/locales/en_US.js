@@ -444,6 +444,7 @@ const enLang = {
   "button.viewReport": "See Report",
   "button.updateStatus": "Update Status",
   "button.updatePayment": "Update Payment",
+  "button.images": "Images",
   /* Inputs */
   "input.name": "Name",
   "input.telePhone": "Telephone",
@@ -647,6 +648,7 @@ const enLang = {
   "select.checkOutDate": "Check-out Date",
   "select.service": "Service",
   "select.paymentType": "Payment Type",
+  "select.country": "Country",
   /* Others */
   "option.yes": "Yes",
   "option.no": "No",
@@ -1482,6 +1484,7 @@ const enLang = {
   "page.productsCatalog.modal.distProduct.table.column.maxPrice": "Max Price",
   "page.productsCatalog.modal.distProduct.localPrices": "Local Prices",
   "page.productsCatalog.modal.distProduct.foranPrices": "Foran Prices",
+  "page.productsCatalog.modal.imageProduct.title": "Product Images: ",
   /* 19.Providers page in inventory module */
   "page.providers.select.typeProvider": "Type Provider",
   "page.providers.input.dni": "Id",

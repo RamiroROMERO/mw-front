@@ -37,17 +37,13 @@ const ProductsCatalog = (props) => {
     fnConfirmGenerateCode,
     listProducts,
     dataStock,
-    propsToModalDistProduct, propsToModalAddTrademarks, propsToModalCompProduct } = useProductsCatalog({ setLoading });
+    propsToModalDistProduct, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct } = useProductsCatalog({ setLoading });
 
   const { id, code, name, status, description, submConversion, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
     typeCalculatePrice, typeCalculateCost, percentLocalPriceMin, valuePercentLocalPriceMin, priceLocalMin, percentLocalPriceMid,
-    valuePercentLocalPriceMid, priceLocalMid, percentLocalPriceMax, valuePercentLocalPriceMax, priceLocalMax, percentOutsidePriceMin,
-    valuePercentOutsidePriceMin, priceOutsideMin, percentOutsidePriceMid, valuePercentOutsidePriceMid, priceOutsideMid, percentOutsidePriceMax,
-    valuePercentOutsidePriceMax, priceOutsideMax, parentProduct, notes, enableForPurchase, enableForSale, paymentTax, requireExpLot,
-    validToSale, paymentComiss, priceIncludeTax, dateLastPurchase, numLastPurchase, provLastPurchase, typeId, undinId, undoutId, packId, tradeId } = formState;
+    valuePercentLocalPriceMid, priceLocalMid, percentLocalPriceMax, valuePercentLocalPriceMax, priceLocalMax, percentOutsidePriceMin, valuePercentOutsidePriceMin, priceOutsideMin, percentOutsidePriceMid, valuePercentOutsidePriceMid, priceOutsideMid, percentOutsidePriceMax, valuePercentOutsidePriceMax, priceOutsideMax, parentProduct, notes, enableForPurchase, enableForSale, paymentTax, requireExpLot, validToSale, paymentComiss, priceIncludeTax, dateLastPurchase, numLastPurchase, provLastPurchase, typeId, undinId, undoutId, packId, tradeId } = formState;
 
-  const { codeValid, nameValid, typeIdValid, typeValid, packValid, undinIdValid, undoutIdValid, costValueValid,
-    typeCalculateCostValid, typeCalculatePriceValid } = formValidation;
+  const { codeValid, nameValid, typeIdValid, typeValid, packValid, undinIdValid, undoutIdValid, costValueValid, typeCalculateCostValid, typeCalculatePriceValid } = formValidation;
 
   return (
     <>
@@ -749,6 +745,7 @@ const ProductsCatalog = (props) => {
       <Modal {...propsToModalDistProduct} />
       <Modal {...propsToModalAddTrademarks} />
       <Modal {...propsToModalCompProduct} />
+      <Modal {...propsToModalImagesProduct} />
       <Confirmation {...propsToMsgCode} />
       <Confirmation {...propsToMsgDeleteProduct} />
     </>

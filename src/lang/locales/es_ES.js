@@ -445,6 +445,7 @@ const esLang = {
   "button.viewReport": "Ver Reporte",
   "button.updateStatus": "Actualizar Estado",
   "button.updatePayment": "Actualizar Pago",
+  "button.images": "Imagenes",
   /* Inputs */
   "input.name": "Nombre",
   "input.telePhone": "Teléfono",
@@ -649,6 +650,7 @@ const esLang = {
   "select.checkOutDate": "Fecha de Salida",
   "select.service": "Servicio",
   "select.paymentType": "Tipo de Pago",
+  "select.country": "Pais",
   /* Others */
   "option.yes": "Si",
   "option.no": "No",
@@ -1492,6 +1494,7 @@ const esLang = {
   "page.productsCatalog.modal.distProduct.table.column.maxPrice": "Precio Max",
   "page.productsCatalog.modal.distProduct.localPrices": "Precios Locales",
   "page.productsCatalog.modal.distProduct.foranPrices": "Precios Foraneos",
+  "page.productsCatalog.modal.imageProduct.title": "Imagenes del Producto: ",
   /* 19.Providers page in inventory module */
   "page.providers.select.typeProvider": "Tipo de Proveedor",
   "page.providers.input.dni": "DNI ó RTN",
