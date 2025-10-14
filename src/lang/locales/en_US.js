@@ -687,6 +687,7 @@ const enLang = {
   "check.isBonus": "Bonus",
   "modal.viewDocument.title": "Document",
   "modal.viewDocument.invoice": "Invoice #",
+  "modal.viewDocument.proofPayment": "Proof of Payment",
   "modal.confirm.title": "Confirm",
   "modal.printDocument.title": "Print Document",
   'pages.select.documentCode': "Document",

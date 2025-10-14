@@ -689,6 +689,7 @@ const esLang = {
   "check.isBonus": "Bonificaciones",
   "modal.viewDocument.title": "Documento",
   "modal.viewDocument.invoice": "Factura #",
+  "modal.viewDocument.proofPayment": "Comprobante de Pago",
   "modal.confirm.title": "Confirmar",
   "modal.printDocument.title": "Imprimir Documento",
   'pages.select.documentCode': "Documento",
