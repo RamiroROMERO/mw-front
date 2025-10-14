@@ -13,10 +13,10 @@ import ModalDeducctions from './ModalDeductions';
 import { useResumePayroll } from './useResumePayroll';
 import ModalIncomes from './ModalIncomes';
 
-const BiweeklyPayroll = ({ setLoading, screenControl }) => {
+const BiweeklyPayroll = ({ setLoading, screenControl, adminControl }) => {
   const typePayroll = 1;
 
-  const { openModalPayrolls, openModalPrint, openModalDeductions, openModalIncomes, setOpenModalPayrolls, setOpenModalPrint, setOpenModalDeductions, setOpenModalIncomes, propsToControlPanel, propsToDetailTable, propsToHeaderPayroll, propsToModalViewPayroll, propsToModalPrint, propsToModalDeductions, propsToModalIncomes, dataTotals, propsToMsgDelete } = useResumePayroll({ setLoading, typePayroll, screenControl });
+  const { openModalPayrolls, openModalPrint, openModalDeductions, openModalIncomes, setOpenModalPayrolls, setOpenModalPrint, setOpenModalDeductions, setOpenModalIncomes, propsToControlPanel, propsToDetailTable, propsToHeaderPayroll, propsToModalViewPayroll, propsToModalPrint, propsToModalDeductions, propsToModalIncomes, dataTotals, propsToMsgDelete, propsToViewPDF } = useResumePayroll({ setLoading, typePayroll, screenControl, adminControl });
 
   const propsToModalPayrolls = {
     ModalContent: ModalViewPayroll,
@@ -77,6 +77,7 @@ const BiweeklyPayroll = ({ setLoading, screenControl }) => {
         <Modal {...propsToModalPrintReceipt} />
         <Modal {...propsToModalAddDeductions} />
         <Modal {...propsToModalAddIncomes} />
+        <Modal {...propsToViewPDF} />
       </Row>
       <Confirmation {...propsToMsgDelete}/>
     </>

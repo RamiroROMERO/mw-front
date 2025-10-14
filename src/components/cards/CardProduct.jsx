@@ -35,6 +35,7 @@ export const CardProduct = ({ id, productName, trademark, imageName, classificat
         height="100%"
         width="100%"
         crossOrigin="anonymous"
+        style={{textAlign: 'center'}}
       />
       <CardBody className='m-1 p-2'>
         <CardText>

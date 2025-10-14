@@ -77,7 +77,7 @@ export const useModalIncomes = ({idPayroll, dataDetailPayroll, setLoading, setOp
 
       const totalInc = validFloat(findDetail.totalIncomes) + validFloat(value);
       const totalPay = totalInc - validFloat(findDetail.totalDeductions);
-      const totalDays = validFloat(findDetail.daysWorked) + days;
+      const totalDays = validFloat(findDetail.daysWorked) + validFloat(days);
       const dataUpdate = {
         totalIncomes: totalInc,
         totalPayment: totalPay,

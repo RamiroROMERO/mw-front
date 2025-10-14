@@ -7,7 +7,7 @@ import ReactTable from '@Components/reactTable';
 import Modal from '@Components/modal';
 import ModalViewDetailPay from './ModalViewDetailPay';
 
-const DetailTable = ({idPayroll, typePayroll, dateStart, dateEnd, notes, dataDetailPayroll, listTypeDeductions, listEmployees, listJobPositions, listPaymentMethod, listSchedules, listTypeIncomes, setEmployeeId, setOpenModalPrint, setLoading, fnViewDetailPayroll}) => {
+const DetailTable = ({idPayroll, typePayroll, dateStart, dateEnd, notes, dataDetailPayroll, listTypeDeductions, listEmployees, listJobPositions, listPaymentMethod, listSchedules, listTypeIncomes, setEmployeeId, setOpenModalPrint, setLoading, fnViewDetailPayroll, fnUpdate, fnDelete}) => {
   const [openModalDetail, setOpenModalDetail] = useState(false);
   const [currentItemDeta, setCurrentItemDeta] = useState({});
 

@@ -3,10 +3,12 @@ import { useForm } from '@Hooks'
 import { request } from '@Helpers/core'
 import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications'
+import ViewPdf from '@/components/ViewPDF/ViewPdf';
 
-export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => {
+export const useResumePayroll = ({ setLoading, typePayroll, screenControl, adminControl }) => {
   const currentYear = new Date().getFullYear();
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
+  const enableDeletePayroll = adminControl.find(ctrl => ctrl.code === "07.02.016")?.active || false;
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [employeeId, setEmployeeId] = useState(0);
   const [typeSheet, setTypeSheet] = useState(1);
@@ -32,6 +34,10 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
   const [openModalIncomes, setOpenModalIncomes] = useState(false);
   const [openModalSelectEmployees, setOpenModalSelectEmployees] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
+
+  //print invoice
+  const [openViewFile, setOpenViewFile] = useState(false);
+  const [documentPath, setDocumentPath] = useState("");
 
   const formValidations = {
     date: [(val) => val !== "", "msg.required.input.date"],
@@ -316,12 +322,16 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
     const dataPrint = {
       id,
       typeSheet,
-      employeeId
+      employeeId,
+      userName: userData.name
     }
-    request.GETPdf('rrhh/process/weeklyPayrolls/exportPDFReceipt', dataPrint, 'Comprobante de Pago.pdf', (err) => {
+
+    request.GETPdfUrl('rrhh/process/weeklyPayrolls/exportPDFReceipt', dataPrint, (resp) => {
+      setDocumentPath(resp);
+      setOpenViewFile(true);
+    }, (err) => {
       console.error(err);
       setLoading(false);
-      setOpenModalPrint(false);
     });
   }
 
@@ -346,7 +356,8 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
   }
 
   const fnCancelPayroll = () => {
-    if (fnDelete === false) {
+    if (enableDeletePayroll === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
     }
     if(id>0){
@@ -630,6 +641,18 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
     fnOnNo: () => onResetForm
   };
 
+  const propsToViewPDF = {
+    ModalContent: ViewPdf,
+    title: "modal.viewDocument.proofPayment",
+    // valueTitle: documentId,
+    open: openViewFile,
+    setOpen: setOpenViewFile,
+    maxWidth: 'xl',
+    data: {
+      documentPath
+    }
+  }
+
   return (
     {
       dataTotals,
@@ -651,7 +674,8 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl }) => 
       propsToModalDeductions,
       propsToModalIncomes,
       propsToModalEmployees,
-      propsToMsgDelete
+      propsToMsgDelete,
+      propsToViewPDF
     }
   )
 }

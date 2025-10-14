@@ -190,8 +190,8 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     let totalAbsence = 0;
     let totalIntDeduc = 0;
 
-    if(totalDays<15){
-      totalAbsence = (validFloat(incWeekly)/15) * (15 - totalDays);
+    if(validFloat(totalDays)<15){
+      totalAbsence = (validFloat(incWeekly)/15) * (15 - validFloat(totalDays));
       totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap) + totalAbsence;
     }else{
       totalAbsence = 0;
@@ -579,7 +579,7 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     const totalInc = allIncomes.map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0) + validFloat(valueInc);
     const totalPay = totalInc - validFloat(totalDeductions);
     const totalHours = allIncomes.map(item => validFloat(item.hours)).reduce((prev, curr) => prev + curr, 0) + validFloat(hoursInc);
-    const sumDays = allIncomes.map(item => validFloat(item.days)).reduce((prev, curr) => prev + curr, 0) + validInt(daysInc) - daysVacationTaken;
+    const sumDays = allIncomes.map(item => validFloat(item.days)).reduce((prev, curr) => prev + curr, 0) + validInt(daysInc) - validFloat(daysVacationTaken);
     onBulkForm({ totalIncomes: totalInc, totalPayment: totalPay, hoursWorked: totalHours, daysWorked: sumDays });
 
     if (idInc === 0) {
@@ -674,7 +674,7 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
 
     const sumIncomes = newData.map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0);
     const sumHours = newData.map(item => validFloat(item.hours)).reduce((prev, curr) => prev + curr, 0);
-    const sumDays = newData.map(item => validFloat(item.days)).reduce((prev, curr) => prev + curr, 0) - daysVacationTaken;
+    const sumDays = newData.map(item => validFloat(item.days)).reduce((prev, curr) => prev + curr, 0) - validFloat(daysVacationTaken);
     const totalPay = sumIncomes - totalDeductions;
     onBulkForm({ totalIncomes: sumIncomes, totalPayment: totalPay, hoursWorked: sumHours, daysWorked: sumDays });
 
