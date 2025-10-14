@@ -46,7 +46,7 @@ export const useModalAddProduct = ({ setLoading, currentItem, fnGetDataDetail, s
     }
 
     setLoading(true);
-    request.GET(`inventory/process/stoks/getStoks?storeId=${storeId}&type=1`, (resp) => {
+    request.GET(`inventory/process/stocks/getStocks?storeId=${storeId}&type=1`, (resp) => {
       const data = resp.data.map((item) => {
         item.productName = item.name
         item.price = validFloat(item.priceLocalMid)

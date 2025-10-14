@@ -8,12 +8,13 @@ import { formatNumber, IntlMessages } from '@/helpers/Utils';
 import { ContainerWithLabel } from '@/components/containerWithLabel';
 import { InputField } from '@/components/inputFields';
 import { SimpleTable } from '@/components/SimpleTable';
+import Modal from "@Components/modal";
 
 const Content = (props) => {
   const { setLoading } = props;
   const [activeTab, setActiveTab] = useState('1');
 
-  const { propsToControlPanel, formState, formValidation, onInputChange, isFormValid, table, propsToMsgDelete, columnDetails, dataDetails, fnAddItem } = useQuotes({ setLoading });
+  const { propsToControlPanel, formState, formValidation, onInputChange, isFormValid, table, propsToMsgDelete, columnDetails, dataDetails, fnAddItem, propsToModalSeekCustomers, propsToModalNewCustomer, propsToModalSeekProducts } = useQuotes({ setLoading });
 
   const { customerId, customerCode, customerName, phone, email, address, sellerId, notes, condDeliveryTime, condPaymentMethod, subtotal, discount, exoneratedValue, exemptValue, taxedValue, tax, total } = formState;
 
@@ -245,6 +246,10 @@ const Content = (props) => {
           </Card>
         </Colxx>
       </Row>
+      <Modal {...propsToModalSeekCustomers} />
+      <Modal {...propsToModalNewCustomer} />
+      <Modal {...propsToModalSeekProducts} />
+      {/* <Modal {} */}
     </>
   );
 }

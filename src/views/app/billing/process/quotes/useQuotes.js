@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from '@/hooks';
 import { IntlMessages, IntlMessagesFn, validFloat, validInt } from '@/helpers/Utils';
 import { request } from '@/helpers/core';
+import ModalViewCust from '../customers/ModalViewCust';
+import { data } from 'react-router-dom';
+import { ModalNewCustomer } from './ModalNewCustomer';
+import ModalProducts from '../invoicing/ModalProducts';
+import TableButtons from '@/components/tableButtons';
 
 export const useQuotes = ({ setLoading }) => {
 
@@ -10,6 +15,14 @@ export const useQuotes = ({ setLoading }) => {
   const [sendForm, setSendForm] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [dataDetails, setDataDetails] = useState([]);
+  const [openSeekCustomer, setOpenSeekCustomer] = useState(false);
+  const [customersList, setCustomersList] = useState([]);
+  const [openNewCustomer, setOpenNewCustomer] = useState(false);
+  const [openSeekProducts, setOpenSeekProducts] = useState(false);
+  const [listProducts, setListProducts] = useState([]);
+  const [currentProduct, setCurrentProduct] = useState({});
+  const [openEditCurrentProduct, setOpenEditCurrentProduct] = useState(false);
+  const [isEditItem, setIsEditItem] = useState(false);
 
   const validation = {
     date: [(val) => val.length > 0, IntlMessagesFn("page.common.validation.date")],
@@ -22,9 +35,9 @@ export const useQuotes = ({ setLoading }) => {
     { title: 'input.code', field: 'productCode', width: 15 },
     { title: 'input.name', field: 'productName', width: 40 },
     { title: 'input.outputUnit', field: 'um', width: 15 },
-    { title: 'input.qty', field: 'qty', width: 10 },
-    { title: 'input.price', field: 'price', width: 10 },
-    { title: 'input.subtotal', field: 'subtotal', width: 15 },
+    { title: 'input.qty', field: 'qty', width: 10, type: 'number' },
+    { title: 'input.price', field: 'price', width: 10, type: 'currency', prefix: 'L. ' },
+    { title: 'input.subtotal', field: 'subtotal', width: 15, type: 'currency', prefix: 'L. ' },
   ]
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
@@ -34,6 +47,7 @@ export const useQuotes = ({ setLoading }) => {
     customerCode: "",
     customerName: "",
     phone: "",
+    email: "",
     address: "",
     sellerId: "",
     notes: "",
@@ -113,6 +127,22 @@ export const useQuotes = ({ setLoading }) => {
     });
   }
 
+  const fnSeekCustomerList = () => {
+    setLoading(true);
+    request.GET('facCustomers', (resp) => {
+      const data = resp.data.map((item) => {
+        item.typeCustomer = item.setCustomerType ? item.setCustomerType.name : ""
+        return item;
+      });
+      setCustomersList(data);
+      setLoading(false);
+      setOpenSeekCustomer(true);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+  }
+
   const fnGetData = () => {
 
     request.getJSON("accounting/settings/accountants/getSL", {}, (resp) => {
@@ -140,30 +170,64 @@ export const useQuotes = ({ setLoading }) => {
   }
 
   const fnNewCustomer = () => {
-
+    setOpenNewCustomer(true);
   }
 
-  const fnSearchCustomer = () => {
+  const setSelectedCustomer = (customer) => {
+    const { id, nomcli, rtn, tel, correoc, direcc } = customer;
+    onBulkForm({ ...formState, customerId: id, customerCode: rtn, customerName: nomcli, phone: tel, address: direcc, email: correoc })
+    setOpenSeekCustomer(false);
+  }
+  const fnSelectProduct = (product) => {
+    setOpenSeekProducts(false);
+    setCurrentProduct(product);
+    let currProduct = {};
+    if (isEditItem) {
+      setCurrentProduct(product);
+    } else {
+      let currPrice = validFloat(product.includeTaxPrice ? product.med / 1 + (validFloat(product.percentTax) !== 0 ? (validFloat(product.percentTax / 100)) : 0) : product.med, 2);
+      let currTaxValue = validFloat(currPrice * (validFloat(product.percentTax) !== 0 ? (validFloat(product.percentTax / 100)) : 0), 2)
+      currProduct = {
+        productCode: product.productCode,
+        productName: product.productName,
+        undOutId: product.undoutId,
+        undOutName: product.undoutName,
+        qtyDist: product.valChange,
+        price: currPrice,
+        qty: 1,
+        subtotal: currPrice * 1,
+        discountPercent: 0,
+        discountValue: 0,
+        taxPercent: product.percentTax,
+        taxValue: currTaxValue,
+        total: validFloat(currPrice + currTaxValue, 2)
+      }
+      setCurrentProduct(currProduct);
+    }
+    setOpenEditCurrentProduct(true);
 
+    // console.log({ product });
   }
 
   const fnAddItem = () => {
-    const newItem = {
-      productCode: '2023983',
-      productName: 'Producto nuevo',
-      qty: 4,
-      price: 120.30,
-      subtotal: 481.20,
-      discount: 0,
-      exoneratedValue: 0,
-      exemptValue: 0,
-      taxPercent: 15,
-      taxedValue: 481.20,
-      taxValue: 72.18,
-      total: 553.38,
-      isExonerated: false
-    }
-    setDataDetails([...dataDetails, newItem]);
+
+    request.GET(`inventory/process/stocks/getStockForQuotes`, (resp) => {
+      const products = resp.data.map((item) => {
+        item.name = item.productName;
+        item.unitProd = item.undoutName;
+        item.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
+        return item;
+      });
+      setIsEditItem(false);
+      setListProducts(products);
+      setOpenSeekProducts(true);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+
+    // setDataDetails([...dataDetails, newItem]);
   }
 
   const [table, setTable] = useState({
@@ -205,7 +269,7 @@ export const useQuotes = ({ setLoading }) => {
     }, {
       title: "button.searchCustomer",
       icon: "bi bi-search",
-      onClick: fnSearchCustomer
+      onClick: fnSeekCustomerList
     }],
     buttonsOptions: [],
     buttonsAdmin: []
@@ -218,6 +282,44 @@ export const useQuotes = ({ setLoading }) => {
     fnOnOk: fnDelete,
     fnOnNo: onResetForm
   };
+
+  const propsToModalSeekCustomers = {
+    ModalContent: ModalViewCust,
+    title: "page.paymentMethods.radio.usageType.customers",
+    open: openSeekCustomer,
+    setOpen: setOpenSeekCustomer,
+    maxWidth: 'lg',
+    data: {
+      dataCustomers: customersList,
+      fnViewItem: setSelectedCustomer,
+      setLoading
+    }
+  }
+
+  const propsToModalNewCustomer = {
+    ModalContent: ModalNewCustomer,
+    title: "button.newCustomer",
+    open: openNewCustomer,
+    setOpen: setOpenNewCustomer,
+    maxWidth: 'md',
+    data: {
+      setLoading,
+      setCustomer: setSelectedCustomer
+    }
+  }
+
+  const propsToModalSeekProducts = {
+    ModalContent: ModalProducts,
+    title: "page.invoicing.modal.products.title",
+    open: openSeekProducts,
+    setOpen: setOpenSeekProducts,
+    maxWidth: 'xl',
+    setLoading,
+    data: {
+      setLoading,
+      listProducts
+    }
+  }
 
   useEffect(() => {
     fnGetData();
@@ -240,6 +342,9 @@ export const useQuotes = ({ setLoading }) => {
     propsToControlPanel,
     columnDetails,
     dataDetails,
-    fnAddItem
+    fnAddItem,
+    propsToModalSeekCustomers,
+    propsToModalNewCustomer,
+    propsToModalSeekProducts
   }
 }

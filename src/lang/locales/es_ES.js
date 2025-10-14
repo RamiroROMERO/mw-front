@@ -2839,6 +2839,7 @@ const esLang = {
   "page.common.validation.date": "Falta Fecha del Documento!",
   "page.common.validation.customerName": "Falta Nombre de Cliente!",
   "page.common.validation.phone": "Falta Número de Teléfono",
+  "page.common.validation.total": "El Total del Documento debe ser mayor a Cero!",
   "page.quotes.terms": "Condiciones",
   "page.quotes.terms.deliveryTimes": "Tiempo de Entrega",
   "page.quotes.terms.paymentMethod": "Forma de Pago",

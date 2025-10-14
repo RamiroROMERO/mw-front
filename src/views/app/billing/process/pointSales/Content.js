@@ -73,55 +73,55 @@ const PointSales = (props) => {
   }
 
   const { formState: formIndex, formValidation: formValidationIndex, isFormValid: isFormValidIndex, onInputChange: onInputChangeIndex, onResetForm: onResetFormIndex, setBulkForm: setBulkFormIndex } = useForm({
-      id: 0,
-      customerId: 1,
-      customerDNI: '00000000000000',
-      customerName: 'CONSUMIDOR FINAL',
-      notes: '',
-      documentCode: dataCashBox ? dataCashBox.documentCode : '',
-      documentType: 1,
-      currency: 1,
-      printType: dataCashBox ? dataCashBox.printType : 1,
-      date: '',
-      dateInProcess: moment(new Date()).format("YYYY-MM-DD"),
-      cashierId: 0,
-      documentExo: false,
-      documentId: 0,
-      subTotalValue: 0,
-      discountValue: 0,
-      subTotExeValue: 0,
-      subTotExoValue: 0,
-      subtotTaxValue: 0,
-      taxValue: 0,
-      total: 0,
-      valueCustomer: 0,
-      valueRestore: 0
-    }, invoicingValid);
+    id: 0,
+    customerId: 1,
+    customerDNI: '00000000000000',
+    customerName: 'CONSUMIDOR FINAL',
+    notes: '',
+    documentCode: dataCashBox ? dataCashBox.documentCode : '',
+    documentType: 1,
+    currency: 1,
+    printType: dataCashBox ? dataCashBox.printType : 1,
+    date: '',
+    dateInProcess: moment(new Date()).format("YYYY-MM-DD"),
+    cashierId: 0,
+    documentExo: false,
+    documentId: 0,
+    subTotalValue: 0,
+    discountValue: 0,
+    subTotExeValue: 0,
+    subTotExoValue: 0,
+    subtotTaxValue: 0,
+    taxValue: 0,
+    total: 0,
+    valueCustomer: 0,
+    valueRestore: 0
+  }, invoicingValid);
 
   const { formState: formDetail, formValidation: formValidationDetail, isFormValid: isFormValidDetail, onInputChange: onInputDetaChange, onResetForm: onResetFormDetail, setBulkForm: setBulkFormDetail } = useForm({
-      productCode: '',
-      description: '',
-      areaId: dataCashBox ? dataCashBox.areaId : 0,
-      storeId: dataCashBox ? dataCashBox.storeId : 0,
-      unitProd: '',
-      qty: 0,
-      price: 0,
-      subtotal: 0,
-      discountPercent: 0,
-      discountValue: 0,
-      taxPercent: 0,
-      taxValue: 0,
-      total: 0,
-      typePrice: dataCashBox ? dataCashBox.typePrice : 0,
-      priceLocalMin: 0,
-      priceLocalMid: 0,
-      priceLocalMax: 0,
-      otherPriceProd: 0,
-      unitedCoste: 0,
-      unitedOut: 0,
-      qtyDist: 0,
-      haveComiss: 0
-    }, invoiceDetailValid);
+    productCode: '',
+    description: '',
+    areaId: dataCashBox ? dataCashBox.areaId : 0,
+    storeId: dataCashBox ? dataCashBox.storeId : 0,
+    unitProd: '',
+    qty: 0,
+    price: 0,
+    subtotal: 0,
+    discountPercent: 0,
+    discountValue: 0,
+    taxPercent: 0,
+    taxValue: 0,
+    total: 0,
+    typePrice: dataCashBox ? dataCashBox.typePrice : 0,
+    priceLocalMin: 0,
+    priceLocalMid: 0,
+    priceLocalMax: 0,
+    otherPriceProd: 0,
+    unitedCoste: 0,
+    unitedOut: 0,
+    qtyDist: 0,
+    haveComiss: 0
+  }, invoiceDetailValid);
 
   const { id, customerId, customerDNI, customerName, notes, documentCode, documentType, currency, printType, date, dateInProcess, cashierId, documentExo, documentId, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue: taxValueInvoice, total, valueCustomer, valueRestore } = formIndex;
 
@@ -413,7 +413,7 @@ const PointSales = (props) => {
         id, userName: userData.name, typePrint: printType
       }
 
-      request.GETPdfUrl('billing/process/invoices/exportInvoicePDF', dataPrint, (resp) =>{
+      request.GETPdfUrl('billing/process/invoices/exportInvoicePDF', dataPrint, (resp) => {
         setDocumentPath(resp);
         setOpenViewFile(true);
       }, (err) => {
@@ -519,7 +519,7 @@ const PointSales = (props) => {
     }
     setLoading(true);
     setListProducts([]);
-    request.GET(`inventory/process/stoks/getStoks?storeId=${storeId}`, (resp) => {
+    request.GET(`inventory/process/stocks/getStocks?storeId=${storeId}`, (resp) => {
       const products = resp.data.map((item) => {
         item.taxPercent = item.percentTax
         item.unitProd = item.outputUnit

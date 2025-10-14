@@ -1,10 +1,9 @@
 import React from 'react'
 import { Table } from 'reactstrap'
 import { IntlMessages } from '@/helpers/Utils'
+import { SimpleTableTD } from './SimpleTableTD'
 
 export const SimpleTable = ({ columns = [], data = [] }) => {
-
-  console.log({ data });
 
   return (
     <div className='mt-3 mb-3'>
@@ -17,10 +16,10 @@ export const SimpleTable = ({ columns = [], data = [] }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map(item => {
-            return (<tr>
+          {data.map((item, idx) => {
+            return (<tr id={`det-cot-${idx}`}>
               {columns.map(col => {
-                return (<td>{item[col.field]}</td>)
+                return (<SimpleTableTD value={item[col.field]} formatTd={col} />)
               })}
             </tr>)
           })}

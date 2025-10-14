@@ -189,9 +189,11 @@ const TopNav = ({
   }
 
   const getProfileImage = async () => {
-    const imageUrl = `assets/profiles/${userData.img}`;
-    const imageObjectURL = await request.getFile(imageUrl);
-    setUserImage(imageObjectURL);
+    if (userData.img && userData.img != '') {
+      const imageUrl = `assets/profiles/${userData.img}`;
+      const imageObjectURL = await request.getFile(imageUrl);
+      setUserImage(imageObjectURL);
+    }
   }
 
   useEffect(() => {

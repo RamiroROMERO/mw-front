@@ -32,7 +32,7 @@ export const useStock = ({ setLoading }) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET(`inventory/process/stoks/getStoks`, (resp) => {
+    request.GET(`inventory/process/stocks/getStocks`, (resp) => {
       const products = resp.data.map((item) => {
         item.label = item.name
         item.value = item.id

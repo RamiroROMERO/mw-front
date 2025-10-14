@@ -9,13 +9,14 @@ const ModalProducts = (props) => {
   const { listProducts } = data;
 
   const [table, setTable] = useState({
-    title: IntlMessages("page.invoicing.modal.products.table.title"),
+    // title: IntlMessages("page.invoicing.modal.products.table.title"),
+    title: '',
     columns: [
       {
         text: IntlMessages("page.invoicing.modal.products.table.code"), dataField: "productCode", headerStyle: { 'width': '15%' },
         classes: 'd-xs-none-table-cell', headerClasses: 'd-xs-none-table-cell'
       },
-      { text: IntlMessages("page.invoicing.modal.products.table.name"), dataField: "name", headerStyle: { 'width': '25%' } },
+      { text: IntlMessages("page.invoicing.modal.products.table.name"), dataField: "productName", headerStyle: { 'width': '25%' } },
       {
         text: IntlMessages("page.invoicing.modal.products.table.unit"), dataField: "unitProd", headerStyle: { 'width': '10%' },
         classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell'

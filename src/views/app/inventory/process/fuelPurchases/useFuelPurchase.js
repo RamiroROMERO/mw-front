@@ -268,7 +268,7 @@ export const useFuelPurchase = ({ setLoading }) => {
     });
 
     setLoading(true);
-    request.GET(`inventory/process/stoks/getStoks`, (resp) => {
+    request.GET(`inventory/process/stocks/getStocks`, (resp) => {
       const products = resp.data.map((item) => {
         return {
           label: item.name,

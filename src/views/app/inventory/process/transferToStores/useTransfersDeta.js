@@ -34,7 +34,7 @@ export const useTransfersDeta = ({ setLoading }) => {
 
   const fnViewProducts = (idStore) => {
     setLoading(true);
-    request.GET(`inventory/process/stoks/getStoks?storeId=${idStore}`, (resp) => {
+    request.GET(`inventory/process/stocks/getStocks?storeId=${idStore}`, (resp) => {
       const data = resp.data.map((item) => {
         item.qty = 1
         item.code = item.productCode

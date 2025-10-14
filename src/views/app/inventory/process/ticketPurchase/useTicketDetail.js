@@ -35,7 +35,7 @@ export const useTicketDetail = ({ setLoading }) => {
 
   const fnViewProducts = () => {
     setLoading(true);
-    request.GET(`inventory/process/stoks/getStoks`, (resp) => {
+    request.GET(`inventory/process/stocks/getStocks`, (resp) => {
       const data = resp.data.map((item) => {
         item.code = item.productCode
         item.nameProduct = item.name

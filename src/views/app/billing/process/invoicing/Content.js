@@ -67,52 +67,52 @@ const Invoicing = (props) => {
   }
 
   const { formState: formIndex, formValidation: formValidationIndex, isFormValid: isFormValidIndex, onInputChange: onInputChangeIndex, onResetForm: onResetFormIndex, setBulkForm: setBulkFormIndex } = useForm({
-      id: 0,
-      customerId: 0,
-      customerDNI: '',
-      customerName: '',
-      notes: '',
-      documentCode: '',
-      documentType: 1,
-      currency: 1,
-      date: moment(new Date()).format("YYYY-MM-DD"),
-      dateInProcess: moment(new Date()).format("YYYY-MM-DD"),
-      cashierId: 0,
-      documentExo: false,
-      documentId: 0,
-      subTotalValue: 0,
-      discountValue: 0,
-      subTotExeValue: 0,
-      subTotExoValue: 0,
-      subtotTaxValue: 0,
-      taxValue: 0,
-      total: 0
-    }, invoicingValid);
+    id: 0,
+    customerId: 0,
+    customerDNI: '',
+    customerName: '',
+    notes: '',
+    documentCode: '',
+    documentType: 1,
+    currency: 1,
+    date: moment(new Date()).format("YYYY-MM-DD"),
+    dateInProcess: moment(new Date()).format("YYYY-MM-DD"),
+    cashierId: 0,
+    documentExo: false,
+    documentId: 0,
+    subTotalValue: 0,
+    discountValue: 0,
+    subTotExeValue: 0,
+    subTotExoValue: 0,
+    subtotTaxValue: 0,
+    taxValue: 0,
+    total: 0
+  }, invoicingValid);
 
   const { formState: formDetail, formValidation: formValidationDetail, isFormValid: isFormValidDetail, onInputChange: onInputDetaChange, onResetForm: onResetFormDetail, setBulkForm: setBulkFormDetail } = useForm({
-      productCode: '',
-      description: '',
-      areaId: 0,
-      storeId: 0,
-      unitProd: '',
-      qty: 0,
-      price: 0,
-      subtotal: 0,
-      discountPercent: 0,
-      discountValue: 0,
-      taxPercent: 0,
-      taxValue: 0,
-      total: 0,
-      typePrice: 2,
-      priceLocalMin: 0,
-      priceLocalMid: 0,
-      priceLocalMax: 0,
-      otherPriceProd: 0,
-      unitedCoste: 0,
-      unitedOut: 0,
-      qtyDist: 0,
-      haveComiss: 0
-    }, invoiceDetailValid);
+    productCode: '',
+    description: '',
+    areaId: 0,
+    storeId: 0,
+    unitProd: '',
+    qty: 0,
+    price: 0,
+    subtotal: 0,
+    discountPercent: 0,
+    discountValue: 0,
+    taxPercent: 0,
+    taxValue: 0,
+    total: 0,
+    typePrice: 2,
+    priceLocalMin: 0,
+    priceLocalMid: 0,
+    priceLocalMax: 0,
+    otherPriceProd: 0,
+    unitedCoste: 0,
+    unitedOut: 0,
+    qtyDist: 0,
+    haveComiss: 0
+  }, invoiceDetailValid);
 
   const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
     total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, qtyDist,
@@ -125,12 +125,12 @@ const Invoicing = (props) => {
   const handleAreaChange = e => {
     let valueStore = "0";
     let typePricelocal = 2;
-    if (e.target.value > 0) {
-      const dataArea = listAreas.filter((item) => {
-        return item.id === parseInt(e.target.value, 10);
+    if (validInt(e.target.value) > 0) {
+      const dataArea = listAreas.find((item) => {
+        return validInt(item.id) === validInt(e.target.value);
       });
-      valueStore = dataArea[0].invStore !== null ? dataArea[0].invStore.id : "0";
-      typePricelocal = dataArea[0].localPriceType;
+      valueStore = dataArea && dataArea.invStore !== null ? dataArea.invStore?.id : "0";
+      typePricelocal = dataArea?.localPriceType;
     } else {
       valueStore = "0";
       typePricelocal = 2;
@@ -385,7 +385,7 @@ const Invoicing = (props) => {
 
   const fnPrintInvoicing = () => {
     if (id > 0) {
-      request.GETPdfUrl('billing/process/invoices/exportPDF', { id, userName: userData.name }, (resp) =>{
+      request.GETPdfUrl('billing/process/invoices/exportPDF', { id, userName: userData.name }, (resp) => {
         setDocumentPath(resp);
         setOpenViewFile(true);
       }, (err) => {
@@ -483,14 +483,15 @@ const Invoicing = (props) => {
   const fnViewProducts = () => {
     setLoading(true);
     setListProducts([]);
-    request.GET(`inventory/process/stoks/getStoks?storeId=${storeId}&enableForSale=1`, (resp) => {
+    request.GET(`inventory/process/stocks/getStocks?storeId=${storeId}&enableForSale=1`, (resp) => {
       const products = resp.data.map((item) => {
         item.taxPercent = item.percentTax
-        item.unitProd = item.outputUnit
-        item.min = item.priceLocalMin
-        item.med = item.priceLocalMid
-        item.max = item.priceLocalMax
-        item.stock = formatNumber(item.stockQty)
+        item.name = item.productName
+        item.unitProd = item.undoutName
+        item.min = item.localMinPrice
+        item.med = item.localMedPrice
+        item.max = item.localMaxPrice
+        item.stock = formatNumber(item.qtyStock)
         item.options = <TableButton color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
         return item;
       });
@@ -961,7 +962,7 @@ const Invoicing = (props) => {
       <Modal {...propsToModalGenerate} />
       <Modal {...propsToModalQuotation} />
       <Modal {...propsToModalDeliveryDoc} />
-      <Modal {...propsToViewPDF}/>
+      <Modal {...propsToViewPDF} />
       <Confirmation {...propsToMsgDelete} />
       <Confirmation {...propsToMsgCancelInvoice} />
       <Confirmation {...propsToMsgGenerateInvoice} />

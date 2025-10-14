@@ -42,7 +42,7 @@ export const useInventoryReport = ({ setLoading }) => {
       setLoading(false);
     });
 
-    request.GET(`inventory/process/stoks/getStoks`, (resp) => {
+    request.GET(`inventory/process/stocks/getStocks`, (resp) => {
       const data = resp.data.map((item) => {
         return {
           label: item.name,
