@@ -14,6 +14,7 @@ dist-ssr
 .vite/
 
 .env
+.env.*
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -25,3 +26,5 @@ dist-ssr
 *.sln
 *.sw?
 *.zip
+post-build.js
+vps.config.json
