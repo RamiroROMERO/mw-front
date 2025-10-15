@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
 import { Colxx } from '@/components/common/CustomBootstrap';
 import { IntlMessages } from "@/helpers/Utils";
@@ -6,11 +6,17 @@ import { request } from '@/helpers/core';
 import { useForm } from '@/hooks';
 import { InputField } from "@/components/inputFields";
 import { ContainerWithLabel } from "@/components/containerWithLabel";
+import ViewPdf from "@/components/ViewPDF/ViewPdf";
+import Modal from "@/components/modal";
 
 const ModalDeliveryDoc = (props) => {
   const { data, setOpen } = props;
   const { id, customerId, listCustomers, setLoading } = data;
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
+
+  //print invoice
+  const [openViewFile, setOpenViewFile] = useState(false);
+  const [documentPath, setDocumentPath] = useState("");
 
   const filterCustomer = listCustomers.filter((item) => {
     return item.id === customerId;
@@ -36,12 +42,25 @@ const ModalDeliveryDoc = (props) => {
       notes,
       userName: userData.name
     }
-    request.GETPdf('billing/process/invoices/exportPDFDeliveryDoc', dataExport, 'Documento de Entrega.pdf', (err) => {
+
+    request.GETPdfUrl('billing/process/invoices/exportPDFDeliveryDoc', dataExport, (resp) => {
+      setDocumentPath(resp);
+      setOpenViewFile(true);
+    }, (err) => {
       console.error(err);
       setLoading(false);
     });
-    onResetForm();
-    setOpen(false);
+  }
+
+  const propsToViewPDF = {
+    ModalContent: ViewPdf,
+    title: "page.invoicing.modal.deliveryDoc.title",
+    open: openViewFile,
+    setOpen: setOpenViewFile,
+    maxWidth: 'xl',
+    data: {
+      documentPath
+    }
   }
 
   return (
@@ -110,6 +129,7 @@ const ModalDeliveryDoc = (props) => {
           {` ${IntlMessages('button.exit')}`}
         </Button>
       </ModalFooter>
+      <Modal {...propsToViewPDF} />
     </>
   )
 }

@@ -223,7 +223,7 @@ const Invoicing = (props) => {
       subtotTaxValue: valueTaxed,
       taxValue: valueTaxes,
       total: totalInvoice,
-      documentExo: !e.target.checked
+      documentExo: e.target.checked
     }
     setBulkFormIndex(addProduct);
   }
@@ -321,7 +321,8 @@ const Invoicing = (props) => {
       customerDNI,
       customerName,
       documentType: validInt(documentType),
-      documentExo
+      documentExo,
+      cashierId
     }
 
     invoiceDetail.map((item) => {
@@ -836,6 +837,7 @@ const Invoicing = (props) => {
       total,
       currency,
       setLoading,
+      userData,
       setOpenModalPrint,
       onInputChangeIndex
     }

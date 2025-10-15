@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
 import { Colxx } from '@/components/common/CustomBootstrap';
 import { IntlMessages } from "@/helpers/Utils";
@@ -9,11 +9,17 @@ import { ContainerWithLabel } from "@/components/containerWithLabel";
 import { InputField } from "@/components/inputFields";
 import moment from 'moment';
 import DateCalendar from '@/components/dateCalendar';
+import ViewPdf from "@/components/ViewPDF/ViewPdf";
+import Modal from "@/components/modal";
 
 const ModalGenerateInvoice = (props) => {
   const { data, setOpen } = props;
   const { id, subTotalValue, discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValueInvoice, total, currency,
-    typeDocument, setLoading, setOpenModalPrint, onInputChangeIndex } = data;
+    typeDocument, setLoading, setOpenModalPrint, userData, onInputChangeIndex } = data;
+
+  //print invoice
+  const [openViewFile, setOpenViewFile] = useState(false);
+  const [documentPath, setDocumentPath] = useState("");
 
   const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     documentId: 0,
@@ -37,7 +43,7 @@ const ModalGenerateInvoice = (props) => {
         documentId: resp2.data.codeInt,
         cai: resp2.data.cai,
         numcai: resp2.data.numCai,
-        dateOut: resp2.data.limitDate,
+        dateOut: resp2?.data?.limitDate || "1900-01-01",
         range: resp2.data.noRange
       }
       setBulkForm(newDocument);
@@ -66,16 +72,30 @@ const ModalGenerateInvoice = (props) => {
 
     setLoading(true);
     request.PUT(`billing/process/invoices/${id}`, newData, (resp) => {
-      console.log(resp);
       onInputChangeIndex({ target: { name: 'documentId', value: documentId } });
-      setOpen(false);
-      setOpenModalPrint(true);
-      onResetForm();
+      request.GETPdfUrl('billing/process/invoices/exportPDF', { id, userName: userData.name }, (resp) => {
+        setDocumentPath(resp);
+        setOpenViewFile(true);
+      }, (err) => {
+        console.error(err);
+        setLoading(false);
+      });
       setLoading(false);
     }, (err) => {
       console.error(err);
       setLoading(false);
     });
+  }
+
+  const propsToViewPDF = {
+    ModalContent: ViewPdf,
+    title: "page.invoicing.modal.printInvoice.title",
+    open: openViewFile,
+    setOpen: setOpenViewFile,
+    maxWidth: 'xl',
+    data: {
+      documentPath
+    }
   }
 
   return (
@@ -288,6 +308,7 @@ const ModalGenerateInvoice = (props) => {
           {` ${IntlMessages('button.exit')}`}
         </Button>
       </ModalFooter>
+      <Modal {...propsToViewPDF} />
     </>
   )
 }
