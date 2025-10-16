@@ -8,8 +8,7 @@ export const useCustomer = ({ setLoading, screenControl }) => {
   const [openModalNew, setOpenModalNew] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [currentItem, setCurrentItem] = useState({});
-  const [listDepartments, setListDepartments] = useState([]);
-  const [listMunicipalities, setListMunicipalities] = useState([]);
+  const [listCountries, setListCountries] = useState([]);
 
   const fnNewDocument = () => {
     if (fnCreate === false) {
@@ -45,7 +44,7 @@ export const useCustomer = ({ setLoading, screenControl }) => {
     }
     if (currentItem.id && currentItem.id > 0) {
       setLoading(true);
-      request.PUT(`facCustomers/${currentItem.id}`, data, () => {
+      request.PUT(`hotel/settings/customers/${currentItem.id}`, data, () => {
         fnGetData();
         setCurrentItem({});
         setLoading(false);
@@ -59,9 +58,9 @@ export const useCustomer = ({ setLoading, screenControl }) => {
   const [table, setTable] = useState({
     title: IntlMessages("page.hotel.rooms"),
     columns: [
-      { text: IntlMessages("table.column.dni"), dataField: "rtn", headerStyle: { 'width': '25%' } },
-      { text: IntlMessages("table.column.name"), dataField: "nomcli", headerStyle: { 'width': '35%' } },
-      { text: IntlMessages("table.column.phone"), dataField: "tel", headerStyle: { 'width': '15%' } },
+      { text: IntlMessages("table.column.dni"), dataField: "dni", headerStyle: { 'width': '25%' } },
+      { text: IntlMessages("table.column.name"), dataField: "name", headerStyle: { 'width': '35%' } },
+      { text: IntlMessages("table.column.phone"), dataField: "phone1", headerStyle: { 'width': '15%' } },
       { text: IntlMessages("table.column.email"), dataField: "email", headerStyle: { 'width': '15%' } },
       {
         text: IntlMessages("table.column.status"), dataField: "statusIcon", headerStyle: { 'width': '10%' },
@@ -91,7 +90,7 @@ export const useCustomer = ({ setLoading, screenControl }) => {
 
   const fnGetData = ()=>{
     setLoading(true);
-    request.GET(`facCustomers`, (resp)=>{
+    request.GET(`hotel/settings/customers`, (resp)=>{
       const data = resp.data.map((item) => {
         item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;
@@ -108,16 +107,16 @@ export const useCustomer = ({ setLoading, screenControl }) => {
   }
 
   useEffect(() => {
-
-    request.GET('admin/locateDeptos/getSL', resp => {
-      const listDeptos = resp.data.map(item => {
+    request.GET('admin/countries/getSl', (resp) => {
+      const countries = resp.data.map(item => {
         return {
           label: item.name,
-          value: item.code
+          value: item.id
         }
       });
-      setListDepartments(listDeptos);
-    }, (err)=>{
+      setListCountries(countries);
+      setLoading(false);
+    }, (err) => {
       console.error(err);
       setLoading(false);
     });
@@ -137,12 +136,10 @@ export const useCustomer = ({ setLoading, screenControl }) => {
     {
       table,
       currentItem,
-      listDepartments,
-      listMunicipalities,
+      listCountries,
       openModalNew,
       propsToMsgDisable,
       setOpenModalNew,
-      setListMunicipalities,
       fnGetData
     }
   )

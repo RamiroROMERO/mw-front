@@ -8,20 +8,18 @@ import ModalNewCust from "./ModalNewCust";
 
 const Content = ({setLoading, screenControl}) => {
 
-  const {table, currentItem, listDepartments, listMunicipalities, propsToMsgDisable, openModalNew, setOpenModalNew, setListMunicipalities, fnGetData} = useCustomer({setLoading, screenControl});
+  const {table, currentItem, listCountries, propsToMsgDisable, openModalNew, setOpenModalNew, fnGetData} = useCustomer({setLoading, screenControl});
 
   const propsToModalNewCustomer = {
     ModalContent: ModalNewCust,
     title: "page.hotel.modal.addCustomer.title",
     open: openModalNew,
     setOpen: setOpenModalNew,
-    maxWidth: 'md',
+    maxWidth: 'lg',
     data: {
-      listDepartments,
-      listMunicipalities,
+      listCountries,
       currentItem,
       setLoading,
-      setListMunicipalities,
       fnGetData
     }
   }
