@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { IntlMessages } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 
-export const useControlPermissions = ({setLoading}) => {
+export const useControlPermissions = ({setLoading, adminControl}) => {
   const [listEmployees, setListEmployees] = useState([]);
+  const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.005")?.active || false;
 
   const [table, setTable] = useState({
     title: IntlMessages("page.permissions.table.controlPermissions.title"),
@@ -68,6 +69,7 @@ export const useControlPermissions = ({setLoading}) => {
     listEmployees,
     setLoading,
     table,
+    enableGenerateReport,
     setTable
   }
 

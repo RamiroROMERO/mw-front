@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { request } from '@Helpers/core';
+import notification from '@Containers/ui/Notifications';
 
-export const useHeader = ({setLoading, table, setTable}) => {
+export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) => {
 
   const [employeeId, setEmployeeId] = useState(0);
 
@@ -22,7 +23,8 @@ export const useHeader = ({setLoading, table, setTable}) => {
         { title: 'Estado', field: 'statusName', type: 'String', length: 50 },
         { title: 'Año', field: 'year', type: 'String', length: 70},
         { title: 'Mes', field: 'monthLetter', type: 'String', length: 70},
-        { title: 'Dias de Permisos', field: 'daysPermissions', type: 'String', length: 70}
+        { title: 'Dias de Permisos', field: 'daysPermissions', type: 'String', length: 70},
+        { title: 'Motivo', field: 'reason', type: 'String', length: 100 },
       ],
       headerData: [],
       reportTitle: "Control de Permisos",
@@ -33,6 +35,10 @@ export const useHeader = ({setLoading, table, setTable}) => {
   }
 
   const fnGetData = ()=>{
+    // if (enableGenerateReport === false) {
+    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+    //   return;
+    // }
 
     const newActions = {
       color: "primary",

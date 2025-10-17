@@ -3,8 +3,8 @@ import ReactTable from '@Components/reactTable';
 import { useControlIncapacities } from './useControlIncapacities'
 import Header from './Header';
 
-const Content = ({setLoading}) => {
-  const {table, propsToHeader} = useControlIncapacities({setLoading})
+const Content = ({setLoading, adminControl}) => {
+  const {table, propsToHeader} = useControlIncapacities({setLoading, adminControl})
 
   return (
     <>

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { IntlMessages } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 
-export const useControlIncapacities = ({setLoading}) => {
+export const useControlIncapacities = ({setLoading, adminControl}) => {
   const [listEmployees, setListEmployees] = useState([]);
+  const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.006")?.active || false;
 
   const [table, setTable] = useState({
     title: IntlMessages("page.incapacities.table.controlIncapacities.title"),
@@ -68,6 +69,7 @@ export const useControlIncapacities = ({setLoading}) => {
     listEmployees,
     setLoading,
     table,
+    enableGenerateReport,
     setTable
   }
 
