@@ -135,6 +135,7 @@ const Users = (props) => {
 
     const data = {
       name,
+      userName,
       email,
       pass,
       typeId,
