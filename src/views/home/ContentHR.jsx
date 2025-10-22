@@ -3,7 +3,8 @@ import './styleCalendar.css';
 import HeaderHR from './HeaderHR'
 import { useHeaderHR } from './useHeaderHR';
 import { useContentHR } from './useContentHR';
-import { Card, CardBody, Modal } from 'reactstrap';
+import { Card, CardBody } from 'reactstrap';
+import Modal from '@Components/modal';
 import FullCalendar from '@fullcalendar/react';
 import esLocale from '@fullcalendar/core/locales/es';
 import dayGridPlugin from '@fullcalendar/daygrid';
