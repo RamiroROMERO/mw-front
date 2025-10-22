@@ -24,6 +24,10 @@ export const useModalNewCust = ({currentItem, setLoading, fnGetData, setOpen}) =
     phone1: currentItem?.phone1 || "",
     phone2: currentItem?.phone2 || "",
     email: currentItem?.email || "",
+    genderId: currentItem?.genderId || 0,
+    taxType: currentItem?.taxType || 0,
+    zipCode: currentItem?.zipCode || "",
+    companyId: currentItem?.companyId || 0,
     contact1Name: currentItem?.contact1Name || "",
     contact1Phone: currentItem?.contact1Phone || "",
     contact1Email: currentItem?.contact1Email || "",
@@ -31,6 +35,7 @@ export const useModalNewCust = ({currentItem, setLoading, fnGetData, setOpen}) =
     contact2Phone: currentItem?.contact2Phone || "",
     contact2Email: currentItem?.contact2Email || "",
     haveCredit: currentItem?.haveCredit || false,
+    notes: currentItem?.notes || "",
     status: currentItem?.status || true
   }, validation);
 

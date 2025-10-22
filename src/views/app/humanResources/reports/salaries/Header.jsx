@@ -7,9 +7,9 @@ import { useHeader } from './useHeader';
 import { Checkbox } from '@Components/checkbox';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 
-const Header = ({listEmployees, setLoading, table, setTable}) => {
+const Header = ({listEmployees, setLoading, table, setTable, enableGenerateReport}) => {
 
-  const {employeeId, salaryParam, bankAccountParam, onEmployeeId, onSalaryChange, onBankAccountChange, fnGetData} = useHeader({setLoading, table, setTable});
+  const {employeeId, salaryParam, bankAccountParam, onEmployeeId, onSalaryChange, onBankAccountChange, fnGetData} = useHeader({setLoading, table, setTable, enableGenerateReport});
 
   return (
     <Card className='mb-3'>

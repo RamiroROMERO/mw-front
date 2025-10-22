@@ -3,6 +3,7 @@ import { onBreadcrumbEdit, onTitleEdit } from '@Redux/actions';
 import { useDispatch } from 'react-redux';
 import { adminRoot } from '@Constants/defaultValues';
 import Breadcrumb from '@Containers/navs/Breadcrumb';
+import { getPrivilegeAdmin } from '@/helpers/Utils';
 
 const Content = React.lazy(() =>
   import('./Content')
@@ -10,6 +11,8 @@ const Content = React.lazy(() =>
 
 const Salaries = (props) => {
   const dispatch = useDispatch();
+
+  const adminControl = getPrivilegeAdmin();
 
   useEffect(() => {
     dispatch(onTitleEdit("menu.salaries"))
@@ -19,7 +22,7 @@ const Salaries = (props) => {
   return (
     <Suspense fallback={<div className="loading" />}>
       <Breadcrumb />
-      <Content {...props} />
+      <Content adminControl={adminControl} {...props} />
     </Suspense>
   )
 }

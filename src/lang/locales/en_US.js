@@ -126,7 +126,7 @@ const enLang = {
   "msg.required.select.service": "Please select a service!",
   /* Require Input */
   "msg.required.input.price": "Please enter a price!",
-  "msg.required.input.dni": "Please enter a correct ID!",
+  "msg.required.input.dni": "Please enter a valid ID, no dashes or spaces!!",
   "msg.required.input.date": "Please select a date!",
   "msg.required.input.typeCustomer": "Please select a type customer!",
   "msg.required.input.creditDays": "Please enter a number of credit days!",
@@ -585,6 +585,7 @@ const enLang = {
   "input.companyName": "Company Name",
   "input.city1": "City 1",
   "input.city2": "City 2",
+  "input.zipCode": "Zip Code",
   /* Selects */
   "select.department": "Department",
   "select.municipality": "Municipality",
@@ -653,6 +654,8 @@ const enLang = {
   "select.service": "Service",
   "select.paymentType": "Payment Type",
   "select.country": "Country",
+  "select.companyId": "Company",
+  "select.taxId": "Tax Type",
   /* Others */
   "option.yes": "Yes",
   "option.no": "No",

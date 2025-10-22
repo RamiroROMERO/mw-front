@@ -7,11 +7,11 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import ReactTable from '@Components/reactTable';
 import { useDetailDeductions } from './useDetailDeductions'
 
-const DetailDeductions = ({id, date, employeeName, typeId, value, description, projectId, setProjectId, onProjectChange, onResetForm, listEmployeesByProject, listTypeDeductions, listProjects, onInputChange, fnGetData, setLoading, formValidation, isFormValid}) => {
+const DetailDeductions = ({id, date, employeeName, typeId, value, description, projectId, setProjectId, onProjectChange, onResetForm, listEmployeesByProject, listTypeDeductions, listProjects, onInputChange, fnGetData, setLoading, formValidation, isFormValid, fnCreate, fnUpdate}) => {
 
   const {dateValid, typeIdValid, valueValid, descriptionValid} = formValidation;
 
-  const {table, sendForm, fnSave, fnClearInputs} = useDetailDeductions({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value});
+  const {table, sendForm, fnSave, fnClearInputs} = useDetailDeductions({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, fnCreate, fnUpdate});
 
   return (
     <Card>

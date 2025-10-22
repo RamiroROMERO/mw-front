@@ -7,9 +7,9 @@ import { useOvertime } from './useOvertime';
 import useDetailTable from './useDetailTable';
 
 const Overtime = (props) => {
-  const { setLoading } = props;
+  const { setLoading, screenControl } = props;
 
-  const {propsToDetailOvertime, propsToDetailTable, propsToMsgDelete} = useOvertime({setLoading});
+  const {propsToDetailOvertime, propsToDetailTable, propsToMsgDelete} = useOvertime({setLoading, screenControl});
 
   const {table} = useDetailTable({...propsToDetailTable});
 

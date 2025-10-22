@@ -7,9 +7,9 @@ import { useSchedules } from './useSchedules';
 import useDetailTable from './useDetailTable';
 
 const Schedules = (props) => {
-  const { setLoading } = props;
+  const { setLoading, screenControl } = props;
 
-  const {propsToMsgDelete, propsToDetailSchedules, propsToDetailTable} = useSchedules({setLoading});
+  const {propsToMsgDelete, propsToDetailSchedules, propsToDetailTable} = useSchedules({setLoading, screenControl});
 
   const {table} = useDetailTable({...propsToDetailTable});
 

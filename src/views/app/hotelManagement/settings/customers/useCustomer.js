@@ -9,6 +9,9 @@ export const useCustomer = ({ setLoading, screenControl }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [currentItem, setCurrentItem] = useState({});
   const [listCountries, setListCountries] = useState([]);
+  const [listCompanies, setListCompanies] = useState([]);
+  const [listGenders, setListGenders] = useState([]);
+  const [listTypeTax, setListTypeTax] = useState([]);
 
   const fnNewDocument = () => {
     if (fnCreate === false) {
@@ -121,6 +124,48 @@ export const useCustomer = ({ setLoading, screenControl }) => {
       setLoading(false);
     });
 
+    request.GET('rrhh/settings/genders/getSl', (resp) => {
+      const genders = resp.data.map(item => {
+        return {
+          label: item.name,
+          value: item.id
+        }
+      });
+      setListGenders(genders);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+
+    request.GET('admin/taxTypes/getSl', (resp) => {
+      const taxTypes = resp.data.map(item => {
+        return {
+          label: item.name,
+          value: item.id
+        }
+      });
+      setListTypeTax(taxTypes);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+
+    request.GET('hotel/settings/customers/getSl?typeId=1', (resp) => {
+      const customer = resp.data.map(item => {
+        return {
+          label: item.name,
+          value: item.id
+        }
+      });
+      setListCompanies(customer);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+
     fnGetData();
   }, []);
 
@@ -137,6 +182,9 @@ export const useCustomer = ({ setLoading, screenControl }) => {
       table,
       currentItem,
       listCountries,
+      listCompanies,
+      listGenders,
+      listTypeTax,
       openModalNew,
       propsToMsgDisable,
       setOpenModalNew,

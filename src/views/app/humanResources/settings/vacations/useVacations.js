@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from '@Hooks'
 import { request } from '@Helpers/core'
 import { validFloat, validInt } from '@Helpers/Utils';
+import notification from '@Containers/ui/Notifications';
 
-export const useVacations = ({setLoading}) => {
+export const useVacations = ({setLoading, screenControl}) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataVacations, setDataVacations] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
@@ -51,6 +53,10 @@ export const useVacations = ({setLoading}) => {
     }
 
     if (id > 0) {
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.PUT(`rrhh/settings/setVacations/${id}`, formState, () => {
         fnGetData();
@@ -61,6 +67,10 @@ export const useVacations = ({setLoading}) => {
         setLoading(false);
       });
     } else {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/settings/setVacations', formState, () => {
         fnGetData();
@@ -108,6 +118,7 @@ export const useVacations = ({setLoading}) => {
     dataVacations,
     onBulkForm,
     setOpenMsgQuestion,
+    fnDelete
   }
 
   useEffect(() => {

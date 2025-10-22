@@ -65,11 +65,11 @@ export const useDetailIncomes = ({id, projectId, setProjectId, onResetForm, list
     });
 
     if(id === 0){
-      // if (fnCreate === false) {
-      //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      //   setSendForm(false);
-      //   return;
-      // }
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        setSendForm(false);
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/process/incomes/createMany', newData, () => {
         fnGetData();
@@ -82,11 +82,11 @@ export const useDetailIncomes = ({id, projectId, setProjectId, onResetForm, list
         setLoading(false);
       });
     }else{
-      // if (fnUpdate === false) {
-      //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      //   setSendForm(false);
-      //   return;
-      // }
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        setSendForm(false);
+        return;
+      }
       setLoading(true);
       request.PUT(`rrhh/process/incomes/${id}`, updateData, () => {
         fnGetData();

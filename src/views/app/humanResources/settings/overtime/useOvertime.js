@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { request } from '@Helpers/core';
 import { validFloat, validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks';
+import notification from '@Containers/ui/Notifications';
 
-export const useOvertime = ({setLoading}) => {
+export const useOvertime = ({setLoading, screenControl}) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataOvertime, setDataOvertime] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
@@ -55,6 +57,10 @@ export const useOvertime = ({setLoading}) => {
     }
 
     if (formState.id > 0) {
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.PUT(`rrhh/settings/overtimes/${formState.id}`, formState, () => {
         fnGetData();
@@ -65,6 +71,10 @@ export const useOvertime = ({setLoading}) => {
         setLoading(false);
       });
     } else {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/settings/overtimes', formState, () => {
         fnGetData();
@@ -108,7 +118,8 @@ export const useOvertime = ({setLoading}) => {
   const propsToDetailTable = {
     dataOvertime,
     onBulkForm,
-    setOpenMsgQuestion
+    setOpenMsgQuestion,
+    fnDelete
   }
 
   useEffect(() => {

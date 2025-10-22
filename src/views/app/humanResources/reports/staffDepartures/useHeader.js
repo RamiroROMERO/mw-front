@@ -1,7 +1,8 @@
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms';
+import notification from '@Containers/ui/Notifications';
 
-export const useHeader = ({setLoading, table, setTable}) => {
+export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) => {
 
   const { formState, onInputChange } = useForm({
     dateStart: '',
@@ -35,6 +36,10 @@ export const useHeader = ({setLoading, table, setTable}) => {
   }
 
   const fnGetData = ()=>{
+    if (enableGenerateReport === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     let url = `rrhh/process/employeeHistory/findInactives?status=0`;
 
     if(dateStart!=="" && dateEnd!==""){

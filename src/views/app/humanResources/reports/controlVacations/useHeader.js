@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { request } from '@Helpers/core';
+import notification from '@Containers/ui/Notifications';
 
-export const useHeader = ({setLoading, table, setTable}) => {
+export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) => {
   const [employeeId, setEmployeeId] = useState(0);
 
   const onEmployeeId = e =>{
@@ -35,6 +36,10 @@ export const useHeader = ({setLoading, table, setTable}) => {
   }
 
   const fnGetData = ()=>{
+    if (enableGenerateReport === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
 
     const newActions = {
       color: "primary",
@@ -44,9 +49,7 @@ export const useHeader = ({setLoading, table, setTable}) => {
       isFreeAction: true
     }
 
-    // let url = `rrhh/process/vacations/getVacations`;
-
-    let url = `rrhh/reports/getIncapacitiesByMonth`;
+    let url = `rrhh/process/vacations/getVacations`;
 
     if(employeeId>0){
       url = `${url}?employeeId=${employeeId}`;

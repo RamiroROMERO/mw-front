@@ -8,9 +8,9 @@ import { useDetailTable } from './useDetailTable';
 import Detail from './Detail';
 
 const Content = (props) => {
-  const {setLoading} = props;
+  const {setLoading, screenControl} = props;
 
-  const {propsToMsgDelete, propsToDetail, propsToDetailTable} = useDaysTypes({setLoading});
+  const {propsToMsgDelete, propsToDetail, propsToDetailTable} = useDaysTypes({setLoading, screenControl});
 
   const {table} = useDetailTable({...propsToDetailTable})
 

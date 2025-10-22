@@ -9,11 +9,11 @@ import { RadioGroup } from '@/components/radioGroup';
 import { Checkbox } from '@/components/checkbox';
 
 const ModalNewCust = ({data, setOpen}) => {
-  const { listCountries, currentItem, setLoading, setListMunicipalities, fnGetData} = data;
+  const { listCountries, listCompanies, listGenders, listTypeTax, currentItem, setLoading, setListMunicipalities, fnGetData} = data;
 
   const {formState, formValidation, sendForm, onInputChange, fnSave} = useModalNewCust({setLoading, currentItem,fnGetData, setOpen, setListMunicipalities});
 
-  const {typeId, dni, name, name2, phone1, phone2, email, address, countryId, city1, city2, contact1Name, contact1Phone, contact1Email, contact2Name, contact2Phone, contact2Email, haveCredit, status} = formState;
+  const {typeId, dni, name, name2, phone1, phone2, email, address, genderId, taxType, companyId, zipCode, countryId, city1, city2, contact1Name, contact1Phone, contact1Email, contact2Name, contact2Phone, contact2Email, haveCredit, notes, status} = formState;
 
   const {dniValid, nameValid, phone1Valid} = formValidation;
 
@@ -50,6 +50,24 @@ const ModalNewCust = ({data, setOpen}) => {
                     label='input.companyName'
                     value={name2}
                     onChange={onInputChange}
+                  />
+                </Colxx>
+                <Colxx xxs={12} md={6}>
+                  <SearchSelect
+                    label="select.genderId"
+                    name="genderId"
+                    inputValue={genderId}
+                    onChange={onInputChange}
+                    options={listGenders}
+                  />
+                </Colxx>
+                <Colxx xxs={12} md={6}>
+                  <SearchSelect
+                    label="select.companyId"
+                    name="companyId"
+                    inputValue={companyId}
+                    onChange={onInputChange}
+                    options={listCompanies}
                   />
                 </Colxx>
                 <Colxx xxs={12} md={6}>
@@ -92,11 +110,29 @@ const ModalNewCust = ({data, setOpen}) => {
                     }
                   />
                 </Colxx>
+                <Colxx xxs={12}>
+                  <InputField
+                    value={notes}
+                    name="notes"
+                    onChange={onInputChange}
+                    type="textarea"
+                    label="input.notes"
+                  />
+                </Colxx>
               </Row>
             </ContainerWithLabel>
           </Colxx>
           <Colxx xxs={12} lg={6}>
             <Row>
+              <Colxx xxs={12} md={6}>
+                <SearchSelect
+                  label="select.taxId"
+                  name="taxType"
+                  inputValue={taxType}
+                  onChange={onInputChange}
+                  options={listTypeTax}
+                />
+              </Colxx>
               <Colxx xxs={12} md={6}>
                 <Checkbox
                   onChange={onInputChange}
@@ -105,7 +141,7 @@ const ModalNewCust = ({data, setOpen}) => {
                   label="check.haveCredit"
                 />
               </Colxx>
-              <Colxx xxs={12} md={6}>
+              <Colxx xxs={12} md={12} style={{textAlign: 'right'}}>
                 <Checkbox
                   onChange={onInputChange}
                   name="status"
@@ -158,6 +194,14 @@ const ModalNewCust = ({data, setOpen}) => {
                         onChange={onInputChange}
                         type="textarea"
                         label="label.title.exactAddress"
+                      />
+                    </Colxx>
+                    <Colxx xxs={12} md={6} lg={6}>
+                      <InputField
+                        name='zipCode'
+                        label='input.zipCode'
+                        value={zipCode}
+                        onChange={onInputChange}
                       />
                     </Colxx>
                   </Row>

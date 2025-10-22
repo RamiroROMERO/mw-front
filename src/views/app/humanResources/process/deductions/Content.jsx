@@ -6,9 +6,9 @@ import useDetailTable from './useDetailTable';
 import ReactTable from '@Components/reactTable'
 import { useDeductions } from './useDeductions';
 
-const Deductions = ({ setLoading }) => {
+const Deductions = ({ setLoading, screenControl }) => {
 
-  const {propsToDetailDeductions, propsToDetailTable, propsToMsgDelete} = useDeductions({setLoading});
+  const {propsToDetailDeductions, propsToDetailTable, propsToMsgDelete} = useDeductions({setLoading, screenControl});
 
   const {table} = useDetailTable({...propsToDetailTable});
 

@@ -10,10 +10,10 @@ import DetailTable from './DetailTable';
 import ModalViewPayroll from '../resumePayroll/ModalViewPayroll';
 import FooterPayroll from '../resumePayroll/FooterPayroll';
 
-const Content = ({setLoading}) => {
+const Content = ({setLoading, screenControl}) => {
   const typePayroll = 5;
 
-  const {dataTotals, propsToControlPanel, propsToHeaderPayroll, propsToDetailTable, propsToModalViewPayroll, openModalPayrolls, setOpenModalPayrolls} = useNeighborhoodTax({setLoading, typePayroll});
+  const {dataTotals, propsToControlPanel, propsToHeaderPayroll, propsToDetailTable, propsToModalViewPayroll, openModalPayrolls, setOpenModalPayrolls} = useNeighborhoodTax({setLoading, typePayroll, screenControl});
 
   const propsToModalPayrolls = {
     ModalContent: ModalViewPayroll,

@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import { request } from '@Helpers/core';
-import createNotification from '@Containers/ui/Notifications';
+import notification from '@Containers/ui/Notifications';
 
-export const useNeighborhoodTax = ({ setLoading, typePayroll }) => {
+export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) => {
   const currentYear = new Date().getFullYear();
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [customerName, setCustomerName] = useState('');
   const [projectName, setProjectName] = useState('');
   const [listCustomers, setListCustomers] = useState([]);
@@ -56,12 +57,16 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll }) => {
   }
 
   const fnGetPayrolls = () => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     if (validInt(customerId) === 0) {
-      createNotification('warning', 'msg.required.select.customer', 'alert.warning.title');
+      notification('warning', 'msg.required.select.customer', 'alert.warning.title');
       return
     }
     if (validInt(projectId) === 0) {
-      createNotification('warning', 'msg.required.select.project', 'alert.warning.title');
+      notification('warning', 'msg.required.select.project', 'alert.warning.title');
       return
     }
 
@@ -111,6 +116,10 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll }) => {
   }
 
   const fnGeneratePayroll = () => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     setSendForm(true);
     if (!isFormValid) {
       return;
@@ -143,6 +152,10 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll }) => {
   }
 
   const fnPrintPayroll = async() => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     if (id > 0) {
       setLoading(true);
       let data = {

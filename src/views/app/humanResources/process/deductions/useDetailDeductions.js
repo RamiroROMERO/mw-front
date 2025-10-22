@@ -3,7 +3,7 @@ import { request } from '@/helpers/core';
 import { IntlMessages } from '@Helpers/Utils'
 import notification from '@/containers/ui/Notifications';
 
-export const useDetailDeductions = ({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value}) => {
+export const useDetailDeductions = ({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, fnCreate, fnUpdate}) => {
 
   const [sendForm, setSendForm] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -61,6 +61,11 @@ export const useDetailDeductions = ({id, projectId, setProjectId, onResetForm, l
     });
 
     if(id === 0){
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        setSendForm(false);
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/process/deductions/createMany', newData, () => {
         fnGetData();
@@ -73,6 +78,11 @@ export const useDetailDeductions = ({id, projectId, setProjectId, onResetForm, l
         setLoading(false);
       });
     }else{
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        setSendForm(false);
+        return;
+      }
       setLoading(true);
       request.PUT(`rrhh/process/deductions/${id}`, updateData, () => {
         fnGetData();

@@ -3,7 +3,8 @@ import { useForm } from '@Hooks'
 import { request } from '@Helpers/core';
 import { validFloat, validInt } from '@Helpers/Utils';
 
-export const useDeductions = ({setLoading}) => {
+export const useDeductions = ({setLoading, screenControl}) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [projectId, setProjectId] = useState(0);
   const [listEmployees, setListEmployees] = useState([]);
   const [listEmployeesByProject, setListEmployeesByProject] = useState([]);
@@ -55,7 +56,7 @@ export const useDeductions = ({setLoading}) => {
     });
   }
 
-  const fnDelete = () =>{
+  const fnConfirmDelete = () =>{
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/deductions/${id}`, () => {
@@ -126,13 +127,7 @@ export const useDeductions = ({setLoading}) => {
   },[projectId]);
 
   const propsToDetailDeductions = {
-    id,
-    date,
-    typeId,
-    employeeId,
-    employeeName,
-    value,
-    description,
+    ...formState,
     projectId,
     setProjectId,
     onProjectChange,
@@ -144,13 +139,15 @@ export const useDeductions = ({setLoading}) => {
     fnGetData,
     setLoading,
     formValidation,
-    isFormValid
+    isFormValid,
+    fnCreate,
+    fnUpdate
   }
 
   const propsToMsgDelete = {
     open: openMsgQuestion,
     setOpen: setOpenMsgQuestion,
-    fnOnOk: fnDelete,
+    fnOnOk: fnConfirmDelete,
     title: "alert.question.title",
     fnOnNo: onResetForm
   }
@@ -158,6 +155,7 @@ export const useDeductions = ({setLoading}) => {
   const propsToDetailTable = {
     dataDeductions,
     setBulkForm,
+    fnDelete,
     setOpenMsgQuestion
   }
 

@@ -10,9 +10,9 @@ import Confirmation from '@Containers/ui/confirmationMsg';
 import { InputField } from '@Components/inputFields';
 
 const ModalDetail = ({data, setOpen}) => {
-  const {currentItem, listWorkShifts, listEmployees, setLoading, fnGetProjects} = data;
+  const {currentItem, listWorkShifts, listEmployees, setLoading, fnGetProjects, screenControl} = data;
 
-  const {codeEmployee, formState, formValidation, sendForm, onInputChange, table, propsToMsgDelete, fnSave, fnClearInputs} = useModalDetail({currentItem, setLoading, fnGetProjects});
+  const {codeEmployee, formState, formValidation, sendForm, onInputChange, table, propsToMsgDelete, fnSave, fnClearInputs} = useModalDetail({currentItem, setLoading, fnGetProjects, screenControl});
 
   const {turnId, employeeId, dateIn, dateOut} = formState;
 

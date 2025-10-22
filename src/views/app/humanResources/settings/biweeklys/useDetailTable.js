@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { IntlMessages } from '@Helpers/Utils'
+import notification from '@Containers/ui/Notifications';
 
-export const useDetailTable = ({dataBiweeklies, setBulkForm, setOpenMsgQuestion}) => {
+export const useDetailTable = ({dataBiweeklies, setBulkForm, setOpenMsgQuestion, fnDelete}) => {
 
   const fnEditBiweekly = (item)=>{
     item.noYear = `${item.noYear}`
@@ -9,6 +10,10 @@ export const useDetailTable = ({dataBiweeklies, setBulkForm, setOpenMsgQuestion}
   }
 
   const fnDeleteBiweekly = (item)=>{
+    if (fnDelete === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     setBulkForm({id:item.id});
     setOpenMsgQuestion(true);
   }

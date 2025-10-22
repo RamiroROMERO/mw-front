@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { request } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
+import notification from '@Containers/ui/Notifications';
 
-export const useDaysTypes = ({ setLoading }) => {
+export const useDaysTypes = ({ setLoading, screenControl }) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [listAccount, setListAccount] = useState([]);
   const [dataDaysTypes, setDataDaysTypes] = useState([]);
@@ -49,8 +51,12 @@ export const useDaysTypes = ({ setLoading }) => {
       return;
     }
 
-    setLoading(true);
     if (validInt(id) === 0) {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
+      setLoading(true);
       request.POST('rrhh/settings/payrollDayTypes', formState, () => {
         setLoading(false);
         fnGetData();
@@ -60,6 +66,11 @@ export const useDaysTypes = ({ setLoading }) => {
         setLoading(false);
       })
     } else {
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
+      setLoading(true);
       request.PUT(`rrhh/settings/payrollDayTypes/${id}`, formState, () => {
         setLoading(false);
         fnGetData();
@@ -129,7 +140,8 @@ export const useDaysTypes = ({ setLoading }) => {
   const propsToDetailTable = {
     dataDaysTypes,
     onBulkForm,
-    setOpenMsgQuestion
+    setOpenMsgQuestion,
+    fnDelete
   }
 
   return (

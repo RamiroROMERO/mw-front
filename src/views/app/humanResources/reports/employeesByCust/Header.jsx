@@ -5,9 +5,9 @@ import { IntlMessages } from '@Helpers/Utils';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { useHeader } from './useHeader'
 
-const Header = ({listCustomers, listWorkShifts, setLoading, table, setTable}) => {
+const Header = ({listCustomers, listWorkShifts, setLoading, table, setTable, enableGenerateReport}) => {
 
-  const {formState, formValidation, sendForm, listProjects, onInputChange, onCustomerChange, fnClear, fnGetData} = useHeader({setLoading, table, setTable, listCustomers});
+  const {formState, formValidation, sendForm, listProjects, onInputChange, onCustomerChange, fnClear, fnGetData} = useHeader({setLoading, table, setTable, listCustomers, enableGenerateReport});
 
   const {customerId, projectId, turnId} = formState;
 

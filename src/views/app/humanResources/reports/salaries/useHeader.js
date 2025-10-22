@@ -1,7 +1,8 @@
 import { request } from '@Helpers/core';
 import { useState } from 'react'
+import notification from '@Containers/ui/Notifications';
 
-export const useHeader = ({setLoading, table, setTable}) => {
+export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) => {
   const [employeeId, setEmployeeId] = useState(0);
   const [salaryParam, setSalaryParam] = useState(true);
   const [bankAccountParam, setBankAccountParam] = useState(false);
@@ -55,6 +56,10 @@ export const useHeader = ({setLoading, table, setTable}) => {
   }
 
   const fnGetData = ()=>{
+    if (enableGenerateReport === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
 
     const newActions = {
       color: "primary",

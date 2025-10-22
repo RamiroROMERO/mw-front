@@ -3,9 +3,9 @@ import ReactTable from '@Components/reactTable'
 import Header from './Header'
 import { useControlVacations } from './useControlVacations'
 
-const ControlVacations = ({setLoading}) => {
+const ControlVacations = ({setLoading, adminControl}) => {
 
-  const {table, propsToHeader} = useControlVacations({setLoading})
+  const {table, propsToHeader} = useControlVacations({setLoading, adminControl})
 
   return (
     <>

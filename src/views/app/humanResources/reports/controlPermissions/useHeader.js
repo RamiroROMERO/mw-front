@@ -35,10 +35,10 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
   }
 
   const fnGetData = ()=>{
-    // if (enableGenerateReport === false) {
-    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-    //   return;
-    // }
+    if (enableGenerateReport === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
 
     const newActions = {
       color: "primary",

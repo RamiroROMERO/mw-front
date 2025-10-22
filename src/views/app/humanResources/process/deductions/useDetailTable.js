@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import { IntlMessages, formatDate } from '@Helpers/Utils'
+import notification from '@/containers/ui/Notifications';
 
-const useDetailTable = ({dataDeductions, setBulkForm, setOpenMsgQuestion}) => {
+const useDetailTable = ({dataDeductions, setBulkForm, setOpenMsgQuestion, fnDelete}) => {
 
   const fnEditDeduction = (item)=>{
     item.employeeName = `${item.rrhhEmployee.firstName} ${item.rrhhEmployee.secondName} ${item.rrhhEmployee.lastName} ${item.rrhhEmployee.secondLastName}`
@@ -9,6 +10,10 @@ const useDetailTable = ({dataDeductions, setBulkForm, setOpenMsgQuestion}) => {
   }
 
   const fnDeleteDeduction = (item)=>{
+    if (fnDelete === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     setBulkForm({id:item.id});
     setOpenMsgQuestion(true);
   }

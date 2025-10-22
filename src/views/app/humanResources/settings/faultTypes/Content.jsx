@@ -7,9 +7,9 @@ import { useFaultTypes } from './useFaultTypes';
 import useDetailTable from './useDetailTable';
 
 const FaultTypes = (props) => {
-  const { setLoading } = props;
+  const { setLoading, screenControl } = props;
 
-  const {propsToDetailTable, propsToDetailTypes, propsToMsgDelete} = useFaultTypes({setLoading});
+  const {propsToDetailTable, propsToDetailTypes, propsToMsgDelete} = useFaultTypes({setLoading, screenControl});
 
   const {table} = useDetailTable({...propsToDetailTable})
 

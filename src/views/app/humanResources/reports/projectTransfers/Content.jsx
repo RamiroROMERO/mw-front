@@ -3,9 +3,9 @@ import ReactTable from '@Components/reactTable'
 import { useProjectTransfers } from './useProjectTransfers'
 import Header from './Header';
 
-const Content = ({setLoading}) => {
+const Content = ({setLoading, adminControl}) => {
 
-  const {propsToHeader, table} = useProjectTransfers({setLoading});
+  const {propsToHeader, table} = useProjectTransfers({setLoading, adminControl});
 
   return (
     <>

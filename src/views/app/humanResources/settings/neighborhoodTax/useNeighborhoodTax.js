@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { request } from '@Helpers/core'
 import { useForm } from '@Hooks';
 import { validFloat } from '@Helpers/Utils';
+import notification from '@Containers/ui/Notifications';
 
-export const useNeighborhoodTax = ({setLoading}) => {
+export const useNeighborhoodTax = ({setLoading, screenControl}) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataTax, setDataTax] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
@@ -17,11 +19,11 @@ export const useNeighborhoodTax = ({setLoading}) => {
 
   const { formState, formValidation, isFormValid, onBulkForm, onInputChange, onResetForm } = useForm({
     id: 0,
-    rangeInit: '',
-    rangeEnd: '',
-    range: '',
-    rate: '',
-    total: '',
+    rangeInit: 0,
+    rangeEnd: 0,
+    range: 0,
+    rate: 0,
+    total: 0,
     status: true
   },neighborhoodTaxValidations);
 
@@ -60,6 +62,10 @@ export const useNeighborhoodTax = ({setLoading}) => {
       status
     }
     if (id > 0) {
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.PUT(`rrhh/settings/setetNeighborhoodTax/${id}`, data, () => {
         fnGetData();
@@ -70,6 +76,10 @@ export const useNeighborhoodTax = ({setLoading}) => {
         setLoading(false);
       });
     } else {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/settings/setetNeighborhoodTax', data, () => {
         fnGetData();
@@ -103,7 +113,8 @@ export const useNeighborhoodTax = ({setLoading}) => {
   const propsToDetailTable = {
     dataTax,
     onBulkForm,
-    setOpenMsgQuestion
+    setOpenMsgQuestion,
+    fnDelete
   }
 
   const propsToDetailTax = {

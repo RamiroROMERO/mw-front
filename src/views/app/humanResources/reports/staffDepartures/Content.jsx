@@ -3,9 +3,9 @@ import ReactTable from '@Components/reactTable'
 import { useStaffDepartures } from './useStaffDepartures'
 import Header from './Header';
 
-const Content = ({setLoading}) => {
+const Content = ({setLoading, adminControl}) => {
 
-  const {propsToHeader, table} = useStaffDepartures({setLoading});
+  const {propsToHeader, table} = useStaffDepartures({setLoading, adminControl});
 
   return (
     <>

@@ -9,9 +9,9 @@ import { useJobPositions } from './useJobPositions';
 import useDetailTable from './useDetailTable';
 
 const JobPositions = (props) => {
-  const { setLoading } = props;
+  const { setLoading, screenControl } = props;
 
-  const {propsToMsgDelete, propsToDetailJobPosition, propsToDetailTable, openModalLevel, setOpenModalLevel, fnLevels} = useJobPositions({setLoading});
+  const {propsToMsgDelete, propsToDetailJobPosition, propsToDetailTable, openModalLevel, setOpenModalLevel, fnLevels} = useJobPositions({setLoading, screenControl});
 
   const {table} = useDetailTable({...propsToDetailTable});
 
@@ -22,6 +22,7 @@ const JobPositions = (props) => {
     setOpen: setOpenModalLevel,
     maxWidth: 'md',
     data: {
+      fnCreate: screenControl.fnCreate,
       setLoading,
       fnLevels
     }

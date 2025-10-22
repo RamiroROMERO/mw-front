@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { request } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
+import notification from '@Containers/ui/Notifications';
 
-export const useDeductionTypes = ({ setLoading }) => {
+export const useDeductionTypes = ({ setLoading, screenControl }) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [listAccount, setListAccount] = useState([]);
   const [dataDeductions, setDataDeductions] = useState([]);
@@ -49,8 +51,12 @@ export const useDeductionTypes = ({ setLoading }) => {
       return;
     }
 
-    setLoading(true);
     if (validInt(id) === 0) {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
+      setLoading(true);
       request.POST('rrhh/settings/deductionTypes', formState, () => {
         setLoading(false);
         fnGetData();
@@ -60,6 +66,10 @@ export const useDeductionTypes = ({ setLoading }) => {
         setLoading(false);
       })
     } else {
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       request.PUT(`rrhh/settings/deductionTypes/${id}`, formState, () => {
         setLoading(false);
         fnGetData();
@@ -129,7 +139,8 @@ export const useDeductionTypes = ({ setLoading }) => {
   const propsToDetailTable = {
     dataDeductions,
     onBulkForm,
-    setOpenMsgQuestion
+    setOpenMsgQuestion,
+    fnDelete
   }
 
   return (

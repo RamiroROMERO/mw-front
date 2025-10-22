@@ -5,9 +5,9 @@ import { IntlMessages } from '@Helpers/Utils';
 import { useHeader } from './useHeader';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 
-const Header = ({listEmployees, setLoading, table, setTable}) => {
+const Header = ({listEmployees, setLoading, table, setTable, enableGenerateReport}) => {
 
-  const {employeeId, onEmployeeId, fnGetData} = useHeader({setLoading, table, setTable});
+  const {employeeId, onEmployeeId, fnGetData} = useHeader({setLoading, table, setTable, enableGenerateReport});
 
   return (
     <Card className='mb-3'>

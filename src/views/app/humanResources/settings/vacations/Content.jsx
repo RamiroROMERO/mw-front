@@ -7,9 +7,9 @@ import { useVacations } from './useVacations'
 import useDetailTable from './useDetailTable';
 
 const Vacations = (props) => {
-  const { setLoading } = props;
+  const { setLoading, screenControl } = props;
 
-  const {propsToDetailTable, propsToDetailVacations, propsToMsgDelete} = useVacations({setLoading});
+  const {propsToDetailTable, propsToDetailVacations, propsToMsgDelete} = useVacations({setLoading, screenControl});
 
   const {table} = useDetailTable({...propsToDetailTable})
 

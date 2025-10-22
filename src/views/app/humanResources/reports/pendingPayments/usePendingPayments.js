@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
+import notification from '@Containers/ui/Notifications';
 
-export const usePendingPayments = ({setLoading}) => {
+export const usePendingPayments = ({setLoading, adminControl}) => {
+  const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.007")?.active || false;
 
   const [table, setTable] = useState({
     title: IntlMessages("menu.pendingPayments"),
@@ -83,6 +85,10 @@ export const usePendingPayments = ({setLoading}) => {
   }
 
   const fnGetData = ()=>{
+    if (enableGenerateReport === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
 
     const newActions = {
       color: "primary",

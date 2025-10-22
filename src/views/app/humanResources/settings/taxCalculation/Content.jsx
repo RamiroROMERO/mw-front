@@ -7,9 +7,9 @@ import { useTaxCalculation } from './useTaxCalculation';
 import useDetailTable from './useDetailTable';
 
 const TaxCalculation = (props) => {
-  const { setLoading } = props;
+  const { setLoading, screenControl } = props;
 
-  const {propsToDetailCalculation, propsToDetailTable, propsToMsgDelete} = useTaxCalculation({setLoading});
+  const {propsToDetailCalculation, propsToDetailTable, propsToMsgDelete} = useTaxCalculation({setLoading, screenControl});
 
   const {table} = useDetailTable({...propsToDetailTable});
 

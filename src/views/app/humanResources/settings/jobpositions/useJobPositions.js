@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { request } from '@/helpers/core';
 import { useForm } from '@/hooks';
 import { validInt } from '@Helpers/Utils';
+import notification from '@Containers/ui/Notifications';
 
-export const useJobPositions = ({setLoading}) => {
+export const useJobPositions = ({setLoading, screenControl}) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [listLevel, setListLevel] = useState([]);
   const [openModalLevel, setOpenModalLevel] = useState(false);
   const [dataJobPosition, setDataJobPosition] = useState([]);
@@ -81,6 +83,10 @@ export const useJobPositions = ({setLoading}) => {
       status
     }
     if (id > 0) {
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.PUT(`rrhh/settings/jobPositions/${id}`, newdata, () => {
         fnGetData();
@@ -91,6 +97,10 @@ export const useJobPositions = ({setLoading}) => {
         setLoading(false);
       });
     } else {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/settings/jobPositions', newdata, () => {
         fnGetData();
@@ -143,9 +153,10 @@ export const useJobPositions = ({setLoading}) => {
   }
 
   const propsToDetailTable = {
+    fnDelete,
     dataJobPosition,
     onBulkForm,
-    setOpenMsgQuestion
+    setOpenMsgQuestion,
   }
 
   const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDisableDocument, title: "alert.question.title", onResetForm }

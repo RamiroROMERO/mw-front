@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { validFloat } from '@Helpers/Utils';
 import { useForm } from '@Hooks';
 import { request } from '@Helpers/core'
+import notification from '@Containers/ui/Notifications';
 
-export const useTaxCalculation = ({setLoading}) => {
+export const useTaxCalculation = ({setLoading, screenControl}) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataCalculation, setDataCalculation] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
@@ -57,6 +59,10 @@ export const useTaxCalculation = ({setLoading}) => {
       status
     }
     if (id > 0) {
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.PUT(`rrhh/settings/setISR/${id}`, data, () => {
         fnGetData();
@@ -67,6 +73,10 @@ export const useTaxCalculation = ({setLoading}) => {
         setLoading(false);
       });
     } else {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/settings/setISR', data, () => {
         fnGetData();
@@ -115,7 +125,8 @@ export const useTaxCalculation = ({setLoading}) => {
   const propsToDetailTable = {
     dataCalculation,
     onBulkForm,
-    setOpenMsgQuestion
+    setOpenMsgQuestion,
+    fnDelete
   }
 
   useEffect(() => {

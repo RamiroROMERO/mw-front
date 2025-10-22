@@ -11,8 +11,8 @@ const Content = React.lazy(() =>
 const ResumePayroll = (props) => {
   const dispatch = useDispatch();
 
-  const PRIVILEGE_CODE = "07.02.001";
-  // const PRIVILEGE_CODE = "07.02.015";
+  // const PRIVILEGE_CODE = "07.02.001";
+  const PRIVILEGE_CODE = "07.02.015";
   const screenControl = getPrivilegeData(PRIVILEGE_CODE);
 
   const adminControl = getPrivilegeAdmin();

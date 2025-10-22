@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 import { useForm } from '@Hooks';
 import { IntlMessages, formatDate, validFloat, validInt } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
+import notification from '@Containers/ui/Notifications';
 
-export const useModalDetail = ({ currentItem, setLoading, fnGetProjects }) => {
+export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenControl }) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [nextCode, setNextCode] = useState(0);
   const [codeEmployee, setCodeEmployee] = useState('');
   const [sendForm, setSendForm] = useState(false);
@@ -38,11 +40,15 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects }) => {
   }
 
   const fnDeleteDetail = (item) => {
+    if (fnDelete === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     onBulkForm({ id: item.id });
     setOpenMsgQuestion(true);
   }
 
-  const fnDelete = () => {
+  const fnConfirmDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/projectDetail/${id}`, (resp) => {
@@ -145,6 +151,11 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects }) => {
     }
 
     if (id === 0) {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        setSendForm(false);
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/process/projectDetail', newData, (resp) => {
         onInputChange({ target: { name: 'id', value: resp.data.id } });
@@ -175,6 +186,11 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects }) => {
         setLoading(false);
       });
     } else {
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        setSendForm(false);
+        return;
+      }
       setLoading(true);
       request.PUT(`rrhh/process/projectDetail/${id}`, newData, () => {
         fnGetData();
@@ -193,7 +209,6 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects }) => {
 
     const nextCodeP = validFloat(currentItem.corre) + 1;
     const codeEmpl = `${currentItem.code}-${nextCodeP}`;
-    console.log(nextCode);
     setCodeEmployee(codeEmpl);
     setNextCode(nextCodeP);
   }, []);
@@ -201,7 +216,7 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects }) => {
   const propsToMsgDelete = {
     open: openMsgQuestion,
     setOpen: setOpenMsgQuestion,
-    fnOnOk: fnDelete,
+    fnOnOk: fnConfirmDelete,
     title: "alert.question.title",
     fnOnNo: onResetForm
   }

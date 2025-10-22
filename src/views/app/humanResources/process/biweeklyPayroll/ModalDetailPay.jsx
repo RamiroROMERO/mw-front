@@ -192,9 +192,9 @@ const ModalDetailPay = ({setOpen, data}) => {
     let totalAbsence = 0;
     let totalIntDeduc = 0;
 
-    if(totalDays<15){
+    if(validFloat(totalDays)<15){
       setDisabledAbsence(false);
-      totalAbsence = (validFloat(incBiweekly)/15) * (15 - totalDays);
+      totalAbsence = (validFloat(incBiweekly)/15) * (15 - validFloat(totalDays));
       if(validInt(excusedAbsence) === 1){
         totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap);
       }else{
@@ -210,7 +210,7 @@ const ModalDetailPay = ({setOpen, data}) => {
     const totalPay = validFloat(totalIncomes) - totalDeduc;
 
     const newValue = {
-      daysWorked: totalDays,
+      daysWorked: validFloat(totalDays),
       deducAbsence: totalAbsence,
       deducTotal: totalIntDeduc,
       internalDeductions: totalIntDeduc,
@@ -407,7 +407,7 @@ const ModalDetailPay = ({setOpen, data}) => {
           const totalPay = validFloat(totalInc) - totalDeduc;
           setBulkForm({
             excusedAbsence,
-            daysWorked: totalDays,
+            daysWorked: validFloat(totalDays),
             deducAbsence: totalAbsence,
             internalDeductions: totalIntDeduc,
             externalDeductions: totalExtDeduc,

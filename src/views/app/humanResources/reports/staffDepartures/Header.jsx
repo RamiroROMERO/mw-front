@@ -5,9 +5,9 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from '@Helpers/Utils';
 import DateCalendar from '@Components/dateCalendar';
 
-const Header = ({setLoading, table, setTable}) => {
+const Header = ({setLoading, table, setTable, enableGenerateReport}) => {
 
-  const {formState, onInputChange, fnGetData} = useHeader({setLoading, table, setTable});
+  const {formState, onInputChange, fnGetData} = useHeader({setLoading, table, setTable, enableGenerateReport});
 
   const {dateStart, dateEnd} = formState;
 

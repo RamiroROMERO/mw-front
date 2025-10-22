@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { request } from '@Helpers/core';
 import { IntlMessages } from '@Helpers/Utils';
 
-export const useProjectTransfers = ({setLoading}) => {
+export const useProjectTransfers = ({setLoading, adminControl}) => {
   const [listProjects, setListProjects] = useState([]);
+  const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.009")?.active || false;
 
   const [table, setTable] = useState({
       title: IntlMessages("page.reports.table.employeesByCust.title"),
@@ -65,6 +66,7 @@ export const useProjectTransfers = ({setLoading}) => {
     listProjects,
     setLoading,
     table,
+    enableGenerateReport,
     setTable
   }
 

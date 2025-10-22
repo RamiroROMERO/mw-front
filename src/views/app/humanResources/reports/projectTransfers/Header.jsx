@@ -6,9 +6,9 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from '@Helpers/Utils';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 
-const Header = ({listProjects, setLoading, table, setTable}) => {
+const Header = ({listProjects, setLoading, table, setTable, enableGenerateReport}) => {
 
-  const {formState, formValidation, sendForm, onInputChange, fnGetData} = useHeader({setLoading, table, setTable});
+  const {formState, formValidation, sendForm, onInputChange, fnGetData} = useHeader({setLoading, table, setTable, enableGenerateReport});
 
   const {projectId} = formState;
 

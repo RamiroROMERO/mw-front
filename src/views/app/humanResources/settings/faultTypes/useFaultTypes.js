@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { validInt } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
+import notification from '@Containers/ui/Notifications';
 
-export const useFaultTypes = ({setLoading}) => {
+export const useFaultTypes = ({setLoading, screenControl}) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataFaultTypes, setDataFaultTypes] = useState([]);
   const [typesFault, setTypesFault] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -51,6 +53,10 @@ export const useFaultTypes = ({setLoading}) => {
     }
 
     if (id > 0) {
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.PUT(`rrhh/settings/faulTypes/${id}`, formState, () => {
         fnGetData();
@@ -61,6 +67,10 @@ export const useFaultTypes = ({setLoading}) => {
         setLoading(false);
       });
     } else {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/settings/faulTypes', formState, () => {
         fnGetData();
@@ -112,7 +122,8 @@ export const useFaultTypes = ({setLoading}) => {
   const propsToDetailTable = {
     dataFaultTypes,
     onBulkForm,
-    setOpenMsgQuestion, fnSave
+    setOpenMsgQuestion,
+    fnDelete
   }
 
   const propsToDetailTypes = {

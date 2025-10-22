@@ -6,9 +6,9 @@ import DetailBiweeklys from './DetailBiweeklys'
 import { useBiweeklys } from './useBiweeklys'
 import { useDetailTable } from './useDetailTable'
 
-const Biweeklys = ({ setLoading }) => {
+const Biweeklys = ({ setLoading, screenControl }) => {
 
-  const {propsToDetailBiweekly, propsToDetailTable, propsToMsgDelete} = useBiweeklys({setLoading});
+  const {propsToDetailBiweekly, propsToDetailTable, propsToMsgDelete} = useBiweeklys({setLoading, screenControl});
 
   const {table} = useDetailTable({...propsToDetailTable});
 

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { formatDate, formatNumber, IntlMessages } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 
-export const useSalaries = ({setLoading}) => {
+export const useSalaries = ({setLoading, adminControl}) => {
   const [listEmployees, setListEmployees] = useState([]);
+  const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.003")?.active || false;
 
   const [table, setTable] = useState({
     title: IntlMessages("menu.salaries"),
@@ -70,6 +71,7 @@ export const useSalaries = ({setLoading}) => {
     listEmployees,
     setLoading,
     table,
+    enableGenerateReport,
     setTable
   }
 

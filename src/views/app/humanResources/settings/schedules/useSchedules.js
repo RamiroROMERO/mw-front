@@ -4,7 +4,8 @@ import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
 
-export const useSchedules = ({setLoading}) => {
+export const useSchedules = ({setLoading, screenControl}) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataSchedules, setDataSchedules] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const { formState, onBulkForm, onResetForm, onInputChange } = useForm({
@@ -159,6 +160,10 @@ export const useSchedules = ({setLoading}) => {
       status
     }
     if (id > 0) {
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.PUT(`rrhhSchedules/${id}`, data, () => {
         fnGetData();
@@ -169,6 +174,10 @@ export const useSchedules = ({setLoading}) => {
         setLoading(false);
       });
     } else {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.POST('rrhhSchedules', data, () => {
         fnGetData();
@@ -202,7 +211,7 @@ export const useSchedules = ({setLoading}) => {
   const propsToDetailSchedules = {...formState, onInputChange, onResetForm, fnSave }
 
   const propsToDetailTable = {
-    dataSchedules, onBulkForm, setOpenMsgQuestion
+    dataSchedules, onBulkForm, setOpenMsgQuestion, fnDelete
   }
 
   useEffect(() => {

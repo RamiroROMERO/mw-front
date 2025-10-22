@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react'
 import { IntlMessages } from '@Helpers/Utils';
+import notification from '@Containers/ui/Notifications';
 
-export const useDetailTable = ({ dataDaysTypes, onBulkForm, setOpenMsgQuestion }) => {
+export const useDetailTable = ({ dataDaysTypes, onBulkForm, setOpenMsgQuestion, fnDelete }) => {
 
   const fnEditDocument = (item) => {
     onBulkForm(item);
   }
 
   const fnDeleteDocument = (item) => {
+    if (fnDelete === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     onBulkForm({id:item.id});
     setOpenMsgQuestion(true);
   }

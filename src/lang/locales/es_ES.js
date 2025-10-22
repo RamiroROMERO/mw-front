@@ -127,7 +127,7 @@ const esLang = {
   "msg.required.select.service": "Por favor seleccione un servicio!",
   /* Require Input */
   "msg.required.input.price": "Por favor ingrese un precio!",
-  "msg.required.input.dni": "Por favor ingrese un número de identidad correcto!",
+  "msg.required.input.dni": "Por favor ingrese una identidad valida, sin guiones ni espacios!",
   "msg.required.input.date": "Por favor seleccione una fecha!",
   "msg.required.input.typeCustomer": "Por favor seleccione un tipo de cliente!",
   "msg.required.input.creditDays": "Por favor ingrese un número de días de crédito!",
@@ -586,6 +586,7 @@ const esLang = {
   "input.companyName": "Razon Social",
   "input.city1": "Ciudad 1",
   "input.city2": "Ciudad 2",
+  "input.zipCode": "Codigo Postal",
   /* Selects */
   "select.department": "Departamento",
   "select.municipality": "Municipio",
@@ -655,6 +656,8 @@ const esLang = {
   "select.service": "Servicio",
   "select.paymentType": "Tipo de Pago",
   "select.country": "Pais",
+  "select.companyId": "Empresa",
+  "select.taxId": "Tipo Impuesto",
   /* Others */
   "option.yes": "Si",
   "option.no": "No",

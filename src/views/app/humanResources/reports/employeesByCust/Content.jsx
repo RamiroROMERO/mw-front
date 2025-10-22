@@ -3,9 +3,9 @@ import ReactTable from '@Components/reactTable'
 import Header from './Header';
 import { useEmployeesByCust } from './useEmployeesByCust'
 
-const Content = ({setLoading}) => {
+const Content = ({setLoading, adminControl}) => {
 
-  const {propsToHeader, table} = useEmployeesByCust({setLoading});
+  const {propsToHeader, table} = useEmployeesByCust({setLoading, adminControl});
 
   return (
     <>

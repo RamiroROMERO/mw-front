@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { formatNumber, IntlMessages } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 
-export const useControlVacations = ({setLoading}) => {
+export const useControlVacations = ({setLoading, adminControl}) => {
   const [listEmployees, setListEmployees] = useState([]);
+  const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.004")?.active || false;
 
   const [table, setTable] = useState({
     title: IntlMessages("page.vacations.table.vacationsTaken.title"),
@@ -70,6 +71,7 @@ export const useControlVacations = ({setLoading}) => {
     listEmployees,
     setLoading,
     table,
+    enableGenerateReport,
     setTable
   }
 

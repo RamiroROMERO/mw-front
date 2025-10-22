@@ -1,64 +1,14 @@
-import React, { useState } from 'react'
 import { Button, Card, CardBody, Row } from 'reactstrap'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { InputField } from '@Components/inputFields'
 import { Checkbox } from '@Components/checkbox'
 import { IntlMessages } from '@Helpers/Utils'
-import { request } from '@Helpers/core'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import DateCalendar from '@Components/dateCalendar'
 
-const DetailProject = ({id, customerId, code, name, description, initDate, markAssistance, status, listCustomers, onInputChange, fnGetData, onResetForm, setLoading, formValidation, isFormValid}) => {
+const DetailProject = ({customerId, code, name, description, initDate, markAssistance, status, listCustomers, onInputChange, sendForm, fnSave, fnClearInputs, formValidation}) => {
 
-  const [sendForm, setSendForm] = useState(false);
   const {customerIdValid, codeValid, nameValid, initDateValid} = formValidation;
-
-  const fnSave = () =>{
-    setSendForm(true);
-    if(!isFormValid){
-      return;
-    }
-
-    const newData = {
-      customerId,
-      code,
-      name,
-      description,
-      initDate,
-      markAssistance,
-      status
-    }
-
-    if(id === 0){
-      setLoading(true);
-      request.POST('rrhh/process/projects', newData, (resp) => {
-        onInputChange({target:{name:'id', value:resp.data.id}});
-        fnGetData();
-        onResetForm();
-        setSendForm(false);
-        setLoading(false);
-      },(err)=>{
-        console.error(err);
-        setLoading(false);
-      });
-    }else{
-      setLoading(true);
-      request.PUT(`rrhh/process/projects/${id}`, newData, () => {
-        fnGetData();
-        onResetForm();
-        setSendForm(false);
-        setLoading(false);
-      }, (err) => {
-        console.error(err);
-        setLoading(false);
-      });
-    }
-  }
-
-  const fnClearInputs = ()=>{
-    onResetForm();
-    setSendForm(false);
-  }
 
   return (
     <Card className='mb-3'>

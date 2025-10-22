@@ -8,7 +8,7 @@ import ModalNewCust from "./ModalNewCust";
 
 const Content = ({setLoading, screenControl}) => {
 
-  const {table, currentItem, listCountries, propsToMsgDisable, openModalNew, setOpenModalNew, fnGetData} = useCustomer({setLoading, screenControl});
+  const {table, currentItem, listCountries, listCompanies, listGenders, listTypeTax, propsToMsgDisable, openModalNew, setOpenModalNew, fnGetData} = useCustomer({setLoading, screenControl});
 
   const propsToModalNewCustomer = {
     ModalContent: ModalNewCust,
@@ -18,6 +18,9 @@ const Content = ({setLoading, screenControl}) => {
     maxWidth: 'lg',
     data: {
       listCountries,
+      listCompanies,
+      listGenders,
+      listTypeTax,
       currentItem,
       setLoading,
       fnGetData

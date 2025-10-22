@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { request } from '@Helpers/core';
 import { IntlMessages } from '@Helpers/Utils';
 
-export const useEmployeesByCust = ({setLoading}) => {
-
+export const useEmployeesByCust = ({setLoading, adminControl}) => {
+  const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.002")?.active || false;
   const [listCustomers, setListCustomers] = useState([]);
   const [listWorkShifts, setListWorkShifts] = useState([]);
 
@@ -81,6 +81,7 @@ export const useEmployeesByCust = ({setLoading}) => {
     listWorkShifts,
     setLoading,
     table,
+    enableGenerateReport,
     setTable
   }
 

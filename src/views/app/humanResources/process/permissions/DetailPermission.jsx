@@ -9,8 +9,8 @@ import UploadFile from '@Components/uploadFile'
 import DateCalendar from '@Components/dateCalendar'
 import DateTimeCalendar from '@Components/dateTimeCalendar'
 
-const DetailPermission = ({employeeId, date,typeId,applicationTypeId,dateStart,dateEnd,phoneContact,reason,description,
-  observations,authorizedById, filePath, withPayment, setFilePath, status, listImmediateBoss, listEmployees,onInputChange,
+const DetailPermission = ({employeeId, date, typeId, applicationTypeId, dateStart, dateEnd, phoneContact, reason, description,
+  notes, authorizedById, filePath, withPayment, setFilePath, status, listImmediateBoss, listEmployees, onInputChange,
   formValidation, sendForm}) => {
 
   const {employeeIdValid, dateValid, typeIdValid, applicationTypeIdValid, dateStartValid, dateEndValid, reasonValid,
@@ -127,9 +127,9 @@ const DetailPermission = ({employeeId, date,typeId,applicationTypeId,dateStart,d
         <Row>
           <Colxx xxs="12">
             <InputField
-              name='observations'
+              name='notes'
               label='input.observations'
-              value={observations}
+              value={notes}
               onChange={onInputChange}
               type='textarea'
               style={{resize:'none'}}

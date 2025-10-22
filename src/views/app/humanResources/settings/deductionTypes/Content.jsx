@@ -7,9 +7,9 @@ import { useDeductionTypes } from './useDeductionTypes';
 import { useDetailTable } from './useDetailTable';
 import Detail from './Detail';
 
-const Content = ({setLoading}) => {
+const Content = ({setLoading, screenControl}) => {
 
-  const { propsToMsgDelete, propsToDetail, propsToDetailTable} = useDeductionTypes({setLoading});
+  const { propsToMsgDelete, propsToDetail, propsToDetailTable} = useDeductionTypes({setLoading, screenControl});
 
   const {table} = useDetailTable({...propsToDetailTable});
 

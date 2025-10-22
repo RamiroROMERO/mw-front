@@ -73,10 +73,10 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
   }
 
   const fnGetPayrolls = () => {
-    // if (fnCreate === false) {
-    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-    //   return;
-    // }
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     if (validInt(customerId) === 0) {
       notification('warning', 'msg.required.select.customer', 'alert.warning.title');
       return
@@ -133,10 +133,10 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
   }
 
   const fnPrintPayroll = async () => {
-    // if (fnCreate === false) {
-    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-    //   return;
-    // }
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     if (id > 0) {
       setLoading(true);
 
@@ -153,6 +153,14 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
           length: 70,
           isSum: true,
           currency: true
+        },{
+          id: `qty-${item.value}`,
+          title: `Cantidad ${item.label}`,
+          field: `incQty${item.value}`,
+          type: 'decimal',
+          length: 70,
+          isSum: true,
+          currency: false
         });
 
         if(dataDayVacation){
@@ -210,10 +218,10 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
   }
 
   const fnPrintPayrollPdf = () => {
-    // if (fnCreate === false) {
-    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-    //   return;
-    // }
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     if (id > 0) {
       setLoading(true);
 
@@ -248,11 +256,11 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     }
 
     if(typePayroll===1){
-      // if (fnCreate === false) {
-      //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      //   setSendForm(false);
-      //   return;
-      // }
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        setSendForm(false);
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/process/weeklyPayrolls/generatePayroll', newData, (resp) => {
         if (validInt(resp.data.id) > 0) {
@@ -266,11 +274,11 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         setLoading(false);
       });
     }else if(typePayroll===2 || typePayroll===3){
-      // if (fnCreate === false) {
-      //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      //   setSendForm(false);
-      //   return;
-      // }
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        setSendForm(false);
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/process/weeklyPayrolls/generateOtherPayroll', newData, (resp) => {
         if (validInt(resp.data.id) > 0) {
@@ -304,10 +312,10 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
   }
 
   const fnPrintPaymentReceipt = () => {
-    // if (fnCreate === false) {
-    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-    //   return;
-    // }
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     if (id > 0) {
       setEmployeeId(0);
       setOpenModalPrint(true);
@@ -315,10 +323,10 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
   }
 
   const fnPrintDocument = () => {
-    // if (fnCreate === false) {
-    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-    //   return;
-    // }
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     const dataPrint = {
       id,
       typeSheet,
@@ -336,20 +344,20 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
   }
 
   const fnAddDeductions = ()=>{
-    // if (fnCreate === false) {
-    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-    //   return;
-    // }
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     if (id > 0) {
       setOpenModalDeductions(true);
     }
   }
 
   const fnAddIncomes = ()=>{
-    // if (fnCreate === false) {
-    //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-    //   return;
-    // }
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     if(id>0){
       setOpenModalIncomes(true);
     }

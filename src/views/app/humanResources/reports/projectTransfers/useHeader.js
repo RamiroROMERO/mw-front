@@ -2,8 +2,9 @@ import { request } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import { useState } from 'react'
+import notification from '@Containers/ui/Notifications';
 
-export const useHeader = ({setLoading, table, setTable}) => {
+export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) => {
   const [sendForm, setSendForm] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
@@ -29,6 +30,10 @@ export const useHeader = ({setLoading, table, setTable}) => {
   }
 
   const fnGetData = ()=>{
+    if (enableGenerateReport === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
     setSendForm(true);
     if (!isFormValid) {
       return;

@@ -2,9 +2,9 @@ import React from 'react'
 import ReactTable from '@Components/reactTable'
 import { usePendingPayments } from './usePendingPayments'
 
-const PendingPayments = ({setLoading}) => {
+const PendingPayments = ({setLoading, adminControl}) => {
 
-  const {table} = usePendingPayments({setLoading});
+  const {table} = usePendingPayments({setLoading, adminControl});
 
   return (
     <>

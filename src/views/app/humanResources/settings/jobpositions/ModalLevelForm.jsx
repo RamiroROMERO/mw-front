@@ -10,7 +10,7 @@ import { useForm } from "@Hooks/useForms";
 
 const LevelForm = (props) => {
   const { data, setOpen } = props;
-  const { setLoading, fnLevels } = data;
+  const { setLoading, fnLevels, fnCreate } = data;
   const { onInputChange, onResetForm, formState } = useForm({
     id: 0,
     name: '',
@@ -42,6 +42,10 @@ const LevelForm = (props) => {
         setLoading(false);
       });
     } else {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/settings/jobPositionLevels', newdata, () => {
         setOpen(false);

@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from '@Hooks'
 import { request } from '@Helpers/core'
 import { formatDate, validInt } from '@Helpers/Utils'
+import notification from '@Containers/ui/Notifications';
 
-export const useBiweeklys = ({setLoading}) => {
+export const useBiweeklys = ({setLoading, screenControl}) => {
+  const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataBiweeklies, setDataBiweeklies] = useState([]);
   const [sendForm, setSendForm] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -55,6 +57,10 @@ export const useBiweeklys = ({setLoading}) => {
     }
 
     if(formState.id === 0){
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.POST('rrhh/process/byweeklies', formState, (resp) => {
         onInputChange({target:{name:'id', value:resp.data.id}});
@@ -66,6 +72,10 @@ export const useBiweeklys = ({setLoading}) => {
         setLoading(false);
       });
     }else{
+      if (fnUpdate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        return;
+      }
       setLoading(true);
       request.PUT(`rrhh/process/byweeklies/${formState.id}`, formState, () => {
         fnGetData();
@@ -112,7 +122,8 @@ export const useBiweeklys = ({setLoading}) => {
   const propsToDetailTable = {
     dataBiweeklies,
     setBulkForm,
-    setOpenMsgQuestion
+    setOpenMsgQuestion,
+    fnDelete
   }
 
   const propsToMsgDelete = {

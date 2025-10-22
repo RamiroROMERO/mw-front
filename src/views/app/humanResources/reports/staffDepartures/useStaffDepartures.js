@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { formatDate, IntlMessages } from '@Helpers/Utils';
 
-export const useStaffDepartures = ({setLoading}) => {
+export const useStaffDepartures = ({setLoading, adminControl}) => {
+  const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.008")?.active || false;
 
   const [table, setTable] = useState({
     title: IntlMessages("page.reports.table.staffDepartures.title"),
@@ -46,6 +47,7 @@ export const useStaffDepartures = ({setLoading}) => {
   const propsToHeader = {
     setLoading,
     table,
+    enableGenerateReport,
     setTable
   }
 
