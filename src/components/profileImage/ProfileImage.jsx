@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Card,
   CardBody,
@@ -25,6 +25,10 @@ const ProfileImage = ({ initialImage, onUploadFiles = null }) => {
     reader.readAsDataURL(file);
     onUploadFiles && onUploadFiles(e);
   };
+
+  useEffect(() => {
+    setImage(initialImage);
+  }, [initialImage]);
 
   return (
     <Card
