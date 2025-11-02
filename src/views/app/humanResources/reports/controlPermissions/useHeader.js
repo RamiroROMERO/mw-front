@@ -1,10 +1,18 @@
 import React, { useState } from 'react'
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
+import { useForm } from '@/hooks';
 
 export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) => {
 
   const [employeeId, setEmployeeId] = useState(0);
+
+  const { formState, onInputChange } = useForm({
+    dateStart: '',
+    dateEnd: ''
+  });
+
+  const {dateStart, dateEnd} = formState;
 
   const onEmployeeId = e =>{
     const emplId = e.target.value;
@@ -12,11 +20,21 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
   }
 
   const fnExportDocument = async()=>{
-    const where = employeeId>0?{employeeId}:{};
+    let where = employeeId>0?{employeeId}:{};
+
+    if(dateStart!=="" && dateEnd!==""){
+      where = {
+        status:1,
+        dateStart,
+        dateEnd
+      }
+    }
+
     setLoading(true);
     let data = {
       where: where,
       fields: [
+        { title: 'No.', field: 'num', type: 'decimal', length: 20 },
         { title: 'Empleado', field: 'employeeName', type: 'String', length: 150 },
         { title: 'Proyecto', field: 'projectName', type: 'String', length: 100 },
         { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 70},
@@ -48,15 +66,19 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
       isFreeAction: true
     }
 
-    let url = `rrhh/reports/getPermissionsByMonth`;
+    let url = `rrhh/reports/getPermissionsByMonth?status=1`;
 
     if(employeeId>0){
-      url = `${url}?employeeId=${employeeId}`;
+      url = `${url}&employeeId=${employeeId}`;
     }
 
+    if(dateStart!=="" && dateEnd!==""){
+      url = `${url}&dateStart=${dateStart}&dateEnd=${dateEnd}`;
+    }
     setLoading(true);
     request.GET(url, (resp) => {
-      const data = resp.data.map((item) => {
+      const data = resp.data.map((item, idx) => {
+        item.num = idx + 1
         item.employee = item.employeeName
         return item;
       });
@@ -70,8 +92,10 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
 
   return (
     {
+      formState,
       employeeId,
       onEmployeeId,
+      onInputChange,
       fnGetData
     }
   )

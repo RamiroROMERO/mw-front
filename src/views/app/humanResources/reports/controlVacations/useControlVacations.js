@@ -10,9 +10,14 @@ export const useControlVacations = ({setLoading, adminControl}) => {
     title: IntlMessages("page.vacations.table.vacationsTaken.title"),
     columns: [
       {
+        text: IntlMessages("table.column.no"),
+        dataField: "num",
+        headerStyle: { width: "5%" }
+      },
+      {
         text: IntlMessages("select.employee"),
         dataField: "employee",
-        headerStyle: { width: "30%" }
+        headerStyle: { width: "25%" }
       },
       {
         text: IntlMessages("select.project"),

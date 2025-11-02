@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
 import { useForm } from '@Hooks';
-import { validFloat, validInt } from '@Helpers/Utils';
+import { getCurrentDate, validFloat, validInt } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 import { PATH_FILES } from '/src/helpers/pathFiles';
@@ -255,6 +255,22 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
           onInputChange({ target: { name: 'id', value: resp.data.id } });
           setLoading(false);
           fnGetAreaManager();
+
+          // guardar historial
+          const dataHistory = {
+            date: getCurrentDate(),
+            employeeId: resp.data.id,
+            reason: 'Primer Ingreso',
+            status: true,
+            isHireable: true
+          }
+          setLoading(true);
+          request.POST('rrhh/process/employeeHistory', dataHistory, () => {
+          }, (err) => {
+            console.error(err);
+            setLoading(false);
+          }, false);
+
         }, (err) => {
           console.error(err);
           setLoading(false);

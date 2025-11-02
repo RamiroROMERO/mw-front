@@ -8,12 +8,25 @@ export const useStaffDepartures = ({setLoading, adminControl}) => {
     title: IntlMessages("page.reports.table.staffDepartures.title"),
     columns: [
       {
+        text: IntlMessages("table.column.no"),
+        dataField: "num",
+        headerStyle: { width: "10%" }
+      },
+      {
         text: IntlMessages("select.employee"),
         dataField: "employee",
         headerStyle: { width: "30%" }
       },
       {
-        text: IntlMessages("table.column.date"),
+        text: IntlMessages("table.column.dateIn"),
+        dataField: "dateIn",
+        headerStyle: {width: "15%"},
+        cell:({row})=>{
+          return (formatDate(row.original.dateIn));
+        }
+      },
+      {
+        text: IntlMessages("table.column.dateOut"),
         dataField: "date",
         headerStyle: {width: "15%"},
         cell:({row})=>{
@@ -23,7 +36,7 @@ export const useStaffDepartures = ({setLoading, adminControl}) => {
       {
         text: IntlMessages("page.employees.modal.viewHistory.table.comment"),
         dataField: "reason",
-        headerStyle: {width: "30%"}
+        headerStyle: {width: "20%"}
       },
       {
         text: IntlMessages("page.employees.modal.viewHistory.table.column.status"),

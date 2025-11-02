@@ -10,9 +10,14 @@ export const useSalaries = ({setLoading, adminControl}) => {
     title: IntlMessages("menu.salaries"),
     columns: [
       {
+        text: IntlMessages("table.column.no"),
+        dataField: "num",
+        headerStyle: { width: "5%" }
+      },
+      {
         text: IntlMessages("select.employee"),
         dataField: "employee",
-        headerStyle: { width: "40%" }
+        headerStyle: { width: "35%" }
       },
       {
         text: IntlMessages("table.column.dni"),

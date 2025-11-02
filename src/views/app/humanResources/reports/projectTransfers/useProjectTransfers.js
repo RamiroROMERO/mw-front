@@ -10,6 +10,11 @@ export const useProjectTransfers = ({setLoading, adminControl}) => {
       title: IntlMessages("page.reports.table.employeesByCust.title"),
       columns: [
         {
+          text: IntlMessages("table.column.no"),
+          dataField: "num",
+          headerStyle: { width: "5%" }
+        },
+        {
           text: IntlMessages("select.dateIn"),
           dataField: "dateIn",
           type: 'date',
@@ -18,7 +23,7 @@ export const useProjectTransfers = ({setLoading, adminControl}) => {
         {
           text: IntlMessages("select.employee"),
           dataField: "employee",
-          headerStyle: { width: "30%" }
+          headerStyle: { width: "25%" }
         },
         {
           text: IntlMessages("input.code"),

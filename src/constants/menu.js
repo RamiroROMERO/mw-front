@@ -1081,6 +1081,11 @@ const data = [
             to: `${adminRoot}/humanResources/reports/pendingPayments`,
           },
           {
+            icon: 'bi bi-person-add',
+            label: 'menu.newStaff',
+            to: `${adminRoot}/humanResources/reports/newStaff`,
+          },
+          {
             icon: 'bi bi-person-dash',
             label: 'menu.staffDepartures',
             to: `${adminRoot}/humanResources/reports/staffDepartures`,
@@ -1089,6 +1094,11 @@ const data = [
             icon: 'bi bi-arrow-left-right',
             label: 'menu.projectTransfers',
             to: `${adminRoot}/humanResources/reports/projectTransfers`,
+          },
+          {
+            icon: 'bi bi-cash',
+            label: 'menu.biweeklyIncomes',
+            to: `${adminRoot}/humanResources/reports/biweeklyIncomes`,
           }
         ],
       },

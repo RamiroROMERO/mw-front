@@ -29,18 +29,15 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
         { title: 'Empleado', field: 'employeeName', type: 'String', length: 120 },
         { title: 'Proyecto', field: 'projectName', type: 'String', length: 100 },
         { title: 'Puesto', field: 'jobPositionName', type: 'String', length: 100 },
-        { title: 'Salario', field: 'defaultSalary', type: 'decimal', length: 50 },
+        { title: 'Salario', field: 'defaultSalary', type: 'decimal', length: 50, currency: true },
         { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 40},
-        { title: 'Fecha Salida', field: 'date', type: 'String', length: 40},
-        { title: 'Motivo', field: 'reason', type: 'String', length: 120},
-        { title: 'Estado', field: 'statusName', type: 'String', length: 40 },
-        { title: 'Es Contratable', field: 'hireable', type: 'String', length: 50 }
+        { title: 'Comentario', field: 'reason', type: 'String', length: 120},
       ],
       headerData: [],
-      reportTitle: "Reporte de Egresos de Personal",
-      nameXLSXFile: "EgresosDePersonal.xlsx",
+      reportTitle: "Reporte de Altas de Personal",
+      nameXLSXFile: "altasDePersonal.xlsx",
     };
-    await request.fnExportToXLSX("rrhh/process/employeeHistory/exportInactivesXlsx", data, "EgresosDePersonal.xlsx");
+    await request.fnExportToXLSX("rrhh/process/employeeHistory/exportActivesXlsx", data, "AltasDePersonal.xlsx");
     setLoading(false);
   }
 
@@ -49,7 +46,7 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
     }
-    let url = `rrhh/process/employeeHistory/findInactives?status=0`;
+    let url = `rrhh/process/employeeHistory/findActives?status=1`;
 
     if(dateStart!=="" && dateEnd!==""){
       url = `${url}&dateStart=${dateStart}&dateEnd=${dateEnd}`;
@@ -69,8 +66,6 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
         item.num = idx + 1
         item.employee = `${item.rrhhEmployee.firstName}  ${item.rrhhEmployee.secondName}  ${item.rrhhEmployee.lastName}  ${item.rrhhEmployee.secondLastName}`
         item.dateIn = item.rrhhEmployee.dateIn
-        item.hireable = item.isHireable === true ? 'Si' : 'No'
-        item.statusName = item.status === true ? 'Activo' : 'Inactivo'
         return item;
       });
       setTable({ ...table, data: employees, actions: [newActions] });

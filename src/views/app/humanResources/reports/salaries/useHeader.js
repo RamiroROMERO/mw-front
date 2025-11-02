@@ -23,7 +23,7 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
   }
 
   const fnExportDocument = async()=>{
-    const where = employeeId>0?{id: employeeId}:{};
+    const where = employeeId>0?{id: employeeId, status: 1}:{status: 1};
     const nameXLSXFile = "Reporte de Salarios y Cuentas Bancarias.xlsx";
 
     let otherFields = [];
@@ -39,7 +39,7 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
     let data = {
       where,
       fields: [
-        { title: 'N.', field: 'id', type: 'String', length: 20 },
+        { title: 'No.', field: 'num', type: 'decimal', length: 20 },
         { title: 'Identidad', field: 'dni', type: 'String', length: 60 },
         { title: 'Empleado', field: 'employeeName', type: 'String', length: 140 },
         { title: 'Código en Proyecto', field: 'codeEmployee', type: 'String', length: 70 },
@@ -69,15 +69,16 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
       isFreeAction: true
     }
 
-    let url = `rrhh/process/employees`;
+    let url = `rrhh/process/employees?status=1`;
 
     if(employeeId>0){
-      url = `${url}?id=${employeeId}`;
+      url = `${url}&id=${employeeId}`;
     }
 
     setLoading(true);
     request.GET(url, (resp) => {
-      const dataEmployees = resp.data.map((item) => {
+      const dataEmployees = resp.data.map((item, idx) => {
+        item.num = idx + 1
         item.employee = `${item.firstName}  ${item.secondName}  ${item.lastName}  ${item.secondLastName}`
         return item;
       });

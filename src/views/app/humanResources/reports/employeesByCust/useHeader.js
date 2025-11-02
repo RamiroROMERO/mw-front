@@ -51,9 +51,10 @@ export const useHeader = ({setLoading, table, setTable, listCustomers, enableGen
         status: 1
       },
       fields: [
+        { title: 'No.', field: 'num', type: 'decimal', length: 20 },
         { title: 'Empleado', field: 'employeeName', type: 'String', length: 120 },
-        { title: 'Proyecto', field: 'project', type: 'String', length: 70},
-        { title: 'Turno', field: 'workShifts', type: 'String', length: 70},
+        { title: 'Proyecto', field: 'project', type: 'String', length: 100},
+        { title: 'Turno', field: 'workShifts', type: 'String', length: 100},
         { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 40 }
       ],
       headerData: [
@@ -94,7 +95,8 @@ export const useHeader = ({setLoading, table, setTable, listCustomers, enableGen
 
     setLoading(true);
     request.GET(url, (resp) => {
-      const projectDeta = resp.data.map((item) => {
+      const projectDeta = resp.data.map((item, idx) => {
+        item.num = idx + 1
         item.workShifts = item.rrhhSchedule?.name || ''
         item.employee = `${item.rrhhEmployee?.firstName || ''} ${item.rrhhEmployee?.secondName || ''} ${item.rrhhEmployee?.lastName || ''} ${item.rrhhEmployee?.secondLastName || ''}`
         item.project = item.rrhhProject?.name || ''

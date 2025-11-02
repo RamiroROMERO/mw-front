@@ -10,9 +10,14 @@ export const useControlIncapacities = ({setLoading, adminControl}) => {
     title: IntlMessages("page.incapacities.table.controlIncapacities.title"),
     columns: [
       {
+        text: IntlMessages("table.column.no"),
+        dataField: "num",
+        headerStyle: { width: "10%" }
+      },
+      {
         text: IntlMessages("select.employee"),
         dataField: "employee",
-        headerStyle: { width: "45%" }
+        headerStyle: { width: "35%" }
       },
       {
         text: IntlMessages("select.project"),

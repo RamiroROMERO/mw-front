@@ -1,8 +1,12 @@
 import React from 'react'
 import { CardHotel } from '@/components/cards'
 import PieChart from '@/components/charts/PieChart'
+import ReactTable from "@Components/reactTable";
 import { Colxx } from '@/components/common/CustomBootstrap'
 import { Card, CardBody, Row, Table } from 'reactstrap'
+import { useContentHotel } from './useContentHotel'
+import { RadioGroup } from '@/components/radioGroup';
+import DateCalendar from '@/components/dateCalendar';
 
 const ContentHotel = ({ setLoading }) => {
 
@@ -13,6 +17,10 @@ const ContentHotel = ({ setLoading }) => {
       data: [{ label: 'Disponible', value: 4 }, { label: 'Ocupada', value: 8 }, { label: 'Bloqueada', value: 2 }, { label: 'Mantenimiento', value: 1 }]
     }
   ]
+
+  const {table, formState, onInputChange} = useContentHotel({setLoading});
+
+  const {date, type} = formState;
 
   return (
     <>
@@ -33,190 +41,35 @@ const ContentHotel = ({ setLoading }) => {
       </Row >
       <Row>
         <Colxx xxs={12} md={8}>
-          <Card>
+          <Card className='mb-3'>
             <CardBody>
-              <h4>Detalle de Reservas</h4>
-              <Table
-                bordered
-                striped
-              >
-                <thead>
-                  <tr>
-                    <th>
-                      #
-                    </th>
-                    <th>
-                      First Name
-                    </th>
-                    <th>
-                      Last Name
-                    </th>
-                    <th>
-                      Habitación
-                    </th>
-                    <th>
-                      Tiempo
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">
-                      1
-                    </th>
-                    <td>
-                      Mark
-                    </td>
-                    <td>
-                      Otto
-                    </td>
-                    <td>
-                      1
-                    </td>
-                    <td>
-                      1
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      2
-                    </th>
-                    <td>
-                      Jacob
-                    </td>
-                    <td>
-                      Thornton
-                    </td>
-                    <td>
-                      3
-                    </td>
-                    <td>
-                      1
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      3
-                    </th>
-                    <td>
-                      Larry
-                    </td>
-                    <td>
-                      the Bird
-                    </td>
-                    <td>
-                      8
-                    </td>
-                    <td>
-                      2
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      1
-                    </th>
-                    <td>
-                      Mark
-                    </td>
-                    <td>
-                      Otto
-                    </td>
-                    <td>
-                      1
-                    </td>
-                    <td>
-                      1
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      2
-                    </th>
-                    <td>
-                      Jacob
-                    </td>
-                    <td>
-                      Thornton
-                    </td>
-                    <td>
-                      3
-                    </td>
-                    <td>
-                      1
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      3
-                    </th>
-                    <td>
-                      Larry
-                    </td>
-                    <td>
-                      the Bird
-                    </td>
-                    <td>
-                      8
-                    </td>
-                    <td>
-                      2
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      1
-                    </th>
-                    <td>
-                      Mark
-                    </td>
-                    <td>
-                      Otto
-                    </td>
-                    <td>
-                      1
-                    </td>
-                    <td>
-                      1
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      2
-                    </th>
-                    <td>
-                      Jacob
-                    </td>
-                    <td>
-                      Thornton
-                    </td>
-                    <td>
-                      3
-                    </td>
-                    <td>
-                      1
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      3
-                    </th>
-                    <td>
-                      Larry
-                    </td>
-                    <td>
-                      the Bird
-                    </td>
-                    <td>
-                      8
-                    </td>
-                    <td>
-                      2
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
+              <Row>
+                <Colxx xxs={12} md={6}>
+                  <DateCalendar
+                    name="date"
+                    value={date}
+                    label='select.date'
+                    onChange={onInputChange}
+                  />
+                </Colxx>
+                <Colxx xxs={12} md={6}>
+                  <RadioGroup
+                    label="select.status"
+                    name="type"
+                    value={type}
+                    onChange={onInputChange}
+                    options={
+                      [
+                        { id: 1, label: "radio.availability" },
+                        { id: 2, label: "radio.occupancy" }
+                      ]
+                    }
+                  />
+                </Colxx>
+              </Row>
             </CardBody>
           </Card>
+          <ReactTable {...table} />
 
         </Colxx>
         <Colxx xxs={12} md={4}>

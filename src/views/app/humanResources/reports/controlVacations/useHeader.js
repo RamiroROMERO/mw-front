@@ -11,11 +11,12 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
   }
 
   const fnExportDocument = async()=>{
-    const where = employeeId>0?{employeeId}:{};
+    const where = employeeId>0?{employeeId, status: 1}:{status: 1};
     setLoading(true);
     let data = {
       where: where,
       fields: [
+        { title: 'No.', field: 'num', type: 'decimal', length: 20 },
         { title: 'Empleado', field: 'employeeName', type: 'String', length: 150 },
         { title: 'Proyecto', field: 'projectName', type: 'String', length: 100 },
         { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 70},
@@ -57,7 +58,8 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
 
     setLoading(true);
     request.GET(url, (resp) => {
-      const vacations = resp.data.map((item) => {
+      const vacations = resp.data.map((item, idx) => {
+        item.num = idx + 1
         item.employee = item.employeeName
         return item;
       });

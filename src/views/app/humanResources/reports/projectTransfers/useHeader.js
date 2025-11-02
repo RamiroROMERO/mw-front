@@ -49,7 +49,8 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
 
     setLoading(true);
     request.GET(`rrhh/process/projectDetail/findProjectTransfers?projectId=${projectId}`, (resp) => {
-      const projectDeta = resp.data.map((item) => {
+      const projectDeta = resp.data.map((item, idx) => {
+        item.num = idx + 1
         item.workShifts = item.rrhhSchedule?.name || ''
         item.employee = `${item.rrhhEmployee?.firstName || ''} ${item.rrhhEmployee?.secondName || ''} ${item.rrhhEmployee?.lastName || ''} ${item.rrhhEmployee?.secondLastName || ''}`
         item.prevProject = item.rrhhProject?.name || ''

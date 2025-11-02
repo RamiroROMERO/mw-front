@@ -32,14 +32,24 @@ const DetailTable = ({idPayroll, typePayroll, dateStart, dateEnd, notes, dataDet
     title: IntlMessages("page.resumePayroll.table.title"),
     columns: typePayroll===1?[
       {
+        text: IntlMessages("table.column.no"),
+        dataField: "num",
+        headerStyle: { width: "5%" }
+      },
+      {
         text: IntlMessages("table.column.employee"),
         dataField: "employee",
         headerStyle: {width: "20%"}
       },
       {
+        text: IntlMessages("table.column.dateIn"),
+        dataField: "dateIn",
+        headerStyle: { width: "9%" }
+      },
+      {
         text: IntlMessages("page.resumePayroll.table.jobPosition"),
         dataField: "jobPosition",
-        headerStyle: {width: "20%"}
+        headerStyle: {width: "15%"}
       },
       {
         text: IntlMessages("page.employees.select.workSchedule"),
@@ -49,26 +59,36 @@ const DetailTable = ({idPayroll, typePayroll, dateStart, dateEnd, notes, dataDet
       {
         text: IntlMessages("page.resumePayroll.table.totalIncome"),
         dataField: "totalIncomesValue",
-        headerStyle: {width: "15%"},
+        headerStyle: {width: "12%"},
         style:{textAlign: 'right'}
       },
       {
         text: IntlMessages("page.resumePayroll.table.totalDeductions"),
         dataField: "totalDeductionsValue",
-        headerStyle: {width: "15%"},
+        headerStyle: {width: "12%"},
         style:{textAlign: 'right'}
       },
       {
         text: IntlMessages("page.resumePayroll.table.totalPayment"),
         dataField: "totalPaymentValue",
-        headerStyle: {width: "15%"},
+        headerStyle: {width: "12%"},
         style:{textAlign: 'right'}
       }
     ]:[
       {
+        text: IntlMessages("table.column.no"),
+        dataField: "num",
+        headerStyle: { width: "5%" }
+      },
+      {
         text: IntlMessages("table.column.employee"),
         dataField: "employee",
-        headerStyle: {width: "30%"}
+        headerStyle: {width: "25%"}
+      },
+      {
+        text: IntlMessages("table.column.dateIn"),
+        dataField: "dateIn",
+        headerStyle: { width: "10%" }
       },
       {
         text: IntlMessages("page.resumePayroll.table.jobPosition"),
@@ -78,12 +98,12 @@ const DetailTable = ({idPayroll, typePayroll, dateStart, dateEnd, notes, dataDet
       {
         text: IntlMessages("page.employees.select.workSchedule"),
         dataField: "turnName",
-        headerStyle: {width: "25%"}
+        headerStyle: {width: "20%"}
       },
       {
         text: IntlMessages("page.resumePayroll.table.totalPayment"),
         dataField: "totalPaymentValue",
-        headerStyle: {width: "20%"},
+        headerStyle: {width: "15%"},
         style:{textAlign: 'right'}
       }
     ],

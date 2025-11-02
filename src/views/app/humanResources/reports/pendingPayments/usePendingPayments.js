@@ -6,13 +6,26 @@ import notification from '@Containers/ui/Notifications';
 export const usePendingPayments = ({setLoading, adminControl}) => {
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.007")?.active || false;
 
+  const [projectId, setProjectId] = useState(0);
+  const [listProjects, setListProjects] = useState([]);
+
+  const onProjectId = e =>{
+    const idProject = e.target.value;
+    setProjectId(idProject);
+  }
+
   const [table, setTable] = useState({
     title: IntlMessages("menu.pendingPayments"),
     columns: [
       {
+        text: IntlMessages("table.column.no"),
+        dataField: "num",
+        headerStyle: { width: "10%" }
+      },
+      {
         text: IntlMessages("table.column.employee"),
         dataField: "employee",
-        headerStyle: { width: "25%" }
+        headerStyle: { width: "20%" }
       },
       {
         text: IntlMessages("table.column.date"),
@@ -22,7 +35,7 @@ export const usePendingPayments = ({setLoading, adminControl}) => {
       {
         text: IntlMessages("table.column.description"),
         dataField: "description",
-        headerStyle: {width: "20%"}
+        headerStyle: {width: "15%"}
       },
       {
         text: IntlMessages("table.column.valueTotal"),
@@ -61,14 +74,15 @@ export const usePendingPayments = ({setLoading, adminControl}) => {
   });
 
   const fnExportDocument = async()=>{
+    let where = projectId>0?{projectId, status: 1}:{status: 1};
     setLoading(true);
     let data = {
-      where: {
-        status: 1
-      },
+      where,
       fields: [
+        { title: 'No.', field: 'num', type: 'decimal', length: 20 },
         { title: 'Empleado', field: 'employeeName', type: 'String', length: 120 },
         { title: 'Fecha', field: 'date', type: 'String', length: 70},
+        { title: 'Proyecto', field: 'projectName', type: 'String', length: 70},
         { title: 'Descripcion', field: 'description', type: 'String', length: 120},
         { title: 'Valor Capital', field: 'valueCapital', type: 'decimal', length: 50, isSum: true, currency: true},
         { title: 'Valor Interés', field: 'valueInterest', type: 'decimal', length: 50, isSum: true, currency: true},
@@ -98,8 +112,14 @@ export const usePendingPayments = ({setLoading, adminControl}) => {
       isFreeAction: true
     }
 
+    let url = `rrhh/process/paymentPlans/getPendingPayment?status=1`;
+
+    if(projectId>0){
+      url = `${url}&projectId=${projectId}`;
+    }
+
     setLoading(true);
-    request.GET(`rrhh/process/paymentPlans/getPendingPayment?status=1`, (resp) => {
+    request.GET(url, (resp) => {
       const pendingPayments = resp.data.map((item) => {
         item.employee = item.employeeName
         return item;
@@ -113,12 +133,34 @@ export const usePendingPayments = ({setLoading, adminControl}) => {
   }
 
   useEffect(()=>{
-    fnGetData();
+    setLoading(true);
+    request.GET('rrhh/process/projects', (resp) => {
+      const projectsList = resp.data.map((item) => {
+        return {
+          id: item.id,
+          label: `${item.code}| ${item.name}`,
+          value: item.id
+        }
+      });
+      setListProjects(projectsList);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
   }, []);
+
+  const propsToHeader = {
+    projectId,
+    listProjects,
+    onProjectId,
+    fnGetData
+  }
 
   return (
     {
-      table
+      table,
+      propsToHeader
     }
   )
 }

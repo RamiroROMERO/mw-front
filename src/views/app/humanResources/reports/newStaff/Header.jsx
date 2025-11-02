@@ -1,14 +1,13 @@
 import React from 'react'
+import { useHeader } from './useHeader'
 import { Button, Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from '@Helpers/Utils';
-import { useHeader } from './useHeader';
-import SearchSelect from '@Components/SearchSelect/SearchSelect';
-import DateCalendar from '@/components/dateCalendar';
+import DateCalendar from '@Components/dateCalendar';
 
-const Header = ({listEmployees, setLoading, table, setTable, enableGenerateReport}) => {
+const Header = ({setLoading, table, setTable, enableGenerateReport}) => {
 
-  const {employeeId, formState, onInputChange, onEmployeeId, fnGetData} = useHeader({setLoading, table, setTable, enableGenerateReport});
+  const {formState, onInputChange, fnGetData} = useHeader({setLoading, table, setTable, enableGenerateReport});
 
   const {dateStart, dateEnd} = formState;
 
@@ -16,16 +15,7 @@ const Header = ({listEmployees, setLoading, table, setTable, enableGenerateRepor
     <Card className='mb-3'>
       <CardBody>
         <Row>
-          <Colxx xxs={12} md={7} lg={6}>
-            <SearchSelect
-              label='select.employee'
-              name='employeeId'
-              inputValue={employeeId}
-              options={listEmployees}
-              onChange={onEmployeeId}
-            />
-          </Colxx>
-          <Colxx xxs={12} md={5} lg={3}>
+          <Colxx xxs={12} md={6} lg={6}>
             <DateCalendar
               name="dateStart"
               value={dateStart}
@@ -33,7 +23,7 @@ const Header = ({listEmployees, setLoading, table, setTable, enableGenerateRepor
               onChange={onInputChange}
             />
           </Colxx>
-          <Colxx xxs={12} md={5} lg={3}>
+          <Colxx xxs={12} md={6} lg={6}>
             <DateCalendar
               name="dateEnd"
               value={dateEnd}
@@ -41,7 +31,7 @@ const Header = ({listEmployees, setLoading, table, setTable, enableGenerateRepor
               onChange={onInputChange}
             />
           </Colxx>
-          <Colxx xxs={12} md={7} lg={12} style={{textAlign: 'right'}}>
+          <Colxx xxs={12} style={{textAlign: 'right'}}>
             <Button
               color="primary" onClick={fnGetData}><i className="iconsminds-save" /> {IntlMessages("button.filter")}
             </Button>

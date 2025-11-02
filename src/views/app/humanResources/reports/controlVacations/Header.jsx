@@ -13,7 +13,7 @@ const Header = ({listEmployees, setLoading, table, setTable, enableGenerateRepor
     <Card className='mb-3'>
       <CardBody>
         <Row>
-          <Colxx xxs={12} md={7} lg={6}>
+          <Colxx xxs={12} md={6} lg={6}>
             <SearchSelect
               label='select.employee'
               name='employeeId'
@@ -22,7 +22,7 @@ const Header = ({listEmployees, setLoading, table, setTable, enableGenerateRepor
               onChange={onEmployeeId}
             />
           </Colxx>
-          <Colxx xxs={12} md={6} lg={12} style={{textAlign: 'right'}}>
+          <Colxx xxs={12} md={6} lg={6} style={{textAlign: 'right'}}>
             <Button
               color="primary" onClick={fnGetData}><i className="iconsminds-save" /> {IntlMessages("button.filter")}
             </Button>

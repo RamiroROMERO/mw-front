@@ -114,13 +114,15 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
   const fnViewDetailPayroll = (idPayroll) => {
     setLoading(true);
     request.GET(`rrhh/process/weeklyPayrollDetails/payrollDetail?fatherId=${idPayroll}`, (resp) => {
-      const payrollDeta = resp.data.map(item => {
+      const payrollDeta = resp.data.map((item, idx) => {
+        item.num = idx + 1
         item.employee = `${item.rrhhEmployee?.firstName} ${item.rrhhEmployee?.secondName} ${item.rrhhEmployee?.lastName} ${item.rrhhEmployee?.secondLastName}` || ''
         item.jobPosition = item.rrhhJobPosition?.name || ''
         item.totalIncomesValue = formatNumber(validFloat(item.totalIncomes))
         item.totalDeductionsValue = formatNumber(validFloat(item.totalDeductions))
         item.totalPaymentValue = formatNumber(validFloat(item.totalPayment))
         item.turnName = item.rrhhSchedule?.name || ''
+        item.dateIn = formatDate(item.rrhhEmployee.dateIn)
         return item;
       });
       setDataDetailPayroll(payrollDeta);
@@ -140,17 +142,16 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     if (id > 0) {
       setLoading(true);
 
-      const dataDayVacation = listTypeIncomes.find(item => item.isVacationDay === 1);
-
-      const otherFields = []
+      const otherFields = [];
+      const qtyDaysFields = [];
 
       listTypeIncomes.map((item)=>{
         otherFields.push({
           id: item.value,
-          title: item.label,
+          title: `Total ${item.label}`,
           field: `inc${item.value}`,
           type: 'decimal',
-          length: 70,
+          length: 50,
           isSum: true,
           currency: true
         },{
@@ -158,21 +159,20 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
           title: `Cantidad ${item.label}`,
           field: `incQty${item.value}`,
           type: 'decimal',
-          length: 70,
-          isSum: true,
+          length: 50,
+          isSum: false,
           currency: false
         });
 
-        if(dataDayVacation){
-          if(item.value === dataDayVacation.value){
-            otherFields.push({
-              title: "Dias Vacaciones",
-              field: `daysVacations`,
-              type: 'decimal',
-              length: 70
-            });
-          }
-        }
+        qtyDaysFields.push({
+          id: `qtyDays-${item.value}`,
+          title: `${item.label}`,
+          field: `incQtyDays${item.value}`,
+          type: 'decimal',
+          length: 40,
+          isSum: false,
+          currency: false
+        });
       });
 
       const otherFields2 = listTypeDeductions.map((item)=>{
@@ -181,7 +181,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
           title: item.label,
           field: `deduc${item.value}`,
           type: 'decimal',
-          length: 70,
+          length: 60,
           isSum: true,
           currency: true
         }
@@ -192,14 +192,17 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
           id
         },
         fields: [
+          { title: 'No.', field: 'num', type: 'decimal', length: 20 },
           { title: 'Identidad', field: 'dni', type: 'String', length: 50 },
           { title: 'Empleado', field: 'employeeName', type: 'String', length: 120 },
+          { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 40},
           { title: 'Cargo', field: 'positionName', type: 'String', length: 70, isSum: false, curreny: false },
           { title: 'Forma de Pago', field: 'paymentMethod', type: 'String', length: 70, isSum: false, curreny: false },
           { title: 'Salario Base Mensual', field: 'montlySalary', type: 'decimal', length: 50, isSum: true, currency: true },
-          { title: typePayroll===4?'Dias Vacaciones: ':'Dias Trabajados: ', field: 'daysWorked', type: 'decimal', length: 40, isSum: false, currency: false },
-          { title: 'Dias Vacaciones Gozadas', field: 'daysVacationTaken', type: 'decimal', length: 40, isSum: false, currency: false },
-          { title: 'Ingreso Quincenal', field: 'incWeekly', type: 'decimal', length: 50, isSum: true, currency: true },
+          { title: 'Salario Quincenal', field: 'incWeekly', type: 'decimal', length: 50, isSum: true, currency: true },
+          { title: 'Dias Vacaciones Gozadas', field: 'daysVacationTaken', type: 'decimal', length: 50, isSum: false, currency: false },
+          ...qtyDaysFields,
+          { title: typePayroll===4?'Dias Vacaciones: ':'Total Dias', field: 'totalDays', type: 'decimal', length: 40, isSum: false, currency: false },
           ...otherFields,
           { title: 'Total Ingresos', field: 'totalIncomes', type: 'decimal', length: 50, isSum: true, currency: true },
           ...otherFields2,
@@ -208,6 +211,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         ],
         otherFields,
         otherFields2,
+        qtyDaysFields,
         headerData: [],
         reportTitle: "Planilla Quincenal",
         nameXLSXFile: "Planilla.xlsx",

@@ -11,14 +11,19 @@ export const useEmployeesByCust = ({setLoading, adminControl}) => {
     title: IntlMessages("page.reports.table.employeesByCust.title"),
     columns: [
       {
+        text: IntlMessages("table.column.no"),
+        dataField: "num",
+        headerStyle: { width: "10%" }
+      },
+      {
         text: IntlMessages("select.employee"),
         dataField: "employee",
-        headerStyle: { width: "35%" }
+        headerStyle: { width: "30%" }
       },
       {
         text: IntlMessages("select.project"),
         dataField: "project",
-        headerStyle: { width: "25%" }
+        headerStyle: { width: "20%" }
       },
       {
         text: IntlMessages("select.workShifts"),

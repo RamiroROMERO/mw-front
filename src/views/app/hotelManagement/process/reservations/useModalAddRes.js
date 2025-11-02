@@ -158,7 +158,7 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
       if(statusId===3 || statusId===6 || statusId===7){
         const dataUpdate = {
           statusId: 1
-        }
+      }
 
         setLoading(true);
         request.PUT(`hotel/settings/rooms/${idRoom}`, dataUpdate, () => {
@@ -170,6 +170,22 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
         }, false);
         setOpen(false);
       }
+
+      //calendarizar reserva si el status es 5-Check-IN
+      if(statusId===5){
+        const dataCalendar = {
+          bookingId: id
+        }
+
+        setLoading(true);
+        request.POST('hotel/process/calendarBooking/programBooking', dataCalendar, (resp) => {
+          setLoading(false);
+        }, (err) => {
+          console.log(err);
+          setLoading(false);
+        })
+      }
+
     }, (err) => {
       console.log(err);
       setLoading(false);

@@ -4,10 +4,13 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from '@Helpers/Utils';
 import { useHeader } from './useHeader';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import DateCalendar from '@/components/dateCalendar';
 
 const Header = ({listEmployees, setLoading, table, setTable, enableGenerateReport}) => {
 
-  const {employeeId, onEmployeeId, fnGetData} = useHeader({setLoading, table, setTable, enableGenerateReport});
+  const {employeeId, formState, onInputChange, onEmployeeId, fnGetData} = useHeader({setLoading, table, setTable, enableGenerateReport});
+
+  const {dateStart, dateEnd} = formState;
 
   return (
     <Card className='mb-3'>
@@ -22,7 +25,23 @@ const Header = ({listEmployees, setLoading, table, setTable, enableGenerateRepor
               onChange={onEmployeeId}
             />
           </Colxx>
-          <Colxx xxs={12} md={6} lg={12} style={{textAlign: 'right'}}>
+          <Colxx xxs={12} md={5} lg={3}>
+            <DateCalendar
+              name="dateStart"
+              value={dateStart}
+              label='select.dateStart'
+              onChange={onInputChange}
+            />
+          </Colxx>
+          <Colxx xxs={12} md={5} lg={3}>
+            <DateCalendar
+              name="dateEnd"
+              value={dateEnd}
+              label='select.dateEnd'
+              onChange={onInputChange}
+            />
+          </Colxx>
+          <Colxx xxs={12} md={7} lg={12} style={{textAlign: 'right'}}>
             <Button
               color="primary" onClick={fnGetData}><i className="iconsminds-save" /> {IntlMessages("button.filter")}
             </Button>
