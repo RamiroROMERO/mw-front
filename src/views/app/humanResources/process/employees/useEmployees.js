@@ -5,6 +5,10 @@ import { getCurrentDate, validFloat, validInt } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 import { PATH_FILES } from '/src/helpers/pathFiles';
+import ViewPdf from '@/components/ViewPDF/ViewPdf';
+import ModalPermissions from './ModalPermissions';
+import ModalVacations from './ModalVacations';
+import ModalIncapacities from './ModalIncapacities';
 
 export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
@@ -31,9 +35,15 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
   const [openModalProjects, setOpenModalProjects] = useState(false);
   const [openModalChangeSalary, setOpenModalChangeSalary] = useState(false);
   const [openModalChangeStatus, setOpenModalChangeStatus] = useState(false);
+  const [openModalPermissions, setOpenModalPermissions] = useState(false);
+  const [openModalVacations, setOpenModalVacations] = useState(false);
+  const [openModalIncapacities, setOpenModalIncapacities] = useState(false);
   const [sendForm, setSendForm] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
+
+  const [openViewFile, setOpenViewFile] = useState(false);
+  const [documentPath, setDocumentPath] = useState("");
 
   const employeeValid = {
     nationalityId: [(val) => validInt(val) > 0, "msg.required.select.nationality"],
@@ -478,6 +488,85 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     }
   }
 
+  const fnInclusionSheet = () => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
+
+    if (validInt(id) === 0) {
+      return
+    }
+
+    const dataPrint = {
+      id
+    }
+
+    request.GETPdfUrl('rrhh/process/employees/exportPDFInclusionSheet', dataPrint, (resp) => {
+      setDocumentPath(resp);
+      setOpenViewFile(true);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+  }
+
+  const fnExclusionSheet = () => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
+
+    if (validInt(id) === 0 || status===1) {
+      return
+    }
+
+    const dataPrint = {
+      id
+    }
+
+    request.GETPdfUrl('rrhh/process/employees/exportPDFExclusionSheet', dataPrint, (resp) => {
+      setDocumentPath(resp);
+      setOpenViewFile(true);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+  }
+
+  const fnPermissions = () => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
+
+    if (id > 0) {
+      setOpenModalPermissions(true);
+    }
+  }
+
+  const fnVacations = () => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
+
+    if (id > 0) {
+      setOpenModalVacations(true);
+    }
+  }
+
+  const fnIncapacities = () => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
+
+    if (id > 0) {
+      setOpenModalIncapacities(true);
+    }
+  }
+
   const fnGetImgEmployee = async (nameImg)=>{
     const name = nameImg !== "" ? nameImg : 'usuario.png'
     const imageUrl = `${PATH_FILES.GET.PROFILES}${name}`;
@@ -631,6 +720,16 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
         title: "button.changeStatus",
         icon: "bi bi-toggles",
         onClick: fnChangeStatus
+      },
+      {
+        title: "button.inclusionSheet",
+        icon: "bi bi-file-earmark-text",
+        onClick: fnInclusionSheet
+      },
+      {
+        title: "button.exclusionSheet",
+        icon: "bi bi-file-earmark-text",
+        onClick: fnExclusionSheet
       }
     ],
     buttonsOptions: [
@@ -638,6 +737,21 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
         title: "button.printCarnet",
         icon: "bi bi-person-badge",
         onClick: fnPrintCarnet
+      },
+      {
+        title: "button.permissions",
+        icon: "bi bi-file-earmark-check",
+        onClick: fnPermissions
+      },
+      {
+        title: "button.vacations",
+        icon: "bi bi-calendar4-week",
+        onClick: fnVacations
+      },
+      {
+        title: "button.incapacities",
+        icon: "bi bi-file-earmark-medical",
+        onClick: fnIncapacities
       },
       {
         title: "button.changeSalary",
@@ -742,6 +856,57 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     fnOnNo: onResetForm
   }
 
+  const propsToViewPDF = {
+    ModalContent: ViewPdf,
+    title: "modal.viewDocument.inclusionSheet",
+    valueTitle: `${firstName} ${secondName} ${lastName} ${secondLastName}`,
+    open: openViewFile,
+    setOpen: setOpenViewFile,
+    maxWidth: 'xl',
+    data: {
+      documentPath
+    }
+  }
+
+  const propsToPermissions = {
+    ModalContent: ModalPermissions,
+    title: "page.employees.modal.permissions.title",
+    valueTitle: `${firstName} ${secondName} ${lastName} ${secondLastName}`,
+    open: openModalPermissions,
+    setOpen: setOpenModalPermissions,
+    maxWidth: 'lg',
+    data: {
+      employeeId: id,
+      setLoading
+    }
+  }
+
+  const propsToVacations = {
+    ModalContent: ModalVacations,
+    title: "page.employees.modal.vacations.title",
+    valueTitle: `${firstName} ${secondName} ${lastName} ${secondLastName}`,
+    open: openModalVacations,
+    setOpen: setOpenModalVacations,
+    maxWidth: 'lg',
+    data: {
+      employeeId: id,
+      setLoading
+    }
+  }
+
+  const propsToIncapacities = {
+    ModalContent: ModalIncapacities,
+    title: "page.employees.modal.incapacities.title",
+    valueTitle: `${firstName} ${secondName} ${lastName} ${secondLastName}`,
+    open: openModalIncapacities,
+    setOpen: setOpenModalIncapacities,
+    maxWidth: 'lg',
+    data: {
+      employeeId: id,
+      setLoading
+    }
+  }
+
   return (
     {
       id,
@@ -757,6 +922,10 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       listMunicipality,
       listJobPositions,
       dataEmployees,
+      propsToViewPDF,
+      propsToPermissions,
+      propsToVacations,
+      propsToIncapacities,
       openModalDocuments,
       openModalDependents,
       openModalDeduccBonif,

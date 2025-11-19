@@ -5,8 +5,9 @@ import { InputField } from '@Components/inputFields'
 import { validInt } from '@Helpers/Utils';
 import DateCalendar from '@Components/dateCalendar'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import { Checkbox } from '@/components/checkbox';
 
-const HeaderPayroll = ({typePayroll, date, customerId, projectId, dateStart, dateEnd, notes, listCustomers, listProjects, listProjectsFilter, setListProjectsFilter, onInputChange, onBulkForm, formValidation, sendForm}) => {
+const HeaderPayroll = ({typePayroll, date, customerId, projectId, dateStart, dateEnd, isConfidential, notes, listCustomers, listProjects, listProjectsFilter, setListProjectsFilter, onInputChange, onBulkForm, formValidation, sendForm, enableConfidentialPayroll}) => {
 
   const {dateValid, customerIdValid, projectIdValid, dateStartValid, dateEndValid} = formValidation;
 
@@ -76,6 +77,14 @@ const HeaderPayroll = ({typePayroll, date, customerId, projectId, dateStart, dat
           invalid={sendForm && !!dateEndValid}
           feedbackText={sendForm && (dateEndValid || null)}
           disabled={(typePayroll===1)?false:true}
+        />
+      </Colxx>
+      <Colxx xxs="12" sm="6" lg="3" style={{ display: enableConfidentialPayroll === false ? 'none' : 'block' }}>
+        <Checkbox
+          label='check.isConfidential'
+          name="isConfidential"
+          value={isConfidential}
+          onChange={onInputChange}
         />
       </Colxx>
       <Colxx xxs="12" sm="12">

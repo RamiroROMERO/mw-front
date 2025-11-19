@@ -1,83 +1,50 @@
 import React, { useEffect, useState } from 'react'
 import { useForm } from '@Hooks'
 import { request } from '@Helpers/core'
-import { validFloat, validInt, IntlMessages } from '@Helpers/Utils'
+import { validFloat, IntlMessages } from '@Helpers/Utils'
 import notification from '@Containers/ui/Notifications';
 
-export const usePaymentPlans = ({setLoading, screenControl}) => {
+export const usePaymentBenefits = ({setLoading, screenControl}) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [projectId, setProjectId] = useState(0);
   const [listEmployees, setListEmployees] = useState([]);
-  const [listTypeDeductions, setListTypeDeductions] = useState([]);
   const [listEmployeesByProject, setListEmployeesByProject] = useState([]);
   const [listProjects, setListProjects] = useState([]);
-  const [dataPaymentPlans, setDataPaymentPlans] = useState([]);
-  const [dataPayPlanDetail, setDataPayPlanDetail] = useState([]);
-  const [openModalPaymentPlans, setOpenModalPaymentPlans] = useState(false);
+  const [dataPaymentBenefits, setDataPaymentBenefits] = useState([]);
+  const [dataPayDetail, setDataPayDetail] = useState([]);
+  const [openModalPayments, setOpenModalPayments] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [openMsgDelete, setOpenMsgDelete] = useState(false);
   const [sendForm, setSendForm] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
 
-  const paymentPlansValid = {
+  const paymentsValid = {
     date: [(val) => val !== "", "msg.required.input.date"],
-    typeId: [(val) => validInt(val) > 0, "msg.required.select.type"],
     description: [(val) => val.length > 5, "msg.required.input.description"],
     value: [(val) => validFloat(val) > 0, "msg.required.input.value"],
     valueQuote: [(val) => validFloat(val) > 0, "msg.required.input.valueQuote"],
-    dateStart: [(val) => val !== "", "msg.required.select.dateStart"],
-    valueCapital: [(val) => validFloat(val) > 0, "msg.required.input.valueCapital"]
+    startDate: [(val) => val !== "", "msg.required.select.dateStart"]
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
     date: '',
-    typeId: 0,
     employeeId: 0,
     employeeName: '',
     description: '',
     value: 0,
     noQuotes: 0,
     valueQuote: 0,
-    valueInterest: 0,
-    valueCapital: 0,
-    dateStart: '',
-    deductionMethod: 0,
+    startDate: '',
     notes: ''
-  }, paymentPlansValid);
+  }, paymentsValid);
 
-  const { id, date, typeId, employeeId, employeeName, value, noQuotes, valueQuote, valueInterest, valueCapital, dateStart, deductionMethod, description, notes } = formState;
+  const { id, date, employeeId, employeeName, value, noQuotes, valueQuote, startDate, description, notes } = formState;
 
   const onProjectChange = e =>{
     const project = e.target.value;
     setProjectId(project);
     setSelectedItems([]);
-  }
-
-  const onCapitalChange = e => {
-    const totalCapital = e.target.value;
-
-    const totalValue = validFloat(totalCapital) + validFloat(valueInterest);
-
-    const newValue = {
-      value: totalValue,
-      valueCapital: totalCapital
-    }
-
-    setBulkForm(newValue);
-  }
-
-  const onInterestChange = e => {
-    const totalInterest = e.target.value;
-
-    const totalValue = validFloat(totalInterest) + validFloat(valueCapital);
-
-    const newValue = {
-      value: totalValue,
-      valueInterest: totalInterest
-    }
-
-    setBulkForm(newValue);
   }
 
   const [table, setTable] = useState({
@@ -98,31 +65,30 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
     }
   });
 
-  const fnNewPaymentPlan = () => {
+  const fnNewPayment = () => {
     onResetForm();
     setSendForm(false);
-    setDataPayPlanDetail([]);
+    setDataPayDetail([]);
     setSelectedItems([]);
     setProjectId(0);
   }
 
-  const fnSearchPaymentPlan = () => {
+  const fnSearchPayments = () => {
     if (fnCreate === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
     }
     setLoading(true);
-    request.GET('rrhh/process/paymentPlans', (resp) => {
-      const paymentPlans = resp.data.map((item) => {
-        item.employee = `${item.rrhhEmployee.firstName} ${item.rrhhEmployee.secondName} ${item.rrhhEmployee.lastName}
-        ${item.rrhhEmployee.secondLastName}`
-        item.dateStart = item.dateStart===null?'1900-01-01':item.dateStart
-        item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
+    request.GET('rrhh/process/benefitsPaymentPlans', (resp) => {
+      const payments = resp.data.map((item) => {
+        item.employee = `${item?.employeeData?.firstName || ""} ${item?.employeeData?.secondName || ""} ${item?.employeeData?.lastName || ""} ${item?.employeeData?.secondLastName || ""}`
+        item.startDate = item.startDate===null?'1900-01-01':item.startDate
+        item.statusIcon = item.status === true ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />
         return item;
       });
-      setDataPaymentPlans(paymentPlans);
-      setOpenModalPaymentPlans(true);
+      setDataPaymentBenefits(payments);
+      setOpenModalPayments(true);
       setLoading(false);
     }, (err) => {
       console.error(err);
@@ -130,16 +96,15 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
     });
   }
 
-  const fnViewPaymentPlans = (idPlan) => {
+  const fnViewPaymentDetail = (idPay) => {
     setLoading(true);
-    request.GET(`rrhh/process/paymentPlanDetails?fatherId=${idPlan}`, (resp) => {
-      const paymentPlanDeta = resp.data.map((item, idx) => {
-        item.quota = idx + 1
-        item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
+    request.GET(`rrhh/process/benefitsPaymentPlanDetails?idFather=${idPay}`, (resp) => {
+      const paymentsDeta = resp.data.map((item) => {
+        item.statusIcon = item.status === true ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />
         return item;
       });
-      setDataPayPlanDetail(paymentPlanDeta);
+      setDataPayDetail(paymentsDeta);
       setLoading(false);
     }, (err) => {
       console.error(err);
@@ -147,7 +112,7 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
     });
   }
 
-  const fnSavePaymentPlan = () => {
+    const fnSavePaymentPlan = () => {
     setSendForm(true);
     if (!isFormValid) {
       return;
@@ -160,15 +125,11 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
 
     const updateData = {
       date,
-      typeId,
       description,
       value,
       noQuotes,
       valueQuote,
-      valueInterest,
-      valueCapital,
-      dateStart,
-      deductionMethod: 3,
+      startDate,
       notes
     }
 
@@ -182,27 +143,24 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
         const newData = {
           employeeId: item.value,
           date,
-          typeId,
           description,
           value,
           noQuotes,
           valueQuote,
-          valueInterest,
-          valueCapital,
-          dateStart,
-          deductionMethod: 3,
+          startDate,
           notes
         }
 
         setLoading(true);
-        request.POST('rrhh/process/paymentPlans', newData, (resp) => {
+        request.POST('rrhh/process/benefitsPaymentPlans', newData, (resp) => {
           onInputChange({ target: { name: 'id', value: resp.data.id } });
           setSendForm(false);
           setLoading(false);
           // Generar cuotas
+          const dataDetail = {id: resp.data.id}
           setLoading(true);
-          request.POST(`rrhh/process/paymentPlans/generateDetail/${resp.data.id}`, newData, () => {
-            fnViewPaymentPlans(resp.data.id);
+          request.POST(`rrhh/process/benefitsPaymentPlans/generateCuotes`, dataDetail, (resp2) => {
+            setDataPayDetail(resp2.data);
             setLoading(false);
           }, (err) => {
             console.error(err);
@@ -220,7 +178,7 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
         return;
       }
       setLoading(true);
-      request.PUT(`rrhh/process/paymentPlans/${id}`, updateData, () => {
+      request.PUT(`rrhh/process/benefitsPaymentPlans/${id}`, updateData, () => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
@@ -230,9 +188,9 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
     }
   }
 
-  const fnPrintPaymentPlan = () => { }
+  const fnPrintPayments = () => { }
 
-  const fnCancelPaymentPlan = () => {
+  const fnCancelPayments = () => {
     if (fnDelete === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
@@ -248,8 +206,8 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
     const editData = {
       status: 0
     }
-    request.PUT(`rrhh/process/paymentPlans/${id}`, editData, () => {
-      fnNewPaymentPlan();
+    request.PUT(`rrhh/process/benefitsPaymentPlans/${id}`, editData, () => {
+      fnNewPayment();
       setLoading(false);
     }, (err) => {
       console.error(err);
@@ -257,7 +215,7 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
     });
   }
 
-  const fnDeletePaymentPlan = () => {
+  const fnDeletePayment = () => {
     if (fnDelete === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
@@ -270,9 +228,9 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
   const fnOkDelete = () => {
     setOpenMsgDelete(false);
     setLoading(true);
-    request.DELETE(`rrhh/process/paymentPlans/${id}`, (resp) => {
+    request.DELETE(`rrhh/process/benefitsPaymentPlans/${id}`, (resp) => {
       console.log(resp);
-      fnNewPaymentPlan();
+      fnNewPayment();
       setLoading(false);
     }, (err) => {
       console.error(err);
@@ -291,22 +249,6 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
         }
       });
       setListEmployees(employees);
-      setLoading(false);
-    }, (err) => {
-      console.error(err);
-      setLoading(false);
-    });
-
-    setLoading(true);
-    request.GET('rrhh/settings/deductionTypes', (resp) => {
-      const listTypes = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id,
-          noAccount: item.noAccount
-        }
-      });
-      setListTypeDeductions(listTypes);
       setLoading(false);
     }, (err) => {
       console.error(err);
@@ -341,12 +283,12 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
   },[projectId]);
 
   const propsToControlPanel = {
-    fnNew: fnNewPaymentPlan,
-    fnSearch: fnSearchPaymentPlan,
+    fnNew: fnNewPayment,
+    fnSearch: fnSearchPayments,
     fnSave: fnSavePaymentPlan,
-    fnPrint: fnPrintPaymentPlan,
-    fnCancel: fnCancelPaymentPlan,
-    fnDelete: fnDeletePaymentPlan,
+    fnPrint: fnPrintPayments,
+    fnCancel: fnCancelPayments,
+    fnDelete: fnDeletePayment,
     buttonsHome: [],
     buttonsOptions: [],
     buttonsAdmin: []
@@ -354,31 +296,24 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
 
   const propsToDetailPayment = {
     date,
-    typeId,
     employeeId,
     employeeName,
     value,
     noQuotes,
     valueQuote,
-    valueCapital,
-    valueInterest,
-    dateStart,
-    deductionMethod,
+    startDate,
     description,
     notes,
     listEmployees,
-    listTypeDeductions,
     listEmployeesByProject,
     onInputChange,
     formValidation,
     sendForm,
-    setBulkForm,
-    onCapitalChange,
-    onInterestChange
+    setBulkForm
   }
 
   const propsToDetailTable = {
-    dataPayPlanDetail
+    dataPayDetail
   }
 
   const propsToMsgCancel = {
@@ -399,14 +334,14 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
     {
       projectId,
       listProjects,
-      dataPaymentPlans,
+      dataPaymentBenefits,
       table,
       setBulkForm,
-      openModalPaymentPlans,
+      openModalPayments,
       onProjectChange,
-      setDataPayPlanDetail,
-      fnViewPaymentPlans,
-      setOpenModalPaymentPlans,
+      setDataPayDetail,
+      fnViewPaymentDetail,
+      setOpenModalPayments,
       propsToControlPanel,
       propsToDetailPayment,
       propsToDetailTable,

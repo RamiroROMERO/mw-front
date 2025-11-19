@@ -967,6 +967,11 @@ const data = [
             label: 'menu.projects',
             to: `${adminRoot}/humanResources/process/projects`,
           },
+          {
+            icon: 'bi bi-currency-dollar',
+            label: 'menu.paymentBenefits',
+            to: `${adminRoot}/humanResources/process/paymentBenefits`,
+          },
           // {
           //   icon: 'bi bi-file-text',
           //   label: 'menu.dailyReport',

@@ -9,6 +9,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
   const currentYear = new Date().getFullYear();
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
   const enableDeletePayroll = adminControl.find(ctrl => ctrl.code === "07.02.016")?.active || false;
+  const enableConfidentialPayroll = adminControl.find(ctrl => ctrl.code === "07.02.021")?.active || false;
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [employeeId, setEmployeeId] = useState(0);
   const [typeSheet, setTypeSheet] = useState(1);
@@ -60,10 +61,11 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     projectId: 0,
     dateStart: typePayroll===1?"":(typePayroll===2?`${currentYear}-01-01`:(typePayroll===3?`${currentYear-1}-07-01`:"")),
     dateEnd: typePayroll===1?"":(typePayroll===2?`${currentYear}-12-31`:(typePayroll===3?`${currentYear}-06-30`:"")),
+    isConfidential: 0,
     notes: ''
   }, typePayroll===1?formValidations:formValidations2);
 
-  const { id, date, customerId, projectId, dateStart, dateEnd, notes } = formState;
+  const { id, date, customerId, projectId, dateStart, dateEnd, isConfidential, notes } = formState;
 
   const fnNewPayroll = () => {
     onResetForm();
@@ -94,6 +96,47 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
 
     setLoading(true);
     request.GET(`rrhh/process/weeklyPayrolls?customerId=${customerId}&projectId=${projectId}&typeId=${typePayroll}&status=1`, (resp) => {
+      const payrollWeekly = resp.data.map((item) => {
+        item.dateVal = formatDate(item.date)
+        item.startDate = formatDate(item.dateStart)
+        item.endDate = formatDate(item.dateEnd)
+        item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
+          <i className="medium-icon bi bi-square" />
+        return item;
+      });
+      setDataPayrolls(payrollWeekly);
+      setOpenModalPayrolls(true);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+  }
+
+  const fnGetPayrollsConfidential = () => {
+    if (fnCreate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
+    if (validInt(customerId) === 0) {
+      notification('warning', 'msg.required.select.customer', 'alert.warning.title');
+      return
+    }
+    if (validInt(projectId) === 0) {
+      notification('warning', 'msg.required.select.project', 'alert.warning.title');
+      return
+    }
+
+    const filterConfidential = enableConfidentialPayroll === true ? 1 : 0;
+
+    const filterCustomers = listCustomers.find(item => item.value === customerId);
+    setCustomerName(filterCustomers ? filterCustomers.label : '');
+
+    const filterProjects = listProjectsFilter.find(item => item.value === projectId);
+    setProjectName(filterProjects ? filterProjects.label : '');
+
+    setLoading(true);
+    request.GET(`rrhh/process/weeklyPayrolls?customerId=${customerId}&projectId=${projectId}&typeId=${typePayroll}&status=1&isConfidential=${filterConfidential}`, (resp) => {
       const payrollWeekly = resp.data.map((item) => {
         item.dateVal = formatDate(item.date)
         item.startDate = formatDate(item.dateStart)
@@ -256,6 +299,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       dateEnd: dateEnd===""?date:dateEnd,
       notes,
       status: 1,
+      isConfidential,
       userId: userData.id
     }
 
@@ -548,6 +592,12 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         title: "button.incomesGeneral",
         icon: "bi bi-plus-circle",
         onClick: fnAddIncomes
+      }:"",
+      enableConfidentialPayroll===true?
+      {
+        title: "button.payrollsConfidential",
+        icon: "bi bi-eye-slash",
+        onClick: fnGetPayrollsConfidential
       }:""
     ],
     buttonsOptions: [],
@@ -562,6 +612,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     projectId,
     dateStart,
     dateEnd,
+    isConfidential,
     notes,
     listCustomers,
     listProjects,
@@ -570,7 +621,8 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     onInputChange,
     onBulkForm,
     sendForm,
-    formValidation
+    formValidation,
+    enableConfidentialPayroll
   }
 
   const propsToDetailTable = {

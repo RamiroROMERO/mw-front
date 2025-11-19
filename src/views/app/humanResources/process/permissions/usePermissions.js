@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useForm } from '@Hooks';
 import { request } from '@Helpers/core';
-import { validInt } from '@Helpers/Utils';
+import { getCurrentDate, validInt } from '@Helpers/Utils';
 import moment from 'moment';
 import notification from '@Containers/ui/Notifications';
 
@@ -33,8 +33,8 @@ export const usePermissions = ({setLoading, screenControl}) => {
     date: '',
     typeId: 0,
     applicationTypeId: 0,
-    dateStart: moment(new Date()),
-    dateEnd: moment(new Date()),
+    dateStart: getCurrentDate(),
+    dateEnd: getCurrentDate(),
     phoneContact: '',
     reason: '',
     description: '',

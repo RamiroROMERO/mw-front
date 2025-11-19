@@ -14,7 +14,7 @@ const DateCalendar = (props) => {
   return (
     <InputLabel label={label} feedbackText={feedbackText}>
       <ReactDatePicker
-        selected={value !== "" ? new Date(`${value}T12:00:00Z`) || '' : ""}
+        selected={value !== "" ? new Date(`${value.slice(0, 10)}T12:00:00Z`): ""}
         onChange={onDateChange}
         disabled={disabled}
         dateFormat="dd/MM/yyyy"

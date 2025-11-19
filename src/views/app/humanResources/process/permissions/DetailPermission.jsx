@@ -8,6 +8,7 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import UploadFile from '@Components/uploadFile'
 import DateCalendar from '@Components/dateCalendar'
 import DateTimeCalendar from '@Components/dateTimeCalendar'
+import { validInt } from '@/helpers/Utils'
 
 const DetailPermission = ({employeeId, date, typeId, applicationTypeId, dateStart, dateEnd, phoneContact, reason, description,
   notes, authorizedById, filePath, withPayment, setFilePath, status, listImmediateBoss, listEmployees, onInputChange,
@@ -71,6 +72,16 @@ const DetailPermission = ({employeeId, date, typeId, applicationTypeId, dateStar
             />
           </Colxx>
           <Colxx xxs="12" xs="6" sm="4" lg="4">
+          {validInt(typeId)!==2?(
+            <DateCalendar
+              name="dateStart"
+              value={dateStart}
+              label='select.dateStart'
+              onChange={onInputChange}
+              invalid={sendForm && !!dateStartValid}
+              feedbackText={sendForm && (dateStartValid || null)}
+            />
+          ):(
             <DateTimeCalendar
               name="dateStart"
               value={dateStart}
@@ -79,8 +90,19 @@ const DetailPermission = ({employeeId, date, typeId, applicationTypeId, dateStar
               invalid={sendForm && !!dateStartValid}
               feedbackText={sendForm && (dateStartValid || null)}
             />
+          )}
           </Colxx>
           <Colxx xxs="12" xs="6" sm="4" lg="4">
+          {validInt(typeId)!==2?(
+            <DateCalendar
+              name="dateEnd"
+              value={dateEnd}
+              label='select.dateEnd'
+              onChange={onInputChange}
+              invalid={sendForm && !!dateEndValid}
+              feedbackText={sendForm && (dateEndValid || null)}
+            />
+          ):(
             <DateTimeCalendar
               name="dateEnd"
               value={dateEnd}
@@ -89,6 +111,7 @@ const DetailPermission = ({employeeId, date, typeId, applicationTypeId, dateStar
               invalid={sendForm && !!dateEndValid}
               feedbackText={sendForm && (dateEndValid || null)}
             />
+          )}
           </Colxx>
           <Colxx xxs="12" xs="6" sm="3" lg="4">
             <Checkbox

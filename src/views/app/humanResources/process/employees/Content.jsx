@@ -21,7 +21,7 @@ import { useEmployees } from './useEmployees';
 const Content = (props) => {
   const { setLoading, screenControl, adminControl } = props;
 
-  const {id, firstName, secondName, lastName, secondLastName, status, dateIn, workScheduleId, listCustomers, listJobPositions, listMunicipality, listProjects, dataEmployees, openModalBeneficiaries, openModalBenefits, openModalChangeSalary, openModalChangeStatus, openModalDeduccBonif, openModalDependents, openModalDocuments, openModalProjects, openModalViewEmployees, openModalHistory, setBulkForm, setListFilterMunic, setOpenModalBeneficiaries, setOpenModalBenefits, setOpenModalChangeSalary, setOpenModalChangeStatus, setOpenModalDeduccBonif, setOpenModalDependents, setOpenModalDocuments, setOpenModalProjects, setOpenModalViewEmployees, setOpenModalHistory, propsToControlPanel, propsToDetailEmployee, propsToFormEmployee, propsToMsgDelete, fnGetImgEmployee, fnGetProjectEmployee, fnGetProjects} = useEmployees({setLoading, screenControl, adminControl});
+  const {id, firstName, secondName, lastName, secondLastName, status, dateIn, workScheduleId, listCustomers, listJobPositions, listMunicipality, listProjects, dataEmployees, openModalBeneficiaries, openModalBenefits, openModalChangeSalary, openModalChangeStatus, openModalDeduccBonif, openModalDependents, openModalDocuments, openModalProjects, openModalViewEmployees, openModalHistory, setBulkForm, propsToViewPDF, propsToPermissions, propsToVacations, propsToIncapacities, setListFilterMunic, setOpenModalBeneficiaries, setOpenModalBenefits, setOpenModalChangeSalary, setOpenModalChangeStatus, setOpenModalDeduccBonif, setOpenModalDependents, setOpenModalDocuments, setOpenModalProjects, setOpenModalViewEmployees, setOpenModalHistory, propsToControlPanel, propsToDetailEmployee, propsToFormEmployee, propsToMsgDelete, fnGetImgEmployee, fnGetProjectEmployee, fnGetProjects} = useEmployees({setLoading, screenControl, adminControl});
 
   const propsToModalViewHistory = {
     ModalContent: ModalViewHistory,
@@ -187,6 +187,10 @@ const Content = (props) => {
       <Modal {...propsToModalProjects}/>
       <Modal {...propsToModalChangeSalaries}/>
       <Modal {...propsToModalChangeStatus}/>
+      <Modal {...propsToViewPDF} />
+      <Modal {...propsToPermissions} />
+      <Modal {...propsToVacations} />
+      <Modal {...propsToIncapacities} />
       <Confirmation {...propsToMsgDelete} />
     </>
   )

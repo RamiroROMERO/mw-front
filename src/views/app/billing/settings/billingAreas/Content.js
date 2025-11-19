@@ -16,7 +16,7 @@ const BillingAreas = (props) => {
 
   const propsToModalViewDoc = {
     ModalContent: ModalViewDocuments,
-    title: "page.customers.modal.modalViewCust.title",
+    title: "page.billingAreas.table.title",
     open: openModalViewDocument,
     setOpen: setOpenModalViewDocument,
     maxWidth: 'lg',
