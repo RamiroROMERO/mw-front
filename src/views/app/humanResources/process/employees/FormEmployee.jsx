@@ -36,7 +36,7 @@ const FormEmployee = ({ codeEmployee, nationalityId, dni, firstName, secondName,
   return (
     <Row>
       <Colxx xxs="12" xs="5" md="4" lg="8" xl="7" className="mb-4">
-        <ProfileImage initialImage={imgEmployee} uploadFiles={fnUploadFiles} />
+        <ProfileImage initialImage={imgEmployee} onUploadFiles={fnUploadFiles} />
       </Colxx>
       <Colxx xxs="12" xs="7" md="8" lg="12" className="mb-2">
         <Row>
