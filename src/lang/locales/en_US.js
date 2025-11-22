@@ -592,6 +592,8 @@ const enLang = {
   "input.city1": "City 1",
   "input.city2": "City 2",
   "input.zipCode": "Zip Code",
+  "input.rateStandar": "Standard Rate",
+  "input.rateCorp": "Corporate Rate",
   /* Selects */
   "select.department": "Department",
   "select.municipality": "Municipality",
@@ -662,6 +664,7 @@ const enLang = {
   "select.country": "Country",
   "select.companyId": "Company",
   "select.taxId": "Tax Type",
+  "select.channel": "Booking Channel",
   /* Others */
   "option.yes": "Yes",
   "option.no": "No",
@@ -1137,6 +1140,9 @@ const enLang = {
   "menu.biweeklyIncomes": "Biweekly Incomes",
   "menu.newStaff": "New Staff",
   "menu.paymentBenefits": "Payment Benefits",
+  "menu.bookingChannels": "Booking Channels",
+  "menu.hotelManagement.bookingChannels": "Booking Channels",
+  "menu.countries": "Countries",
   /* 04.Error Page */
   "pages.error-title": "Ooops... looks like an error occurred!",
   "pages.error-code": "Error code",
@@ -2859,7 +2865,9 @@ const enLang = {
   "page.hotel.modal.addCustomer.title": "Add/Edit Customer",
   "page.hotel.table.bookingStatus": "Booking Status",
   "page.hotel.table.paymentStatus": "Payment Status",
+  "page.hotel.table.bookingChannels": "Booking Channels",
   "page.hotel.table.availabilityDetails": "Availability Details",
+  "page.hotel.table.countries": "Countries",
   "button.newCustomer": "New Customer",
   "menu.quotes": "Quotes",
   "common.code": "Code",

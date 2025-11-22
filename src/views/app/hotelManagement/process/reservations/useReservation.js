@@ -14,6 +14,7 @@ export const useReservation = ({setLoading, screenControl}) => {
   const [listStatusPayment, setListStatusPayment] = useState([]);
   const [listServices, setListServices] = useState([]);
   const [listPaymentTypes, setListPaymenTypes] = useState([]);
+  const [listBookingChannels, setListBookingChannels] = useState([]);
   const [currentRoom, setCurrentRoom] = useState({});
   const [currentReservation, setCurrentReservation] = useState({});
 
@@ -108,7 +109,9 @@ export const useReservation = ({setLoading, screenControl}) => {
           label: `${item.id} | ${item.rtn} | ${item.nomcli}`,
           value: item.id,
           rtn: item.rtn,
-          name: item.nomcli
+          name: item.nomcli,
+          phone: item.tel,
+          email: item.email
         }
       });
       setListCustomers(customers);
@@ -173,6 +176,20 @@ export const useReservation = ({setLoading, screenControl}) => {
       console.error(err);
       setLoading(false);
     });
+
+    setLoading(true);
+    request.GET('hotel/settings/bookingChannels', (resp) => {
+      const bookingChannels = resp.data.map((item) => {
+        item.label = item.name
+        item.value = item.id
+        return item;
+      });
+      setListBookingChannels(bookingChannels);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
   },[]);
 
   return (
@@ -191,6 +208,7 @@ export const useReservation = ({setLoading, screenControl}) => {
       listStatusPayment,
       listServices,
       listPaymentTypes,
+      listBookingChannels,
       openModalAdd,
       setOpenModalAdd,
       setCurrentPage,

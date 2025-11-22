@@ -13,13 +13,13 @@ import ModalAddService from './ModalAddService';
 import ModalAddPayments from './ModalAddPayments';
 
 const ModalAddRes = ({data, setOpen}) => {
-  const {idRoom, currentRoom, currentReservation, currentPage, search, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, setLoading, fnGetData, descriptionRoom} = data;
+  const {idRoom, currentRoom, currentReservation, currentPage, search, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, listBookingChannels, setLoading, fnGetData, descriptionRoom} = data;
 
   const {rate, roomServices} = currentRoom;
 
-  const {formState, formValidation, sendForm, customerEmail, customerPhone, currentPayment, currentService, dataServices, dataPayments, totalValServices, totalValPayments, activeTab, propsToMsgDeleteService, propsToMsgDeletePayment, openModalAddPayment, openModalAddService, setActiveTab, setOpenModalAddPayment, setOpenModalAddService, onInputChange, onCustomerChange, fnSave, fnSavePayment, fnSaveStatus, fnAddPayment, fnAddService, fnGetDataPayments, fnGetDataServices, fnDeleteService, fnDeletePayment } = useModalAddRes({currentReservation, setLoading, idRoom, currentPage, search, fnGetData, rate, setOpen});
+  const {formState, formValidation, sendForm, customerEmail, customerPhone, currentPayment, currentService, dataServices, dataPayments, totalValServices, totalValPayments, activeTab, propsToMsgDeleteService, propsToMsgDeletePayment, openModalAddPayment, openModalAddService, setActiveTab, setOpenModalAddPayment, setOpenModalAddService, onInputChange, onCustomerChange, fnSave, fnSavePayment, fnSaveStatus, fnAddPayment, fnAddService, fnGetDataPayments, fnGetDataServices, fnDeleteService, fnDeletePayment } = useModalAddRes({currentReservation, setLoading, idRoom, currentPage, search, fnGetData, rate, setOpen, listCustomers});
 
-  const {id, date, customerId, checkInDate, checkOutDate, statusId, totalNights, qtyAdults, qtyChild, others, notes, paymentStatusId} = formState;
+  const {id, date, customerId, checkInDate, checkOutDate, statusId, totalNights, qtyAdults, qtyChild, others, notes, paymentStatusId, channelId} = formState;
 
   const {dateValid, customerIdValid} = formValidation;
 
@@ -255,6 +255,15 @@ const ModalAddRes = ({data, setOpen}) => {
                               name="qtyChild"
                               label='input.qtyChild'
                               value={qtyChild}
+                              onChange={onInputChange}
+                            />
+                          </Colxx>
+                          <Colxx xxs={6} sm={5} md={12} lg={12} xl={6}>
+                            <SearchSelect
+                              label='select.channel'
+                              name='channelId'
+                              inputValue={channelId}
+                              options={listBookingChannels}
                               onChange={onInputChange}
                             />
                           </Colxx>

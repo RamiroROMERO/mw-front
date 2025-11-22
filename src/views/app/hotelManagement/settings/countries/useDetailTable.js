@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react'
 import { IntlMessages } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
 
-export const useDetailTable = ({ dataStatus, onBulkForm, setOpenMsgQuestion, fnDelete, currentPage, totalPages, setCurrentPage, setSearch }) => {
+export const useDetailTable = ({ dataCountries, onBulkForm, setOpenMsgQuestion, fnDelete, currentPage, totalPages, setCurrentPage, setSearch }) => {
 
   const fnEditDocument = (item) => {
-    item.color=item.color===null?"":item.color
     onBulkForm(item);
   }
 
@@ -19,10 +18,9 @@ export const useDetailTable = ({ dataStatus, onBulkForm, setOpenMsgQuestion, fnD
   }
 
   const [table, setTable] = useState({
-    title: IntlMessages("page.hotel.table.paymentStatus"),
+    title: IntlMessages("page.hotel.table.countries"),
     columns: [
-      { text: IntlMessages("table.column.name"), dataField: "name", headerStyle: { 'width': '45%' } },
-      { text: IntlMessages("table.column.color"), dataField: "color", headerStyle: { 'width': '55%' } },
+      { text: IntlMessages("table.column.name"), dataField: "name", headerStyle: { 'width': '90%' } },
       {
         text: IntlMessages("table.column.status"), dataField: "statusIcon", headerStyle: { 'width': '10%' },
         classes: 'd-sm-none-table-cell', headerClasses: 'd-sm-none-table-cell'
@@ -49,10 +47,10 @@ export const useDetailTable = ({ dataStatus, onBulkForm, setOpenMsgQuestion, fnD
 
   useEffect(()=>{
     const tableData = {
-      ...table, data: dataStatus, options: {totalPages, currentPage, setCurrentPage, typePagination: 2, setSearch}
+      ...table, data: dataCountries, options: {totalPages, currentPage, setCurrentPage, typePagination: 2, setSearch}
     }
     setTable(tableData);
-  },[dataStatus]);
+  },[dataCountries]);
 
   return (
     {

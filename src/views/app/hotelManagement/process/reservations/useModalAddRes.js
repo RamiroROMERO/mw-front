@@ -3,7 +3,7 @@ import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import { useEffect, useState } from 'react'
 
-export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentPage, search, fnGetData, rate, setOpen}) => {
+export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentPage, search, fnGetData, rate, setOpen, listCustomers}) => {
   const [activeTab, setActiveTab] = useState('1');
   const [sendForm, setSendForm] = useState(false);
   const [customerPhone, setCustomerPhone] = useState("");
@@ -39,10 +39,11 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
     qtyChild: currentReservation?.qtyChild || 0,
     others: currentReservation?.others || "",
     notes: currentReservation?.notes || "",
-    paymentStatusId: currentReservation?.paymentStatusId || 0
+    paymentStatusId: currentReservation?.paymentStatusId || 0,
+    channelId: currentReservation?.channelId || 0
   }, validation);
 
-  const {id, statusId, paymentStatusId} = formState;
+  const {id, statusId, paymentStatusId, customerId} = formState;
 
   const onCustomerChange = e => {
     const custId = validInt(e.target.value);
@@ -271,6 +272,12 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
     fnGetDataServices();
     fnGetDataPayments();
   }, []);
+
+  useEffect(() => {
+    const filter = listCustomers.find(item => item.id === customerId);
+    setCustomerPhone(filter?.phone || "");
+    setCustomerEmail(filter?.email || "");
+  }, [customerId]);
 
   return (
     {

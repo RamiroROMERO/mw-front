@@ -14,6 +14,8 @@ const Materiales = React.lazy(() => import('@/views/app/hotelManagement/settings
 const Customers = React.lazy(() => import('@/views/app/hotelManagement/settings/customers'));
 const BookingStatus = React.lazy(() => import('@/views/app/hotelManagement/settings/bookingStatus'));
 const PaymentStatus = React.lazy(() => import('@/views/app/hotelManagement/settings/paymentStatus'));
+const BookingChannels = React.lazy(() => import('@/views/app/hotelManagement/settings/bookingChannels'));
+const Countries = React.lazy(() => import('@/views/app/hotelManagement/settings/countries'));
 
 const HotelSettingsRoutes = (props) => {
   const { setLoading } = props;
@@ -66,6 +68,14 @@ const HotelSettingsRoutes = (props) => {
       index
       path="/paymentStatus"
       element={<PaymentStatus setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/bookingChannels"
+      element={<BookingChannels setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+      <Route
+      index
+      path="/countries"
+      element={<Countries setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }

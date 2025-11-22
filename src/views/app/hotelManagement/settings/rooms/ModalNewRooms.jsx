@@ -13,7 +13,7 @@ const ModalNewRooms = ({data, setOpen}) => {
 
   const {formState, formValidation, sendForm, listRoomServices, propsToMsgDelete, setDataImages, onInputChange, onServicesChange, fnSave, fnDeleteImage} = useModalNewRooms({setLoading, currentItem, listServices, dataRoomServices, fnGetData, setOpen, fnGetRoomImages});
 
-  const {name, typeId, levelId, bedNumber, rate, notes, capacity, statusId, mealPlanId} = formState;
+  const {name, typeId, levelId, bedNumber, rate, rateCorp, notes, capacity, statusId, mealPlanId} = formState;
 
   const {typeIdValid} = formValidation;
 
@@ -75,8 +75,17 @@ const ModalNewRooms = ({data, setOpen}) => {
                   <Colxx xxs={12} md={6}>
                     <InputField
                       name='rate'
-                      label='input.rate'
+                      label='input.rateStandar'
                       value={rate}
+                      onChange={onInputChange}
+                      type='text'
+                    />
+                  </Colxx>
+                  <Colxx xxs={12} md={6}>
+                    <InputField
+                      name='rateCorp'
+                      label='input.rateCorp'
+                      value={rateCorp}
                       onChange={onInputChange}
                       type='text'
                     />

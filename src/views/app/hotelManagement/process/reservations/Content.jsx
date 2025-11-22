@@ -8,7 +8,7 @@ import ModalAddRes from './ModalAddRes'
 
 const Content = ({setLoading, screenControl}) => {
 
-  const {idRoom, dataRooms, currentPage, currentReservation, totalPages, descriptionRoom, currentRoom, search, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, openModalAdd, setOpenModalAdd, setCurrentPage, fnAddReservation, fnViewDetail, fnGetData} = useReservation({setLoading, screenControl});
+  const {idRoom, dataRooms, currentPage, currentReservation, totalPages, descriptionRoom, currentRoom, search, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, listBookingChannels, openModalAdd, setOpenModalAdd, setCurrentPage, fnAddReservation, fnViewDetail, fnGetData} = useReservation({setLoading, screenControl});
 
   const propsToModalAddReservation = {
     ModalContent: ModalAddRes,
@@ -28,6 +28,7 @@ const Content = ({setLoading, screenControl}) => {
       listStatusPayment,
       listServices,
       listPaymentTypes,
+      listBookingChannels,
       setLoading,
       descriptionRoom,
       fnGetData

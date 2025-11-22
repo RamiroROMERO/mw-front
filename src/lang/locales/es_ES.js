@@ -593,6 +593,8 @@ const esLang = {
   "input.city1": "Ciudad 1",
   "input.city2": "Ciudad 2",
   "input.zipCode": "Codigo Postal",
+  "input.rateStandar": "Tarifa Estandar",
+  "input.rateCorp": "Tarifa Corporativa",
   /* Selects */
   "select.department": "Departamento",
   "select.municipality": "Municipio",
@@ -664,6 +666,7 @@ const esLang = {
   "select.country": "Pais",
   "select.companyId": "Empresa",
   "select.taxId": "Tipo Impuesto",
+  "select.channel": "Canal de Reservacion",
   /* Others */
   "option.yes": "Si",
   "option.no": "No",
@@ -1140,6 +1143,9 @@ const esLang = {
   "menu.biweeklyIncomes": "Ingresos Quincenales",
   "menu.newStaff": "Altas de Personal",
   "menu.paymentBenefits": "Pago de Prestaciones",
+  "menu.bookingChannels": "Canales de Reservacion",
+  "menu.hotelManagement.bookingChannels": "Canales de Reservacion",
+  "menu.countries": "Paises",
   /* 04.Error  */
   'pages.error-title': 'Vaya, parece que ha ocurrido un error!',
   'pages.error-code': 'Código de error',
@@ -2869,7 +2875,9 @@ const esLang = {
   "page.hotel.modal.addCustomer.title": "Agregar/Editar Cliente",
   "page.hotel.table.bookingStatus": "Estados de Reservacion",
   "page.hotel.table.paymentStatus": "Estados de Pago",
+  "page.hotel.table.bookingChannels": "Estados de Reservacion",
   "page.hotel.table.availabilityDetails": "Detalle de Disponibilidad",
+  "page.hotel.table.countries": "Paises",
   "button.newCustomer": "Nuevo Cliente",
   "button.searchCustomer": "Buscar Cliente",
   "page.common.label.totals": "Totales",

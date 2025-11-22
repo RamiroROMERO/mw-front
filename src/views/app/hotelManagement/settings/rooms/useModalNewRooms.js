@@ -22,6 +22,7 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
     levelId: currentItem?.levelId || 0,
     bedNumber: currentItem?.bedNumber || 0,
     rate: currentItem?.rate || 0,
+    rateCorp: currentItem?.rateCorp || 0,
     notes: currentItem?.notes || "",
     capacity: currentItem?.capacity || "",
     mealPlanId: currentItem?.mealPlanId || 0,
