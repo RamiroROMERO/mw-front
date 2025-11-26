@@ -12,7 +12,7 @@ const HotelRoomInventory = ({ setLoading }) => {
 
   return (
     <>
-      <Card className='mb-3'>
+      <Card className='mb-1'>
         <CardBody>
           <Row>
             <Colxx xxs={12} className="mb-3">

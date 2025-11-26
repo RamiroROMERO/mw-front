@@ -57,6 +57,7 @@ export const HotelCheckOutToday = ({ setLoading }) => {
               </Row>
               <Table hover
                 responsive
+                bordered
                 size="sm">
                 <thead>
                   <tr>
@@ -71,14 +72,14 @@ export const HotelCheckOutToday = ({ setLoading }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dataCurrentCheckOut.map((item, idx) => {
+                  {dataCurrentCheckOut.length > 0 ? dataCurrentCheckOut.map((item, idx) => {
                     return (<tr>
                       <td>{item.roomCode}</td>
                       <td>{item.customerName}</td>
                       <td>{item.currentDays}</td>
                       <td><Button color='info' onClick={() => fnGotoViewBooking(item.bookingId)} ><i className='bi bi-eye'></i></Button></td>
                     </tr>)
-                  })}
+                  }) : <tr><td className='text-center' colSpan={4}>No Hay Datos Disponibles</td></tr>}
                 </tbody>
               </Table>
             </CardBody>

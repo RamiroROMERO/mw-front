@@ -57,6 +57,7 @@ export const HotelOccupancyToday = ({ setLoading }) => {
               </Row>
               <Table hover
                 responsive
+                bordered
                 size="sm">
                 <thead>
                   <tr>
@@ -71,14 +72,14 @@ export const HotelOccupancyToday = ({ setLoading }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dataOccupancy.map((item, idx) => {
+                  {dataOccupancy.length > 0 ? dataOccupancy.map((item, idx) => {
                     return (<tr>
                       <td>{item.roomCode}</td>
                       <td>{item.customerName}</td>
                       <td>{item.currentDays}</td>
                       <td><Button color='primary' onClick={() => fnGotoViewBooking(item.bookingId)} ><i className='bi bi-eye'></i></Button></td>
                     </tr>)
-                  })}
+                  }) : <tr><td className='text-center' colSpan={4}> No hay datos Disponibles</td></tr>}
                 </tbody>
               </Table>
             </CardBody>
