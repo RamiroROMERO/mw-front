@@ -18,8 +18,8 @@ import { XTh } from "./XTh";
 import { XTd } from "./XTd";
 import PaginationBackend from "./PaginationBackend";
 
-const DataTable = ({ title, columns = [], data = [], options = {}, actions = [], hideShowColumns={} }) => {
-  let { enabledRowSelection, enabledActionButtons, setRowSelected, pageSize, pageSizeOptions, showViewColumns, typePagination=1, currentPage, totalPages, setCurrentPage, setSearch } = options;
+const DataTable = ({ title, columns = [], data = [], options = {}, actions = [], hideShowColumns = {} }) => {
+  let { enabledRowSelection, enabledActionButtons, setRowSelected, pageSize, pageSizeOptions, showViewColumns, typePagination = 1, currentPage, totalPages, setCurrentPage, setSearch } = options;
 
   if (actions.length > 0) enabledActionButtons = true;
   const finalData = data;
@@ -28,7 +28,7 @@ const DataTable = ({ title, columns = [], data = [], options = {}, actions = [],
     enabledRowSelection,
     actionButtons: actions,
     enabledActionButtons: enabledActionButtons
-  }), []);
+  }), [columns]);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState({})
   const [sorting, setSorting] = React.useState([])
@@ -110,25 +110,25 @@ const DataTable = ({ title, columns = [], data = [], options = {}, actions = [],
             </tbody>
           </XTable>
           <hr />
-          {typePagination===1?
+          {typePagination === 1 ?
             <>
-            <DataTablePagination
-              page={tableInstance.options.state.pagination.pageIndex}
-              pages={tableInstance.getPageCount() === 1 ? 1 : tableInstance.getPageCount()}
-              canPrevious={tableInstance.getCanPreviousPage()}
-              canNext={tableInstance.getCanNextPage()}
-              pageSizeOptions={pageSizeOptions || [10, 20, 50]}
-              showPageSizeOptions
-              showPageJump
-              defaultPageSize={pageSize || tableInstance.options.state.pagination.pageSize}
-              onPageChange={(p) => tableInstance.setPageIndex(p)}
-              onPageSizeChange={(s) => tableInstance.setPageSize(s)}
-              paginationMaxSize={3}
-            />
-            <Label> Total Rows {tableInstance.getRowModel().rows.length} </Label>
+              <DataTablePagination
+                page={tableInstance.options.state.pagination.pageIndex}
+                pages={tableInstance.getPageCount() === 1 ? 1 : tableInstance.getPageCount()}
+                canPrevious={tableInstance.getCanPreviousPage()}
+                canNext={tableInstance.getCanNextPage()}
+                pageSizeOptions={pageSizeOptions || [10, 20, 50]}
+                showPageSizeOptions
+                showPageJump
+                defaultPageSize={pageSize || tableInstance.options.state.pagination.pageSize}
+                onPageChange={(p) => tableInstance.setPageIndex(p)}
+                onPageSizeChange={(s) => tableInstance.setPageSize(s)}
+                paginationMaxSize={3}
+              />
+              <Label> Total Rows {tableInstance.getRowModel().rows.length} </Label>
             </>
             :
-            <PaginationBackend currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage}/>
+            <PaginationBackend currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
           }
         </CardBody>
       </Card>

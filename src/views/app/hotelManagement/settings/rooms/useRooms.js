@@ -22,7 +22,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
   // paginacion
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-  const pageSize = 2;
+  const pageSize = 10;
 
   const fnNewDocument = () => {
     if (fnCreate === false) {
@@ -35,10 +35,10 @@ export const useRooms = ({ setLoading, screenControl }) => {
     setOpenModalNew(true);
   }
 
-  const fnGetImgEmployee = async (nameImg)=>{
+  const fnGetImgEmployee = async (nameImg) => {
     const imageUrl = `${PATH_FILES.GET.PICTURES}${nameImg}`;
     const imageObjectURL = await request.getFile(imageUrl);
-    setDataRoomImages([{id: 1, src: imageObjectURL}]);
+    setDataRoomImages([{ id: 1, src: imageObjectURL }]);
   }
 
   const fnGetRoomImages = (item) => {
@@ -48,21 +48,21 @@ export const useRooms = ({ setLoading, screenControl }) => {
     setDataRoomImages([]);
 
     setLoading(true);
-    request.GET(`hotel/settings/roomPictures?roomId=${id}`, (resp)=>{
-      const {data} = resp;
+    request.GET(`hotel/settings/roomPictures?roomId=${id}`, (resp) => {
+      const { data } = resp;
 
-      if(data.length>0){
+      if (data.length > 0) {
         data.map(async (item) => {
           const imageUrl = `${PATH_FILES.GET.PICTURES}${item.name}`;
           const imageObjectURL = await request.getFile(imageUrl);
           item.src = imageObjectURL
           setDataRoomImages((prev) => [...prev, item]);
         });
-      }else{
+      } else {
         fnGetImgEmployee("hotelroom.jpg");
       }
       setLoading(false);
-    }, (err)=>{
+    }, (err) => {
       console.error(err);
       setLoading(false);
     });
@@ -70,12 +70,12 @@ export const useRooms = ({ setLoading, screenControl }) => {
 
   const fnGetRoomServices = (id) => {
     setLoading(true);
-    request.GET(`hotel/settings/roomServices?roomId=${id}`, (resp)=>{
+    request.GET(`hotel/settings/roomServices?roomId=${id}`, (resp) => {
       const data = resp.data;
       setDataRoomServices(data);
       setOpenModalNew(true);
       setLoading(false);
-    }, (err)=>{
+    }, (err) => {
       console.error(err);
       setLoading(false);
     });
@@ -108,12 +108,13 @@ export const useRooms = ({ setLoading, screenControl }) => {
       { text: IntlMessages("table.column.level"), dataField: "levelName", headerStyle: { 'width': '15%' } },
       { text: IntlMessages("table.column.rate"), dataField: "rate", headerStyle: { 'width': '15%' } },
       { text: IntlMessages("table.column.capacity"), dataField: "capacity", headerStyle: { 'width': '10%' } },
-      { text: IntlMessages("table.column.statusName"), dataField: "statusName", headerStyle: { 'width': '15%' },
-        cell:({row})=>{
+      {
+        text: IntlMessages("table.column.statusName"), dataField: "statusName", headerStyle: { 'width': '15%' },
+        cell: ({ row }) => {
           return (<Badge
             color=''
             pill
-            style={{backgroundColor: row.original.statusData.color}}
+            style={{ backgroundColor: row.original.statusData.color }}
           >
             {row.original.statusName}
           </Badge>);
@@ -145,9 +146,9 @@ export const useRooms = ({ setLoading, screenControl }) => {
     }],
   });
 
-  const fnGetData = (page=currentPage, searchText=search)=>{
+  const fnGetData = (page = currentPage, searchText = search) => {
     setLoading(true);
-    request.GET(`hotel/settings/rooms/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp)=>{
+    request.GET(`hotel/settings/rooms/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
       const data = resp.data.map(item => {
         item.typeName = item?.typeData?.name || ""
         item.levelName = item?.levelData?.name || ""
@@ -156,17 +157,17 @@ export const useRooms = ({ setLoading, screenControl }) => {
       });
       const pageTotal = resp.pagination.totalPages;
       const tableData = {
-        ...table, data, options: {totalPages: pageTotal, currentPage, setCurrentPage, typePagination: 2, setSearch}
+        ...table, data, options: { totalPages: pageTotal, currentPage, setCurrentPage, typePagination: 2, setSearch }
       }
       setTable(tableData);
       setLoading(false);
-    }, (err)=>{
+    }, (err) => {
       console.error(err);
       setLoading(false);
     });
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
     request.GET('hotel/settings/services', (resp) => {
       const services = resp.data.map((item) => {
@@ -239,7 +240,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
       console.error(err);
       setLoading(false);
     });
-  },[]);
+  }, []);
 
   useEffect(() => {
     fnGetData(currentPage, search);
