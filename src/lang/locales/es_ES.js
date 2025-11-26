@@ -883,7 +883,7 @@ const esLang = {
   "table.column.adds": "ADDS",
   "table.column.totalNights": "Total Noches",
   "table.column.totalPeople": "Total Personas",
-  "table.column.channel": "Reservation Channel",
+  "table.column.channel": "Canal de Reservacion",
 
   /* 02.Inicio de sesión de usuario, cierre de sesión, registro */
   'user.login-title': 'Iniciar sesión',

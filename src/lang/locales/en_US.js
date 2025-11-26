@@ -880,7 +880,7 @@ const enLang = {
   "table.column.adds": "ADDS",
   "table.column.totalNights": "Total Nights",
   "table.column.totalPeople": "Total People",
-  "table.column.channel": "Canal de Reservacion",
+  "table.column.channel": "Booking Channel",
 
   /* 02.User Login, Logout, Register */
   "user.login-title": "Login",
