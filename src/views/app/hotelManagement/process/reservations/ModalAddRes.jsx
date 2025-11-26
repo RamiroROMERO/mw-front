@@ -13,7 +13,7 @@ import ModalAddService from './ModalAddService';
 import ModalAddPayments from './ModalAddPayments';
 
 const ModalAddRes = ({data, setOpen}) => {
-  const {currentReservation, currentPage, search, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, listBookingChannels, listRooms, setLoading, fnGetData, descriptionRoom, fnGetRooms} = data;
+  const {currentReservation, currentPage=null, search=null, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, listBookingChannels, listRooms, setLoading, fnGetData=null, fnGetRooms} = data;
 
   const {formState, formValidation, sendForm, customerEmail, customerPhone, currentPayment, currentService, currentRoom, dataServices, dataPayments, roomsAvailables, totalValServices, totalValPayments, activeTab, propsToMsgDeleteService, propsToMsgDeletePayment, openModalAddPayment, openModalAddService, setActiveTab, setOpenModalAddPayment, setOpenModalAddService, onInputChange, onCustomerChange, onRoomChange, fnSave, fnSavePayment, fnSaveStatus, fnAddPayment, fnAddService, fnGetDataPayments, fnGetDataServices, fnDeleteService, fnDeletePayment } = useModalAddRes({currentReservation, setLoading, currentPage, search, fnGetData, setOpen, listCustomers, listRooms, fnGetRooms});
 
@@ -22,6 +22,8 @@ const ModalAddRes = ({data, setOpen}) => {
   const {dateValid, customerIdValid, roomIdValid} = formValidation;
 
   const roomServices = currentRoom?.roomServices || [];
+
+  const descriptionRoom = currentRoom?.name || "";
 
   const propsToModalAddService = {
     ModalContent: ModalAddService,

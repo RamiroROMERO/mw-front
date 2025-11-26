@@ -1,13 +1,13 @@
 import { Button, Card, CardBody, Col, Row } from 'reactstrap';
+import Modal from '@Components/modal';
 import HotelRoomInventory from './Hotel/HotelRoomInventory';
 import { HotelCheckOutToday } from './Hotel/HotelCheckOutToday';
 import { HotelOccupancyToday } from './Hotel/HotelOcupancyToday';
+import useHotelAdmin from './useHotelAdmin';
 
 const HotelAdmin = ({ setLoading }) => {
 
-  const fnCreateReservation = () => {
-
-  }
+  const {propsToModalAddReservation, fnCreateReservation} = useHotelAdmin({setLoading});
 
   return (
     <>
@@ -29,6 +29,7 @@ const HotelAdmin = ({ setLoading }) => {
           <HotelOccupancyToday setLoading={setLoading} />
         </Col>
       </Row>
+      <Modal {...propsToModalAddReservation}/>
     </>
   )
 }

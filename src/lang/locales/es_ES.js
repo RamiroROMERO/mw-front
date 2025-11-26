@@ -2883,6 +2883,7 @@ const esLang = {
   "page.hotel.table.availabilityDetails": "Detalle de Disponibilidad",
   "page.hotel.table.countries": "Paises",
   "page.hotel.reservations": "Reservaciones",
+  "page.hotel.modal.reservation.title": "Reservacion",
   "button.newCustomer": "Nuevo Cliente",
   "button.searchCustomer": "Buscar Cliente",
   "page.common.label.totals": "Totales",

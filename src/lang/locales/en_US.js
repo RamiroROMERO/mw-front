@@ -2873,6 +2873,7 @@ const enLang = {
   "page.hotel.table.availabilityDetails": "Availability Details",
   "page.hotel.table.countries": "Countries",
   "page.hotel.reservations": "Reservations",
+  "page.hotel.modal.reservation.title": "Reservation",
   "button.newCustomer": "New Customer",
   "menu.quotes": "Quotes",
   "common.code": "Code",

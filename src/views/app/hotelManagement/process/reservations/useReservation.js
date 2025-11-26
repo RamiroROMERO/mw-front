@@ -6,7 +6,6 @@ import { formatDate, IntlMessages } from '@/helpers/Utils';
 export const useReservation = ({setLoading, screenControl}) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [openModalAdd, setOpenModalAdd] = useState(false);
-  const [descriptionRoom, setDescriptionRoom] = useState("");
   const [listCustomers, setListCustomers] = useState([]);
   const [listStatusBooking, setListStatusBooking] = useState([]);
   const [listStatusPayment, setListStatusPayment] = useState([]);
@@ -218,7 +217,6 @@ export const useReservation = ({setLoading, screenControl}) => {
   return (
     {
       currentPage,
-      descriptionRoom,
       currentReservation,
       search,
       table,

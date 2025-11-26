@@ -3,7 +3,7 @@ import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import { useEffect, useState } from 'react'
 
-export const useModalAddRes = ({currentReservation, setLoading, currentPage, search, fnGetData, setOpen, listCustomers, listRooms, fnGetRooms}) => {
+export const useModalAddRes = ({currentReservation, setLoading, currentPage=null, search=null, fnGetData=null, setOpen, listCustomers, listRooms, fnGetRooms}) => {
   const [activeTab, setActiveTab] = useState('1');
   const [sendForm, setSendForm] = useState(false);
   const [customerPhone, setCustomerPhone] = useState("");
@@ -89,7 +89,7 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage, sea
         setLoading(true);
         request.PUT(`hotel/settings/rooms/${roomId}`, dataUpdate, () => {
           setLoading(false);
-          fnGetData(currentPage, search);
+          if(fnGetData) fnGetData(currentPage, search);
           fnGetRooms();
         }, (err) => {
           console.log(err);
@@ -100,6 +100,7 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage, sea
         console.log(err);
         setLoading(false);
       })
+      setOpen(false);
     } else {
       // if (fnUpdate === false) {
       //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
@@ -108,8 +109,9 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage, sea
       setLoading(true);
       request.PUT(`hotel/process/bookings/${id}`, formState, () => {
         setLoading(false);
-        fnGetData(currentPage, search);
+        if(fnGetData) fnGetData(currentPage, search);
         fnGetRooms();
+        setOpen(false);
       }, (err) => {
         console.log(err);
         setLoading(false);

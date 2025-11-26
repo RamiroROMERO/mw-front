@@ -7,12 +7,11 @@ import ModalAddRes from './ModalAddRes'
 
 const Content = ({setLoading, screenControl}) => {
 
-  const {currentPage, currentReservation, descriptionRoom, search, table, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, listBookingChannels, listRooms, openModalAdd, setOpenModalAdd, fnGetData, fnGetRooms} = useReservation({setLoading, screenControl});
+  const {currentPage, currentReservation, search, table, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, listBookingChannels, listRooms, openModalAdd, setOpenModalAdd, fnGetData, fnGetRooms} = useReservation({setLoading, screenControl});
 
   const propsToModalAddReservation = {
     ModalContent: ModalAddRes,
-    title: "page.hotel.modal.viewRooms.title",
-    valueTitle: descriptionRoom,
+    title: "page.hotel.modal.reservation.title",
     open: openModalAdd,
     setOpen: setOpenModalAdd,
     maxWidth: 'xl',
@@ -28,7 +27,6 @@ const Content = ({setLoading, screenControl}) => {
       listBookingChannels,
       listRooms,
       setLoading,
-      descriptionRoom,
       fnGetData,
       fnGetRooms
     }
