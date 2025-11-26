@@ -13,15 +13,15 @@ import ModalAddService from './ModalAddService';
 import ModalAddPayments from './ModalAddPayments';
 
 const ModalAddRes = ({data, setOpen}) => {
-  const {idRoom, currentRoom, currentReservation, currentPage, search, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, listBookingChannels, setLoading, fnGetData, descriptionRoom} = data;
+  const {currentReservation, currentPage, search, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, listBookingChannels, listRooms, setLoading, fnGetData, descriptionRoom, fnGetRooms} = data;
 
-  const {rate, roomServices} = currentRoom;
+  const {formState, formValidation, sendForm, customerEmail, customerPhone, currentPayment, currentService, currentRoom, dataServices, dataPayments, roomsAvailables, totalValServices, totalValPayments, activeTab, propsToMsgDeleteService, propsToMsgDeletePayment, openModalAddPayment, openModalAddService, setActiveTab, setOpenModalAddPayment, setOpenModalAddService, onInputChange, onCustomerChange, onRoomChange, fnSave, fnSavePayment, fnSaveStatus, fnAddPayment, fnAddService, fnGetDataPayments, fnGetDataServices, fnDeleteService, fnDeletePayment } = useModalAddRes({currentReservation, setLoading, currentPage, search, fnGetData, setOpen, listCustomers, listRooms, fnGetRooms});
 
-  const {formState, formValidation, sendForm, customerEmail, customerPhone, currentPayment, currentService, dataServices, dataPayments, totalValServices, totalValPayments, activeTab, propsToMsgDeleteService, propsToMsgDeletePayment, openModalAddPayment, openModalAddService, setActiveTab, setOpenModalAddPayment, setOpenModalAddService, onInputChange, onCustomerChange, fnSave, fnSavePayment, fnSaveStatus, fnAddPayment, fnAddService, fnGetDataPayments, fnGetDataServices, fnDeleteService, fnDeletePayment } = useModalAddRes({currentReservation, setLoading, idRoom, currentPage, search, fnGetData, rate, setOpen, listCustomers});
+  const {id, date, customerId, roomId, checkInDate, checkOutDate, statusId, totalNights, qtyAdults, qtyChild, others, notes, paymentStatusId, channelId} = formState;
 
-  const {id, date, customerId, checkInDate, checkOutDate, statusId, totalNights, qtyAdults, qtyChild, others, notes, paymentStatusId, channelId} = formState;
+  const {dateValid, customerIdValid, roomIdValid} = formValidation;
 
-  const {dateValid, customerIdValid} = formValidation;
+  const roomServices = currentRoom?.roomServices || [];
 
   const propsToModalAddService = {
     ModalContent: ModalAddService,
@@ -152,19 +152,23 @@ const ModalAddRes = ({data, setOpen}) => {
                     <Colxx xxs={12} md={7} xl={6}>
                       <ContainerWithLabel label="page.hotel.modal.addReservations.label.detailRoom">
                         <Row>
-                          <Colxx xxs={6} sm={6} lg={6}>
-                            <InputField
-                              name="nameRoom"
-                              label='input.nameRoom'
-                              value={currentRoom.name}
-                              disabled
+                          <Colxx xxs={12} md={12} xl={12}>
+                            <SearchSelect
+                              label='select.roomId'
+                              name='roomId'
+                              inputValue={roomId}
+                              options={currentReservation.id?listRooms:roomsAvailables}
+                              onChange={onRoomChange}
+                              invalid={sendForm && !!roomIdValid}
+                              feedbackText={sendForm && (roomIdValid || null)}
+                              disabled={currentReservation.id?false:true}
                             />
                           </Colxx>
                           <Colxx xxs={6} sm={6} lg={6}>
                             <InputField
                               name="typeId"
                               label='select.typeId'
-                              value={currentRoom.typeName}
+                              value={currentRoom?.typeData?.name || ""}
                               disabled
                             />
                           </Colxx>
@@ -172,7 +176,7 @@ const ModalAddRes = ({data, setOpen}) => {
                             <InputField
                               name="bedNumber"
                               label='input.bedNumber'
-                              value={currentRoom.bedNumber}
+                              value={currentRoom?.bedNumber || ""}
                               disabled
                             />
                           </Colxx>
@@ -180,7 +184,7 @@ const ModalAddRes = ({data, setOpen}) => {
                             <InputField
                               name="rate"
                               label='input.rate'
-                              value={formatNumber(currentRoom.rate, 'L.', 2)}
+                              value={formatNumber(currentRoom?.rate || 0, 'L.', 2)}
                               disabled
                             />
                           </Colxx>
@@ -188,7 +192,7 @@ const ModalAddRes = ({data, setOpen}) => {
                             <InputField
                               name='capacity'
                               label='input.capacity'
-                              value={currentRoom.capacity}
+                              value={currentRoom?.capacity || ""}
                               onChange={onInputChange}
                               type='text'
                               disabled
@@ -309,7 +313,7 @@ const ModalAddRes = ({data, setOpen}) => {
                             <InputField
                               name="totalValServices"
                               label='input.totalCost'
-                              value={formatNumber(totalValServices + validFloat(currentRoom.rate), 'L.', 2)}
+                              value={formatNumber(totalValServices + validFloat(currentRoom?.rate || 0), 'L.', 2)}
                               disabled
                             />
                           </Colxx>
@@ -325,7 +329,7 @@ const ModalAddRes = ({data, setOpen}) => {
                             <InputField
                               name="totalValServices"
                               label='input.pendingPayment'
-                              value={formatNumber((totalValServices + validFloat(currentRoom.rate)) - totalValPayments, 'L.', 2)}
+                              value={formatNumber((totalValServices + validFloat(currentRoom?.rate || 0)) - totalValPayments, 'L.', 2)}
                               disabled
                             />
                           </Colxx>
@@ -379,9 +383,6 @@ const ModalAddRes = ({data, setOpen}) => {
                         <th>{IntlMessages("table.column.service")}</th>
                         <th className='d-xs-none-table-cell'>{IntlMessages("table.column.qty")}</th>
                         <th className='d-xs-none-table-cell'>{IntlMessages("table.column.price")}</th>
-                        {/* <th className='d-xs-none-table-cell'>{IntlMessages("table.column.subtotal")}</th>
-                        <th className='d-xs-none-table-cell'>{IntlMessages("table.column.taxPercent")}</th>
-                        <th className='d-xs-none-table-cell'>{IntlMessages("table.column.tax")}</th> */}
                         <th>{IntlMessages("table.column.total")}</th>
                       </tr>
                     </thead>
@@ -393,9 +394,6 @@ const ModalAddRes = ({data, setOpen}) => {
                             <th scope="row">{item.service}</th>
                             <td className='d-xs-none-table-cell' align='right'>{formatNumber(item.qty)}</td>
                             <td className='d-xs-none-table-cell' align='right'>{formatNumber(item.priceTotal)}</td>
-                            {/* <td className='d-xs-none-table-cell' align='right'>{formatNumber(item.subtotal)}</td>
-                            <td className='d-xs-none-table-cell' align='right'>{formatNumber(item.taxPercent)}</td>
-                            <td className='d-xs-none-table-cell' align='right'>{formatNumber(item.tax)}</td> */}
                             <td align='right'>{formatNumber(item.total)}</td>
                             <td align='right'>
                               <Button type="button" className="btn-circle-table" color="outline-danger" title="Eliminar"

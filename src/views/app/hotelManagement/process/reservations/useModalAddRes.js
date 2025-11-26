@@ -3,15 +3,17 @@ import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import { useEffect, useState } from 'react'
 
-export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentPage, search, fnGetData, rate, setOpen, listCustomers}) => {
+export const useModalAddRes = ({currentReservation, setLoading, currentPage, search, fnGetData, setOpen, listCustomers, listRooms, fnGetRooms}) => {
   const [activeTab, setActiveTab] = useState('1');
   const [sendForm, setSendForm] = useState(false);
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [currentService, setCurrentService] = useState({});
   const [currentPayment, setCurrentPayment] = useState({});
+  const [currentRoom, setCurrentRoom] = useState({});
   const [dataServices, setDataServices] = useState([]);
   const [dataPayments, setDataPayments] = useState([]);
+  const [roomsAvailables, setRoomsAvailables] = useState([]);
   const [totalValServices, setTotalValServices] = useState(0);
   const [totalValPayments, setTotalValPayments] = useState(0);
   const [openModalAddService, setOpenModalAddService] = useState(false);
@@ -21,20 +23,21 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
 
   const validation = {
     date: [(val) => val !== "", "msg.required.input.date"],
-    customerId: [(val)=>validFloat(val)>0, "msg.required.select.customer"]
+    customerId: [(val)=>validFloat(val)>0, "msg.required.select.customer"],
+    roomId: [(val)=>validFloat(val)>0, "msg.required.select.room"],
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
     id: currentReservation?.id || 0,
     date: currentReservation?.date || "",
     customerId: currentReservation?.customerId || 0,
-    roomId: currentReservation?.roomId || idRoom,
+    roomId: currentReservation?.roomId || 0,
     checkInDate: currentReservation?.checkInDate || "",
     checkOutDate: currentReservation?.checkOutDate || "",
     personQty: currentReservation?.personQty || 0,
     statusId: currentReservation?.statusId || 0,
     totalNights: currentReservation?.totalNights || 0,
-    baseRate: currentReservation?.baseRate || rate,
+    baseRate: currentReservation?.baseRate || currentRoom?.rate || 0,
     qtyAdults: currentReservation?.qtyAdults || 0,
     qtyChild: currentReservation?.qtyChild || 0,
     others: currentReservation?.others || "",
@@ -43,12 +46,18 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
     channelId: currentReservation?.channelId || 0
   }, validation);
 
-  const {id, statusId, paymentStatusId, customerId} = formState;
+  const {id, statusId, paymentStatusId, customerId, roomId} = formState;
 
   const onCustomerChange = e => {
     const custId = validInt(e.target.value);
 
     onBulkForm({customerId: custId});
+  }
+
+  const onRoomChange = e => {
+    const roomId = e.target.value;
+
+    onBulkForm({roomId});
   }
 
   const fnSave = () => {
@@ -78,9 +87,10 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
         }
 
         setLoading(true);
-        request.PUT(`hotel/settings/rooms/${idRoom}`, dataUpdate, () => {
+        request.PUT(`hotel/settings/rooms/${roomId}`, dataUpdate, () => {
           setLoading(false);
           fnGetData(currentPage, search);
+          fnGetRooms();
         }, (err) => {
           console.log(err);
           setLoading(false);
@@ -99,6 +109,7 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
       request.PUT(`hotel/process/bookings/${id}`, formState, () => {
         setLoading(false);
         fnGetData(currentPage, search);
+        fnGetRooms();
       }, (err) => {
         console.log(err);
         setLoading(false);
@@ -162,7 +173,7 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
       }
 
         setLoading(true);
-        request.PUT(`hotel/settings/rooms/${idRoom}`, dataUpdate, () => {
+        request.PUT(`hotel/settings/rooms/${roomId}`, dataUpdate, () => {
           setLoading(false);
           fnGetData(currentPage, search);
         }, (err) => {
@@ -191,6 +202,7 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
       console.log(err);
       setLoading(false);
     })
+    setOpen(false);
   }
 
   const fnSavePayment = () => {
@@ -271,6 +283,8 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
   useEffect(() => {
     fnGetDataServices();
     fnGetDataPayments();
+    const filterRooms = listRooms.filter(item => item.statusId === 1);
+    setRoomsAvailables(filterRooms);
   }, []);
 
   useEffect(() => {
@@ -278,6 +292,22 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
     setCustomerPhone(filter?.phone || "");
     setCustomerEmail(filter?.email || "");
   }, [customerId]);
+
+  useEffect(() => {
+    const filter = listRooms.find(item => item.id === roomId);
+    setLoading(true);
+    request.GET(`hotel/settings/roomServices?roomId=${roomId}`, (resp)=>{
+      const data = resp.data;
+      if(filter){
+        filter.roomServices = data;
+      }
+      setCurrentRoom(filter);
+      setLoading(false);
+    }, (err)=>{
+      console.error(err);
+      setLoading(false);
+    });
+  }, [roomId]);
 
   return (
     {
@@ -288,8 +318,10 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
       customerPhone,
       currentPayment,
       currentService,
+      currentRoom,
       dataServices,
       dataPayments,
+      roomsAvailables,
       totalValServices,
       totalValPayments,
       activeTab,
@@ -301,6 +333,7 @@ export const useModalAddRes = ({currentReservation, setLoading, idRoom, currentP
       setOpenModalAddPayment,
       setOpenModalAddService,
       onCustomerChange,
+      onRoomChange,
       onInputChange,
       fnSave,
       fnSaveStatus,

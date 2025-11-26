@@ -125,6 +125,7 @@ const esLang = {
   "msg.required.select.storeId": "Por favor seleccione un almacen!",
   "msg.required.select.turnId": "Por favor seleccione un turno!",
   "msg.required.select.service": "Por favor seleccione un servicio!",
+  "msg.required.select.room": "Por favor seleccione una habitacion!",
   /* Require Input */
   "msg.required.input.price": "Por favor ingrese un precio!",
   "msg.required.input.dni": "Por favor ingrese una identidad valida, sin guiones ni espacios!",
@@ -880,6 +881,9 @@ const esLang = {
   "table.column.kngm": "KNGM",
   "table.column.adks": "ADKS",
   "table.column.adds": "ADDS",
+  "table.column.totalNights": "Total Noches",
+  "table.column.totalPeople": "Total Personas",
+  "table.column.channel": "Reservation Channel",
 
   /* 02.Inicio de sesión de usuario, cierre de sesión, registro */
   'user.login-title': 'Iniciar sesión',
@@ -2878,6 +2882,7 @@ const esLang = {
   "page.hotel.table.bookingChannels": "Estados de Reservacion",
   "page.hotel.table.availabilityDetails": "Detalle de Disponibilidad",
   "page.hotel.table.countries": "Paises",
+  "page.hotel.reservations": "Reservaciones",
   "button.newCustomer": "Nuevo Cliente",
   "button.searchCustomer": "Buscar Cliente",
   "page.common.label.totals": "Totales",

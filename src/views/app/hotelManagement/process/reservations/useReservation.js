@@ -1,13 +1,11 @@
 import { request } from '@/helpers/core';
 import { useEffect, useState } from 'react'
-import { PATH_FILES } from '/src/helpers/pathFiles';
 import notification from '@Containers/ui/Notifications';
+import { formatDate, IntlMessages } from '@/helpers/Utils';
 
 export const useReservation = ({setLoading, screenControl}) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
-  const [dataRooms, setDataRooms] = useState([]);
   const [openModalAdd, setOpenModalAdd] = useState(false);
-  const [idRoom, setIdRoom] = useState(0);
   const [descriptionRoom, setDescriptionRoom] = useState("");
   const [listCustomers, setListCustomers] = useState([]);
   const [listStatusBooking, setListStatusBooking] = useState([]);
@@ -15,86 +13,108 @@ export const useReservation = ({setLoading, screenControl}) => {
   const [listServices, setListServices] = useState([]);
   const [listPaymentTypes, setListPaymenTypes] = useState([]);
   const [listBookingChannels, setListBookingChannels] = useState([]);
-  const [currentRoom, setCurrentRoom] = useState({});
+  const [listRooms, setListRooms] = useState([]);
   const [currentReservation, setCurrentReservation] = useState({});
 
   // paginacion
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 3;
+  const pageSize = 10;
 
-  const fnAddReservation = (id) => {
+  const fnAddReservation = () => {
     if (fnCreate === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
     }
-    const findRoom = dataRooms.find(item => item.id === id);
-    const description = `${findRoom?.name || ""} ${findRoom?.typeName || ""}`;
-    setCurrentRoom(findRoom);
-    setDescriptionRoom(description);
-    setIdRoom(id);
     setCurrentReservation({});
     setOpenModalAdd(true);
   }
 
-  const fnViewDetail = (id) => {
+  const fnViewDetail = (item) => {
     if (fnCreate === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
     }
-    const findRoom = dataRooms.find(item => item.id === id);
-    const description = `${findRoom?.name || ""} ${findRoom?.typeName || ""}`;
-    setCurrentRoom(findRoom);
-    setDescriptionRoom(description);
-    setIdRoom(id);
-
-    // buscar la reservacion que esta activa
-    setLoading(true);
-    request.GET(`hotel/process/bookings?roomId=${id}&status=1`, (resp)=>{
-      const data = resp.data.map(item => {
-        item.typeName = item?.typeData?.name || ""
-        item.levelName = item?.levelData?.name || ""
-        item.statusName = item?.statusData?.name || ""
-        return item
-      });
-      setCurrentReservation(data[0]);
-      setOpenModalAdd(true);
-      setLoading(false);
-    }, (err)=>{
-      console.error(err);
-      setLoading(false);
-    });
+    setCurrentReservation(item);
+    setOpenModalAdd(true);
   }
 
   const fnGetData = (page=currentPage, searchText=search)=>{
-    setDataRooms([]);
     setLoading(true);
-    request.GET(`hotel/settings/rooms/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp)=>{
+    request.GET(`hotel/process/bookings/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp)=>{
       const data = resp.data.map(item => {
-        item.typeName = item?.typeData?.name || ""
-        item.levelName = item?.levelData?.name || ""
         item.statusName = item?.statusData?.name || ""
-        item.mealPlanName = item?.mealTypeData?.name || ""
-        item.statusColor = item?.statusData?.color || ""
         return item
       });
-
-      data.map(async (item) => {
-        const nameImg = item?.roomPictures[0]?.name || "hotelroom.jpg";
-        const imageUrl = `${PATH_FILES.GET.PICTURES}${nameImg}`;
-        const imageObjectURL = await request.getFile(imageUrl);
-        item.imageSrc = imageObjectURL
-        setDataRooms((prev) => [...prev, item]);
-      });
       const pageTotal = resp.pagination.totalPages;
-      setTotalPages(pageTotal);
+      const tableData = {
+        ...table, data, options: {totalPages: pageTotal, currentPage, setCurrentPage, typePagination: 2, setSearch}
+      }
+      setTable(tableData);
       setLoading(false);
     }, (err)=>{
       console.error(err);
       setLoading(false);
     });
   }
+
+  const fnGetRooms = () => {
+    setLoading(true);
+    request.GET('hotel/settings/rooms', (resp) => {
+      const rooms = resp.data.map((item) => {
+        item.label = item.name
+        item.value = item.id
+        return item;
+      });
+      setListRooms(rooms);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+  }
+
+  const [table, setTable] = useState({
+    title: IntlMessages("page.hotel.reservations"),
+    columns: [
+      { text: IntlMessages("table.column.dateIn"), dataField: "checkInDate", headerStyle: { 'width': '20%' },
+        cell:({row})=>{
+          return (formatDate(row.original.checkInDate));
+        }
+      },
+      { text: IntlMessages("table.column.dateOut"), dataField: "checkOutDate", headerStyle: { 'width': '20%' },
+        cell:({row})=>{
+          return (formatDate(row.original.checkOutDate));
+        }
+      },
+      { text: IntlMessages("table.column.totalNights"), dataField: "totalNights", headerStyle: { 'width': '15%' } },
+      { text: IntlMessages("table.column.totalPeople"), dataField: "personQty", headerStyle: { 'width': '15%' } },
+      { text: IntlMessages("table.column.channel"), dataField: "channel", headerStyle: { 'width': '20%' } },
+      {
+        text: IntlMessages("table.column.statusName"), dataField: "statusIcon", headerStyle: { 'width': '10%' },
+        classes: 'd-sm-none-table-cell', headerClasses: 'd-sm-none-table-cell'
+      }
+    ],
+    data: [],
+    options: {
+      columnActions: 'options',
+      typePagination: 2,
+      currentPage,
+      totalPages: 0,
+      setCurrentPage
+    },
+    actions: [{
+      color: 'warning',
+      onClick: fnViewDetail,
+      icon: 'list'
+    }, {
+      color: "primary",
+      icon: "bi bi-plus",
+      onClick: fnAddReservation,
+      title: IntlMessages("button.new"),
+      isFreeAction: true
+    }],
+  });
 
   useEffect(() => {
     fnGetData(currentPage, search);
@@ -190,32 +210,30 @@ export const useReservation = ({setLoading, screenControl}) => {
       console.error(err);
       setLoading(false);
     });
+
+    fnGetRooms();
+
   },[]);
 
   return (
     {
-      idRoom,
-      dataRooms,
-      totalPages,
       currentPage,
-      typePagination: 2,
       descriptionRoom,
-      currentRoom,
       currentReservation,
       search,
+      table,
       listCustomers,
       listStatusBooking,
       listStatusPayment,
       listServices,
       listPaymentTypes,
       listBookingChannels,
+      listRooms,
       openModalAdd,
       setOpenModalAdd,
-      setCurrentPage,
       setSearch,
-      fnAddReservation,
-      fnViewDetail,
-      fnGetData
+      fnGetData,
+      fnGetRooms
     }
   )
 }
