@@ -27,7 +27,7 @@ export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, 
     status: 1
   }, projectsValid);
 
-  const {id, customerId, projectId, codeEmployee, dateIn, dateOut} = formState;
+  const {id, customerId, projectId, codeEmployee, dateIn, dateOut, status} = formState;
 
   const onCustomerChange = e => {
     const customer = e.target.value;
@@ -163,7 +163,7 @@ export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, 
       codeEmployee,
       dateIn,
       dateOut: dateOut===""?"1900-01-01":dateOut,
-      status: (dateOut!=="" && dateOut!=="1900-01-01")?0:1
+      status
     }
 
     if(id === 0){

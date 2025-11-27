@@ -8,13 +8,14 @@ import DateCalendar from '@Components/dateCalendar';
 import ReactTable from '@Components/reactTable';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import { InputField } from '@Components/inputFields';
+import { Checkbox } from '@/components/checkbox';
 
 const ModalDetail = ({data, setOpen}) => {
   const {currentItem, listWorkShifts, listEmployees, setLoading, fnGetProjects, screenControl} = data;
 
   const {codeEmployee, formState, formValidation, sendForm, onInputChange, table, propsToMsgDelete, fnSave, fnClearInputs} = useModalDetail({currentItem, setLoading, fnGetProjects, screenControl});
 
-  const {turnId, employeeId, dateIn, dateOut} = formState;
+  const {turnId, employeeId, dateIn, dateOut, status} = formState;
 
   const {turnIdValid, employeeIdValid, dateInValid} = formValidation;
 
@@ -68,6 +69,14 @@ const ModalDetail = ({data, setOpen}) => {
             name="dateOut"
             value={dateOut}
             label='select.dateOut'
+            onChange={onInputChange}
+          />
+        </Colxx>
+        <Colxx xxs={12} sm={6} md={4}>
+          <Checkbox
+            label='check.status'
+            name="status"
+            value={status}
             onChange={onInputChange}
           />
         </Colxx>

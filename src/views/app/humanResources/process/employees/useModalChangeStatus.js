@@ -56,6 +56,20 @@ export const useModalChangeStatus = ({setLoading, employeeId, statusEmployee, se
         setLoading(false);
       });
 
+      //si el status es false desactivarlo en los proyectos
+      if(status===false){
+        const projectUpdate = {
+          status: false
+        }
+        setLoading(true);
+        request.PUT(`rrhh/process/projectDetail?employeeId=${employeeId}`, projectUpdate, () => {
+          setLoading(false);
+        }, (err) => {
+          console.error(err);
+          setLoading(false);
+        });
+      }
+
     }, (err) => {
       console.error(err);
       setLoading(false);

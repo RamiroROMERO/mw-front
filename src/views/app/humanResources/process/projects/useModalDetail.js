@@ -94,7 +94,12 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
         cell:({row})=>{
           return (row.original.dateOutVal===""?"":formatDate(row.original.dateOutVal));
         }
-      }
+      },
+      {
+        text: IntlMessages("table.column.status"),
+        dataField: "statusIcon",
+        headerStyle: {width: "10%"}
+      },
     ],
     data: [],
     options: {
@@ -124,6 +129,8 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
         item.workShifts = item.rrhhSchedule?.name || ''
         item.employee = `${item.rrhhEmployee?.firstName || ''} ${item.rrhhEmployee?.secondName || ''} ${item.rrhhEmployee?.lastName || ''} ${item.rrhhEmployee?.secondLastName || ''}`
         item.dateOutVal = item.dateOut==="1900-01-01"?"":item.dateOut
+        item.statusIcon = item.status === true || item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
+          <i className="medium-icon bi bi-square" />
         return item;
       });
       setTable({ ...table, data: projectDeta });

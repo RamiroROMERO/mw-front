@@ -8,13 +8,14 @@ import Confirmation from '@Containers/ui/confirmationMsg';
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import DateCalendar from '@Components/dateCalendar'
 import { useModalProjects } from './useModalProjects'
+import { Checkbox } from '@/components/checkbox'
 
 const ModalProjects = ({data, setOpen}) => {
   const {employeeId, turnId, listCustomers, listProjects, setLoading, fnGetProjects, fnGetProjectEmployee} = data;
 
   const {formState, formValidation, sendForm, fnClearInputs, fnSave, propsToMsgDelete, table, listProjectsCust,onCustomerChange, onProjectChange, onInputChange} = useModalProjects({employeeId, turnId, listProjects, setLoading, fnGetProjects, fnGetProjectEmployee})
 
-  const {customerId, projectId, codeEmployee, dateIn, dateOut} = formState;
+  const {customerId, projectId, codeEmployee, dateIn, dateOut, status} = formState;
 
   const {customerIdValid, projectIdValid, dateInValid} = formValidation;
 
@@ -69,6 +70,14 @@ const ModalProjects = ({data, setOpen}) => {
             name="dateOut"
             value={dateOut}
             label='select.dateOut'
+            onChange={onInputChange}
+          />
+        </Colxx>
+        <Colxx xxs={12} sm={6} md={4}>
+          <Checkbox
+            label='check.status'
+            name="status"
+            value={status}
             onChange={onInputChange}
           />
         </Colxx>
