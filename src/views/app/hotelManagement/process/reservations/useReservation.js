@@ -2,6 +2,7 @@ import { request } from '@/helpers/core';
 import { useEffect, useState } from 'react'
 import notification from '@Containers/ui/Notifications';
 import { formatDate, IntlMessages } from '@/helpers/Utils';
+import { Badge } from 'reactstrap';
 
 export const useReservation = ({setLoading, screenControl}) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
@@ -43,6 +44,10 @@ export const useReservation = ({setLoading, screenControl}) => {
     request.GET(`hotel/process/bookings/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp)=>{
       const data = resp.data.map(item => {
         item.statusName = item?.statusData?.name || ""
+        item.channel = item?.channelData?.name || ""
+        item.room = item?.roomData?.name || ""
+        item.customer = item?.customerData?.name || ""
+        item.typeRoom = item?.roomData?.typeData?.name || ""
         return item
       });
       const pageTotal = resp.pagination.totalPages;
@@ -76,23 +81,34 @@ export const useReservation = ({setLoading, screenControl}) => {
   const [table, setTable] = useState({
     title: IntlMessages("page.hotel.reservations"),
     columns: [
-      { text: IntlMessages("table.column.dateIn"), dataField: "checkInDate", headerStyle: { 'width': '20%' },
+      { text: IntlMessages("table.column.dateIn"), dataField: "checkInDate", headerStyle: { 'width': '10%' },
         cell:({row})=>{
           return (formatDate(row.original.checkInDate));
         }
       },
-      { text: IntlMessages("table.column.dateOut"), dataField: "checkOutDate", headerStyle: { 'width': '20%' },
+      { text: IntlMessages("table.column.dateOut"), dataField: "checkOutDate", headerStyle: { 'width': '10%' },
         cell:({row})=>{
           return (formatDate(row.original.checkOutDate));
         }
       },
-      { text: IntlMessages("table.column.totalNights"), dataField: "totalNights", headerStyle: { 'width': '15%' } },
-      { text: IntlMessages("table.column.totalPeople"), dataField: "personQty", headerStyle: { 'width': '15%' } },
-      { text: IntlMessages("table.column.channel"), dataField: "channel", headerStyle: { 'width': '20%' } },
+      { text: IntlMessages("table.column.customer"), dataField: "customer", headerStyle: { 'width': '20%' } },
+      { text: IntlMessages("table.column.room"), dataField: "room", headerStyle: { 'width': '10%' } },
+      { text: IntlMessages("table.column.roomType"), dataField: "typeRoom", headerStyle: { 'width': '10%' } },
+      { text: IntlMessages("table.column.totalNights"), dataField: "totalNights", headerStyle: { 'width': '10%' } },
+      { text: IntlMessages("table.column.totalPeople"), dataField: "personQty", headerStyle: { 'width': '10%' } },
+      { text: IntlMessages("table.column.channel"), dataField: "channel", headerStyle: { 'width': '10%' } },
       {
-        text: IntlMessages("table.column.statusName"), dataField: "statusIcon", headerStyle: { 'width': '10%' },
-        classes: 'd-sm-none-table-cell', headerClasses: 'd-sm-none-table-cell'
-      }
+        text: IntlMessages("table.column.statusName"), dataField: "statusName", headerStyle: { 'width': '10%' },
+        cell: ({ row }) => {
+          return (<Badge
+            color=''
+            pill
+            style={{ backgroundColor: row.original?.statusData?.color || "#2a93d5" }}
+          >
+            {row.original.statusName}
+          </Badge>);
+        }
+      },
     ],
     data: [],
     options: {

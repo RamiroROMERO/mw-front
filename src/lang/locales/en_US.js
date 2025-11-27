@@ -881,6 +881,8 @@ const enLang = {
   "table.column.totalNights": "Total Nights",
   "table.column.totalPeople": "Total People",
   "table.column.channel": "Booking Channel",
+  "table.column.room": "Room",
+  "table.column.roomType": "Room Type",
 
   /* 02.User Login, Logout, Register */
   "user.login-title": "Login",
