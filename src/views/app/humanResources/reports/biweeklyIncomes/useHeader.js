@@ -2,7 +2,7 @@ import { request } from '@/helpers/core';
 import { useForm } from '@/hooks';
 import notification from '@Containers/ui/Notifications';
 
-export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) => {
+export const useHeader = ({setLoading, table, setTable, enableGenerateReport, listTypeIncomes}) => {
 
   const { formState, onInputChange } = useForm({
     projectId: 0,
@@ -27,19 +27,54 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
       where.projectId = projectId;
     }
 
+    const otherFields = [];
+    const qtyDaysFields = [];
+
+    listTypeIncomes.map((item)=>{
+      otherFields.push({
+        id: item.value,
+        title: `Total ${item.label}`,
+        field: `inc${item.value}`,
+        type: 'decimal',
+        length: 50,
+        isSum: true,
+        currency: true
+      },{
+        id: `qty-${item.value}`,
+        title: `Cantidad ${item.label}`,
+        field: `incQty${item.value}`,
+        type: 'decimal',
+        length: 50,
+        isSum: false,
+        currency: false
+      });
+
+      qtyDaysFields.push({
+        id: `qtyDays-${item.value}`,
+        title: `${item.label}`,
+        field: `incQtyDays${item.value}`,
+        type: 'decimal',
+        length: 40,
+        isSum: false,
+        currency: false
+      });
+    });
+
     setLoading(true);
     let data = {
       where: where,
       fields: [
         { title: 'No.', field: 'num', type: 'decimal', length: 20 },
         { title: 'Empleado', field: 'employeeName', type: 'String', length: 150 },
-        { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 70},
-        { title: 'Proyecto', field: 'projectName', type: 'String', length: 120 },
+        { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 40},
+        { title: 'Proyecto', field: 'projectName', type: 'String', length: 70 },
         { title: 'Descripcion', field: 'description', type: 'String', length: 150},
-        { title: 'Cantidad', field: 'qty', type: 'String', length: 50 },
-        { title: 'Valor', field: 'value', type: 'decimal', length: 50, isSum: true, currency: true },
-        { title: 'Fecha', field: 'date', type: 'String', length: 70},
+        ...otherFields,
+        // { title: 'Cantidad', field: 'qty', type: 'String', length: 50 },
+        { title: 'Total Ingresos', field: 'value', type: 'decimal', length: 50, isSum: true, currency: true },
+        { title: 'Fecha', field: 'date', type: 'String', length: 40},
       ],
+      otherFields,
       headerData: [],
       reportTitle: "Control de Ingresos Quincenales",
       nameXLSXFile: "ControlIngresosQuincenales.xlsx",

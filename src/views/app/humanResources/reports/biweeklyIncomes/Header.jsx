@@ -6,9 +6,9 @@ import DateCalendar from '@/components/dateCalendar';
 import { useHeader } from './useHeader';
 import SearchSelect from '@/components/SearchSelect/SearchSelect';
 
-const Header = ({setLoading, table, setTable, enableGenerateReport, listProjects}) => {
+const Header = ({setLoading, table, setTable, enableGenerateReport, listProjects, listTypeIncomes}) => {
 
-  const {formState, onInputChange, fnGetData} = useHeader({setLoading, table, setTable, enableGenerateReport});
+  const {formState, onInputChange, fnGetData} = useHeader({setLoading, table, setTable, enableGenerateReport, listTypeIncomes});
 
   const {projectId, dateStart, dateEnd} = formState;
 

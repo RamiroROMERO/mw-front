@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 export const useBiweeklyIncomes = ({setLoading, adminControl}) => {
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.010")?.active || false;
   const [listProjects, setListProjects] = useState([]);
+  const [listTypeIncomes, setListTypeIncomes] = useState([]);
 
   const [table, setTable] = useState({
     title: IntlMessages("page.biweeklyIncomes.table.biweeklyIncomes.title"),
@@ -73,6 +74,22 @@ export const useBiweeklyIncomes = ({setLoading, adminControl}) => {
       console.error(err);
       setLoading(false);
     });
+
+    setLoading(true);
+    request.GET('rrhh/settings/payrollDayTypes', (resp) => {
+      const listTypes = resp.data.map((item) => {
+        return {
+          label: item.name,
+          value: item.id,
+          noAccount: item.noAccount
+        }
+      });
+      setListTypeIncomes(listTypes);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
   }, []);
 
   const propsToHeader = {
@@ -80,6 +97,7 @@ export const useBiweeklyIncomes = ({setLoading, adminControl}) => {
     setLoading,
     table,
     enableGenerateReport,
+    listTypeIncomes,
     setTable
   }
 
