@@ -1149,6 +1149,7 @@ const enLang = {
   "menu.bookingChannels": "Booking Channels",
   "menu.hotelManagement.bookingChannels": "Booking Channels",
   "menu.countries": "Countries",
+  "menu.generalVacations": "General Vacation",
   /* 04.Error Page */
   "pages.error-title": "Ooops... looks like an error occurred!",
   "pages.error-code": "Error code",
@@ -2823,6 +2824,7 @@ const enLang = {
   "page.reports.table.staffDepartures.title": "Departures",
   "page.biweeklyIncomes.table.biweeklyIncomes.title": "Biweekly Incomes",
   "page.reports.table.newStaff.title": "New Staff",
+  "page.reports.table.generalVacacions.title": "General Vacation Report",
   // 93. Home
   "page.home.modal.addScheduling.title": "Add/Edit Work Scheduling",
   "page.home.table.detail.title": "Detail",

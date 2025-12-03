@@ -1152,6 +1152,7 @@ const esLang = {
   "menu.bookingChannels": "Canales de Reservacion",
   "menu.hotelManagement.bookingChannels": "Canales de Reservacion",
   "menu.countries": "Paises",
+  "menu.generalVacations": "General de Vacaciones",
   /* 04.Error  */
   'pages.error-title': 'Vaya, parece que ha ocurrido un error!',
   'pages.error-code': 'Código de error',
@@ -2832,6 +2833,7 @@ const esLang = {
   "page.reports.table.staffDepartures.title": "Egresos",
   "page.biweeklyIncomes.table.biweeklyIncomes.title": "Ingresos Quincenales",
   "page.reports.table.newStaff.title": "Altas de Personal",
+  "page.reports.table.generalVacacions.title": "Reporte General de Vacaciones",
   // 93. Home
   "page.home.modal.addScheduling.title": "Agregar/Editar Horario de Trabajo",
   "page.home.table.detail.title": "Detalle",

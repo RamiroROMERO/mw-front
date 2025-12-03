@@ -187,6 +187,8 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
 
       const otherFields = [];
       const qtyDaysFields = [];
+      const qtyDaysDeductions = [];
+      const otherFields2 = [];
 
       listTypeIncomes.map((item)=>{
         otherFields.push({
@@ -218,8 +220,8 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         });
       });
 
-      const otherFields2 = listTypeDeductions.map((item)=>{
-        return {
+      listTypeDeductions.map((item)=>{
+        otherFields2.push({
           id: item.value,
           title: item.label,
           field: `deduc${item.value}`,
@@ -227,7 +229,23 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
           length: 60,
           isSum: true,
           currency: true
-        }
+        },{
+          id: `qtyDeduc-${item.value}`,
+          title: `Cantidad Dias ${item.label}`,
+          field: `deducQty${item.value}`,
+          type: 'decimal',
+          length: 50,
+          isSum: false,
+          currency: false
+        },{
+          id: `qtyHDeduc-${item.value}`,
+          title: `Cantidad Horas ${item.label}`,
+          field: `deducQtyH${item.value}`,
+          type: 'decimal',
+          length: 50,
+          isSum: false,
+          currency: false
+        })
       });
 
       let data = {

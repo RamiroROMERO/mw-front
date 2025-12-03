@@ -190,6 +190,7 @@ export const useAdmonitions = ({setLoading, screenControl}) => {
   }
 
   const fnGenerateDismiss = () => {
+    console.log(appointmentDate)
     const newData = {
       ...formState,
       appointmentDate: appointmentDate === "" ? "1900-01-01" : appointmentDate,

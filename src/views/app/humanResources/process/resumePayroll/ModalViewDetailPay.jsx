@@ -347,7 +347,9 @@ const ModalViewDetailPay = ({setOpen, data}) => {
                     <Table bordered hover size='sm'>
                       <thead>
                         <tr>
-                          <th width="70%">{IntlMessages('table.column.description')}</th>
+                          <th width="40%">{IntlMessages('table.column.description')}</th>
+                          <th width="15%">{IntlMessages('table.column.days')}</th>
+                          <th width="15%">{IntlMessages('table.column.hours')}</th>
                           <th width="20%">{IntlMessages('table.column.value')}</th>
                           <th width="10%">{IntlMessages('table.column.options')}</th>
                         </tr>
@@ -357,7 +359,9 @@ const ModalViewDetailPay = ({setOpen, data}) => {
                           return (
                             <tr id={`tr-table-invoiceDetail-${item.id}`} key={idx}>
                               <td>{item.description}</td>
-                              <td>{item.value}</td>
+                              <td>{item.days}</td>
+                              <td>{item.hours}</td>
+                              <td align='right'>{formatNumber(item.value)}</td>
                               <td align='right'>
                                 <Button type="button" className="btn-circle-table" color="warning" title="Editar"
                                   onClick={() => {fnEditDeductionExternal(item)}} key={`buttons2-${idx}`}>

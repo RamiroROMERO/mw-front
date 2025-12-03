@@ -11,11 +11,15 @@ const DateTimeCalendar = (props) => {
   const [controlDateTime, setControlDateTime] = useState(moment(value));
 
   useEffect(() => {
-    onChange({ target: { name, value: controlDateTime.format("YYYY-MM-DD HH:mm:ss") } })
+    if(value!==""){
+      onChange({ target: { name, value: controlDateTime.format("YYYY-MM-DD HH:mm:ss") } })
+    }
   }, [controlDateTime])
 
   useEffect(() => {
-    setControlDateTime(moment(value))
+    if(value!==""){
+      setControlDateTime(moment(value))
+    }
   }, [value])
 
   return (

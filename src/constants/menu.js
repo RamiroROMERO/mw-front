@@ -1081,6 +1081,11 @@ const data = [
             to: `${adminRoot}/humanResources/reports/controlVacations`,
           },
           {
+            icon: 'bi bi-calendar4-week',
+            label: 'menu.generalVacations',
+            to: `${adminRoot}/humanResources/reports/generalVacations`,
+          },
+          {
             icon: 'bi bi-file-earmark-check',
             label: 'menu.controlPermissions',
             to: `${adminRoot}/humanResources/reports/controlPermissions`,

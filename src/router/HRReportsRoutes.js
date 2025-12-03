@@ -9,6 +9,7 @@ const EmployeesByCust = React.lazy(() => import('@/views/app/humanResources/repo
 const ControlVacations = React.lazy(() => import('@/views/app/humanResources/reports/controlVacations'));
 const ControlPermissions = React.lazy(() => import('@/views/app/humanResources/reports/controlPermissions'));
 const ControlIncapacities = React.lazy(() => import('@/views/app/humanResources/reports/controlIncapacities'));
+const GeneralVacations = React.lazy(() => import('@/views/app/humanResources/reports/generalVacations'));
 const PendingPayments = React.lazy(() => import('@/views/app/humanResources/reports/pendingPayments'));
 const Salaries = React.lazy(() => import('@/views/app/humanResources/reports/salaries'));
 const StaffDepartures = React.lazy(() => import('@/views/app/humanResources/reports/staffDepartures'));
@@ -47,6 +48,10 @@ const HRReportsRoutes = (props) => {
       index
       path="/controlIncapacities"
       element={<ControlIncapacities setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/generalVacations"
+      element={<GeneralVacations setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
       path="/pendingPayments"
