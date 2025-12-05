@@ -1,14 +1,16 @@
 import React from 'react';
-import { Card, CardBody, Row } from 'reactstrap';
+import { Card, CardBody, Col, Row } from 'reactstrap';
 import { Colxx } from '@/components/common/CustomBootstrap';
 import { useSalesReport } from './useSalesReport';
 import HeaderReport from './HeaderReport';
 import ReactTable from '@/components/reactTable'
 import TotalsReport from '@/views/app/inventory/reports/purchaseReport/TotalsReport';
+import { InputField } from '@/components/inputFields';
+import { formatNumber } from '@/helpers/Utils';
 
 const SalesReport = ({ setLoading }) => {
 
-  const { table, propsToHeaderReport, totals } = useSalesReport({ setLoading });
+  const { table, propsToHeaderReport, totals, valChangeUsd } = useSalesReport({ setLoading });
 
   return (
     <>
@@ -27,6 +29,52 @@ const SalesReport = ({ setLoading }) => {
           <Card className='mb-3 mt-3'>
             <CardBody>
               <TotalsReport {...totals} />
+            </CardBody>
+          </Card>
+        </Colxx>
+      </Row>
+      <Row>
+        <Colxx xxs={12}>
+          <Card>
+            <CardBody>
+              <Row>
+                <Colxx xxs={12} sm={4} md={3} lg={2}>
+                  <InputField
+                    name="totalUSD"
+                    label='input.totalUSD'
+                    value={formatNumber((totals['total'] / valChangeUsd), '', 2)}
+                    type="text"
+                    disabled
+                  />
+                </Colxx>
+                <Colxx xxs={12} sm={4} md={3} lg={2}>
+                  <InputField
+                    name="totalCostUSD"
+                    label='input.totalCostUSD'
+                    value={formatNumber((totals['costValue'] / valChangeUsd), '', 2)}
+                    type="text"
+                    disabled
+                  />
+                </Colxx>
+                <Colxx xxs={12} sm={4} md={3} lg={2}>
+                  <InputField
+                    name="saleDiffUSD"
+                    label='input.saleDiffUSD'
+                    value={formatNumber(((totals['total'] - totals['costValue']) / valChangeUsd), '', 2)}
+                    type="text"
+                    disabled
+                  />
+                </Colxx>
+                <Colxx xxs={12} sm={4} md={3} lg={2}>
+                  <InputField
+                    name="changeValueUsd"
+                    label='input.changeValueUsd'
+                    value={formatNumber(valChangeUsd, '', 4)}
+                    type="text"
+                    disabled
+                  />
+                </Colxx>
+              </Row>
             </CardBody>
           </Card>
         </Colxx>

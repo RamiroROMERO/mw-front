@@ -4,10 +4,10 @@ import { Colxx } from '@/components/common/CustomBootstrap'
 import { InputField } from '@/components/inputFields'
 import { formatNumber } from '@/helpers/Utils'
 
-const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, discount, tax, fleteValue, otherChargesValue, total, month_1, month_2, month_3, month_4, month_5, month_6, month_7, month_8, month_9, month_10, month_11, month_12}) => {
+const TotalsReport = ({ subtotal, exoneratedValue, exemptValue, taxedValue, discount, tax, fleteValue, otherChargesValue, total, costValue, saleDiff, month_1, month_2, month_3, month_4, month_5, month_6, month_7, month_8, month_9, month_10, month_11, month_12 }) => {
   return (
     <Row>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: subtotal!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: subtotal !== undefined ? 'block' : 'none' }}>
         <InputField
           name="subtotal"
           label='input.subtotal'
@@ -16,7 +16,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: exoneratedValue!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: exoneratedValue !== undefined ? 'block' : 'none' }}>
         <InputField
           name="exoneratedValue"
           label='input.exoneratedValue'
@@ -25,7 +25,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: exemptValue!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: exemptValue !== undefined ? 'block' : 'none' }}>
         <InputField
           name="exemptValue"
           label='input.exemptValue'
@@ -34,7 +34,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: taxedValue!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: taxedValue !== undefined ? 'block' : 'none' }}>
         <InputField
           name="taxedValue"
           label='input.taxedValue'
@@ -43,7 +43,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: discount!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: discount !== undefined ? 'block' : 'none' }}>
         <InputField
           name="discount"
           label='input.discount'
@@ -52,7 +52,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: tax!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: tax !== undefined ? 'block' : 'none' }}>
         <InputField
           name="tax"
           label='input.tax'
@@ -61,7 +61,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: fleteValue!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: fleteValue !== undefined ? 'block' : 'none' }}>
         <InputField
           name="fleteValue"
           label='input.fleteValue'
@@ -70,7 +70,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: otherChargesValue!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: otherChargesValue !== undefined ? 'block' : 'none' }}>
         <InputField
           name="otherChargesValue"
           label='input.otherChargesValue'
@@ -79,7 +79,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: month_1!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: month_1 !== undefined ? 'block' : 'none' }}>
         <InputField
           name="month_1"
           label='input.month1'
@@ -88,7 +88,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: month_2!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: month_2 !== undefined ? 'block' : 'none' }}>
         <InputField
           name="month_2"
           label='input.month2'
@@ -97,7 +97,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: month_3!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: month_3 !== undefined ? 'block' : 'none' }}>
         <InputField
           name="month_3"
           label='input.month3'
@@ -106,7 +106,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: month_4!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: month_4 !== undefined ? 'block' : 'none' }}>
         <InputField
           name="month_4"
           label='input.month4'
@@ -115,7 +115,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: month_5!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: month_5 !== undefined ? 'block' : 'none' }}>
         <InputField
           name="month_5"
           label='input.month5'
@@ -124,7 +124,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: month_6!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: month_6 !== undefined ? 'block' : 'none' }}>
         <InputField
           name="month_6"
           label='input.month6'
@@ -133,7 +133,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: month_7!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: month_7 !== undefined ? 'block' : 'none' }}>
         <InputField
           name="month_7"
           label='input.month7'
@@ -142,7 +142,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: month_8!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: month_8 !== undefined ? 'block' : 'none' }}>
         <InputField
           name="month_8"
           label='input.month8'
@@ -151,7 +151,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: month_9!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: month_9 !== undefined ? 'block' : 'none' }}>
         <InputField
           name="month_9"
           label='input.month9'
@@ -160,7 +160,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: month_10!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: month_10 !== undefined ? 'block' : 'none' }}>
         <InputField
           name="month_10"
           label='input.month10'
@@ -169,7 +169,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: month_11!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: month_11 !== undefined ? 'block' : 'none' }}>
         <InputField
           name="month_11"
           label='input.month11'
@@ -178,7 +178,7 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: month_12!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: month_12 !== undefined ? 'block' : 'none' }}>
         <InputField
           name="month_12"
           label='input.month12'
@@ -187,11 +187,38 @@ const TotalsReport = ({subtotal, exoneratedValue, exemptValue, taxedValue, disco
           disabled
         />
       </Colxx>
-      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{display: total!==undefined?'block':'none'}}>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: total !== undefined ? 'block' : 'none' }}>
         <InputField
           name="total"
           label='input.total'
           value={formatNumber(total)}
+          type="text"
+          disabled
+        />
+      </Colxx>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: costValue !== undefined ? 'block' : 'none' }}>
+        <InputField
+          name="costValue"
+          label='input.cost'
+          value={formatNumber(costValue)}
+          type="text"
+          disabled
+        />
+      </Colxx>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: saleDiff !== undefined ? 'block' : 'none' }}>
+        <InputField
+          name="saleDiffValue"
+          label='input.saleDiff'
+          value={formatNumber(saleDiff)}
+          type="text"
+          disabled
+        />
+      </Colxx>
+      <Colxx xxs="12" xs="6" sm="4" lg="3" xxl="2" style={{ display: saleDiff !== undefined ? 'block' : 'none' }}>
+        <InputField
+          name="salePercent"
+          label='page.overtime.input.percentValue'
+          value={formatNumber((saleDiff / total) * 100, '', 2)}
           type="text"
           disabled
         />

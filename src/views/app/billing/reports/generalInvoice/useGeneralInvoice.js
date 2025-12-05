@@ -22,7 +22,7 @@ export const useGeneralInvoice = ({ setLoading }) => {
         headerStyle: { width: "10%" },
         classes: 'd-md-none-table-cell',
         headerClasses: 'd-md-none-table-cell',
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatDate(row.original.date));
         }
       },
@@ -45,7 +45,7 @@ export const useGeneralInvoice = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.taxedValue, '', 2));
         }
       },
@@ -56,7 +56,7 @@ export const useGeneralInvoice = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.exemptValue, '', 2));
         }
       },
@@ -67,7 +67,7 @@ export const useGeneralInvoice = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.exoneratedValue, '', 2));
         }
       },
@@ -78,7 +78,7 @@ export const useGeneralInvoice = ({ setLoading }) => {
         classes: 'd-sm-none-table-cell',
         headerClasses: 'd-sm-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.discount, '', 2));
         }
       },
@@ -89,7 +89,7 @@ export const useGeneralInvoice = ({ setLoading }) => {
         classes: 'd-sm-none-table-cell',
         headerClasses: 'd-sm-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.taxValue, '', 2));
         }
       },
@@ -98,7 +98,7 @@ export const useGeneralInvoice = ({ setLoading }) => {
         dataField: "total",
         headerStyle: { 'width': '7%' },
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.total, '', 2));
         }
       }

@@ -33,7 +33,7 @@ export const useSummaryByProduct = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.qty, '', 2));
         }
       },
@@ -44,7 +44,7 @@ export const useSummaryByProduct = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.subtotal, '', 2));
         }
       },
@@ -55,7 +55,7 @@ export const useSummaryByProduct = ({ setLoading }) => {
         classes: 'd-sm-none-table-cell',
         headerClasses: 'd-sm-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.discount, '', 2));
         }
       },
@@ -66,7 +66,7 @@ export const useSummaryByProduct = ({ setLoading }) => {
         classes: 'd-sm-none-table-cell',
         headerClasses: 'd-sm-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.tax, '', 2));
         }
       },
@@ -75,7 +75,7 @@ export const useSummaryByProduct = ({ setLoading }) => {
         dataField: "total",
         headerStyle: { 'width': '10%' },
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.total, '', 2));
         }
       }

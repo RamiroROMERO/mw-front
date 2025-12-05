@@ -596,6 +596,11 @@ const esLang = {
   "input.zipCode": "Codigo Postal",
   "input.rateStandar": "Tarifa Estandar",
   "input.rateCorp": "Tarifa Corporativa",
+  "input.totalUSD": "Total (USD)",
+  "input.totalCostUSD": "Costo Total (USD)",
+  "input.saleDiff": "Ingreso Bruto",
+  "input.saleDiffUSD": "Ingreso Bruto (USD)",
+  "input.changeValueUsd": "Tipo de Cambio",
   /* Selects */
   "select.department": "Departamento",
   "select.municipality": "Municipio",

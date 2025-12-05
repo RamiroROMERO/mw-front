@@ -595,6 +595,7 @@ const enLang = {
   "input.zipCode": "Zip Code",
   "input.rateStandar": "Standard Rate",
   "input.rateCorp": "Corporate Rate",
+  "input.saleDiff": "Gross Income",
   /* Selects */
   "select.department": "Department",
   "select.municipality": "Municipality",

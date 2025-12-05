@@ -9,6 +9,7 @@ export const useSalesReport = ({ setLoading }) => {
   const [listSellers, setlistSellers] = useState([]);
   const [listStores, setListStores] = useState([]);
   const [listProducts, setListProducts] = useState([]);
+  const [valChangeUsd, setValChangeUsd] = useState(0);
   const [totals, setTotals] = useState({ qty: 0, subtotal: 0, discount: 0, tax: 0, total: 0 });
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
@@ -16,8 +17,8 @@ export const useSalesReport = ({ setLoading }) => {
     storeId: 0,
     productCode: '',
     sellerId: 0,
-    startDate: '2024-01-01',
-    endDate: '2025-12-30'
+    startDate: '2025-10-01',
+    endDate: '2025-11-30'
   });
 
   const [table, setTable] = useState({
@@ -29,7 +30,7 @@ export const useSalesReport = ({ setLoading }) => {
         headerStyle: { width: "10%" },
         classes: 'd-md-none-table-cell',
         headerClasses: 'd-md-none-table-cell',
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatDate(row.original.date));
         }
       },
@@ -60,7 +61,7 @@ export const useSalesReport = ({ setLoading }) => {
         dataField: "qty",
         headerStyle: { 'width': '7%' },
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.qty, '', 2));
         }
       },
@@ -71,7 +72,7 @@ export const useSalesReport = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.price, '', 2));
         }
       },
@@ -82,7 +83,7 @@ export const useSalesReport = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.subtotal, '', 2));
         }
       },
@@ -93,7 +94,7 @@ export const useSalesReport = ({ setLoading }) => {
         classes: 'd-sm-none-table-cell',
         headerClasses: 'd-sm-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.discount, '', 2));
         }
       },
@@ -104,7 +105,7 @@ export const useSalesReport = ({ setLoading }) => {
         classes: 'd-sm-none-table-cell',
         headerClasses: 'd-sm-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.tax, '', 2));
         }
       },
@@ -113,7 +114,7 @@ export const useSalesReport = ({ setLoading }) => {
         dataField: "total",
         headerStyle: { 'width': '7%' },
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.total, '', 2));
         }
       },
@@ -123,6 +124,15 @@ export const useSalesReport = ({ setLoading }) => {
         headerStyle: { width: "10%" },
         classes: 'd-md-none-table-cell',
         headerClasses: 'd-md-none-table-cell'
+      },
+      {
+        text: IntlMessages("table.column.cost"),
+        dataField: "costValue",
+        headerStyle: { 'width': '7%' },
+        style: { textAlign: 'right' },
+        cell: ({ row }) => {
+          return (formatNumber(row.original.costValue, '', 2));
+        }
       }
     ],
     data: [],
@@ -229,6 +239,17 @@ export const useSalesReport = ({ setLoading }) => {
     });
   }, []);
 
+
+  useEffect(() => {
+
+    request.GET('admin/utils/getUsdChange/', resp => {
+      const { data } = resp;
+      setValChangeUsd(data.value || 0);
+    }, err => {
+      setValChangeUsd(0);
+    });
+  }, [])
+
   const propsToHeaderReport = {
     formState,
     onInputChange,
@@ -243,7 +264,8 @@ export const useSalesReport = ({ setLoading }) => {
     {
       totals,
       table,
-      propsToHeaderReport
+      propsToHeaderReport,
+      valChangeUsd
     }
   )
 }
