@@ -1,5 +1,5 @@
 import { request } from '@/helpers/core';
-import { validFloat, validInt } from '@/helpers/Utils';
+import { formatNumber, validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import React, { useEffect, useState } from 'react'
 
@@ -14,16 +14,13 @@ export const useSales = ({ setLoading }) => {
   const [labelSalesForClassif, setLabelSalesForClassif] = useState([]);
   const [dataSalesForDepto, setDataSalesForDepto] = useState([]);
   const [labelSalesForDepto, setLabelSalesForDepto] = useState([]);
+  const [dataTotals, setDataTotals] = useState([]);
+  const [dataMonthDetail, setDataMonthDetail] = useState([]);
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [reportId, setReportId] = useState('1');
   const [noYear, setNoYear] = useState(new Date().getFullYear());
-
-  // const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
-  //   startDate: '2025-01-01',
-  //   endDate: '2025-08-31'
-  // });
 
   const fnSetDates = () => {
     let currStartDate = '', currEndDate = ''
@@ -123,6 +120,33 @@ export const useSales = ({ setLoading }) => {
       console.log(err);
       setLoading(false);
     }, false);
+
+    setLoading(true);
+    request.POST('dashboard/sales/dashResumeCards', { year: noYear }, resp => {
+      let { monthDetails, totalSales, mediaSales, totalItems } = resp.data;
+
+      const totals = [
+        {
+          title: 'Ventas Totales',
+          value: formatNumber(totalSales, "L. ", 2)
+        },
+        {
+          title: 'Promedio Mensual',
+          value: formatNumber(mediaSales, "L. ", 2)
+        },
+        {
+          title: 'Total Items Vendidos',
+          value: formatNumber(totalItems, "L. ", 2)
+        },
+      ]
+
+      setDataTotals(totals);
+      setDataMonthDetail(monthDetails);
+      setLoading(false);
+    }, err => {
+      console.log(err);
+      setLoading(false);
+    }, false);
   }
 
   const propsToHeaderReport = {
@@ -136,6 +160,8 @@ export const useSales = ({ setLoading }) => {
   return (
     {
       dataAllSales,
+      dataTotals,
+      dataMonthDetail,
       labelSales,
       dataProductsBest,
       labelProductsBest,

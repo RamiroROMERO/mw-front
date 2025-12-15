@@ -2712,6 +2712,7 @@ const esLang = {
   "page.salesReport.select.billerId": "Facturador",
   "page.salesReport.select.sellerId": "Vendedor",
   "page.salesReport.modal.salesReport.title": "Reporte de Ventas",
+  "page.salesReport.modal.summary.title": "Resumen",
   // 85. Boxes Report Page in Billing
   "page.boxesReport.radio.generalBilling": "General de Cobros",
   "page.boxesReport.radio.cashierCharges": "Cobros por Cajero",

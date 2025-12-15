@@ -4,9 +4,10 @@ import { Colxx } from '@/components/common/CustomBootstrap'
 import DateCalendar from '@/components/dateCalendar'
 import SearchSelect from '@/components/SearchSelect/SearchSelect'
 import { IntlMessages } from '@/helpers/Utils'
+import { RadioGroup } from '@/components/radioGroup'
 
 const HeaderReport = ({formState, onInputChange, listCustomers, listSellers, listStores, listProducts, fnSearchReport }) => {
-  const { customerId, storeId, productCode, sellerId, startDate, endDate } = formState;
+  const { customerId, storeId, productCode, sellerId, documentType, startDate, endDate } = formState;
   return (
     <>
       <Row>
@@ -66,6 +67,21 @@ const HeaderReport = ({formState, onInputChange, listCustomers, listSellers, lis
                 label='select.dateEnd'
                 value={endDate}
                 onChange={onInputChange}
+              />
+            </Colxx>
+            <Colxx xxs="12" xs="6" lg="12">
+              <RadioGroup
+                label="page.invoicing.title.salesType"
+                name="documentType"
+                value={documentType}
+                onChange={onInputChange}
+                options={
+                  [
+                    { id: 1, label: "page.invoicing.radio.cash" },
+                    { id: 2, label: "page.invoicing.radio.credit" },
+                    { id: 3, label: "radio.all" }
+                  ]
+                }
               />
             </Colxx>
           </Row>

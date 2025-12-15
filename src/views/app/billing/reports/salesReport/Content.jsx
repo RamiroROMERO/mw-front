@@ -1,16 +1,30 @@
 import React from 'react';
-import { Card, CardBody, Col, Row } from 'reactstrap';
+import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@/components/common/CustomBootstrap';
 import { useSalesReport } from './useSalesReport';
 import HeaderReport from './HeaderReport';
 import ReactTable from '@/components/reactTable'
 import TotalsReport from '@/views/app/inventory/reports/purchaseReport/TotalsReport';
+import Modal from '@Components/modal';
 import { InputField } from '@/components/inputFields';
 import { formatNumber } from '@/helpers/Utils';
+import ModalSummary from './ModalSummary';
 
 const SalesReport = ({ setLoading }) => {
 
-  const { table, propsToHeaderReport, totals, valChangeUsd } = useSalesReport({ setLoading });
+  const { table, tableSummary, propsToHeaderReport, totals, valChangeUsd, totalsSummary, openModalSummary, setOpenModalSummary } = useSalesReport({ setLoading });
+
+  const propsToModalSummary = {
+    ModalContent: ModalSummary,
+    title: "page.salesReport.modal.summary.title",
+    open: openModalSummary,
+    setOpen: setOpenModalSummary,
+    maxWidth: 'lg',
+    data: {
+      tableSummary,
+      totalsSummary
+    }
+  }
 
   return (
     <>
@@ -79,6 +93,7 @@ const SalesReport = ({ setLoading }) => {
           </Card>
         </Colxx>
       </Row>
+      <Modal {...propsToModalSummary} />
     </>
   );
 }

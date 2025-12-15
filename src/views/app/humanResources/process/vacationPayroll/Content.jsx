@@ -10,11 +10,12 @@ import DetailTable from '../resumePayroll/DetailTable';
 import FooterPayroll from '../resumePayroll/FooterPayroll';
 import ModalTypeSheet from '@Components/modalTypeSheet';
 import ModalSelectEmployees from './ModalSelectEmployees';
+import Confirmation from '@/containers/ui/confirmationMsg';
 
 const VacationPayroll = ({setLoading, screenControl, adminControl}) => {
   const typePayroll = 4;
 
-  const {openModalPayrolls, openModalPrint, openModalSelectEmployees, setOpenModalPayrolls, setOpenModalPrint, setOpenModalSelectEmployees, propsToControlPanel, propsToDetailTable, propsToHeaderPayroll, propsToModalViewPayroll, propsToModalPrint, propsToModalEmployees, dataTotals} = useResumePayroll({setLoading, typePayroll, screenControl, adminControl});
+  const {openModalPayrolls, openModalPrint, openModalSelectEmployees, setOpenModalPayrolls, setOpenModalPrint, setOpenModalSelectEmployees, propsToControlPanel, propsToDetailTable, propsToHeaderPayroll, propsToModalViewPayroll, propsToModalPrint, propsToModalEmployees, dataTotals, propsToViewPDF, propsToMsgDelete} = useResumePayroll({setLoading, typePayroll, screenControl, adminControl});
 
   const propsToModalPayrolls = {
     ModalContent: ModalViewPayroll,
@@ -65,6 +66,8 @@ const VacationPayroll = ({setLoading, screenControl, adminControl}) => {
       <Modal {...propsToModalPayrolls} />
       <Modal {...propsToModalPrintReceipt} />
       <Modal {...propsToModalSelectEmployees} />
+      <Modal {...propsToViewPDF} />
+      <Confirmation {...propsToMsgDelete} />
     </>
   )
 }

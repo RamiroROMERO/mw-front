@@ -9,11 +9,12 @@ import HeaderPayroll from '../resumePayroll/HeaderPayroll';
 import DetailTable from '../resumePayroll/DetailTable';
 import FooterPayroll from '../resumePayroll/FooterPayroll';
 import ModalTypeSheet from '@Components/modalTypeSheet';
+import Confirmation from '@/containers/ui/confirmationMsg';
 
 const FourteenthMonth = ({setLoading, screenControl, adminControl}) => {
   const typePayroll = 3;
 
-  const {openModalPayrolls, openModalPrint, setOpenModalPayrolls, setOpenModalPrint, propsToControlPanel, propsToDetailTable, propsToHeaderPayroll, propsToModalViewPayroll, propsToModalPrint, dataTotals} = useResumePayroll({setLoading, typePayroll, screenControl, adminControl});
+  const {openModalPayrolls, openModalPrint, setOpenModalPayrolls, setOpenModalPrint, propsToControlPanel, propsToDetailTable, propsToHeaderPayroll, propsToModalViewPayroll, propsToModalPrint, dataTotals, propsToViewPDF, propsToMsgDelete} = useResumePayroll({setLoading, typePayroll, screenControl, adminControl});
 
   const propsToModalPayrolls = {
     ModalContent: ModalViewPayroll,
@@ -54,6 +55,8 @@ const FourteenthMonth = ({setLoading, screenControl, adminControl}) => {
       </Row>
       <Modal {...propsToModalPayrolls} />
       <Modal {...propsToModalPrintReceipt} />
+      <Modal {...propsToViewPDF} />
+      <Confirmation {...propsToMsgDelete} />
     </>
   )
 }

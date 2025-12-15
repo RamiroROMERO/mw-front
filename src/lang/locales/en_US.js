@@ -2698,6 +2698,7 @@ const enLang = {
   "page.salesReport.select.billerId": "Biller",
   "page.salesReport.select.sellerId": "Seller",
   "page.salesReport.modal.salesReport.title": "Sales Report",
+  "page.salesReport.modal.summary.title": "Summary",
   // 85. Boxes Report Page in Billing
   "page.boxesReport.radio.generalBilling": "General Billing",
   "page.boxesReport.radio.cashierCharges": "Cashier Charges",
