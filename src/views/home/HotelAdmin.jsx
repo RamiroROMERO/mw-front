@@ -7,7 +7,7 @@ import useHotelAdmin from './useHotelAdmin';
 
 const HotelAdmin = ({ setLoading }) => {
 
-  const {propsToModalAddReservation, fnCreateReservation} = useHotelAdmin({setLoading});
+  const { propsToModalAddReservation, propsToModalAddCustomer, fnCreateReservation, fnCreateCustomer } = useHotelAdmin({ setLoading });
 
   return (
     <>
@@ -15,7 +15,8 @@ const HotelAdmin = ({ setLoading }) => {
         <Col xs={12} className='text-right'>
           <Card className='mb-3'>
             <CardBody>
-              <Button color='primary' onClick={fnCreateReservation}> <i className='bi bi-new'></i> Nueva Reservación </Button>
+              <Button className='mr-2' color='success' onClick={fnCreateCustomer}> <i className="bi bi-person-plus"></i> Nuevo Cliente </Button>
+              <Button color='primary' onClick={fnCreateReservation}> <i className="bi bi-node-plus"></i> Nueva Reservación </Button>
             </CardBody>
           </Card>
         </Col>
@@ -29,7 +30,8 @@ const HotelAdmin = ({ setLoading }) => {
           <HotelOccupancyToday setLoading={setLoading} />
         </Col>
       </Row>
-      <Modal {...propsToModalAddReservation}/>
+      <Modal {...propsToModalAddReservation} />
+      <Modal {...propsToModalAddCustomer} />
     </>
   )
 }

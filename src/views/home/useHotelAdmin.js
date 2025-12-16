@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { request } from '@/helpers/core';
 import ModalAddRes from '../app/hotelManagement/process/reservations/ModalAddRes';
+import ModalNewCust from '../app/hotelManagement/settings/customers/ModalNewCust';
 
-const useHotelAdmin = ({setLoading}) => {
+const useHotelAdmin = ({ setLoading }) => {
   const [openModalAdd, setOpenModalAdd] = useState(false);
   const [currentReservation, setCurrentReservation] = useState({});
   const [listCustomers, setListCustomers] = useState([]);
@@ -13,9 +14,21 @@ const useHotelAdmin = ({setLoading}) => {
   const [listBookingChannels, setListBookingChannels] = useState([]);
   const [listRooms, setListRooms] = useState([]);
 
+  // data for Create customer.
+  const [listCountries, setListCountries] = useState([]);
+  const [listCompanies, setListCompanies] = useState([]);
+  const [listGenders, setListGenders] = useState([]);
+  const [listTypeTax, setListTypeTax] = useState([]);
+
+  const [openModalCreateCustomer, setOpenModalCreateCustomer] = useState(false);
+
   const fnCreateReservation = () => {
     setCurrentReservation({});
     setOpenModalAdd(true);
+  }
+
+  const fnCreateCustomer = () => {
+    setOpenModalCreateCustomer(true);
   }
 
   const fnGetRooms = () => {
@@ -127,7 +140,67 @@ const useHotelAdmin = ({setLoading}) => {
 
     fnGetRooms();
 
-  },[]);
+  }, []);
+
+  // data for modal new customer
+  useEffect(() => {
+    request.GET('admin/countries/getSl', (resp) => {
+      const countries = resp.data.map(item => {
+        return {
+          label: item.name,
+          value: item.id
+        }
+      });
+      setListCountries(countries);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+
+    request.GET('rrhh/settings/genders/getSl', (resp) => {
+      const genders = resp.data.map(item => {
+        return {
+          label: item.name,
+          value: item.id
+        }
+      });
+      setListGenders(genders);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+
+    request.GET('admin/taxTypes/getSl', (resp) => {
+      const taxTypes = resp.data.map(item => {
+        return {
+          label: item.name,
+          value: item.id
+        }
+      });
+      setListTypeTax(taxTypes);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+
+    request.GET('hotel/settings/customers/getSl?typeId=1', (resp) => {
+      const customer = resp.data.map(item => {
+        return {
+          label: item.name,
+          value: item.id
+        }
+      });
+      setListCompanies(customer);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+
+  }, []);
 
   const propsToModalAddReservation = {
     ModalContent: ModalAddRes,
@@ -149,10 +222,29 @@ const useHotelAdmin = ({setLoading}) => {
     }
   }
 
+  const propsToModalAddCustomer = {
+    ModalContent: ModalNewCust,
+    title: "page.hotel.modal.addCustomer.title",
+    open: openModalCreateCustomer,
+    setOpen: setOpenModalCreateCustomer,
+    maxWidth: 'lg',
+    data: {
+      listCountries,
+      listCompanies,
+      listGenders,
+      listTypeTax,
+      currentItem: null,
+      setLoading,
+      fnGetData: () => { }
+    }
+  }
+
   return (
     {
       propsToModalAddReservation,
-      fnCreateReservation
+      fnCreateReservation,
+      fnCreateCustomer,
+      propsToModalAddCustomer
     }
   )
 }
