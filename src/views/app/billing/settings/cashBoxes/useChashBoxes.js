@@ -12,10 +12,10 @@ const useChashBoxes = ({ setLoading }) => {
   const [sendForm, setSendForm] = useState(false);
 
   const cashBoxValid = {
-    name: [(val)=>val.length>5, "msg.required.input.name"],
-    idCtaCash: [(val)=>val!=="", "msg.required.input.cashAccount"],
-    idCtaDeposit: [(val)=>val!=="", "msg.required.input.depositAccount"],
-    billingAreaId: [(val)=>val!=="", "msg.required.select.areaId"]
+    name: [(val) => val.length > 5, "msg.required.input.name"],
+    idCtaCash: [(val) => val !== "", "msg.required.input.cashAccount"],
+    idCtaDeposit: [(val) => val !== "", "msg.required.input.depositAccount"],
+    billingAreaId: [(val) => val !== "", "msg.required.select.areaId"]
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
@@ -27,7 +27,7 @@ const useChashBoxes = ({ setLoading }) => {
     status: true
   }, cashBoxValid);
 
-  const fnClearInputs = ()=>{
+  const fnClearInputs = () => {
     setSendForm(false);
     onResetForm();
   }
@@ -37,7 +37,7 @@ const useChashBoxes = ({ setLoading }) => {
   }
 
   const fnDeleteItem = (item) => {
-    onBulkForm({id:item.id});
+    onBulkForm({ id: item.id });
     setOpenMsgQuestion(true);
   }
 
@@ -55,7 +55,7 @@ const useChashBoxes = ({ setLoading }) => {
 
   const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
@@ -87,7 +87,7 @@ const useChashBoxes = ({ setLoading }) => {
 
     fnGetData();
     setLoading(true);
-    request.GET('contAccountants/getSL', (resp) => {
+    request.GET('accounting/settings/accountants/getSL', (resp) => {
       const listAccount = resp.data.map((item) => {
         return {
           label: `${item.cta} - ${item.nombre}`,

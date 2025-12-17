@@ -4,7 +4,7 @@ import notification from '@Containers/ui/Notifications';
 import { formatDate, IntlMessages } from '@/helpers/Utils';
 import { Badge } from 'reactstrap';
 
-export const useReservation = ({setLoading, screenControl}) => {
+export const useReservation = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [openModalAdd, setOpenModalAdd] = useState(false);
   const [listCustomers, setListCustomers] = useState([]);
@@ -39,9 +39,9 @@ export const useReservation = ({setLoading, screenControl}) => {
     setOpenModalAdd(true);
   }
 
-  const fnGetData = (page=currentPage, searchText=search)=>{
+  const fnGetData = (page = currentPage, searchText = search) => {
     setLoading(true);
-    request.GET(`hotel/process/bookings/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp)=>{
+    request.GET(`hotel/process/bookings/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
       const data = resp.data.map(item => {
         item.statusName = item?.statusData?.name || ""
         item.channel = item?.channelData?.name || ""
@@ -52,11 +52,11 @@ export const useReservation = ({setLoading, screenControl}) => {
       });
       const pageTotal = resp.pagination.totalPages;
       const tableData = {
-        ...table, data, options: {totalPages: pageTotal, currentPage, setCurrentPage, typePagination: 2, setSearch}
+        ...table, data, options: { totalPages: pageTotal, currentPage, setCurrentPage, typePagination: 2, setSearch }
       }
       setTable(tableData);
       setLoading(false);
-    }, (err)=>{
+    }, (err) => {
       console.error(err);
       setLoading(false);
     });
@@ -81,13 +81,15 @@ export const useReservation = ({setLoading, screenControl}) => {
   const [table, setTable] = useState({
     title: IntlMessages("page.hotel.reservations"),
     columns: [
-      { text: IntlMessages("table.column.dateIn"), dataField: "checkInDate", headerStyle: { 'width': '10%' },
-        cell:({row})=>{
+      {
+        text: IntlMessages("table.column.dateIn"), dataField: "checkInDate", headerStyle: { 'width': '10%' },
+        cell: ({ row }) => {
           return (formatDate(row.original.checkInDate));
         }
       },
-      { text: IntlMessages("table.column.dateOut"), dataField: "checkOutDate", headerStyle: { 'width': '10%' },
-        cell:({row})=>{
+      {
+        text: IntlMessages("table.column.dateOut"), dataField: "checkOutDate", headerStyle: { 'width': '10%' },
+        cell: ({ row }) => {
           return (formatDate(row.original.checkOutDate));
         }
       },
@@ -137,7 +139,7 @@ export const useReservation = ({setLoading, screenControl}) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('facCustomers?status=1', (resp) => {
+    request.GET('billing/settings/customers/?status=1', (resp) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,
@@ -228,7 +230,7 @@ export const useReservation = ({setLoading, screenControl}) => {
 
     fnGetRooms();
 
-  },[]);
+  }, []);
 
   return (
     {

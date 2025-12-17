@@ -27,7 +27,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.month_1, '', 2));
         }
       },
@@ -38,7 +38,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.month_2, '', 2));
         }
       },
@@ -49,7 +49,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.month_3, '', 2));
         }
       },
@@ -60,7 +60,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.month_4, '', 2));
         }
       },
@@ -71,7 +71,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.month_5, '', 2));
         }
       },
@@ -82,7 +82,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.month_6, '', 2));
         }
       },
@@ -93,7 +93,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.month_7, '', 2));
         }
       },
@@ -104,7 +104,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.month_8, '', 2));
         }
       },
@@ -115,7 +115,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.month_9, '', 2));
         }
       },
@@ -126,7 +126,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.month_10, '', 2));
         }
       },
@@ -137,7 +137,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.month_11, '', 2));
         }
       },
@@ -148,7 +148,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.month_12, '', 2));
         }
       },
@@ -157,7 +157,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
         dataField: "total",
         headerStyle: { 'width': '7%' },
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.total, '', 2));
         }
       }
@@ -193,9 +193,9 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
     }, false);
   };
 
-   useEffect(() => {
+  useEffect(() => {
     setLoading(true);
-    request.GET('facCustomers?status=1', (resp) => {
+    request.GET('billing/settings/customers/?status=1', (resp) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,

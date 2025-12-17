@@ -137,7 +137,7 @@ export const useGeneralInvoice = ({ setLoading }) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('facCustomers?status=1', (resp) => {
+    request.GET('billing/settings/customers/?status=1', (resp) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,

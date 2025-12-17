@@ -140,7 +140,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     shoesSize: ''
   }, employeeValid);
 
-  const { id, nationalityId, dni, firstName, secondName, lastName, secondLastName, birthday, genderId, civilStatusId, profession,cellPhone, telePhone, email, spouse, telSpouse, birthplace, phoneContact, nameContact, departmentId, municipalityId, colonyId, exactAddress, educationLevelId, ownsVehicle, typeVehicleId, vehiclePlate, dateIn, areaId, jobPositionId, immediateBossId, workScheduleId, contractTypeId, payrollTypeId, dateInContract, dateOutContract, defaultSalary, paymentMethod, bankPayment, accountNumber, condDiabetes, condHypertension, condVenerealDiseases, condHeartAttacks, condVisualImpairment, condHearingImpairment, condCerebroAccidents, condNeuroDisorders, condSteoDiseases, condOtherDiseases, condAllergies, deductionsIhss, deductionsIhssBiweekly, deductionsRap, deductionsRapBiweekly, status, areaManager, payOvertime, pathImage, shirtSize, pantSize, shoesSize } = formState;
+  const { id, nationalityId, dni, firstName, secondName, lastName, secondLastName, birthday, genderId, civilStatusId, profession, cellPhone, telePhone, email, spouse, telSpouse, birthplace, phoneContact, nameContact, departmentId, municipalityId, colonyId, exactAddress, educationLevelId, ownsVehicle, typeVehicleId, vehiclePlate, dateIn, areaId, jobPositionId, immediateBossId, workScheduleId, contractTypeId, payrollTypeId, dateInContract, dateOutContract, defaultSalary, paymentMethod, bankPayment, accountNumber, condDiabetes, condHypertension, condVenerealDiseases, condHeartAttacks, condVisualImpairment, condHearingImpairment, condCerebroAccidents, condNeuroDisorders, condSteoDiseases, condOtherDiseases, condAllergies, deductionsIhss, deductionsIhssBiweekly, deductionsRap, deductionsRapBiweekly, status, areaManager, payOvertime, pathImage, shirtSize, pantSize, shoesSize } = formState;
 
   const fnNewEmployee = () => {
     onResetForm();
@@ -256,7 +256,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
         const employees = resp.data;
         setLoading(false);
 
-        if(employees.length>0){
+        if (employees.length > 0) {
           notification('warning', 'msg.warning.employee.registered', 'alert.warning.title');
           return;
         }
@@ -322,7 +322,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     }
   }
 
-  const fnOkDeleteEmployee = () =>{
+  const fnOkDeleteEmployee = () => {
     if (fnDelete === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
@@ -398,12 +398,12 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     }
   }
 
-  const fnViewProjects = () =>{
+  const fnViewProjects = () => {
     if (fnCreate === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
     }
-    if(id>0){
+    if (id > 0) {
       setOpenModalProjects(true);
     }
   }
@@ -424,7 +424,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     }
   }
 
-  const fnGetAreaManager = ()=>{
+  const fnGetAreaManager = () => {
     setLoading(true);
     request.GET('rrhh/process/employees/findSL?areaManager=1', (resp) => {
       const immediateBoss = resp.data.map((item) => {
@@ -441,7 +441,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     });
   }
 
-  const fnGetProjects = ()=>{
+  const fnGetProjects = () => {
     setLoading(true);
     request.GET('rrhh/process/projects', (resp) => {
       const projectsList = resp.data.map((item) => {
@@ -462,13 +462,13 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     });
   }
 
-  const fnGetProjectEmployee = (idEmpl)=>{
+  const fnGetProjectEmployee = (idEmpl) => {
     setLoading(true);
-    request.GET(`rrhh/process/projectDetail?employeeId=${idEmpl}&status=1`, (resp)=>{
+    request.GET(`rrhh/process/projectDetail?employeeId=${idEmpl}&status=1`, (resp) => {
       const dataProjects = resp.data;
       setCodeEmployee(dataProjects[0]?.codeEmployee || 0);
       setLoading(false);
-    }, (err)=>{
+    }, (err) => {
       console.error(err);
       setLoading(false);
     });
@@ -517,7 +517,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       return;
     }
 
-    if (validInt(id) === 0 || status===1) {
+    if (validInt(id) === 0 || status === 1) {
       return
     }
 
@@ -567,7 +567,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     }
   }
 
-  const fnGetImgEmployee = async (nameImg)=>{
+  const fnGetImgEmployee = async (nameImg) => {
     const name = nameImg !== "" ? nameImg : 'usuario.png'
     const imageUrl = `${PATH_FILES.GET.PROFILES}${name}`;
     const imageObjectURL = await request.getFile(imageUrl);
@@ -650,7 +650,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     });
 
     setLoading(true);
-    request.GET('facCustomers?status=1', (resp) => {
+    request.GET('billing/settings/customers?status=1', (resp) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,

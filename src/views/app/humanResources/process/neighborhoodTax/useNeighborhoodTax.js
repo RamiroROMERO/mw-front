@@ -37,16 +37,16 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
 
   const { id, date, customerId, projectId, dateStart, dateEnd, notes } = formState;
 
-  const onCustomerChange = e =>{
+  const onCustomerChange = e => {
     const custId = validInt(e.target.value);
 
-    const filter = listProjects.filter((item)=>{
+    const filter = listProjects.filter((item) => {
       return item.customerId === custId
     });
 
     setListProjectsFilter(filter);
 
-    onBulkForm({customerId: custId, projectId:0});
+    onBulkForm({ customerId: custId, projectId: 0 });
   }
 
   const fnNewPayroll = () => {
@@ -130,8 +130,8 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
       date,
       customerId,
       projectId,
-      dateStart: dateStart===""?date:dateStart,
-      dateEnd: dateEnd===""?date:dateEnd,
+      dateStart: dateStart === "" ? date : dateStart,
+      dateEnd: dateEnd === "" ? date : dateEnd,
       notes,
       status: 1,
       userId: userData.id
@@ -151,7 +151,7 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
     });
   }
 
-  const fnPrintPayroll = async() => {
+  const fnPrintPayroll = async () => {
     if (fnCreate === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
@@ -201,9 +201,9 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
     disableTab: [false, true, true]
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
-    request.GET('facCustomers?status=1', (resp) => {
+    request.GET('billing/settings/customers?status=1', (resp) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,
@@ -235,7 +235,7 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
       console.error(err);
       setLoading(false);
     });
-  },[]);
+  }, []);
 
   const propsToHeaderPayroll = {
     date,

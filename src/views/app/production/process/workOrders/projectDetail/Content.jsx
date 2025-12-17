@@ -284,7 +284,7 @@ const ProjectDetail = (props) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('facCustomers/findSL', (resp) => {
+    request.GET('billing/settings/customers/findSL', (resp) => {
       const listCustomer = resp.data.map((item) => {
         return {
           label: item.nomcli,

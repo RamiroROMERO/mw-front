@@ -303,7 +303,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
     });
 
     setLoading(true);
-    request.GET('contAccountants/getSL', (resp) => {
+    request.GET('accounting/settings/accountants/getSL', (resp) => {
       const listAccounts = resp.data.map((item) => {
         return {
           label: `${item.cta} - ${item.nombre}`,

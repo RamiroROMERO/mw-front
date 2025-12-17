@@ -2,7 +2,7 @@ import { request } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms';
 import React, { useEffect, useState } from 'react'
 
-export const useProviderTypes = ({setLoading}) => {
+export const useProviderTypes = ({ setLoading }) => {
 
   const [listAccount, setListAccount] = useState([]);
   const [tableData, setTableData] = useState([]);
@@ -96,7 +96,7 @@ export const useProviderTypes = ({setLoading}) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('contAccountants/getSL', (resp) => {
+    request.GET('accounting/settings/accountants/getSL', (resp) => {
       const account = resp.data.map((item) => {
         return {
           label: `${item.cta} - ${item.nombre}`,

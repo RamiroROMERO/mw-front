@@ -129,9 +129,9 @@ export const useQuotes = ({ setLoading }) => {
 
   const fnSeekCustomerList = () => {
     setLoading(true);
-    request.GET('facCustomers', (resp) => {
+    request.GET('billing/settings/customers/', (resp) => {
       const data = resp.data.map((item) => {
-        item.typeCustomer = item.setCustomerType ? item.setCustomerType.name : ""
+        item.typeCustomer = item.customerTypeData ? item.customerTypeData.name : ""
         return item;
       });
       setCustomersList(data);

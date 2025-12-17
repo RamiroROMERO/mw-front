@@ -59,11 +59,11 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     date: '',
     customerId: 0,
     projectId: 0,
-    dateStart: typePayroll===1?"":(typePayroll===2?`${currentYear}-01-01`:(typePayroll===3?`${currentYear-1}-07-01`:"")),
-    dateEnd: typePayroll===1?"":(typePayroll===2?`${currentYear}-12-31`:(typePayroll===3?`${currentYear}-06-30`:"")),
+    dateStart: typePayroll === 1 ? "" : (typePayroll === 2 ? `${currentYear}-01-01` : (typePayroll === 3 ? `${currentYear - 1}-07-01` : "")),
+    dateEnd: typePayroll === 1 ? "" : (typePayroll === 2 ? `${currentYear}-12-31` : (typePayroll === 3 ? `${currentYear}-06-30` : "")),
     isConfidential: 0,
     notes: ''
-  }, typePayroll===1?formValidations:formValidations2);
+  }, typePayroll === 1 ? formValidations : formValidations2);
 
   const { id, date, customerId, projectId, dateStart, dateEnd, isConfidential, notes } = formState;
 
@@ -190,7 +190,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       const qtyDaysDeductions = [];
       const otherFields2 = [];
 
-      listTypeIncomes.map((item)=>{
+      listTypeIncomes.map((item) => {
         otherFields.push({
           id: item.value,
           title: `Total ${item.label}`,
@@ -199,7 +199,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
           length: 50,
           isSum: true,
           currency: true
-        },{
+        }, {
           id: `qty-${item.value}`,
           title: `Cantidad ${item.label}`,
           field: `incQty${item.value}`,
@@ -220,7 +220,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         });
       });
 
-      listTypeDeductions.map((item)=>{
+      listTypeDeductions.map((item) => {
         otherFields2.push({
           id: item.value,
           title: item.label,
@@ -229,7 +229,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
           length: 60,
           isSum: true,
           currency: true
-        },{
+        }, {
           id: `qtyDeduc-${item.value}`,
           title: `Cantidad Dias ${item.label}`,
           field: `deducQty${item.value}`,
@@ -237,7 +237,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
           length: 50,
           isSum: false,
           currency: false
-        },{
+        }, {
           id: `qtyHDeduc-${item.value}`,
           title: `Cantidad Horas ${item.label}`,
           field: `deducQtyH${item.value}`,
@@ -256,14 +256,14 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
           { title: 'No.', field: 'num', type: 'decimal', length: 20 },
           { title: 'Identidad', field: 'dni', type: 'String', length: 50 },
           { title: 'Empleado', field: 'employeeName', type: 'String', length: 120 },
-          { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 40},
+          { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 40 },
           { title: 'Cargo', field: 'positionName', type: 'String', length: 70, isSum: false, curreny: false },
           { title: 'Forma de Pago', field: 'paymentMethod', type: 'String', length: 70, isSum: false, curreny: false },
           { title: 'Salario Base Mensual', field: 'montlySalary', type: 'decimal', length: 50, isSum: true, currency: true },
           { title: 'Salario Quincenal', field: 'incWeekly', type: 'decimal', length: 50, isSum: true, currency: true },
           { title: 'Dias Vacaciones Gozadas', field: 'daysVacationTaken', type: 'decimal', length: 50, isSum: false, currency: false },
           ...qtyDaysFields,
-          { title: typePayroll===4?'Dias Vacaciones: ':'Total Dias', field: 'totalDays', type: 'decimal', length: 40, isSum: false, currency: false },
+          { title: typePayroll === 4 ? 'Dias Vacaciones: ' : 'Total Dias', field: 'totalDays', type: 'decimal', length: 40, isSum: false, currency: false },
           ...otherFields,
           { title: 'Total Ingresos', field: 'totalIncomes', type: 'decimal', length: 50, isSum: true, currency: true },
           ...otherFields2,
@@ -313,15 +313,15 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       date,
       customerId,
       projectId,
-      dateStart: dateStart===""?date:dateStart,
-      dateEnd: dateEnd===""?date:dateEnd,
+      dateStart: dateStart === "" ? date : dateStart,
+      dateEnd: dateEnd === "" ? date : dateEnd,
       notes,
       status: 1,
       isConfidential,
       userId: userData.id
     }
 
-    if(typePayroll===1){
+    if (typePayroll === 1) {
       if (fnCreate === false) {
         notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
         setSendForm(false);
@@ -339,7 +339,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         console.error(err);
         setLoading(false);
       });
-    }else if(typePayroll===2 || typePayroll===3){
+    } else if (typePayroll === 2 || typePayroll === 3) {
       if (fnCreate === false) {
         notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
         setSendForm(false);
@@ -357,7 +357,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         console.error(err);
         setLoading(false);
       });
-    }else{
+    } else {
 
       // mostrar modal para seleccionar los empleados a los que se les generara la planilla
       request.GET(`rrhh/process/vacations/getVacationByProject?status=1&projectId=${projectId}`, (resp) => {
@@ -409,7 +409,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     });
   }
 
-  const fnAddDeductions = ()=>{
+  const fnAddDeductions = () => {
     if (fnCreate === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
@@ -419,12 +419,12 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     }
   }
 
-  const fnAddIncomes = ()=>{
+  const fnAddIncomes = () => {
     if (fnCreate === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
     }
-    if(id>0){
+    if (id > 0) {
       setOpenModalIncomes(true);
     }
   }
@@ -434,7 +434,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
     }
-    if(id>0){
+    if (id > 0) {
       setOpenMsgQuestion(true);
     }
   }
@@ -458,7 +458,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
 
   useEffect(() => {
     setLoading(true);
-    request.GET('facCustomers?status=1', (resp) => {
+    request.GET('billing/settings/customers?status=1', (resp) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,
@@ -599,24 +599,24 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         icon: "bi bi-printer",
         onClick: fnPrintPaymentReceipt
       },
-      typePayroll===1?
-      {
-        title: "button.deductionsGeneral",
-        icon: "bi bi-dash-circle",
-        onClick: fnAddDeductions
-      }:"",
-      typePayroll===1?
-      {
-        title: "button.incomesGeneral",
-        icon: "bi bi-plus-circle",
-        onClick: fnAddIncomes
-      }:"",
-      enableConfidentialPayroll===true?
-      {
-        title: "button.payrollsConfidential",
-        icon: "bi bi-eye-slash",
-        onClick: fnGetPayrollsConfidential
-      }:""
+      typePayroll === 1 ?
+        {
+          title: "button.deductionsGeneral",
+          icon: "bi bi-dash-circle",
+          onClick: fnAddDeductions
+        } : "",
+      typePayroll === 1 ?
+        {
+          title: "button.incomesGeneral",
+          icon: "bi bi-plus-circle",
+          onClick: fnAddIncomes
+        } : "",
+      enableConfidentialPayroll === true ?
+        {
+          title: "button.payrollsConfidential",
+          icon: "bi bi-eye-slash",
+          onClick: fnGetPayrollsConfidential
+        } : ""
     ],
     buttonsOptions: [],
     buttonsAdmin: [],
@@ -702,8 +702,8 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     date,
     customerId,
     projectId,
-    dateStart: dateStart===""?date:dateStart,
-    dateEnd: dateEnd===""?date:dateEnd,
+    dateStart: dateStart === "" ? date : dateStart,
+    dateEnd: dateEnd === "" ? date : dateEnd,
     notes,
     status: 1,
     userId: userData.id,

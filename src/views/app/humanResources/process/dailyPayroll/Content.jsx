@@ -44,11 +44,11 @@ const DailyPayroll = ({ setLoading }) => {
   });
 
   const { formState: formStateFilter, formValidation, isFormValid, onInputChange: onInputChangeFilter, onResetForm: onResetFormFilter, setBulkForm: setBulkFormFilter } = useForm({
-      dateFilter: '',
-      customerIdFilter: 0,
-      projectIdFilter: 0,
-      previousPayroll: false
-    }, dailyPayrollValid);
+    dateFilter: '',
+    customerIdFilter: 0,
+    projectIdFilter: 0,
+    previousPayroll: false
+  }, dailyPayrollValid);
 
   const { id, date, customerId, projectId, responsibleId, scheduleId } = formState;
 
@@ -162,7 +162,7 @@ const DailyPayroll = ({ setLoading }) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('facCustomers?status=1&outsourcingBill=1', (resp) => {
+    request.GET('billing/settings/customers/?status=1&outsourcingBill=1', (resp) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,
@@ -354,7 +354,7 @@ const DailyPayroll = ({ setLoading }) => {
               <Separator className="mt-2 mb-5" />
               <FilterPayroll {...propsToFilterPayroll} />
               <DetailPayroll {...propsToDetailPayroll} />
-              <FooterPayroll {...propsToFooterPayroll}/>
+              <FooterPayroll {...propsToFooterPayroll} />
             </CardBody>
           </Card>
         </Colxx>

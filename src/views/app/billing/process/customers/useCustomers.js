@@ -88,9 +88,9 @@ export const useCustomers = ({ setLoading }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET('facCustomers', (resp) => {
+    request.GET('billing/settings/customers/', (resp) => {
       const data = resp.data.map((item) => {
-        item.typeCustomer = item.setCustomerType ? item.setCustomerType.name : ""
+        item.typeCustomer = item.customerTypeData ? item.customerTypeData.name : ""
         // item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
         //   <i className="medium-icon bi bi-square" />
         // item.options = <TableButton color='primary' icon='eye' fnOnClick={() => fnViewCustomer(item)} />
@@ -107,7 +107,7 @@ export const useCustomers = ({ setLoading }) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('contAccountants/getSL', (resp) => {
+    request.GET('accounting/settings/accountants/getSL', (resp) => {
       const listAccounts = resp.data.map((item) => {
         return {
           label: `${item.cta} - ${item.nombre}`,
@@ -224,7 +224,7 @@ export const useCustomers = ({ setLoading }) => {
 
     if (id > 0) {
       setLoading(true);
-      request.PUT(`facCustomers/${id}`, newData, (resp) => {
+      request.PUT(`billing/settings/customers/${id}`, newData, (resp) => {
         console.log(resp);
         setSendForm(false);
         setLoading(false);
@@ -234,7 +234,7 @@ export const useCustomers = ({ setLoading }) => {
       });
     } else {
       setLoading(true);
-      request.POST('facCustomers', newData, (resp) => {
+      request.POST('billing/settings/customers/', newData, (resp) => {
         console.log(resp);
         setSendForm(false);
         onInputChange({ target: { name: 'id', value: resp.data.id } });
@@ -257,7 +257,7 @@ export const useCustomers = ({ setLoading }) => {
   const fnDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
-    request.DELETE(`facCustomers/${id}`, (resp) => {
+    request.DELETE(`billing/settings/customers/${id}`, (resp) => {
       console.log(resp);
       fnNewCustomer();
       setLoading(false);

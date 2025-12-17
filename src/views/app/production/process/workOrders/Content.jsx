@@ -137,7 +137,7 @@ const WorkOrders = (props) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('facCustomers/findSL?status=1', (resp) => {
+    request.GET('billing/settings/customers/findSL?status=1', (resp) => {
       const listCustomer = resp.data.map((item) => {
         return {
           label: item.nomcli,

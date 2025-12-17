@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { request } from '@Helpers/core';
 import { IntlMessages } from '@Helpers/Utils';
 
-export const useEmployeesByCust = ({setLoading, adminControl}) => {
+export const useEmployeesByCust = ({ setLoading, adminControl }) => {
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.002")?.active || false;
   const [listCustomers, setListCustomers] = useState([]);
   const [listWorkShifts, setListWorkShifts] = useState([]);
@@ -45,9 +45,9 @@ export const useEmployeesByCust = ({setLoading, adminControl}) => {
     actions: []
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
-    request.GET('facCustomers?status=1', (resp) => {
+    request.GET('billing/settings/customers?status=1', (resp) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,
@@ -65,7 +65,7 @@ export const useEmployeesByCust = ({setLoading, adminControl}) => {
     });
 
     setLoading(true);
-    request.GET('rrhhSchedules', (resp)=>{
+    request.GET('rrhhSchedules', (resp) => {
       const workShifts = resp.data.map((item) => {
         return {
           id: item.id,
@@ -75,11 +75,11 @@ export const useEmployeesByCust = ({setLoading, adminControl}) => {
       });
       setListWorkShifts(workShifts);
       setLoading(false);
-    }, (err)=>{
+    }, (err) => {
       console.error(err);
       setLoading(false);
     });
-  },[]);
+  }, []);
 
   const propsToHeader = {
     listCustomers,

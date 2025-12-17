@@ -59,11 +59,11 @@ const Content = (props) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET('facCustomers', (resp) => {
+    request.GET('billing/settings/customers', (resp) => {
       const data = resp.data.map((item) => {
         const elem = {};
         elem.id = item.id
-        elem.typeCustomer = item.setCustomerType ? item.setCustomerType.name : ""
+        elem.typeCustomer = item.customerTypeData ? item.customerTypeData.name : ""
         elem.dni = item.rtn
         elem.name = item.nomcli
         elem.dateAdmission = item.fechai

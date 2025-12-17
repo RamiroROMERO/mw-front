@@ -91,7 +91,7 @@ export const useContent = ({ setLoading }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET('contAccountants', (resp) => {
+    request.GET('accounting/settings/accountants', (resp) => {
       const data
         = resp.data.map((item) => {
           item.level = item.nivel
@@ -115,7 +115,7 @@ export const useContent = ({ setLoading }) => {
     }
     if (currentItem.id && currentItem.id > 0) {
       setLoading(true);
-      request.PUT(`contAccountants/${currentItem.id}`, data, () => {
+      request.PUT(`accounting/settings/accountants/${currentItem.id}`, data, () => {
         fnGetData();
         fnClearInputs();
         setCurrentItem({});
@@ -178,13 +178,13 @@ export const useContent = ({ setLoading }) => {
       nivel: level,
       detailAux,
       postIn,
-      lastDate: lastDate===""?"1900-01-01":lastDate,
+      lastDate: lastDate === "" ? "1900-01-01" : lastDate,
       cmonext,
       status
     }
     if (currentItem && currentItem.id > 0) {
       setLoading(true);
-      request.PUT(`contAccountants/${currentItem.id}`, data, () => {
+      request.PUT(`accounting/settings/accountants/${currentItem.id}`, data, () => {
         fnClearInputs();
         fnGetData();
         setLoading(false);
@@ -194,7 +194,7 @@ export const useContent = ({ setLoading }) => {
       });
     } else {
       setLoading(true);
-      request.POST('contAccountants', data, () => {
+      request.POST('accounting/settings/accountants', data, () => {
         fnClearInputs();
         fnGetData();
         setLoading(false);

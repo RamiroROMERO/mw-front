@@ -3,7 +3,7 @@ import { IntlMessages } from "@/helpers/Utils";
 import { request } from '@/helpers/core';
 import { useForm } from '@/hooks';
 
-export const useBankAccounts = ({setLoading}) => {
+export const useBankAccounts = ({ setLoading }) => {
   const listCurrency = [{ id: "Dolares", name: "Dolares" }, { id: "Lempiras", name: "Lempiras" }];
   const [listAccount, setListAccount] = useState([]);
   const [currentItem, setCurrentItem] = useState({});
@@ -148,7 +148,7 @@ export const useBankAccounts = ({setLoading}) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('contAccountants/getSL', (resp) => {
+    request.GET('accounting/settings/accountants/getSL', (resp) => {
       const account = resp.data.map((item) => {
         return {
           label: `${item.cta} - ${item.nombre}`,

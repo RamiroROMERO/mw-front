@@ -228,7 +228,7 @@ export const useSalesReport = ({ setLoading }) => {
     setLoading(true);
     request.POST('billing/reports/generalSales/resume', { ...formState }, resp => {
       let { detail, totals } = resp;
-      setTableSummary({ ...tableSummary, data: detail});
+      setTableSummary({ ...tableSummary, data: detail });
       setTotalsSummary(totals);
       setOpenModalSummary(true);
       setLoading(false);
@@ -238,7 +238,7 @@ export const useSalesReport = ({ setLoading }) => {
     }, false);
   };
 
-  const fnExportToExcel = async() => {
+  const fnExportToExcel = async () => {
     const where = formState;
     setLoading(true);
     let data = {
@@ -247,14 +247,14 @@ export const useSalesReport = ({ setLoading }) => {
         // { title: 'No.', field: 'num', type: 'decimal', length: 20 },
         { title: 'Fecha', field: 'date', type: 'String', length: 40 },
         { title: 'Cliente', field: 'customerName', type: 'String', length: 100 },
-        { title: 'CAI', field: 'numcai', type: 'String', length: 70},
+        { title: 'CAI', field: 'numcai', type: 'String', length: 70 },
         { title: 'Producto', field: 'productName', type: 'String', length: 100 },
-        { title: 'Unidad de Salida', field: 'undOut', type: 'String', length: 40},
-        { title: 'Cantidad', field: 'qty', type: 'decimal', length: 30, isSum: true, currency: true},
-        { title: 'Precio', field: 'price', type: 'decimal', length: 30, isSum: true, currency: true},
-        { title: 'Subtotal', field: 'subtotal', type: 'decimal', length: 30, isSum: true, currency: true},
-        { title: 'Descuento', field: 'discount', type: 'decimal', length: 30, isSum: true, currency: true},
-        { title: 'Impuesto', field: 'tax', type: 'decimal', length: 30, isSum: true, currency: true},
+        { title: 'Unidad de Salida', field: 'undOut', type: 'String', length: 40 },
+        { title: 'Cantidad', field: 'qty', type: 'decimal', length: 30, isSum: true, currency: true },
+        { title: 'Precio', field: 'price', type: 'decimal', length: 30, isSum: true, currency: true },
+        { title: 'Subtotal', field: 'subtotal', type: 'decimal', length: 30, isSum: true, currency: true },
+        { title: 'Descuento', field: 'discount', type: 'decimal', length: 30, isSum: true, currency: true },
+        { title: 'Impuesto', field: 'tax', type: 'decimal', length: 30, isSum: true, currency: true },
       ],
       headerData: [],
       reportTitle: "Reporte General de Ventas",
@@ -298,7 +298,7 @@ export const useSalesReport = ({ setLoading }) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('facCustomers?status=1', (resp) => {
+    request.GET('billing/settings/customers/?status=1', (resp) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,

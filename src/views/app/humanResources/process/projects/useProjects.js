@@ -4,7 +4,7 @@ import { request } from '@Helpers/core'
 import { validInt } from '@Helpers/Utils'
 import notification from '@Containers/ui/Notifications';
 
-export const useProjects = ({setLoading, screenControl, adminControl}) => {
+export const useProjects = ({ setLoading, screenControl, adminControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const enableMoveEmployees = adminControl.find(ctrl => ctrl.code === "07.02.011")?.active || false;
   const [listCustomers, setListCustomers] = useState([]);
@@ -67,13 +67,13 @@ export const useProjects = ({setLoading, screenControl, adminControl}) => {
     });
   }
 
-  const fnSave = () =>{
+  const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
-    if(id === 0){
+    if (id === 0) {
       if (fnCreate === false) {
         notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
         setSendForm(false);
@@ -81,16 +81,16 @@ export const useProjects = ({setLoading, screenControl, adminControl}) => {
       }
       setLoading(true);
       request.POST('rrhh/process/projects', formState, (resp) => {
-        onInputChange({target:{name:'id', value:resp.data.id}});
+        onInputChange({ target: { name: 'id', value: resp.data.id } });
         fnGetData();
         onResetForm();
         setSendForm(false);
         setLoading(false);
-      },(err)=>{
+      }, (err) => {
         console.error(err);
         setLoading(false);
       });
-    }else{
+    } else {
       if (fnUpdate === false) {
         notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
         setSendForm(false);
@@ -109,12 +109,12 @@ export const useProjects = ({setLoading, screenControl, adminControl}) => {
     }
   }
 
-  const fnClearInputs = ()=>{
+  const fnClearInputs = () => {
     onResetForm();
     setSendForm(false);
   }
 
-  const fnOkDelete = () =>{
+  const fnOkDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/projects/${id}`, () => {
@@ -130,7 +130,7 @@ export const useProjects = ({setLoading, screenControl, adminControl}) => {
   useEffect(() => {
     fnGetData();
     setLoading(true);
-    request.GET('facCustomers?status=1', (resp) => {
+    request.GET('billing/settings/customers?status=1', (resp) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,
@@ -148,7 +148,7 @@ export const useProjects = ({setLoading, screenControl, adminControl}) => {
     });
 
     setLoading(true);
-    request.GET('rrhhSchedules', (resp)=>{
+    request.GET('rrhhSchedules', (resp) => {
       const workShifts = resp.data.map((item) => {
         return {
           id: item.id,
@@ -158,13 +158,13 @@ export const useProjects = ({setLoading, screenControl, adminControl}) => {
       });
       setListWorkShifts(workShifts);
       setLoading(false);
-    }, (err)=>{
+    }, (err) => {
       console.error(err);
       setLoading(false);
     });
 
     setLoading(true);
-    request.GET('rrhh/process/employees/findSL', (resp)=>{
+    request.GET('rrhh/process/employees/findSL', (resp) => {
       const employees = resp.data.map((item) => {
         return {
           id: item.id,
@@ -174,7 +174,7 @@ export const useProjects = ({setLoading, screenControl, adminControl}) => {
       });
       setListEmployees(employees);
       setLoading(false);
-    }, (err)=>{
+    }, (err) => {
       console.error(err);
       setLoading(false);
     });
