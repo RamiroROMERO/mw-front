@@ -1,31 +1,71 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from '@/hooks';
-import { IntlMessages, IntlMessagesFn, validFloat, validInt } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
+import { Button } from 'reactstrap';
+import { IntlMessagesFn, validFloat, validInt } from '@Helpers/Utils';
+import { request } from '@Helpers/core';
+import { RandomCodeGenerator } from '@Helpers/UuIdGenerator';
+import { API_URLS } from '@Helpers/APIUrl';
+import TableButtons from '@Components/tableButtons';
 import ModalViewCust from '../customers/ModalViewCust';
-import { data } from 'react-router-dom';
-import { ModalNewCustomer } from './ModalNewCustomer';
 import ModalProducts from '../invoicing/ModalProducts';
-import TableButtons from '@/components/tableButtons';
+import { ModalEditCurrentProduct } from './ModalEditCurrentProduct';
+import { ModalNewCustomer } from './ModalNewCustomer';
+import ModalSeekQuotes from './ModalSeekQuotes';
 
-export const useQuotes = ({ setLoading }) => {
+export const useQuotes = ({ setLoading, setActiveTab }) => {
 
-  const [tableData, setTableData] = useState([]);
-  const [accountList, setAccountList] = useState([]);
   const [sendForm, setSendForm] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
-  const [dataDetails, setDataDetails] = useState([]);
+  const [openMsgDeleteItem, setOpenMsgDeleteItem] = useState(false);
   const [openSeekCustomer, setOpenSeekCustomer] = useState(false);
-  const [customersList, setCustomersList] = useState([]);
   const [openNewCustomer, setOpenNewCustomer] = useState(false);
   const [openSeekProducts, setOpenSeekProducts] = useState(false);
-  const [listProducts, setListProducts] = useState([]);
-  const [currentProduct, setCurrentProduct] = useState({});
   const [openEditCurrentProduct, setOpenEditCurrentProduct] = useState(false);
+  const [openSeekDocument, setOpenSeekDocument] = useState(false);
+  const [sellerList, setSellerList] = useState([]);
+  const [dataDetails, setDataDetails] = useState([]);
+  const [customersList, setCustomersList] = useState([]);
+  const [listProducts, setListProducts] = useState([]);
+  const [dataSeekDocument, setDataSeekDocument] = useState([]);
+  const [currentProduct, setCurrentProduct] = useState({});
   const [isEditItem, setIsEditItem] = useState(false);
+
+  const [itemToDelete, setItemToDelete] = useState('');
+  const [nameItemToDelete, setNameItemToDelete] = useState('');
+
+  useEffect(() => {
+
+    const currTotals = dataDetails.reduce((acc, curr) => {
+      acc.subtotal += validFloat(curr.subtotal);
+      acc.discount += validFloat(curr.discountValue);
+      acc.exempt += validFloat(curr.taxValue) === 0 ? (validFloat(curr.subtotal) - validFloat(curr.discountValue)) : 0;
+      acc.taxed += validFloat(curr.taxValue) !== 0 ? (validFloat(curr.subtotal) - validFloat(curr.discountValue)) : 0;
+      acc.tax += validFloat(curr.taxValue);
+      acc.total += validFloat(curr.total);
+      return acc;
+    }, {
+      subtotal: 0,
+      discount: 0,
+      exonerated: 0,
+      exempt: 0,
+      taxed: 0,
+      tax: 0,
+      total: 0
+    });
+    onBulkForm({
+      subtotal: currTotals.subtotal,
+      discount: currTotals.discount,
+      exoneratedValue: currTotals.exonerated,
+      exemptValue: currTotals.exempt,
+      taxedValue: currTotals.taxed,
+      tax: currTotals.tax,
+      total: currTotals.total
+    })
+  }, [dataDetails])
 
   const validation = {
     date: [(val) => val.length > 0, IntlMessagesFn("page.common.validation.date")],
+    sellerId: [val => validInt(val) > 0, IntlMessagesFn("msg.required.select.seller")],
     customerName: [val => val.length > 0, IntlMessagesFn("page.common.validation.customerName")],
     phone: [val => val.length > 0, IntlMessagesFn("page.common.validation.phone")],
     total: [val => validFloat(val) > 0, IntlMessagesFn("page.common.validation.total")]
@@ -34,10 +74,11 @@ export const useQuotes = ({ setLoading }) => {
   const columnDetails = [
     { title: 'input.code', field: 'productCode', width: 15 },
     { title: 'input.name', field: 'productName', width: 40 },
-    { title: 'input.outputUnit', field: 'um', width: 15 },
+    { title: 'input.outputUnit', field: 'unitProd', width: 15 },
     { title: 'input.qty', field: 'qty', width: 10, type: 'number' },
     { title: 'input.price', field: 'price', width: 10, type: 'currency', prefix: 'L. ' },
     { title: 'input.subtotal', field: 'subtotal', width: 15, type: 'currency', prefix: 'L. ' },
+    { title: 'table.column.options', field: 'buttons', width: 15 },
   ]
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
@@ -49,53 +90,99 @@ export const useQuotes = ({ setLoading }) => {
     phone: "",
     email: "",
     address: "",
-    sellerId: "",
-    notes: "",
+    sellerId: 0,
     condDeliveryTime: "",
     condPaymentMethod: "",
+    notes: "",
     subtotal: 0,
     discount: 0,
     exoneratedValue: 0,
     exemptValue: 0,
     taxedValue: 0,
     tax: 0,
-    total: 0
+    total: 0,
+    status: true
   }, validation);
 
   const { id } = formState;
 
   const fnEditDocument = (row) => {
+    setOpenSeekDocument(false);
     onBulkForm(row);
+    setLoading(true);
+    const { id } = row;
+    request.GET(`${API_URLS.FAC_PROC_QUOTES_DETAIL}?idFather=${id}`, ({ data }) => {
+      const currentData = data.map(elem => {
+        elem.productName = elem.productData?.name || "";
+        elem.undOutName = elem.undOutData?.name || "";
+        elem.buttons = fnAddButtonDeleteToItem(elem.tempCode, elem);
+        return elem;
+      });
+      setDataDetails(currentData);
+      setLoading(false);
+    }, err => {
+      setDataDetails([]);
+      setLoading(false);
+    });
   }
 
   const fnNewDocument = () => {
+    setSendForm(false);
     onResetForm();
+    setDataDetails([]);
+    setActiveTab("1")
   }
 
   const fnSearchDocument = () => {
-    console.log('search');
+    setLoading(true);
+    request.GET(API_URLS.FAC_PROC_QUOTES, ({ data }) => {
+      setDataSeekDocument(data);
+      setOpenSeekDocument(true);
+      setLoading(false);
+    }, err => {
+      setLoading(false);
+    });
   }
 
   const fnSaveDocument = () => {
-    setLoading(true);
     setSendForm(true);
     if (!isFormValid) {
+      console.log('formulario invalido.!');
       return;
     }
+    setLoading(true);
     if (validInt(id) === 0) {
-      request.POST('', formState, () => {
+      request.POST(API_URLS.FAC_PROC_QUOTES, formState, ({ data }) => {
         setLoading(false);
-        fnGetTableData();
-        onResetForm();
+        const { id: newId } = data;
+        onInputChange({ target: { name: 'id', value: newId } });
+        const saveDataDetails = dataDetails.map(elem => {
+          elem.idFather = newId;
+          return elem;
+        });
+
+        for (let i = 0; i < saveDataDetails.length; i++) {
+          const elem = saveDataDetails[i];
+          request.POST(API_URLS.FAC_PROC_QUOTES_DETAIL, elem, (data) => { }, err => { }, false);
+        }
+        setLoading(false);
       }, (err) => {
         console.log(err);
         setLoading(false);
       })
     } else {
-      request.PUT(`/${id}`, formState, () => {
+      const saveDataDetails = dataDetails.map(elem => {
+        elem.idFather = id;
+        return elem;
+      });
+      request.PUT(`${API_URLS.FAC_PROC_QUOTES}${id}`, formState, () => {
+        request.DELETE(`${API_URLS.FAC_PROC_QUOTES_DETAIL}?idFather=${id}`, () => {
+          for (let i = 0; i < saveDataDetails.length; i++) {
+            const elem = saveDataDetails[i];
+            request.POST(API_URLS.FAC_PROC_QUOTES_DETAIL, elem, (data) => { }, err => { }, false);
+          }
+        }, () => { }, false);
         setLoading(false);
-        fnGetTableData();
-        onResetForm();
       }, (err) => {
         console.log(err);
         setLoading(false);
@@ -104,11 +191,12 @@ export const useQuotes = ({ setLoading }) => {
   };
 
   const fnPrintDocument = () => {
+    if (validInt(id) <= 0) return;
     console.log('print document!');
   }
 
-  const fnDeleteDocument = (row) => {
-    onBulkForm(row);
+  const fnDeleteDocument = () => {
+    if (validInt(id) <= 0) return;
     setOpenMsgQuestion(true);
   };
 
@@ -118,13 +206,9 @@ export const useQuotes = ({ setLoading }) => {
       return;
     }
     setLoading(true);
-    request.DELETE(`/${id}`, () => {
-      setLoading(false);
-      onResetForm();
-      fnGetTableData();
-    }, (err) => {
-      setLoading(false);
-    });
+    request.DELETE(`${API_URLS.FAC_PROC_QUOTES_DETAIL}?idFather=${id}`, () => { setLoading(false) }, () => { setLoading(false) }, false);
+    request.DELETE(`${API_URLS.FAC_PROC_QUOTES}${id}`, () => { }, () => { setLoading(false) }, true);
+    fnNewDocument();
   }
 
   const fnSeekCustomerList = () => {
@@ -145,27 +229,17 @@ export const useQuotes = ({ setLoading }) => {
 
   const fnGetData = () => {
 
-    request.getJSON("accounting/settings/accountants/getSL", {}, (resp) => {
+    request.getJSON("admin/users/getSellers", {}, (resp) => {
       const { data } = resp;
-      const list = data.map(item => {
-        item.value = item.cta;
-        item.label = `${item.cta}-${item.nombre}`;
-        return item;
+      const currSellers = data.map(elem => {
+        const currItem = {
+          id: elem.id,
+          name: `${elem.sellerCode} - ${elem.name}`
+        }
+        return currItem;
       });
-      setAccountList(list);
-    });
-  }
-
-  const fnGetTableData = () => {
-    setLoading(true);
-    request.GET('fixedAssets/settings/types', (resp) => {
-      const { data } = resp;
-      setTableData(data);
-      setTable({ ...table, data });
-      setLoading(false);
-    }, err => {
-      console.log(err)
-      setLoading(false);
+      setSellerList(currSellers);
+      // console.log(data);
     });
   }
 
@@ -173,11 +247,35 @@ export const useQuotes = ({ setLoading }) => {
     setOpenNewCustomer(true);
   }
 
+  const fnDeleteItem = (code, nameItem) => {
+
+    setItemToDelete(code);
+    setNameItemToDelete(nameItem);
+    setOpenMsgDeleteItem(true);
+  }
+
+  const fnOkDeleteItem = () => {
+
+    setOpenMsgDeleteItem(false);
+    if (itemToDelete === '') return;
+    const currDetail = dataDetails.filter(item => item.tempCode !== itemToDelete);
+    setDataDetails(currDetail);
+  }
+
+  const fnCancelDeleteItem = () => {
+    setItemToDelete('');
+  }
+
   const setSelectedCustomer = (customer) => {
     const { id, nomcli, rtn, tel, correoc, direcc } = customer;
     onBulkForm({ ...formState, customerId: id, customerCode: rtn, customerName: nomcli, phone: tel, address: direcc, email: correoc })
     setOpenSeekCustomer(false);
   }
+
+  const fnAddButtonDeleteToItem = (tempCode, product) => {
+    return <Button type='button' color='outline-danger' className='btn-circle-table' data-bs-toggle="tooltip" onClick={() => fnDeleteItem(tempCode, product.productName)}> <i className='bi bi-trash' /></Button>
+  }
+
   const fnSelectProduct = (product) => {
     setOpenSeekProducts(false);
     setCurrentProduct(product);
@@ -187,26 +285,40 @@ export const useQuotes = ({ setLoading }) => {
     } else {
       let currPrice = validFloat(product.includeTaxPrice ? product.med / 1 + (validFloat(product.percentTax) !== 0 ? (validFloat(product.percentTax / 100)) : 0) : product.med, 2);
       let currTaxValue = validFloat(currPrice * (validFloat(product.percentTax) !== 0 ? (validFloat(product.percentTax / 100)) : 0), 2)
-      currProduct = {
-        productCode: product.productCode,
-        productName: product.productName,
-        undOutId: product.undoutId,
-        undOutName: product.undoutName,
-        qtyDist: product.valChange,
-        price: currPrice,
-        qty: 1,
-        subtotal: currPrice * 1,
-        discountPercent: 0,
-        discountValue: 0,
-        taxPercent: product.percentTax,
-        taxValue: currTaxValue,
-        total: validFloat(currPrice + currTaxValue, 2)
-      }
+      let tempCode = RandomCodeGenerator(),
+        currProduct = {
+          tempCode,
+          productCode: product.productCode,
+          productName: product.productName,
+          undOutId: product.undoutId,
+          undOutName: product.undoutName,
+          qtyDist: product.valChange,
+          price: currPrice,
+          qty: 1,
+          subtotal: currPrice * 1,
+          discountPercent: 0,
+          discountValue: 0,
+          taxPercent: product.percentTax,
+          taxValue: currTaxValue,
+          total: validFloat(currPrice + currTaxValue, 2),
+          stock: product.stock,
+          price1: product.min,
+          price2: product.med,
+          price3: product.max,
+          ...product,
+          buttons: fnAddButtonDeleteToItem(tempCode, product)
+        }
+      delete currProduct['options'];
       setCurrentProduct(currProduct);
     }
     setOpenEditCurrentProduct(true);
 
-    // console.log({ product });
+  }
+
+  const fnSaveCurrentItem = (currentItem) => {
+
+    setOpenEditCurrentProduct(false);
+    setDataDetails([...dataDetails, currentItem]);
   }
 
   const fnAddItem = () => {
@@ -227,34 +339,7 @@ export const useQuotes = ({ setLoading }) => {
       setLoading(false);
     });
 
-    // setDataDetails([...dataDetails, newItem]);
   }
-
-  const [table, setTable] = useState({
-    title: IntlMessages("menu.fixedAssets.types"),
-    columns: [
-      { text: IntlMessages("input.code"), dataField: "code", headerStyle: { 'width': '15%' } },
-      { text: IntlMessages("input.name"), dataField: "name", headerStyle: { 'width': '40%' } },
-      {
-        text: IntlMessages("check.status"), dataField: "statusIcon", headerStyle: { 'width': '10%' },
-        classes: 'd-sm-none-table-cell', headerClasses: 'd-sm-none-table-cell'
-      },
-      { text: IntlMessages("table.column.options"), dataField: "options", headerStyle: { 'width': '20%' } }
-    ],
-    data: tableData,
-    options: {
-      columnActions: 'options'
-    },
-    actions: [{
-      color: 'primary',
-      onClick: fnEditDocument,
-      icon: 'pencil'
-    }, {
-      color: 'danger',
-      onClick: fnDeleteDocument,
-      icon: 'trash'
-    }],
-  });
 
   const propsToControlPanel = {
     fnNew: fnNewDocument,
@@ -280,8 +365,21 @@ export const useQuotes = ({ setLoading }) => {
     open: openMsgQuestion,
     setOpen: setOpenMsgQuestion,
     fnOnOk: fnDelete,
-    fnOnNo: onResetForm
+    fnOnNo: () => { }
   };
+
+  const propsToModalSeekDocuments = {
+    ModalContent: ModalSeekQuotes,
+    title: "menu.quotes",
+    open: openSeekDocument,
+    setOpen: setOpenSeekDocument,
+    maxWidth: 'lg',
+    data: {
+      dataQuotes: dataSeekDocument,
+      fnViewItem: fnEditDocument,
+      setLoading
+    }
+  }
 
   const propsToModalSeekCustomers = {
     ModalContent: ModalViewCust,
@@ -321,22 +419,43 @@ export const useQuotes = ({ setLoading }) => {
     }
   }
 
+  const propsToModalEditCurrentProduct = {
+    ModalContent: ModalEditCurrentProduct,
+    title: "button.addProduct",
+    open: openEditCurrentProduct,
+    setOpen: setOpenEditCurrentProduct,
+    maxWidth: 'sm',
+    data: {
+      setLoading,
+      currentItem: currentProduct,
+      fnSave: fnSaveCurrentItem
+    }
+  }
+
+  const propsToMsgDeleteItem = {
+    title: "alert.question.title",
+    open: openMsgDeleteItem,
+    textLegend: nameItemToDelete,
+    setOpen: setOpenMsgDeleteItem,
+    fnOnOk: fnOkDeleteItem,
+    fnOnNo: fnCancelDeleteItem
+  };
+
   useEffect(() => {
     fnGetData();
-    fnGetTableData();
   }, [])
 
 
   return {
     formState,
-    accountList,
+    sellerList,
     onInputChange,
     onResetForm,
     onBulkForm,
     formValidation,
     isFormValid,
     fnSaveDocument,
-    table,
+    // table,
     sendForm,
     propsToMsgDelete,
     propsToControlPanel,
@@ -344,7 +463,10 @@ export const useQuotes = ({ setLoading }) => {
     dataDetails,
     fnAddItem,
     propsToModalSeekCustomers,
+    propsToModalSeekDocuments,
     propsToModalNewCustomer,
-    propsToModalSeekProducts
+    propsToModalSeekProducts,
+    propsToModalEditCurrentProduct,
+    propsToMsgDeleteItem
   }
 }

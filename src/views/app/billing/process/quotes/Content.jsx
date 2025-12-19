@@ -2,21 +2,26 @@ import React, { useState } from 'react';
 import { Button, Card, CardBody, Nav, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
-import { useQuotes } from './useQuotes';
-import ControlPanel from '@/components/controlPanel';
-import { formatNumber, IntlMessages } from '@/helpers/Utils';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import { InputField } from '@/components/inputFields';
-import { SimpleTable } from '@/components/SimpleTable';
+import ControlPanel from '@Components/controlPanel';
+import { formatNumber, IntlMessages } from '@Helpers/Utils';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import { InputField } from '@Components/inputFields';
+import { SimpleTable } from '@Components/SimpleTable';
+import DateCalendar from '@Components/dateCalendar';
+import Confirmation from '@Containers/ui/confirmationMsg';
 import Modal from "@Components/modal";
+import { useQuotes } from './useQuotes';
+import { SimpleSelect } from '@/components/simpleSelect';
 
 const Content = (props) => {
   const { setLoading } = props;
   const [activeTab, setActiveTab] = useState('1');
 
-  const { propsToControlPanel, formState, formValidation, onInputChange, isFormValid, table, propsToMsgDelete, columnDetails, dataDetails, fnAddItem, propsToModalSeekCustomers, propsToModalNewCustomer, propsToModalSeekProducts } = useQuotes({ setLoading });
+  const { propsToControlPanel, formState, formValidation, onInputChange, isFormValid, propsToMsgDelete, propsToMsgDeleteItem, columnDetails, dataDetails, fnAddItem, propsToModalSeekCustomers, propsToModalNewCustomer, propsToModalSeekProducts, propsToModalEditCurrentProduct, sellerList, sendForm, propsToModalSeekDocuments } = useQuotes({ setLoading, setActiveTab });
 
-  const { customerId, customerCode, customerName, phone, email, address, sellerId, notes, condDeliveryTime, condPaymentMethod, subtotal, discount, exoneratedValue, exemptValue, taxedValue, tax, total } = formState;
+  const { date, customerId, customerCode, customerName, phone, email, address, sellerId, notes, condDeliveryTime, condPaymentMethod, subtotal, discount, exoneratedValue, exemptValue, taxedValue, tax, total } = formState;
+
+  const { dateValid, sellerIdValid, customerNameValid, totalValid } = formValidation;
 
   return (
     <>
@@ -54,11 +59,34 @@ const Content = (props) => {
                   </Nav>
                   <TabContent activeTab={activeTab}>
                     <TabPane tabId="1">
+                      <Row className='mb-2'>
+                        <Colxx xxs={12} md={4} lg={3}>
+                          <DateCalendar
+                            label="input.date"
+                            name="date"
+                            value={date}
+                            onChange={onInputChange}
+                            invalid={sendForm && !!dateValid}
+                            feedbackText={sendForm && (dateValid || null)}
+                          />
+                        </Colxx>
+                        <Colxx xxs={12} md={8} lg={9}>
+                          <SimpleSelect
+                            label="table.column.seller"
+                            name="sellerId"
+                            value={sellerId}
+                            onChange={onInputChange}
+                            options={sellerList}
+                            invalid={sendForm && !!sellerIdValid}
+                            feedbackText={sendForm && (sellerIdValid || null)}
+                          />
+                        </Colxx>
+                      </Row>
                       <Row>
-                        <Colxx xxs={12}>
+                        <Colxx xxs={12} md={7}>
                           <ContainerWithLabel label={"select.customer"}>
                             <Row>
-                              <Colxx xxs={12} md={4} lg={2}>
+                              <Colxx xxs={12} md={4} lg={5}>
                                 <InputField
                                   label='page.common.input.id'
                                   name="customerId"
@@ -67,7 +95,7 @@ const Content = (props) => {
                                   disabled
                                 />
                               </Colxx>
-                              <Colxx xxs={12} md={8} lg={5}>
+                              <Colxx xxs={12} md={8} lg={7}>
                                 <InputField
                                   label='page.common.input.dni'
                                   name="customerCode"
@@ -77,17 +105,19 @@ const Content = (props) => {
                               </Colxx>
                             </Row>
                             <Row>
-                              <Colxx xxs={12} md={8} lg={7}>
+                              <Colxx xxs={12}>
                                 <InputField
                                   label='page.common.input.name'
                                   name="customerName"
                                   value={customerName}
                                   onChange={onInputChange}
+                                  invalid={sendForm && !!customerNameValid}
+                                  feedbackText={sendForm && (customerNameValid || null)}
                                 />
                               </Colxx>
                             </Row>
                             <Row>
-                              <Colxx xxs={12} md={8} lg={7}>
+                              <Colxx xxs={12}>
                                 <InputField
                                   label='input.phone'
                                   name="phone"
@@ -97,7 +127,7 @@ const Content = (props) => {
                               </Colxx>
                             </Row>
                             <Row>
-                              <Colxx xxs={12} md={8} lg={7}>
+                              <Colxx xxs={12}>
                                 <InputField
                                   label='input.email'
                                   name="email"
@@ -107,7 +137,7 @@ const Content = (props) => {
                               </Colxx>
                             </Row>
                             <Row>
-                              <Colxx xxs={12} md={8} lg={7}>
+                              <Colxx xxs={12}>
                                 <InputField
                                   label='input.address'
                                   type='textarea'
@@ -119,16 +149,14 @@ const Content = (props) => {
                             </Row>
                           </ContainerWithLabel>
                         </Colxx>
-                      </Row>
-                      <Row>
-                        <Colxx xxs={12}>
+                        <Colxx xxs={12} md={5}>
                           <ContainerWithLabel label={"page.quotes.terms"}>
                             <Row>
                               <Colxx xxs={12}>
                                 <InputField
                                   label='page.quotes.terms.deliveryTimes'
                                   name="condDeliveryTime"
-                                  valu={condDeliveryTime}
+                                  value={condDeliveryTime}
                                   onChange={onInputChange}
                                 />
                               </Colxx>
@@ -138,7 +166,7 @@ const Content = (props) => {
                                 <InputField
                                   label='page.quotes.terms.paymentMethod'
                                   name="condPaymentMethod"
-                                  valu={condPaymentMethod}
+                                  value={condPaymentMethod}
                                   onChange={onInputChange}
                                 />
                               </Colxx>
@@ -157,6 +185,9 @@ const Content = (props) => {
                           </ContainerWithLabel>
                         </Colxx>
                       </Row>
+                      {/* <Row>
+                        
+                      </Row> */}
                     </TabPane>
                     <TabPane tabId="2">
                       <Row>
@@ -236,6 +267,8 @@ const Content = (props) => {
                           onChange={onInputChange}
                           disabled
                           className='text-right'
+                          invalid={sendForm && !!totalValid}
+                          feedbackText={sendForm && (totalValid || null)}
                         />
                       </Colxx>
                     </Row>
@@ -246,9 +279,13 @@ const Content = (props) => {
           </Card>
         </Colxx>
       </Row>
+      <Modal {...propsToModalSeekDocuments} />
       <Modal {...propsToModalSeekCustomers} />
       <Modal {...propsToModalNewCustomer} />
       <Modal {...propsToModalSeekProducts} />
+      <Modal {...propsToModalEditCurrentProduct} />
+      <Confirmation {...propsToMsgDeleteItem} />
+      <Confirmation {...propsToMsgDelete} />
       {/* <Modal {} */}
     </>
   );
