@@ -25,7 +25,7 @@ const useDiscounts = ({ setLoading }) => {
     status: true
   }, discountValidations);
 
-  const { id, name, percentValue, idCtaAccount } = formState;
+  const { id, name, percentValue, idCtaAccount, status } = formState;
 
   const fnDeleteItem = (item) => {
     setCurrentItem(item)
@@ -41,8 +41,9 @@ const useDiscounts = ({ setLoading }) => {
 
   const fnEditItem = (item) => {
     setCurrentItem(item);
+    console.log({ item })
     setSendForm(false);
-    setBulkForm(item);
+    setBulkForm({ ...item });
   }
 
   const fnGetData = () => {
@@ -69,7 +70,8 @@ const useDiscounts = ({ setLoading }) => {
     const data = {
       name,
       percentValue,
-      idCtaAccount
+      idCtaAccount,
+      status: status == true ? 1 : 0
     }
     if (currentItem && currentItem.id > 0) {
       setLoading(true);

@@ -4,7 +4,7 @@ import { Colxx } from '@/components/common/CustomBootstrap';
 import { IntlMessages } from "@/helpers/Utils";
 
 const Confirmation = (props) => {
-  const { open, setOpen, fnOnOk, title = "alert.question.title", setCurrentItem, fnOnNo } = props;
+  const { open, setOpen, fnOnOk, title = "alert.question.title", textLegend = '', setCurrentItem, fnOnNo } = props;
 
   const onDismiss = () => {
     if (setCurrentItem) {
@@ -27,6 +27,7 @@ const Confirmation = (props) => {
             <br />
           </Colxx>
         </Row>
+        {(textLegend !== '' && textLegend !== '') && <Row><Colxx xxs={12}><p>{textLegend}</p></Colxx></Row>}
         <Row>
           <Colxx xxs="12" className="div-action-button-container">
             <Button outline color="danger" onClick={fnOnOk}><i className="bi bi-check-lg" /> {IntlMessages("alert.question.yes")}</Button>

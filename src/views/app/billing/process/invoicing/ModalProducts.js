@@ -9,7 +9,6 @@ const ModalProducts = (props) => {
   const { listProducts } = data;
 
   const [table, setTable] = useState({
-    // title: IntlMessages("page.invoicing.modal.products.table.title"),
     title: '',
     columns: [
       {
