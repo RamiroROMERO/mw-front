@@ -69,7 +69,7 @@ const useHotelAdmin = ({ setLoading }) => {
     });
 
     setLoading(true);
-    request.GET('hotel/settings/bookingStatuses', (resp) => {
+    request.GET('hotel/settings/bookingStatuses?type=1', (resp) => {
       const bookingStatuses = resp.data.map((item) => {
         item.label = item.name
         item.value = item.id

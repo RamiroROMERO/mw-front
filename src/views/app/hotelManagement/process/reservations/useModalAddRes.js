@@ -69,6 +69,7 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
 
     formState.personQty = totalPeople;
     formState.status = 1;
+    formState.baseRate = currentRoom?.rate;
 
     if (validInt(id) === 0) {
       // if (fnCreate === false) {

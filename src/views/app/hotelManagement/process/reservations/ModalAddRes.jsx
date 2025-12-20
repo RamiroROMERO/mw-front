@@ -264,15 +264,6 @@ const ModalAddRes = ({data, setOpen}) => {
                               onChange={onInputChange}
                             />
                           </Colxx>
-                          <Colxx xxs={6} sm={5} md={12} lg={12} xl={6}>
-                            <SearchSelect
-                              label='select.channel'
-                              name='channelId'
-                              inputValue={channelId}
-                              options={listBookingChannels}
-                              onChange={onInputChange}
-                            />
-                          </Colxx>
                           <Colxx xxs={12}>
                             <InputField
                               name='notes'
@@ -289,6 +280,17 @@ const ModalAddRes = ({data, setOpen}) => {
                   </Row>
                 </Colxx>
                 <Colxx xxs={12} lg={4}>
+                  <Row>
+                    <Colxx xxs={12}>
+                        <SearchSelect
+                          label='select.channel'
+                          name='channelId'
+                          inputValue={channelId}
+                          options={listBookingChannels}
+                          onChange={onInputChange}
+                        />
+                    </Colxx>
+                  </Row>
                   <Row>
                     <Colxx xxs={12} sm={6} lg={12}>
                       <ContainerWithLabel label="page.hotel.modal.addReservations.label.statusBooking">

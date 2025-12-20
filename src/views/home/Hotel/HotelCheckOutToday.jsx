@@ -3,12 +3,17 @@ import { Badge, Button, Card, CardBody, CardTitle, Col, Row, Table } from 'react
 import DateCalendar from '@Components/dateCalendar';
 import { IntlMessages } from '@Helpers/Utils';
 import { request } from '@/helpers/core';
+import Modal from '@Components/modal';
+import ModalInvoice from './ModalInvoice';
 
 export const HotelCheckOutToday = ({ setLoading }) => {
 
   const [currentDate, setCurrentDate] = useState(new Date().toJSON().substring(0, 10));
   const [dataCurrentCheckOut, setDataCurrentCheckOut] = useState([]);
   const [totalCheckOut, setTotalCheckOut] = useState(0);
+  const [bookingId, setBookingId] = useState(0);
+  const [dataBooking, setDataBooking] = useState([]);
+  const [openModalInvoice, setOpenModalInvoice] = useState(false);
 
   const fnRefreshTable = () => {
     setLoading(true);
@@ -24,14 +29,38 @@ export const HotelCheckOutToday = ({ setLoading }) => {
     })
   }
 
+  const fnGetBooking = (id) => {
+    setLoading(true);
+    request.GET(`hotel/process/bookings/${id}`, (resp) => {
+      setDataBooking(resp.data);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+  }
+
   const fnGotoViewBooking = (bookingId) => {
-    console.log({ bookingId });
+    setBookingId(bookingId);
+    fnGetBooking(bookingId)
+    setOpenModalInvoice(true);
   }
 
   useEffect(() => {
     fnRefreshTable()
   }, []);
 
+  const propsToModalInvoice = {
+    ModalContent: ModalInvoice,
+    title: "page.hotel.modal.invoice.title",
+    open: openModalInvoice,
+    setOpen: setOpenModalInvoice,
+    maxWidth: 'xl',
+    data: {
+      dataBooking,
+      setLoading
+    }
+  }
 
   return (
     <>
@@ -77,7 +106,7 @@ export const HotelCheckOutToday = ({ setLoading }) => {
                       <td>{item.roomCode}</td>
                       <td>{item.customerName}</td>
                       <td>{item.currentDays}</td>
-                      <td><Button color='info' onClick={() => fnGotoViewBooking(item.bookingId)} ><i className='bi bi-eye'></i></Button></td>
+                      <td><Button color='info' onClick={() => fnGotoViewBooking(item.bookingId)} ><i className='bi bi-receipt'></i></Button></td>
                     </tr>)
                   }) : <tr><td className='text-center' colSpan={4}>No Hay Datos Disponibles</td></tr>}
                 </tbody>
@@ -86,6 +115,7 @@ export const HotelCheckOutToday = ({ setLoading }) => {
           </Card>
         </Col>
       </Row>
+      <Modal {...propsToModalInvoice}/>
     </>
   )
 }
