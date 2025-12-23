@@ -244,7 +244,9 @@ const useHotelAdmin = ({ setLoading }) => {
       propsToModalAddReservation,
       fnCreateReservation,
       fnCreateCustomer,
-      propsToModalAddCustomer
+      propsToModalAddCustomer,
+      setCurrentReservation,
+      setOpenModalAdd,
     }
   )
 }

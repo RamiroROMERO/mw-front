@@ -21,7 +21,7 @@ const ModalInvoice = ({data, setOpen}) => {
   const creditDays = dataBooking?.customerData?.creditDays || 0;
   const roomId = dataBooking?.roomId || 0;
 
-  const {totalValPayments, totalValServices, listTypePayments, listCashBoxes, listCashiers, listTypeDocuments, openModalGenerateInvoice, formState, formValidation, sendForm, onInputChange, onPriceChange, onDiscountPercentChange, onDiscountValueChange, onTaxPercentChange, onTaxValueChange, onOtherTaxPercentChange, onOtherTaxValueChange, setOpenModalGenerateInvoice, setListTypePayments, dataPayments, dataServices, fnSave} = useModalInvoice({bookingId, baseRate, setLoading});
+  const {totalValPayments, totalValServices, listTypePayments, listCashBoxes, listCashiers, listTypeDocuments, openModalGenerateInvoice, formState, formValidation, sendForm, onInputChange, onPriceChange, onDiscountPercentChange, onDiscountValueChange, onTaxPercentChange, onTaxValueChange, onOtherTaxPercentChange, onOtherTaxValueChange, setOpenModalGenerateInvoice, setListTypePayments, dataPayments, dataServices, fnSave} = useModalInvoice({bookingId, baseRate, creditDays, roomId, setLoading, setOpen});
 
   const { invoiceDate, documentCode, cashId, cashierId, documentType, billingToCompany, price, subtotal, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total } = formState;
 
@@ -47,8 +47,6 @@ const ModalInvoice = ({data, setOpen}) => {
       setLoading
     }
   }
-
-  console.log(dataBooking);
 
   return (
     <>

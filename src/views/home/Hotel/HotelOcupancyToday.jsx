@@ -4,7 +4,7 @@ import DateCalendar from '@Components/dateCalendar';
 import { IntlMessages } from '@Helpers/Utils';
 import { request } from '@/helpers/core';
 
-export const HotelOccupancyToday = ({ setLoading }) => {
+export const HotelOccupancyToday = ({ setLoading, setCurrentReservation, setOpenModalAdd }) => {
 
   const [currentDate, setCurrentDate] = useState(new Date().toJSON().substring(0, 10));
   const [dataOccupancy, setDataOccupancy] = useState([]);
@@ -25,7 +25,15 @@ export const HotelOccupancyToday = ({ setLoading }) => {
   }
 
   const fnGotoViewBooking = (bookingId) => {
-    console.log({ bookingId });
+    setLoading(true);
+    request.GET(`hotel/process/bookings/${bookingId}`, (resp) => {
+      setCurrentReservation(resp.data);
+      setOpenModalAdd(true);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
   }
 
   useEffect(() => {

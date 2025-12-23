@@ -17,11 +17,11 @@ const Content = (props) => {
   const { setLoading } = props;
   const [activeTab, setActiveTab] = useState('1');
 
-  const { propsToControlPanel, formState, formValidation, onInputChange, isFormValid, propsToMsgDelete, propsToMsgDeleteItem, columnDetails, dataDetails, fnAddItem, propsToModalSeekCustomers, propsToModalNewCustomer, propsToModalSeekProducts, propsToModalEditCurrentProduct, sellerList, sendForm, propsToModalSeekDocuments } = useQuotes({ setLoading, setActiveTab });
+  const { propsToControlPanel, formState, formValidation, onInputChange, isFormValid, propsToMsgDelete, propsToMsgDeleteItem, columnDetails, dataDetails, fnAddItem, propsToModalSeekCustomers, propsToModalNewCustomer, propsToModalSeekProducts, propsToModalEditCurrentProduct, sellerList, sendForm, propsToModalSeekDocuments, propsToViewPDF } = useQuotes({ setLoading, setActiveTab });
 
   const { date, customerId, customerCode, customerName, phone, email, address, sellerId, notes, condDeliveryTime, condPaymentMethod, subtotal, discount, exoneratedValue, exemptValue, taxedValue, tax, total } = formState;
 
-  const { dateValid, sellerIdValid, customerNameValid, totalValid } = formValidation;
+  const { dateValid, sellerIdValid, customerNameValid, phoneValid, totalValid } = formValidation;
 
   return (
     <>
@@ -123,6 +123,8 @@ const Content = (props) => {
                                   name="phone"
                                   value={phone}
                                   onChange={onInputChange}
+                                  invalid={sendForm && !!phoneValid}
+                                  feedbackText={sendForm && (phoneValid || null)}
                                 />
                               </Colxx>
                             </Row>
@@ -284,6 +286,7 @@ const Content = (props) => {
       <Modal {...propsToModalNewCustomer} />
       <Modal {...propsToModalSeekProducts} />
       <Modal {...propsToModalEditCurrentProduct} />
+      <Modal {...propsToViewPDF} />
       <Confirmation {...propsToMsgDeleteItem} />
       <Confirmation {...propsToMsgDelete} />
       {/* <Modal {} */}

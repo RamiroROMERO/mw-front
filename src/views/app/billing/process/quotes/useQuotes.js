@@ -11,6 +11,7 @@ import ModalProducts from '../invoicing/ModalProducts';
 import { ModalEditCurrentProduct } from './ModalEditCurrentProduct';
 import { ModalNewCustomer } from './ModalNewCustomer';
 import ModalSeekQuotes from './ModalSeekQuotes';
+import ViewPdf from '@/components/ViewPDF/ViewPdf';
 
 export const useQuotes = ({ setLoading, setActiveTab }) => {
 
@@ -32,6 +33,9 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
 
   const [itemToDelete, setItemToDelete] = useState('');
   const [nameItemToDelete, setNameItemToDelete] = useState('');
+
+  const [openViewFile, setOpenViewFile] = useState(false);
+  const [documentPath, setDocumentPath] = useState("");
 
   useEffect(() => {
 
@@ -193,6 +197,13 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
   const fnPrintDocument = () => {
     if (validInt(id) <= 0) return;
     console.log('print document!');
+    request.GETPdfUrl('billing/process/quotes/exportPDF', { id }, (resp) => {
+      setDocumentPath(resp);
+      setOpenViewFile(true);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
   }
 
   const fnDeleteDocument = () => {
@@ -441,6 +452,18 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     fnOnNo: fnCancelDeleteItem
   };
 
+  const propsToViewPDF = {
+    ModalContent: ViewPdf,
+    title: "modal.viewDocument.invoice",
+    valueTitle: id,
+    open: openViewFile,
+    setOpen: setOpenViewFile,
+    maxWidth: 'xl',
+    data: {
+      documentPath
+    }
+  }
+
   useEffect(() => {
     fnGetData();
   }, [])
@@ -467,6 +490,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     propsToModalNewCustomer,
     propsToModalSeekProducts,
     propsToModalEditCurrentProduct,
-    propsToMsgDeleteItem
+    propsToMsgDeleteItem,
+    propsToViewPDF
   }
 }

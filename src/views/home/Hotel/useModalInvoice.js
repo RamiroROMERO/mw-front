@@ -4,7 +4,7 @@ import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import moment from 'moment';
 
-export const useModalInvoice = ({ bookingId, baseRate, setLoading }) => {
+export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLoading, setOpen }) => {
   const [dataServices, setDataServices] = useState([]);
   const [dataPayments, setDataPayments] = useState([]);
   const [listTypePayments, setListTypePayments] = useState([]);
@@ -39,7 +39,7 @@ export const useModalInvoice = ({ bookingId, baseRate, setLoading }) => {
     total: baseRate,
   }, invoicingValid);
 
-  const {subtotal, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue} = formState;
+  const {invoiceDate, documentCode, billingToCompany, cashId, cashierId, documentType, price, subtotal, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total} = formState;
 
   const onPriceChange = e => {
     const subtotal = validFloat(e.target.value * 1);
@@ -175,7 +175,49 @@ export const useModalInvoice = ({ bookingId, baseRate, setLoading }) => {
     if (!isFormValid) {
       return;
     }
-    setOpenModalGenerateInvoice(true);
+    if(documentType === 1){
+      setOpenModalGenerateInvoice(true);
+    }else{
+      const invoiceData = {
+        documentCode,
+        bookingId,
+        cashId,
+        cashierId,
+        invoiceDate,
+        billingToCompany,
+        isCredit: documentType===1? false : true,
+        creditDays,
+        detailRoom:{
+          roomId,
+          qty: 1,
+          price,
+          subtotal,
+          discountPercent,
+          discountValue,
+          taxPercent,
+          taxValue,
+          otherTaxPercent,
+          otherTaxValue,
+          total
+        },
+        totalCustomer: 0,
+        totalRest: 0,
+      }
+
+      const data = {
+        invoiceData,
+        paymentData: []
+      }
+
+      setLoading(true);
+      request.POST('hotel/process/bookings/generateInvoice', data, (resp) => {
+        setOpen(false);
+        setLoading(false);
+      },(err)=>{
+        console.error(err);
+        setLoading(false);
+      });
+    }
   }
 
   useEffect(() => {

@@ -7,7 +7,7 @@ import useHotelAdmin from './useHotelAdmin';
 
 const HotelAdmin = ({ setLoading }) => {
 
-  const { propsToModalAddReservation, propsToModalAddCustomer, fnCreateReservation, fnCreateCustomer } = useHotelAdmin({ setLoading });
+  const {propsToModalAddReservation, propsToModalAddCustomer, fnCreateReservation, fnCreateCustomer, setCurrentReservation, setOpenModalAdd } = useHotelAdmin({ setLoading });
 
   return (
     <>
@@ -27,7 +27,7 @@ const HotelAdmin = ({ setLoading }) => {
         </Col>
         <Col xs={12} md={4} lg={5}>
           <HotelCheckOutToday setLoading={setLoading} />
-          <HotelOccupancyToday setLoading={setLoading} />
+          <HotelOccupancyToday setLoading={setLoading} setCurrentReservation={setCurrentReservation} setOpenModalAdd={setOpenModalAdd} />
         </Col>
       </Row>
       <Modal {...propsToModalAddReservation} />
