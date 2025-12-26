@@ -727,6 +727,7 @@ const esLang = {
   "modal.viewDocument.invoice": "Factura #",
   "modal.viewDocument.proofPayment": "Comprobante de Pago",
   "modal.viewDocument.inclusionSheet": "Hoja de Inclusion",
+  "modal.viewDocument.quote": "Cotizacion #",
   "modal.confirm.title": "Confirmar",
   "modal.printDocument.title": "Imprimir Documento",
   'pages.select.documentCode': "Documento",

@@ -721,6 +721,7 @@ const enLang = {
   "modal.viewDocument.invoice": "Invoice #",
   "modal.viewDocument.proofPayment": "Proof of Payment",
   "modal.viewDocument.inclusionSheet": "Inclusion Sheet",
+  "modal.viewDocument.quote": "Quote #",
   "modal.confirm.title": "Confirm",
   "modal.printDocument.title": "Print Document",
   'pages.select.documentCode': "Document",

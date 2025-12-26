@@ -454,7 +454,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
 
   const propsToViewPDF = {
     ModalContent: ViewPdf,
-    title: "modal.viewDocument.invoice",
+    title: "modal.viewDocument.quote",
     valueTitle: id,
     open: openViewFile,
     setOpen: setOpenViewFile,
