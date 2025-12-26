@@ -231,7 +231,7 @@ const ModalInvoice = ({data, setOpen}) => {
                         feedbackText={sendForm && (documentTypeValid || null)}
                       />
                     </Colxx>
-                    <Colxx xxs={6} lg={4} xl={6}>
+                    <Colxx xxs={6} lg={4} xl={12}>
                       <SimpleSelect
                         name="documentCode"
                         label="page.invoicing.select.typeDocument"
@@ -263,7 +263,7 @@ const ModalInvoice = ({data, setOpen}) => {
                     <Colxx xxs={12}>
                       <ContainerWithLabel label="page.hotel.modal.reservation.title.roomCharge">
                         <Row>
-                          <Colxx xxs={6} md={3} xl={6}>
+                          <Colxx xxs={6} md={3} xl={4}>
                             <InputField
                               name="price"
                               label="input.price"
@@ -272,7 +272,7 @@ const ModalInvoice = ({data, setOpen}) => {
                               type="text"
                             />
                           </Colxx>
-                          <Colxx xxs={6} md={3} xl={6}>
+                          <Colxx xxs={6} md={3} xl={4}>
                             <InputField
                               name="qty"
                               label="input.days"
@@ -281,7 +281,7 @@ const ModalInvoice = ({data, setOpen}) => {
                               type="text"
                             />
                           </Colxx>
-                          <Colxx xxs={6} md={3} xl={6}>
+                          <Colxx xxs={6} md={3} xl={4}>
                             <InputField
                               name="subtotal"
                               label="input.subtotal"

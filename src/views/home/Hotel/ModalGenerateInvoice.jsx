@@ -14,7 +14,7 @@ const ModalGenerateInvoice = ({data, setOpen}) => {
 
   const { invoiceDate, documentCode, cashId, cashierId, documentType, price, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total } = dataInvoice;
 
-  const totalInvoice = (totalValServices + validFloat(price || 0)) - totalValPayments;
+  const totalInvoice = (totalValServices + total) - totalValPayments;
 
   const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     valueCustomer: 0,
