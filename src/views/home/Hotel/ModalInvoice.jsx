@@ -20,10 +20,12 @@ const ModalInvoice = ({data, setOpen}) => {
   const baseRate = dataBooking?.baseRate || 0;
   const creditDays = dataBooking?.customerData?.creditDays || 0;
   const roomId = dataBooking?.roomId || 0;
+  const checkInDate = dataBooking?.checkInDate || "1900-01-01";
+  const checkOutDate = dataBooking?.checkOutDate || "1900-01-01";
 
-  const {totalValPayments, totalValServices, listTypePayments, listCashBoxes, listCashiers, listTypeDocuments, openModalGenerateInvoice, formState, formValidation, sendForm, onInputChange, onPriceChange, onDiscountPercentChange, onDiscountValueChange, onTaxPercentChange, onTaxValueChange, onOtherTaxPercentChange, onOtherTaxValueChange, setOpenModalGenerateInvoice, setListTypePayments, dataPayments, dataServices, fnSave} = useModalInvoice({bookingId, baseRate, creditDays, roomId, setLoading, setOpen});
+  const {totalValPayments, totalValServices, listTypePayments, listCashBoxes, listCashiers, listTypeDocuments, openModalGenerateInvoice, formState, formValidation, sendForm, onInputChange, onPriceChange, onQtyChange, onDiscountPercentChange, onDiscountValueChange, onTaxPercentChange, onTaxValueChange, onOtherTaxPercentChange, onOtherTaxValueChange, setOpenModalGenerateInvoice, setListTypePayments, dataPayments, dataServices, fnSave} = useModalInvoice({bookingId, baseRate, creditDays, roomId, checkInDate, checkOutDate, setLoading, setOpen});
 
-  const { invoiceDate, documentCode, cashId, cashierId, documentType, billingToCompany, price, subtotal, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total } = formState;
+  const { invoiceDate, documentCode, cashId, cashierId, documentType, billingToCompany, price, qty, subtotal, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total } = formState;
 
   const { documentCodeValid, documentTypeValid } = formValidation;
 
@@ -75,13 +77,13 @@ const ModalInvoice = ({data, setOpen}) => {
               <Colxx xxs={12} sm={4} lg={4}>
                 <TextTitle
                   title='select.checkInDate'
-                  subTitle={dataBooking?.checkInDate}
+                  subTitle={formatDate(dataBooking?.checkInDate)}
                 />
               </Colxx>
               <Colxx xxs={12} sm={4} lg={4}>
                 <TextTitle
                   title='select.checkOutDate'
-                  subTitle={dataBooking?.checkOutDate}
+                  subTitle={formatDate(dataBooking?.checkOutDate)}
                 />
               </Colxx>
             </Row>
@@ -258,89 +260,117 @@ const ModalInvoice = ({data, setOpen}) => {
                         options={listCashBoxes}
                       />
                     </Colxx>
-                    <Colxx xxs={6} md={3} xl={6}>
-                      <InputField
-                        name="price"
-                        label="input.price"
-                        value={price}
-                        onChange={onPriceChange}
-                        type="text"
-                      />
-                    </Colxx>
-                    <Colxx xxs={6} md={3} xl={6}>
-                      <InputField
-                        name="discountPercent"
-                        label="input.discountPercent"
-                        value={discountPercent}
-                        onChange={onDiscountPercentChange}
-                        type="text"
-                      />
-                    </Colxx>
-                    <Colxx xxs={6} md={3} xl={6}>
-                      <InputField
-                        name="discountValue"
-                        label="input.discountValue"
-                        value={discountValue}
-                        onChange={onDiscountValueChange}
-                        type="text"
-                      />
-                    </Colxx>
-                    <Colxx xxs={6} md={3} xl={6}>
-                      <InputField
-                        name="taxPercent"
-                        label="input.taxPercent"
-                        value={taxPercent}
-                        onChange={onTaxPercentChange}
-                        type="text"
-                      />
-                    </Colxx>
-                    <Colxx xxs={6} md={3} xl={6}>
-                      <InputField
-                        name="taxValue"
-                        label="input.taxValue"
-                        value={taxValue}
-                        onChange={onTaxValueChange}
-                        type="text"
-                      />
-                    </Colxx>
-                    <Colxx xxs={6} md={3} xl={6}>
-                      <InputField
-                        name="otherTaxPercent"
-                        label="input.otherTaxPercent"
-                        value={otherTaxPercent}
-                        onChange={onOtherTaxPercentChange}
-                        type="text"
-                      />
-                    </Colxx>
-                    <Colxx xxs={6} md={3} xl={6}>
-                      <InputField
-                        name="otherTaxValue"
-                        label="input.otherTaxValue"
-                        value={otherTaxValue}
-                        onChange={onOtherTaxValueChange}
-                        type="text"
-                      />
-                    </Colxx>
-                    <Colxx xxs={6} md={3} xl={6}>
-                      <InputField
-                        name="total"
-                        label="input.total"
-                        value={total}
-                        onChange={onInputChange}
-                        type="text"
-                        disabled
-                      />
-                    </Colxx>
-                    <Colxx xxs={6} md={6} xl={6}>
-                      <Checkbox
-                        onChange={onInputChange}
-                        name="billingToCompany"
-                        value={billingToCompany}
-                        label="check.billingToCompany"
-                      />
-                    </Colxx>
-                    <Colxx xxs={12} style={{textAlign: 'right'}}>
-                      <Button color="primary" onClick={fnSave}><i className="bi bi-receipt" /> {IntlMessages("button.generateInvoice")}</Button>
+                    <Colxx xxs={12}>
+                      <ContainerWithLabel label="page.hotel.modal.reservation.title.roomCharge">
+                        <Row>
+                          <Colxx xxs={6} md={3} xl={6}>
+                            <InputField
+                              name="price"
+                              label="input.price"
+                              value={price}
+                              onChange={onPriceChange}
+                              type="text"
+                            />
+                          </Colxx>
+                          <Colxx xxs={6} md={3} xl={6}>
+                            <InputField
+                              name="qty"
+                              label="input.days"
+                              value={qty}
+                              onChange={onQtyChange}
+                              type="text"
+                            />
+                          </Colxx>
+                          <Colxx xxs={6} md={3} xl={6}>
+                            <InputField
+                              name="subtotal"
+                              label="input.subtotal"
+                              value={subtotal}
+                              onChange={onQtyChange}
+                              type="text"
+                              disabled
+                            />
+                          </Colxx>
+                          <Colxx xxs={6} md={3} xl={6}>
+                            <InputField
+                              name="discountPercent"
+                              label="input.discountPercent"
+                              value={discountPercent}
+                              onChange={onDiscountPercentChange}
+                              type="text"
+                            />
+                          </Colxx>
+                          <Colxx xxs={6} md={3} xl={6}>
+                            <InputField
+                              name="discountValue"
+                              label="input.discountValue"
+                              value={discountValue}
+                              onChange={onDiscountValueChange}
+                              type="text"
+                              disabled
+                            />
+                          </Colxx>
+                          <Colxx xxs={6} md={3} xl={6}>
+                            <InputField
+                              name="taxPercent"
+                              label="input.taxPercent"
+                              value={taxPercent}
+                              onChange={onTaxPercentChange}
+                              type="text"
+                            />
+                          </Colxx>
+                          <Colxx xxs={6} md={3} xl={6}>
+                            <InputField
+                              name="taxValue"
+                              label="input.taxValue"
+                              value={taxValue}
+                              onChange={onTaxValueChange}
+                              type="text"
+                              disabled
+                            />
+                          </Colxx>
+                          <Colxx xxs={6} md={3} xl={6}>
+                            <InputField
+                              name="otherTaxPercent"
+                              label="input.otherTaxPercent"
+                              value={otherTaxPercent}
+                              onChange={onOtherTaxPercentChange}
+                              type="text"
+                            />
+                          </Colxx>
+                          <Colxx xxs={6} md={3} xl={6}>
+                            <InputField
+                              name="otherTaxValue"
+                              label="input.otherTaxValue"
+                              value={otherTaxValue}
+                              onChange={onOtherTaxValueChange}
+                              type="text"
+                              disabled
+                            />
+                          </Colxx>
+                          <Colxx xxs={6} md={3} xl={6}>
+                            <InputField
+                              name="total"
+                              label="input.total"
+                              value={total}
+                              onChange={onInputChange}
+                              type="text"
+                              disabled
+                            />
+                          </Colxx>
+                          <Colxx xxs={6} md={6} xl={6}>
+                            <Checkbox
+                              onChange={onInputChange}
+                              name="billingToCompany"
+                              value={billingToCompany}
+                              label="check.billingToCompany"
+                            />
+                          </Colxx>
+                          <Colxx xxs={12} style={{textAlign: 'right'}}>
+                            <Button color="primary" onClick={fnSave}><i className="bi bi-receipt" /> {IntlMessages("button.generateInvoice")}</Button>
+                          </Colxx>
+                        </Row>
+                      </ContainerWithLabel>
                     </Colxx>
                   </Row>
                 </ContainerWithLabel>

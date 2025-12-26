@@ -2880,6 +2880,7 @@ const enLang = {
   "page.hotel.modal.reservation.title.generalData": "General Data",
   "page.hotel.modal.reservation.title.otherServices": "Other Services",
   "page.hotel.modal.reservation.title.paymentSummary": "Payment Summary",
+  "page.hotel.modal.reservation.title.roomCharge": "Room Charge",
   "page.hotel.modal.addCustomer.title": "Add/Edit Customer",
   "page.hotel.table.bookingStatus": "Booking Status",
   "page.hotel.table.paymentStatus": "Payment Status",

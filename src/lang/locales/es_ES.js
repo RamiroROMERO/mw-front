@@ -2894,6 +2894,7 @@ const esLang = {
   "page.hotel.modal.reservation.title.generalData": "Datos Generales",
   "page.hotel.modal.reservation.title.otherServices": "Otros Servicios",
   "page.hotel.modal.reservation.title.paymentSummary": "Resumen de Pagos",
+  "page.hotel.modal.reservation.title.roomCharge": "Cobro de Habitacion",
   "page.hotel.modal.addCustomer.title": "Agregar/Editar Cliente",
   "page.hotel.table.bookingStatus": "Estados de Reservacion",
   "page.hotel.table.paymentStatus": "Estados de Pago",

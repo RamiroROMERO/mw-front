@@ -4,7 +4,7 @@ import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import moment from 'moment';
 
-export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLoading, setOpen }) => {
+export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, checkInDate, checkOutDate, setLoading, setOpen }) => {
   const [dataServices, setDataServices] = useState([]);
   const [dataPayments, setDataPayments] = useState([]);
   const [listTypePayments, setListTypePayments] = useState([]);
@@ -29,6 +29,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLo
     cashierId: 0,
     documentType: 1,
     price: baseRate,
+    qty: 0,
     subtotal: baseRate,
     discountPercent: 0,
     discountValue: 0,
@@ -39,14 +40,14 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLo
     total: baseRate,
   }, invoicingValid);
 
-  const {invoiceDate, documentCode, billingToCompany, cashId, cashierId, documentType, price, subtotal, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total} = formState;
+  const {invoiceDate, documentCode, billingToCompany, cashId, cashierId, documentType, price, qty, subtotal, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total} = formState;
 
   const onPriceChange = e => {
-    const subtotal = validFloat(e.target.value * 1);
+    const subtotal = validFloat(e.target.value * qty);
     const discount = validFloat((discountPercent * subtotal) / 100);
     const tax = validFloat((taxPercent * (subtotal - discount)) / 100);
     const otherTax = validFloat((otherTaxPercent * (subtotal - discount)) / 100);
-    const totalCost = validFloat((subtotal - discount) + tax + otherTax);
+    const totalCost = validFloat(subtotal - discount) + validFloat(tax) + validFloat(otherTax);
     const newPrice = {
       subtotal: subtotal,
       discountValue: discount,
@@ -58,11 +59,28 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLo
     onBulkForm(newPrice);
   }
 
+  const onQtyChange = e => {
+    const subtotal = validFloat(e.target.value * price);
+    const discount = validFloat((discountPercent * subtotal) / 100);
+    const tax = validFloat((taxPercent * (subtotal - discount)) / 100);
+    const otherTax = validFloat((otherTaxPercent * (subtotal - discount)) / 100);
+    const totalCost = validFloat(subtotal - discount) + validFloat(tax) + validFloat(otherTax);
+    const newPrice = {
+      subtotal: subtotal,
+      discountValue: discount,
+      taxValue: tax,
+      otherTaxValue: otherTax,
+      total: totalCost,
+      qty: e.target.value
+    }
+    onBulkForm(newPrice);
+  }
+
   const onDiscountPercentChange = e => {
     const discount = validFloat((e.target.value * subtotal) / 100);
     const tax = validFloat((taxPercent * (subtotal - discount)) / 100);
     const otherTax = validFloat((otherTaxPercent * (subtotal - discount)) / 100);
-    const totalCost = validFloat((subtotal - discount) + tax + otherTax);
+    const totalCost = validFloat(subtotal - discount) + validFloat(tax) + validFloat(otherTax);
     const newDiscount = {
       discountValue: discount,
       taxValue: tax,
@@ -78,7 +96,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLo
     const discountPer = validFloat((e.target.value * 100)/subtotal);
     const tax = validFloat((taxPercent * (subtotal - discount)) / 100);
     const otherTax = validFloat((otherTaxPercent * (subtotal - discount)) / 100);
-    const totalCost = validFloat((subtotal - discount) + tax + otherTax);
+    const totalCost = validFloat(subtotal - discount) + validFloat(tax) + validFloat(otherTax);
     const newDiscountPerc = {
       discountPercent: discountPer,
       taxValue: tax,
@@ -91,7 +109,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLo
 
   const onTaxPercentChange = e => {
     const tax = validFloat((e.target.value * (subtotal - discountValue)) / 100);
-    const totalCost = validFloat((subtotal - discountValue) + tax + otherTaxValue);
+    const totalCost = validFloat(subtotal - discountValue) + validFloat(tax) + validFloat(otherTaxValue);
     const newTaxPercent = {
       taxValue: tax,
       total: totalCost,
@@ -103,7 +121,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLo
   const onTaxValueChange = e => {
     const taxValue = validFloat(e.target.value);
     const taxPercent = validFloat((taxValue * 100) /  (subtotal - discountValue));
-    const totalCost = validFloat((subtotal - discountValue) + taxValue + otherTaxValue);
+    const totalCost = validFloat(subtotal - discountValue) + validFloat(taxValue) + validFloat(otherTaxValue);
     const newTaxValue = {
       taxPercent,
       total: totalCost,
@@ -114,7 +132,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLo
 
   const onOtherTaxPercentChange = e => {
     const taxOther = validFloat((e.target.value * (subtotal - discountValue)) / 100);
-    const totalCost = validFloat((subtotal - discountValue) + taxValue + taxOther);
+    const totalCost = validFloat(subtotal - discountValue) + validFloat(taxValue) + validFloat(taxOther);
     const newTaxPercent = {
       otherTaxValue: taxOther,
       total: totalCost,
@@ -126,7 +144,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLo
   const onOtherTaxValueChange = e => {
     const taxOtherValue = validFloat(e.target.value);
     const taxOtherPercent = validFloat((taxOtherValue * 100) /  (subtotal - discountValue));
-    const totalCost = validFloat((subtotal - discountValue) + taxValue + taxOtherValue);
+    const totalCost = validFloat(subtotal - discountValue) + validFloat(taxValue) + validFloat(taxOtherValue);
     const newTaxValue = {
       otherTaxPercent: taxOtherPercent,
       total: totalCost,
@@ -175,7 +193,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLo
     if (!isFormValid) {
       return;
     }
-    if(documentType === 1){
+    if(validInt(documentType) === 1){
       setOpenModalGenerateInvoice(true);
     }else{
       const invoiceData = {
@@ -189,16 +207,16 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLo
         creditDays,
         detailRoom:{
           roomId,
-          qty: 1,
-          price,
-          subtotal,
-          discountPercent,
-          discountValue,
-          taxPercent,
-          taxValue,
-          otherTaxPercent,
-          otherTaxValue,
-          total
+          qty: validFloat(qty),
+          price: validFloat(price),
+          subtotal: validFloat(subtotal),
+          discountPercent: validFloat(discountPercent),
+          discountValue: validFloat(discountValue),
+          taxPercent: validFloat(taxPercent),
+          taxValue: validFloat(taxValue),
+          otherTaxPercent: validFloat(otherTaxPercent),
+          otherTaxValue: validFloat(otherTaxValue),
+          total: validFloat(total)
         },
         totalCustomer: 0,
         totalRest: 0,
@@ -294,8 +312,13 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLo
   },[bookingId]);
 
   useEffect(() => {
+    const date1 = moment(checkInDate);
+    const date2 = moment(checkOutDate);
+    const daysDiff = date2.diff(date1, 'days');
+
     const newPrice = {
       price: baseRate,
+      qty: daysDiff,
       subtotal: baseRate,
       total: baseRate
     }
@@ -316,6 +339,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, setLo
       formValidation,
       onInputChange,
       onPriceChange,
+      onQtyChange,
       onDiscountPercentChange,
       onDiscountValueChange,
       onTaxPercentChange,
