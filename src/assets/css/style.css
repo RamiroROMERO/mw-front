@@ -256,6 +256,13 @@
   }
 }
 
+.modal-fullscreen {
+  width: 100vw;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+}
+
 .link-evcode-web {
   position: absolute;
   bottom: 5%;

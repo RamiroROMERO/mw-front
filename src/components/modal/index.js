@@ -3,15 +3,17 @@ import { Modal } from "reactstrap";
 import Header from './Header';
 
 const ModalMW = (props) => {
-  const { title, valueTitle = "", ModalContent, open, setOpen, maxWidth, data } = props;
+  const { title, valueTitle = "", ModalContent, open, setOpen, maxWidth, data, fullscreen = false } = props;
+  // console.log({ title, fullscreen });
   return (
     <>
       <Modal
         isOpen={open}
         toggle={() => setOpen(!open)}
-        fullscreen="md"
         size={maxWidth}
-        backdrop="static"
+        fullscreen={fullscreen || "sm"}
+        backdrop={true}
+        fade={true}
       // scrollable
       >
         <Header title={title} valueTitle={valueTitle} fnClose={setOpen} />

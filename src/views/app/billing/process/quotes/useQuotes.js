@@ -456,6 +456,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     ModalContent: ViewPdf,
     title: "modal.viewDocument.quote",
     valueTitle: id,
+    fullscreen: true,
     open: openViewFile,
     setOpen: setOpenViewFile,
     maxWidth: 'xl',
