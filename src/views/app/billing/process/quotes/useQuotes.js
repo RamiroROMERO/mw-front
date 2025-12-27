@@ -118,10 +118,11 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     request.GET(`${API_URLS.FAC_PROC_QUOTES_DETAIL}?idFather=${id}`, ({ data }) => {
       const currentData = data.map(elem => {
         elem.productName = elem.productData?.name || "";
-        elem.undOutName = elem.undOutData?.name || "";
+        elem.unitProd = elem.undOutData?.name || "";
         elem.buttons = fnAddButtonDeleteToItem(elem.tempCode, elem);
         return elem;
       });
+      console.log(currentData);
       setDataDetails(currentData);
       setLoading(false);
     }, err => {
