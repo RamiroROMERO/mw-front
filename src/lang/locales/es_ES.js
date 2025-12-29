@@ -2905,6 +2905,7 @@ const esLang = {
   "page.hotel.modal.reservation.title": "Reservacion",
   "page.hotel.modal.invoice.title": "Factura",
   "page.hotel.modal.invoice.paymentDetail.title": "Detalle de Pago",
+  "page.hotel.modal.invoice.paymentDetail.input.difference": "Diferencia",
   "page.hotel.modal.addReservations.label.invoiceDetail": "Detalle de Factura",
   "page.hotel.select.cashierId": "Cajero",
   "page.hotel.modal.invoice.paymentDetail.reference": "Referencia",

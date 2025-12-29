@@ -2891,6 +2891,7 @@ const enLang = {
   "page.hotel.modal.reservation.title": "Reservation",
   "page.hotel.modal.invoice.title": "Invoice",
   "page.hotel.modal.invoice.paymentDetail.title": "Payment Detail",
+  "page.hotel.modal.invoice.paymentDetail.input.difference": "Difference",
   "page.hotel.modal.addReservations.label.invoiceDetail": "Invoice Detail",
   "page.hotel.select.cashierId": "Cashier",
   "page.hotel.modal.invoice.paymentDetail.reference": "Reference",

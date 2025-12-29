@@ -272,8 +272,8 @@ const PointSales = (props) => {
       const invoiceProducts = resp.data.map((item2) => {
         return {
           id: item2.id,
-          productCode: item2.productCode,
-          description: item2.invProduct.name,
+          productCode: item2?.productCode || "",
+          description: item2?.invProduct?.name || "",
           qty: item2.qty,
           price: item2.price,
           subtotal: item2.subtotal,

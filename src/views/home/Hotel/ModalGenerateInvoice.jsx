@@ -5,12 +5,12 @@ import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import createNotification from "@/containers/ui/Notifications";
 import { useForm } from '@/hooks'
 import { InputField } from '@/components/inputFields'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ReactTableEdit } from '@/components/reactTableEdit'
 import { request } from '@/helpers/core';
 
 const ModalGenerateInvoice = ({data, setOpen}) => {
-  const {bookingId, totalValPayments, totalValServices, listTypePayments, setListTypePayments, dataInvoice, creditDays, roomId, subtotal, billingToCompany, setLoading} = data;
+  const {bookingId, totalValPayments, totalValServices, listTypePayments, setListTypePayments, dataInvoice, creditDays, roomId, subtotal, billingToCompany, setLoading, setOpenModalInvoice, fnPrintInvoice} = data;
 
   const { invoiceDate, documentCode, cashId, cashierId, documentType, price, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total } = dataInvoice;
 
@@ -19,9 +19,10 @@ const ModalGenerateInvoice = ({data, setOpen}) => {
   const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     valueCustomer: 0,
     valueRestore: 0,
+    totalDifference: 0
   });
 
-  const { valueCustomer, valueRestore } = formState;
+  const { valueCustomer, valueRestore, totalDifference } = formState;
 
   const [table, setTable] = useState({
     title: "",
@@ -129,12 +130,23 @@ const ModalGenerateInvoice = ({data, setOpen}) => {
     setLoading(true);
     request.POST('hotel/process/bookings/generateInvoice', data, (resp) => {
       setOpen(false);
+      setOpenModalInvoice(false);
       setLoading(false);
+      fnPrintInvoice(resp.data.id);
     },(err)=>{
       console.error(err);
       setLoading(false);
     });
   }
+
+  useEffect(()=>{
+    const totalPayMethod = listTypePayments.map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0);
+    const calcDiff = totalInvoice - totalPayMethod;
+    const newValue = {
+      totalDifference: formatNumber(calcDiff, 'L. ', 2)
+    }
+    setBulkForm(newValue);
+  },[listTypePayments]);
 
   return (
     <>
@@ -150,6 +162,19 @@ const ModalGenerateInvoice = ({data, setOpen}) => {
         <Row className='mb-3'>
           <Colxx xxs={12}>
             <ReactTableEdit {...table} />
+          </Colxx>
+        </Row>
+        <Row className='mb-3'>
+          <Colxx xxs={12} sm={6} md={8}></Colxx>
+          <Colxx xxs={12} sm={6} md={4}>
+            <InputField
+              name="totalDifference"
+              label="page.hotel.modal.invoice.paymentDetail.input.difference"
+              value={totalDifference}
+              onChange={handleInputChange}
+              type="text"
+              disabled
+            />
           </Colxx>
         </Row>
         <Row>

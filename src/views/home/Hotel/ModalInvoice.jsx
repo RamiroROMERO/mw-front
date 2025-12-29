@@ -14,10 +14,10 @@ import DateCalendar from '@/components/dateCalendar'
 import { Checkbox } from '@/components/checkbox'
 
 const ModalInvoice = ({data, setOpen}) => {
-  const {dataBooking, setLoading} = data;
+  const {dataBooking, setLoading, setOpenModalInvoice, fnPrintInvoice} = data;
 
   const bookingId = dataBooking.id;
-  const baseRate = dataBooking?.baseRate || 0;
+  const baseRate = validFloat(dataBooking?.baseRate) || 0;
   const creditDays = dataBooking?.customerData?.creditDays || 0;
   const roomId = dataBooking?.roomId || 0;
   const checkInDate = dataBooking?.checkInDate || "1900-01-01";
@@ -46,7 +46,9 @@ const ModalInvoice = ({data, setOpen}) => {
       totalValPayments,
       listTypePayments,
       setListTypePayments,
-      setLoading
+      setLoading,
+      setOpenModalInvoice,
+      fnPrintInvoice
     }
   }
 

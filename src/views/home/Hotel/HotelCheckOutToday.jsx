@@ -5,6 +5,7 @@ import { IntlMessages } from '@Helpers/Utils';
 import { request } from '@/helpers/core';
 import Modal from '@Components/modal';
 import ModalInvoice from './ModalInvoice';
+import ViewPdf from '@/components/ViewPDF/ViewPdf';
 
 export const HotelCheckOutToday = ({ setLoading }) => {
 
@@ -14,6 +15,12 @@ export const HotelCheckOutToday = ({ setLoading }) => {
   const [bookingId, setBookingId] = useState(0);
   const [dataBooking, setDataBooking] = useState([]);
   const [openModalInvoice, setOpenModalInvoice] = useState(false);
+
+  //print invoice
+  const userData = JSON.parse(localStorage.getItem('mw_current_user'));
+  const [openViewFile, setOpenViewFile] = useState(false);
+  const [documentPath, setDocumentPath] = useState("");
+  const [invoiceId, setInvoiceId] = useState(0);
 
   const fnRefreshTable = () => {
     setLoading(true);
@@ -46,6 +53,25 @@ export const HotelCheckOutToday = ({ setLoading }) => {
     setOpenModalInvoice(true);
   }
 
+  const fnPrintInvoice = (idInvoice) => {
+    setInvoiceId(idInvoice);
+
+    // imprimir factura
+    const dataPrint = {
+      id: idInvoice,
+      userName: userData.name,
+      typePrint: 1
+    }
+
+    request.GETPdfUrl('billing/process/invoices/exportInvoicePDF', dataPrint, (resp) => {
+      setDocumentPath(resp);
+      setOpenViewFile(true);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+  }
+
   useEffect(() => {
     fnRefreshTable()
   }, []);
@@ -58,7 +84,21 @@ export const HotelCheckOutToday = ({ setLoading }) => {
     maxWidth: 'xl',
     data: {
       dataBooking,
-      setLoading
+      setLoading,
+      setOpenModalInvoice,
+      fnPrintInvoice
+    }
+  }
+
+  const propsToViewPDF = {
+    ModalContent: ViewPdf,
+    title: "modal.viewDocument.invoice",
+    valueTitle: invoiceId,
+    open: openViewFile,
+    setOpen: setOpenViewFile,
+    maxWidth: 'xl',
+    data: {
+      documentPath
     }
   }
 
@@ -116,6 +156,7 @@ export const HotelCheckOutToday = ({ setLoading }) => {
         </Col>
       </Row>
       <Modal {...propsToModalInvoice}/>
+      <Modal {...propsToViewPDF}/>
     </>
   )
 }
