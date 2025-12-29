@@ -27,7 +27,7 @@ const ModalInvoice = ({data, setOpen}) => {
 
   const { invoiceDate, documentCode, cashId, cashierId, documentType, billingToCompany, price, qty, subtotal, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total } = formState;
 
-  const { documentCodeValid, documentTypeValid } = formValidation;
+  const { documentCodeValid, documentTypeValid, cashIdValid, cashierIdValid } = formValidation;
 
   const propsToModalGenerateInvoice = {
     ModalContent: ModalGenerateInvoice,
@@ -251,6 +251,8 @@ const ModalInvoice = ({data, setOpen}) => {
                         inputValue={cashierId}
                         onChange={onInputChange}
                         options={listCashiers}
+                        invalid={sendForm && !!cashierIdValid}
+                        feedbackText={sendForm && (cashierIdValid || null)}
                       />
                     </Colxx>
                     <Colxx xxs={6} lg={6} xl={6}>
@@ -260,6 +262,8 @@ const ModalInvoice = ({data, setOpen}) => {
                         inputValue={cashId}
                         onChange={onInputChange}
                         options={listCashBoxes}
+                        invalid={sendForm && !!cashIdValid}
+                        feedbackText={sendForm && (cashIdValid || null)}
                       />
                     </Colxx>
                     <Colxx xxs={12}>

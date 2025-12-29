@@ -141,7 +141,7 @@ const ModalGenerateInvoice = ({data, setOpen}) => {
 
   useEffect(()=>{
     const totalPayMethod = listTypePayments.map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0);
-    const calcDiff = totalInvoice - totalPayMethod;
+    const calcDiff = validFloat(totalInvoice) - totalPayMethod;
     const newValue = {
       totalDifference: formatNumber(calcDiff, 'L. ', 2)
     }

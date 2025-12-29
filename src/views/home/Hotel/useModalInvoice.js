@@ -19,6 +19,8 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
   const invoicingValid = {
     documentCode: [(val) => val !== "", "msg.required.select.typeDocument"],
     documentType: [(val) => validInt(val) > 0, "msg.required.select.salesType"],
+    cashId: [(val) => validInt(val) > 0, "msg.required.select.cashBox"],
+    cashierId: [(val) => validInt(val) > 0, "msg.required.select.cashier"],
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({

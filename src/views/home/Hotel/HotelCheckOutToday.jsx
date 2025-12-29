@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Badge, Button, Card, CardBody, CardTitle, Col, Row, Table } from 'reactstrap'
 import DateCalendar from '@Components/dateCalendar';
-import { IntlMessages } from '@Helpers/Utils';
+import { IntlMessages, validInt } from '@Helpers/Utils';
 import { request } from '@/helpers/core';
 import Modal from '@Components/modal';
 import ModalInvoice from './ModalInvoice';
@@ -40,6 +40,13 @@ export const HotelCheckOutToday = ({ setLoading }) => {
     setLoading(true);
     request.GET(`hotel/process/bookings/${id}`, (resp) => {
       setDataBooking(resp.data);
+      const invoiceId = resp?.data?.invoiceId || 0;
+      if(validInt(invoiceId)>0){
+        fnPrintInvoice(invoiceId);
+        setInvoiceId(invoiceId);
+      }else{
+        setOpenModalInvoice(true);
+      }
       setLoading(false);
     }, (err) => {
       console.error(err);
@@ -49,8 +56,7 @@ export const HotelCheckOutToday = ({ setLoading }) => {
 
   const fnGotoViewBooking = (bookingId) => {
     setBookingId(bookingId);
-    fnGetBooking(bookingId)
-    setOpenModalInvoice(true);
+    fnGetBooking(bookingId);
   }
 
   const fnPrintInvoice = (idInvoice) => {
@@ -63,7 +69,7 @@ export const HotelCheckOutToday = ({ setLoading }) => {
       typePrint: 1
     }
 
-    request.GETPdfUrl('billing/process/invoices/exportInvoicePDF', dataPrint, (resp) => {
+    request.GETPdfUrl('hotel/process/bookings/exportInvoicePDF', dataPrint, (resp) => {
       setDocumentPath(resp);
       setOpenViewFile(true);
     }, (err) => {
