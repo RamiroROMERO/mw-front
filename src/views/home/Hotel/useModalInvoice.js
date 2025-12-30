@@ -321,8 +321,8 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
     const newPrice = {
       price: baseRate,
       qty: daysDiff,
-      subtotal: baseRate,
-      total: baseRate
+      subtotal: validFloat(baseRate) * daysDiff,
+      total: validFloat(baseRate) * daysDiff
     }
     onBulkForm(newPrice);
   }, [baseRate]);
