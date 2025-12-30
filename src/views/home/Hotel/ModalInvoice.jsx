@@ -23,7 +23,7 @@ const ModalInvoice = ({data, setOpen}) => {
   const checkInDate = dataBooking?.checkInDate || "1900-01-01";
   const checkOutDate = dataBooking?.checkOutDate || "1900-01-01";
 
-  const {totalValPayments, totalValServices, listTypePayments, listCashBoxes, listCashiers, listTypeDocuments, openModalGenerateInvoice, formState, formValidation, sendForm, onInputChange, onPriceChange, onQtyChange, onDiscountPercentChange, onDiscountValueChange, onTaxPercentChange, onTaxValueChange, onOtherTaxPercentChange, onOtherTaxValueChange, setOpenModalGenerateInvoice, setListTypePayments, dataPayments, dataServices, fnSave} = useModalInvoice({bookingId, baseRate, creditDays, roomId, checkInDate, checkOutDate, setLoading, setOpen});
+  const {totalValPayments, totalValServices, totalCost, listTypePayments, listCashBoxes, listCashiers, listTypeDocuments, openModalGenerateInvoice, formState, formValidation, sendForm, onInputChange, onPriceChange, onQtyChange, onDiscountPercentChange, onDiscountValueChange, onTaxPercentChange, onTaxValueChange, onOtherTaxPercentChange, onOtherTaxValueChange, setOpenModalGenerateInvoice, setListTypePayments, dataPayments, dataServices, fnSave} = useModalInvoice({bookingId, baseRate, creditDays, roomId, checkInDate, checkOutDate, setLoading, setOpen});
 
   const { invoiceDate, documentCode, cashId, cashierId, documentType, billingToCompany, price, qty, subtotal, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total } = formState;
 
@@ -181,7 +181,7 @@ const ModalInvoice = ({data, setOpen}) => {
                     <Colxx xxs={6} md={6} lg={3} xl={6}>
                       <TextTitle
                         title='input.totalCost'
-                        subTitle={formatNumber(totalValServices + validFloat(dataBooking?.baseRate || 0), 'L.', 2)}
+                        subTitle={formatNumber(totalCost, 'L.', 2)}
                       />
                     </Colxx>
                     <Colxx xxs={6} md={6} lg={3} xl={6}>

@@ -12,7 +12,9 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
   const [idImage, setIdImage] = useState(0);
 
   const validation = {
-    typeId: [(val)=>validFloat(val)>0, "msg.required.input.type"]
+    typeId: [(val)=>validFloat(val)>0, "msg.required.input.type"],
+    rate: [(val)=>validFloat(val)>0, "msg.required.input.rate"],
+    statusId: [(val)=>validFloat(val)>0, "msg.required.select.statusId"],
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({

@@ -125,6 +125,7 @@ const enLang = {
   "msg.required.select.turnId": "Please select the work shifts!",
   "msg.required.select.service": "Please select a service!",
   "msg.required.select.room": "Please select a room!",
+  "msg.required.select.paymentStatusId": "Please select the payment status!",
   /* Require Input */
   "msg.required.input.price": "Please enter a price!",
   "msg.required.input.dni": "Please enter a valid ID, no dashes or spaces!!",
@@ -255,6 +256,10 @@ const enLang = {
   "msg.required.input.valueInterest": "Please enter the interest!",
   "msg.required.input.valueCapital": "Please enter the capital!",
   "msg.required.input.color": "Please enter the color code!",
+  "msg.required.input.rate": "Please enter the rate!",
+  "msg.required.input.checkInDate": "Please select the check in date!",
+  "msg.required.input.checkOutDate": "Please select the check out date!",
+  "msg.required.input.totalNights": "Please enter the total number of nights!",
   /* Require Others */
   "msg.required.radio.creditRequest": "Please select a credit status!",
   "msg.required.radio.type": "Please select a product type!",
@@ -602,6 +607,7 @@ const enLang = {
   "input.taxValue": "Tax",
   "input.otherTaxPercent": "Other Tax %",
   "input.otherTaxValue": "Other Tax",
+  "input.creditDays": "Credit Days",
   /* Selects */
   "select.department": "Department",
   "select.municipality": "Municipality",
@@ -1326,6 +1332,7 @@ const enLang = {
   "page.customers.modal.modalNew.input.contact1Info": "Contact Information",
   "page.customers.modal.modalNew.input.contact2Info": "Contact Information",
   "page.customers.modal.modalNew.city": "City",
+  "page.customers.modal.modalNew.title.credit": "Credit",
   /* 11.Managers page in production module */
   "page.managers.table.title": "Managers Table",
   "page.managers.table.name": "Name",

@@ -15,11 +15,11 @@ import ModalAddPayments from './ModalAddPayments';
 const ModalAddRes = ({data, setOpen}) => {
   const {currentReservation, currentPage=null, search=null, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, listBookingChannels, listRooms, setLoading, fnGetData=null, fnGetRooms} = data;
 
-  const {formState, formValidation, sendForm, customerEmail, customerPhone, currentPayment, currentService, currentRoom, dataServices, dataPayments, roomsAvailables, totalValServices, totalValPayments, activeTab, propsToMsgDeleteService, propsToMsgDeletePayment, openModalAddPayment, openModalAddService, setActiveTab, setOpenModalAddPayment, setOpenModalAddService, onInputChange, onCustomerChange, onRoomChange, fnSave, fnSavePayment, fnSaveStatus, fnAddPayment, fnAddService, fnGetDataPayments, fnGetDataServices, fnDeleteService, fnDeletePayment } = useModalAddRes({currentReservation, setLoading, currentPage, search, fnGetData, setOpen, listCustomers, listRooms, fnGetRooms});
+  const {formState, formValidation, sendForm, customerEmail, customerPhone, currentPayment, currentService, currentRoom, dataServices, dataPayments, roomsAvailables, totalValServices, totalValPayments, activeTab, propsToMsgDeleteService, propsToMsgDeletePayment, openModalAddPayment, openModalAddService, setActiveTab, setOpenModalAddPayment, setOpenModalAddService, onInputChange, onCustomerChange, onRoomChange, onCheckInDate, onCheckOutDate, fnSave, fnSavePayment, fnSaveStatus, fnAddPayment, fnAddService, fnGetDataPayments, fnGetDataServices, fnDeleteService, fnDeletePayment } = useModalAddRes({currentReservation, setLoading, currentPage, search, fnGetData, setOpen, listCustomers, listRooms, fnGetRooms});
 
   const {id, date, customerId, roomId, checkInDate, checkOutDate, statusId, totalNights, qtyAdults, qtyChild, others, notes, paymentStatusId, channelId} = formState;
 
-  const {dateValid, customerIdValid, roomIdValid} = formValidation;
+  const {dateValid, customerIdValid, roomIdValid, checkInDateValid, checkOutDateValid, statusIdValid, totalNightsValid, paymentStatusIdValid} = formValidation;
 
   const roomServices = currentRoom?.roomServices || [];
 
@@ -229,7 +229,9 @@ const ModalAddRes = ({data, setOpen}) => {
                               name="checkInDate"
                               value={checkInDate}
                               label='select.checkInDate'
-                              onChange={onInputChange}
+                              onChange={onCheckInDate}
+                              invalid={sendForm && !!checkInDateValid}
+                              feedbackText={sendForm && (checkInDateValid || null)}
                             />
                           </Colxx>
                           <Colxx xxs={6} sm={6} md={12} lg={12} xl={6}>
@@ -237,7 +239,9 @@ const ModalAddRes = ({data, setOpen}) => {
                               name="checkOutDate"
                               value={checkOutDate}
                               label='select.checkOutDate'
-                              onChange={onInputChange}
+                              onChange={onCheckOutDate}
+                              invalid={sendForm && !!checkOutDateValid}
+                              feedbackText={sendForm && (checkOutDateValid || null)}
                             />
                           </Colxx>
                           <Colxx xxs={6} sm={4} md={12} lg={12} xl={6}>
@@ -246,6 +250,8 @@ const ModalAddRes = ({data, setOpen}) => {
                               label='input.totalNights'
                               value={totalNights}
                               onChange={onInputChange}
+                              invalid={sendForm && !!totalNightsValid}
+                              feedbackText={sendForm && (totalNightsValid || null)}
                             />
                           </Colxx>
                           <Colxx xxs={6} sm={4} md={12} lg={12} xl={6}>
@@ -302,6 +308,8 @@ const ModalAddRes = ({data, setOpen}) => {
                               inputValue={statusId}
                               options={listStatusBooking}
                               onChange={onInputChange}
+                              invalid={sendForm && !!statusIdValid}
+                              feedbackText={sendForm && (statusIdValid || null)}
                             />
                           </Colxx>
                           <Colxx xxs={12} style={{ textAlign: 'right', display: id===0?'none':'block' }}>
@@ -344,6 +352,8 @@ const ModalAddRes = ({data, setOpen}) => {
                               inputValue={paymentStatusId}
                               options={listStatusPayment}
                               onChange={onInputChange}
+                              invalid={sendForm && !!paymentStatusIdValid}
+                              feedbackText={sendForm && (paymentStatusIdValid || null)}
                             />
                           </Colxx>
                           <Colxx xxs={12} style={{ textAlign: 'right', display: id===0?'none':'block' }}>

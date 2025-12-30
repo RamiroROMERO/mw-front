@@ -256,6 +256,11 @@ const esLang = {
   "msg.required.input.valueInterest": "Por favor ingrese el interes!",
   "msg.required.input.valueCapital": "Por favor ingrese el capital!",
   "msg.required.input.color": "Por favor ingrese el codigo del color!",
+  "msg.required.input.rate": "Por favor ingrese la tarifa!",
+  "msg.required.input.checkInDate": "Por favor seleccione la fecha de registro!",
+  "msg.required.input.checkOutDate": "Por favor seleccione la fecha de salida!",
+  "msg.required.input.totalNights": "Por favor ingrese el total de noches!",
+  "msg.required.select.paymentStatusId": "Por favor seleccione el estado del pago!",
   /* Require Others */
   "msg.required.radio.creditRequest": "Por favor seleccione un estado de crédito!",
   "msg.required.radio.type": "Por favor seleccione un tipo de producto!",
@@ -607,6 +612,7 @@ const esLang = {
   "input.taxValue": "Impuesto",
   "input.otherTaxPercent": "Otro % Impuesto",
   "input.otherTaxValue": "Otro Impuesto",
+  "input.creditDays": "Dias Credito",
   /* Selects */
   "select.department": "Departamento",
   "select.municipality": "Municipio",
@@ -1339,6 +1345,7 @@ const esLang = {
   "page.customers.input.patientType.type2": "Aseguradora",
   "page.customers.checkbox.defaSecurityHosp": "Aseguradora por Defecto",
   "page.customers.checkbox.billOuts": "Factura por Personal",
+  "page.customers.modal.modalNew.title.credit": "Credito",
   /* 11.Pagina de encargados en modulo de produccion */
   "page.managers.table.title": "Tabla de Responsables",
   "page.managers.table.name": "Nombre",

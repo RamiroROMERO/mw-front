@@ -1,6 +1,7 @@
 import { request } from '@/helpers/core';
 import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
+import moment from 'moment';
 import { useEffect, useState } from 'react'
 
 export const useModalAddRes = ({currentReservation, setLoading, currentPage=null, search=null, fnGetData=null, setOpen, listCustomers, listRooms, fnGetRooms}) => {
@@ -25,6 +26,11 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
     date: [(val) => val !== "", "msg.required.input.date"],
     customerId: [(val)=>validFloat(val)>0, "msg.required.select.customer"],
     roomId: [(val)=>validFloat(val)>0, "msg.required.select.room"],
+    checkInDate: [(val) => val !== "", "msg.required.input.checkInDate"],
+    checkOutDate: [(val) => val !== "", "msg.required.input.checkOutDate"],
+    statusId: [(val)=>validFloat(val)>0, "msg.required.select.statusId"],
+    totalNights: [(val)=>validFloat(val)>0, "msg.required.input.totalNights"],
+    paymentStatusId: [(val)=>validFloat(val)>0, "msg.required.select.paymentStatusId"]
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
@@ -46,7 +52,7 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
     channelId: currentReservation?.channelId || 0
   }, validation);
 
-  const {id, statusId, paymentStatusId, customerId, roomId} = formState;
+  const {id, checkInDate, checkOutDate, statusId, paymentStatusId, customerId, roomId} = formState;
 
   const onCustomerChange = e => {
     const custId = validInt(e.target.value);
@@ -58,6 +64,34 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
     const roomId = e.target.value;
 
     onBulkForm({roomId});
+  }
+
+  const onCheckInDate = e => {
+    const dateValue = e.target.value;
+
+    const date1 = moment(dateValue);
+    const date2 = moment(checkOutDate);
+    const daysDiff = date2.diff(date1, 'days');
+
+    const newOutDate = {
+      totalNights: validInt(daysDiff),
+      checkInDate: dateValue
+    }
+    onBulkForm(newOutDate);
+  }
+
+  const onCheckOutDate = e => {
+    const dateValue = e.target.value;
+
+    const date1 = moment(checkInDate);
+    const date2 = moment(dateValue);
+    const daysDiff = date2.diff(date1, 'days');
+
+    const newOutDate = {
+      totalNights: validInt(daysDiff),
+      checkOutDate: dateValue
+    }
+    onBulkForm(newOutDate);
   }
 
   const fnSave = () => {
@@ -96,6 +130,21 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
           console.log(err);
           setLoading(false);
         }, false);
+
+        //calendarizar reserva si el status es 5-Check-IN
+        if(statusId===5){
+          const dataCalendar = {
+            bookingId: data.id
+          }
+
+          setLoading(true);
+          request.POST('hotel/process/calendarBooking/programBooking', dataCalendar, (resp) => {
+            setLoading(false);
+          }, (err) => {
+            console.log(err);
+            setLoading(false);
+          })
+        }
 
       }, (err) => {
         console.log(err);
@@ -338,6 +387,8 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
       onCustomerChange,
       onRoomChange,
       onInputChange,
+      onCheckInDate,
+      onCheckOutDate,
       fnSave,
       fnSaveStatus,
       fnSavePayment,

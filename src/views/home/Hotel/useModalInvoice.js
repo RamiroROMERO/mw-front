@@ -15,6 +15,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
   const [totalValPayments, setTotalValPayments] = useState(0);
   const [openModalGenerateInvoice, setOpenModalGenerateInvoice] = useState(false);
   const [sendForm, setSendForm] = useState(false);
+  const [totalCost, setTotalCost] = useState(0);
 
   const invoicingValid = {
     documentCode: [(val) => val !== "", "msg.required.select.typeDocument"],
@@ -325,12 +326,14 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
       total: validFloat(baseRate) * daysDiff
     }
     onBulkForm(newPrice);
+    setTotalCost(validFloat(baseRate) * daysDiff)
   }, [baseRate]);
 
   return (
     {
       totalValServices,
       totalValPayments,
+      totalCost,
       listTypePayments,
       listCashBoxes,
       listCashiers,

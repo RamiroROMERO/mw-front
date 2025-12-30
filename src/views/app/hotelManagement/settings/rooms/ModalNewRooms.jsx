@@ -15,7 +15,7 @@ const ModalNewRooms = ({data, setOpen}) => {
 
   const {name, typeId, levelId, bedNumber, rate, rateCorp, notes, capacity, statusId, mealPlanId} = formState;
 
-  const {typeIdValid} = formValidation;
+  const {typeIdValid, rateValid, statusIdValid} = formValidation;
 
   return (
     <>
@@ -79,6 +79,8 @@ const ModalNewRooms = ({data, setOpen}) => {
                       value={rate}
                       onChange={onInputChange}
                       type='text'
+                      invalid={sendForm && !!rateValid}
+                      feedbackText={sendForm && (rateValid || null)}
                     />
                   </Colxx>
                   <Colxx xxs={12} md={6}>
@@ -116,6 +118,8 @@ const ModalNewRooms = ({data, setOpen}) => {
                       inputValue={statusId}
                       options={listStatus}
                       onChange={onInputChange}
+                      invalid={sendForm && !!statusIdValid}
+                      feedbackText={sendForm && (statusIdValid || null)}
                     />
                   </Colxx>
                 </Row>

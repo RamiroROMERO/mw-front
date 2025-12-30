@@ -13,7 +13,7 @@ const ModalNewCust = ({data, setOpen}) => {
 
   const {formState, formValidation, sendForm, onInputChange, fnSave} = useModalNewCust({setLoading, currentItem,fnGetData, setOpen, setListMunicipalities});
 
-  const {typeId, dni, name, name2, phone1, phone2, email, address, genderId, taxType, companyId, zipCode, countryId, city1, city2, contact1Name, contact1Phone, contact1Email, contact2Name, contact2Phone, contact2Email, haveCredit, notes, status} = formState;
+  const {typeId, dni, name, name2, phone1, phone2, email, address, genderId, taxType, companyId, zipCode, countryId, city1, city2, contact1Name, contact1Phone, contact1Email, contact2Name, contact2Phone, contact2Email, haveCredit, creditDays, notes, status} = formState;
 
   const {dniValid, nameValid, phone1Valid} = formValidation;
 
@@ -124,30 +124,48 @@ const ModalNewCust = ({data, setOpen}) => {
           </Colxx>
           <Colxx xxs={12} lg={6}>
             <Row>
-              <Colxx xxs={12} md={6}>
-                <SearchSelect
-                  label="select.taxId"
-                  name="taxType"
-                  inputValue={taxType}
-                  onChange={onInputChange}
-                  options={listTypeTax}
-                />
+              <Colxx xxs={12} xl={6}>
+                <ContainerWithLabel label="page.customers.modal.modalNew.title.credit">
+                  <Row>
+                    <Colxx xxs={12} md={6} lg={12}>
+                      <Checkbox
+                        onChange={onInputChange}
+                        name="haveCredit"
+                        value={haveCredit}
+                        label="check.haveCredit"
+                      />
+                    </Colxx>
+                    <Colxx xxs={12} md={6} lg={12}>
+                      <InputField
+                        name='creditDays'
+                        label='input.creditDays'
+                        value={creditDays}
+                        onChange={onInputChange}
+                      />
+                    </Colxx>
+                  </Row>
+                </ContainerWithLabel>
               </Colxx>
-              <Colxx xxs={12} md={6}>
-                <Checkbox
-                  onChange={onInputChange}
-                  name="haveCredit"
-                  value={haveCredit}
-                  label="check.haveCredit"
-                />
-              </Colxx>
-              <Colxx xxs={12} md={12} style={{textAlign: 'right'}}>
-                <Checkbox
-                  onChange={onInputChange}
-                  name="status"
-                  value={status}
-                  label="check.active"
-                />
+              <Colxx xxs={12} xl={6}>
+                <Row>
+                  <Colxx xxs={12} md={12} style={{textAlign: 'right'}}>
+                    <Checkbox
+                      onChange={onInputChange}
+                      name="status"
+                      value={status}
+                      label="check.active"
+                    />
+                  </Colxx>
+                  <Colxx xxs={12} md={12}>
+                    <SearchSelect
+                      label="select.taxId"
+                      name="taxType"
+                      inputValue={taxType}
+                      onChange={onInputChange}
+                      options={listTypeTax}
+                    />
+                  </Colxx>
+                </Row>
               </Colxx>
             </Row>
             <Row>
