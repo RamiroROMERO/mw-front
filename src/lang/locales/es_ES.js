@@ -905,6 +905,7 @@ const esLang = {
   "table.column.channel": "Canal de Reservacion",
   "table.column.room": "Habitacion",
   "table.column.roomType": "Tipo de Habitacion",
+  "table.column.totalPay": "Total Pago",
 
   /* 02.Inicio de sesión de usuario, cierre de sesión, registro */
   'user.login-title': 'Iniciar sesión',
@@ -1172,6 +1173,7 @@ const esLang = {
   "menu.hotelManagement.bookingChannels": "Canales de Reservacion",
   "menu.countries": "Paises",
   "menu.generalVacations": "General de Vacaciones",
+  "menu.paymentsHistory": "Historial de Pagos",
   /* 04.Error  */
   'pages.error-title': 'Vaya, parece que ha ocurrido un error!',
   'pages.error-code': 'Código de error',

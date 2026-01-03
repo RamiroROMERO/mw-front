@@ -16,6 +16,7 @@ const StaffDepartures = React.lazy(() => import('@/views/app/humanResources/repo
 const ProjectTransfers = React.lazy(() => import('@/views/app/humanResources/reports/projectTransfers'));
 const BiweeklyIncomes = React.lazy(() => import('@/views/app/humanResources/reports/biweeklyIncomes'));
 const NewStaff = React.lazy(() => import('@/views/app/humanResources/reports/newStaff'));
+const PaymentsHistory = React.lazy(() => import('@/views/app/humanResources/reports/paymentsHistory'));
 
 const HRReportsRoutes = (props) => {
   const { setLoading } = props;
@@ -72,6 +73,10 @@ const HRReportsRoutes = (props) => {
       index
       path="/newStaff"
       element={<NewStaff setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/paymentsHistory"
+      element={<PaymentsHistory setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }

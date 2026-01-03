@@ -1119,6 +1119,11 @@ const data = [
             icon: 'bi bi-cash',
             label: 'menu.biweeklyIncomes',
             to: `${adminRoot}/humanResources/reports/biweeklyIncomes`,
+          },
+          {
+            icon: 'bi bi-cash-stack',
+            label: 'menu.paymentsHistory',
+            to: `${adminRoot}/humanResources/reports/paymentsHistory`,
           }
         ],
       },

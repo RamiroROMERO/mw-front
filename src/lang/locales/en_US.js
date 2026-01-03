@@ -898,6 +898,7 @@ const enLang = {
   "table.column.channel": "Booking Channel",
   "table.column.room": "Room",
   "table.column.roomType": "Room Type",
+  "table.column.totalPay": "Total Payment",
 
   /* 02.User Login, Logout, Register */
   "user.login-title": "Login",
@@ -1165,6 +1166,7 @@ const enLang = {
   "menu.hotelManagement.bookingChannels": "Booking Channels",
   "menu.countries": "Countries",
   "menu.generalVacations": "General Vacation",
+  "menu.paymentsHistory": "Payments History",
   /* 04.Error Page */
   "pages.error-title": "Ooops... looks like an error occurred!",
   "pages.error-code": "Error code",
