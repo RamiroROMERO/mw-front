@@ -3,12 +3,12 @@ import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import { useState } from 'react'
 
-export const useModalAddPayments = ({bookingId, currentPayment, setLoading, fnGetDataPayments, setOpen}) => {
+export const useModalAddPayments = ({ bookingId, currentPayment, setLoading, fnGetDataPayments, setOpen }) => {
   const [sendForm, setSendForm] = useState(false);
 
   const validation = {
     date: [(val) => val !== "", "msg.required.input.date"],
-    paymentTypeId: [(val)=>validFloat(val)>0, "msg.required.select.paymentType"]
+    paymentTypeId: [(val) => validFloat(val) > 0, "msg.required.select.paymentType"]
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
@@ -20,24 +20,23 @@ export const useModalAddPayments = ({bookingId, currentPayment, setLoading, fnGe
     value: currentPayment?.value || 0
   }, validation);
 
-  const {id} = formState;
+  const { id } = formState;
 
   const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
     if (validInt(id) === 0) {
       setLoading(true);
       request.POST('hotel/process/bookingPayments', formState, (resp) => {
-        const {data} = resp;
+        const { data } = resp;
         onBulkForm(data);
         setLoading(false);
         fnGetDataPayments();
         setOpen(false);
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -47,7 +46,6 @@ export const useModalAddPayments = ({bookingId, currentPayment, setLoading, fnGe
         fnGetDataPayments();
         setOpen(false);
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }

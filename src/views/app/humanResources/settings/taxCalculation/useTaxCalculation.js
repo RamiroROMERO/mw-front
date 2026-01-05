@@ -4,7 +4,7 @@ import { useForm } from '@Hooks';
 import { request } from '@Helpers/core'
 import notification from '@Containers/ui/Notifications';
 
-export const useTaxCalculation = ({setLoading, screenControl}) => {
+export const useTaxCalculation = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataCalculation, setDataCalculation] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -23,7 +23,7 @@ export const useTaxCalculation = ({setLoading, screenControl}) => {
     percentValue: "",
     total: "",
     status: true
-  },taxCalculationValidations)
+  }, taxCalculationValidations)
 
   const { id, rangeInit, rangeEnd, differValue, percentValue, total, status } = formState;
 
@@ -34,7 +34,7 @@ export const useTaxCalculation = ({setLoading, screenControl}) => {
       setDataCalculation(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -69,7 +69,7 @@ export const useTaxCalculation = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -83,7 +83,7 @@ export const useTaxCalculation = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -101,7 +101,7 @@ export const useTaxCalculation = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

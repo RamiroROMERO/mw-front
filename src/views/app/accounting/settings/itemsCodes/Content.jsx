@@ -114,7 +114,7 @@ const ItemsCodes = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -123,13 +123,12 @@ const ItemsCodes = (props) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`admin/documents/${currentItem.id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       fnClearInputs();
       setCurrentItem({});
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -172,23 +171,21 @@ const ItemsCodes = (props) => {
     if (id > 0) {
       setLoading(true);
       request.PUT(`admin/documents/${id}`, data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('admin/documents', data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -201,7 +198,7 @@ const ItemsCodes = (props) => {
       setListComp(companies)
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -211,7 +208,7 @@ const ItemsCodes = (props) => {
       setListTaxDoc(setTaxDoc)
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

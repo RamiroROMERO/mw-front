@@ -5,18 +5,18 @@ import ReactTable from '@/components/reactTable';
 import { IntlMessages } from '@/helpers/Utils';
 import { request } from '@/helpers/core';
 
-const ModalViewOrders = ({data, setOpen}) => {
-  const {setListDocuments, dataWorkOrders, setBulkForm, setLoading} = data;
+const ModalViewOrders = ({ data, setOpen }) => {
+  const { setListDocuments, dataWorkOrders, setBulkForm, setLoading } = data;
 
-  const fnViewOrder = (itemOrder)=>{
+  const fnViewOrder = (itemOrder) => {
     setBulkForm(itemOrder);
     setLoading(true);
-    request.GET(`accounting/process/workOrderDetail?fatherId=${itemOrder.id}`, (resp)=>{
+    request.GET(`accounting/process/workOrderDetail?fatherId=${itemOrder.id}`, (resp) => {
       const ordersDeta = resp.data;
       setListDocuments(ordersDeta);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
     setOpen(false);
@@ -28,17 +28,17 @@ const ModalViewOrders = ({data, setOpen}) => {
       {
         text: IntlMessages("page.workOrders.modal.viewOrder.table.dateIn"),
         dataField: "dateIn",
-        headerStyle: {width: "15%"}
+        headerStyle: { width: "15%" }
       },
       {
         text: IntlMessages("page.workOrders.modal.viewOrder.table.description"),
         dataField: "description",
-        headerStyle: {width: "60%"}
+        headerStyle: { width: "60%" }
       },
       {
         text: IntlMessages("page.workOrders.modal.viewOrder.table.dateOut"),
         dataField: "dateOut",
-        headerStyle: {width: "15%"}
+        headerStyle: { width: "15%" }
       }
     ],
     data: dataWorkOrders,
@@ -54,19 +54,19 @@ const ModalViewOrders = ({data, setOpen}) => {
 
   return (
     <>
-    <ModalBody>
-      <Row>
-        <Colxx xxs="12">
-          <ReactTable {...table}/>
-        </Colxx>
-      </Row>
-    </ModalBody>
-    <ModalFooter>
-      <Button color="danger" onClick={()=>{setOpen(false)}} >
-        <i className="bi bi-box-arrow-right"/>
-        {` ${IntlMessages('button.exit')}`}
-      </Button>
-    </ModalFooter>
+      <ModalBody>
+        <Row>
+          <Colxx xxs="12">
+            <ReactTable {...table} />
+          </Colxx>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />
+          {` ${IntlMessages('button.exit')}`}
+        </Button>
+      </ModalFooter>
     </>
   );
 }

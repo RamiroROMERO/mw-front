@@ -35,7 +35,6 @@ export const useFormat = ({ setLoading }) => {
         fnGetTableData();
         onResetForm();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -44,7 +43,6 @@ export const useFormat = ({ setLoading }) => {
         fnGetTableData();
         onResetForm();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -91,7 +89,6 @@ export const useFormat = ({ setLoading }) => {
       setTable({ ...table, data });
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }

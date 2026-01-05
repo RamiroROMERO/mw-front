@@ -85,7 +85,7 @@ export const useFuelPurchase = ({ setLoading }) => {
       setOpenModalFuelPurchases(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -140,7 +140,6 @@ export const useFuelPurchase = ({ setLoading }) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
@@ -149,7 +148,6 @@ export const useFuelPurchase = ({ setLoading }) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -163,7 +161,6 @@ export const useFuelPurchase = ({ setLoading }) => {
         userName: userData.name
       }
       request.GETPdf('inventory/process/purchaseGas/exportPDFPurchase', dataPrint, 'Orden de Combustible.pdf', (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -179,11 +176,9 @@ export const useFuelPurchase = ({ setLoading }) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`inventory/process/purchaseGas/${id}`, (resp) => {
-      console.log(resp);
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -223,7 +218,7 @@ export const useFuelPurchase = ({ setLoading }) => {
       setListCars(cars);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -246,7 +241,7 @@ export const useFuelPurchase = ({ setLoading }) => {
       setListDrivers(drivers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -263,7 +258,7 @@ export const useFuelPurchase = ({ setLoading }) => {
       setListStores(store);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -279,7 +274,7 @@ export const useFuelPurchase = ({ setLoading }) => {
       setListProducts(products);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -295,7 +290,7 @@ export const useFuelPurchase = ({ setLoading }) => {
       setListDocuments(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -310,7 +305,7 @@ export const useFuelPurchase = ({ setLoading }) => {
       setListProviders(providers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -325,7 +320,7 @@ export const useFuelPurchase = ({ setLoading }) => {
       setListPaymenTypes(paymentMethod);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -340,7 +335,7 @@ export const useFuelPurchase = ({ setLoading }) => {
       setListAccounts(account);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

@@ -25,7 +25,7 @@ export const usePurchaseReport = ({ setLoading }) => {
     isBonus: 0
   });
 
-  const {providerId, storeId, productId, dateStart, dateEnd, isBonus} = formState;
+  const { providerId, storeId, productId, dateStart, dateEnd, isBonus } = formState;
 
   const [table, setTable] = useState({
     title: '',
@@ -33,85 +33,85 @@ export const usePurchaseReport = ({ setLoading }) => {
       {
         text: IntlMessages("table.column.date"),
         dataField: "date",
-        headerStyle: {width: "10%"},
+        headerStyle: { width: "10%" },
         classes: 'd-md-none-table-cell',
         headerClasses: 'd-md-none-table-cell',
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatDate(row.original.date));
         }
       },
       {
         text: IntlMessages("table.column.provider"),
         dataField: "providerName",
-        headerStyle: {width: "10%"}
+        headerStyle: { width: "10%" }
       },
       {
         text: IntlMessages("table.column.store"),
         dataField: "storeName",
-        headerStyle: {width: "10%"},
+        headerStyle: { width: "10%" },
         classes: 'd-md-none-table-cell',
         headerClasses: 'd-md-none-table-cell'
       },
       {
         text: IntlMessages("table.column.noPurchase"),
         dataField: "purchaseCode",
-        headerStyle: {width: "10%"},
+        headerStyle: { width: "10%" },
         classes: 'd-md-none-table-cell',
         headerClasses: 'd-md-none-table-cell'
       },
       {
         text: IntlMessages("page.purchaseReport.table.column.description"),
         dataField: "productName",
-        headerStyle: {width: "10%"}
+        headerStyle: { width: "10%" }
       },
       {
         text: IntlMessages("table.column.qty"),
         dataField: "qty",
-        headerStyle:{'width' : '10%'},
+        headerStyle: { 'width': '10%' },
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.qty, '', 2));
         }
       },
       {
         text: IntlMessages("table.column.subtotal"),
         dataField: "subtot",
-        headerStyle:{'width' : '10%'},
+        headerStyle: { 'width': '10%' },
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.subtot, '', 2));
         }
       },
       {
         text: IntlMessages("table.column.discount"),
         dataField: "discount",
-        headerStyle:{'width' : '10%'},
+        headerStyle: { 'width': '10%' },
         classes: 'd-sm-none-table-cell',
         headerClasses: 'd-sm-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.discount, '', 2));
         }
       },
       {
         text: IntlMessages("table.column.tax"),
         dataField: "tax",
-        headerStyle:{'width' : '10%'},
+        headerStyle: { 'width': '10%' },
         classes: 'd-sm-none-table-cell',
         headerClasses: 'd-sm-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.tax, '', 2));
         }
       },
       {
         text: IntlMessages("table.column.total"),
         dataField: "total",
-        headerStyle:{'width' : '10%'},
+        headerStyle: { 'width': '10%' },
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.total, '', 2));
         }
       }
@@ -150,18 +150,18 @@ export const usePurchaseReport = ({ setLoading }) => {
       endDate: dateEnd
     }
 
-    if(isBonus===true){
+    if (isBonus === true) {
       params.isBonus = isBonus
     }
 
     setLoading(true);
     request.POST(`inventory/reports/mainPurchases`, params, (resp) => {
-      const {detail, totals} = resp.data;
+      const { detail, totals } = resp.data;
       setTable({ ...table, data: detail, actions: newActions });
       setDataTotals(totals);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     }, false);
   }
@@ -178,7 +178,7 @@ export const usePurchaseReport = ({ setLoading }) => {
       setListProviders(providers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -193,7 +193,7 @@ export const usePurchaseReport = ({ setLoading }) => {
       setListStores(stores);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -207,7 +207,7 @@ export const usePurchaseReport = ({ setLoading }) => {
       setListProducts(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

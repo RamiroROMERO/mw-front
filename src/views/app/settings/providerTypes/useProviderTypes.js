@@ -37,7 +37,6 @@ export const useProviderTypes = ({ setLoading }) => {
       setTableData(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -60,7 +59,6 @@ export const useProviderTypes = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
@@ -70,7 +68,6 @@ export const useProviderTypes = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -88,7 +85,6 @@ export const useProviderTypes = ({ setLoading }) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -107,7 +103,6 @@ export const useProviderTypes = ({ setLoading }) => {
       setLoading(false);
       fnGetData();
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
     fnGetData();

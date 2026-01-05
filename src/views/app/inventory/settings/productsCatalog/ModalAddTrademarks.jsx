@@ -6,11 +6,11 @@ import { InputField } from '@/components/inputFields'
 import { request } from '@/helpers/core'
 
 const ModalAddTrademarks = ({ setOpen, data }) => {
-  const {setLoading, setListTrademarks} = data;
+  const { setLoading, setListTrademarks } = data;
 
   const [nameTrademark, setNameTrademark] = useState('')
 
-  const fnGetTrademarks = ()=>{
+  const fnGetTrademarks = () => {
     request.GET('inventory/settings/trademarks', (resp) => {
 
       const trademarks = resp.data.map((item) => {
@@ -20,25 +20,23 @@ const ModalAddTrademarks = ({ setOpen, data }) => {
         }
       });
       setListTrademarks(trademarks);
-      setLoading(false);  
+      setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
-  
-  const fnSaveTrademark = ()=>{
-    console.log(nameTrademark);
-    if (nameTrademark.lenght <3){
-      return 
+
+  const fnSaveTrademark = () => {
+    if (nameTrademark.lenght < 3) {
+      return
     }
-    const data = {name:nameTrademark};
+    const data = { name: nameTrademark };
     setLoading(true);
-    request.POST('inventory/settings/trademarks', data, (resp)=>{
+    request.POST('inventory/settings/trademarks', data, (resp) => {
       setLoading(false);
       fnGetTrademarks();
       setOpen(false)
-    }, err=>{
+    }, err => {
       setLoading(false);
       setOpen(false);
     });
@@ -54,7 +52,7 @@ const ModalAddTrademarks = ({ setOpen, data }) => {
               id="nameTrademark"
               name="nameTrademark"
               value={nameTrademark}
-              onChange = {({target})=>setNameTrademark(target.value)}
+              onChange={({ target }) => setNameTrademark(target.value)}
             />
           </Colxx>
         </Row>

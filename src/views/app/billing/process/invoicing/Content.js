@@ -270,7 +270,7 @@ const Invoicing = (props) => {
       setOpenModalInvoices(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -288,7 +288,7 @@ const Invoicing = (props) => {
       setOpenModalInvoices(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -333,36 +333,32 @@ const Invoicing = (props) => {
     if (id && id > 0) {
       setLoading(true);
       request.PUT(`billing/process/invoices/${id}`, newData, (resp) => {
-        console.log(resp);
         setLoading(false);
         // Eliminar productos
         request.DELETE(`billing/process/invoiceDetail?idFather=${id}`, (resp2) => {
-          console.log(resp2);
           // guardar productos
           const dataProducts = invoiceDetail.map((item) => {
             item.idFather = id;
             return item;
           });
           request.POST('billing/process/invoiceDetail/createMany', dataProducts, (resp3) => {
-            console.log(resp3);
             setLoading(false);
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           });
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('billing/process/invoices', newData, (resp) => {
-        console.log(resp);
         onInputChangeIndex({ target: { name: 'id', value: resp.data.id } });
         // guardar productos
         const dataProducts = invoiceDetail.map((item) => {
@@ -370,15 +366,14 @@ const Invoicing = (props) => {
           return item;
         });
         request.POST('billing/process/invoiceDetail/createMany', dataProducts, (resp2) => {
-          console.log(resp2);
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -390,7 +385,7 @@ const Invoicing = (props) => {
         setDocumentPath(resp);
         setOpenViewFile(true);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -408,11 +403,10 @@ const Invoicing = (props) => {
     }
     setLoading(true);
     request.PUT(`billing/process/invoices/${id}`, dataCancel, (resp) => {
-      console.log(resp);
       setOpenMsgCancelInvoice(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -500,7 +494,7 @@ const Invoicing = (props) => {
       setOpenModalProducts(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -670,7 +664,7 @@ const Invoicing = (props) => {
       setListTypeDocuments(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -687,7 +681,7 @@ const Invoicing = (props) => {
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -696,7 +690,7 @@ const Invoicing = (props) => {
       setListAreas(areas);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -705,7 +699,7 @@ const Invoicing = (props) => {
       setListWarehouse(warehouse);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -720,7 +714,7 @@ const Invoicing = (props) => {
       setListSellers(users);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

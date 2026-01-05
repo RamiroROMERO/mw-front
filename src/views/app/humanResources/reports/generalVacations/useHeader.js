@@ -3,7 +3,7 @@ import { useForm } from '@/hooks';
 import { request } from '@/helpers/core';
 import notification from '@Containers/ui/Notifications';
 
-export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) => {
+export const useHeader = ({ setLoading, table, setTable, enableGenerateReport }) => {
 
   const [employeeId, setEmployeeId] = useState(0);
 
@@ -12,19 +12,19 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
     dateEnd: ''
   });
 
-  const {dateStart, dateEnd} = formState;
+  const { dateStart, dateEnd } = formState;
 
-  const onEmployeeId = e =>{
+  const onEmployeeId = e => {
     const emplId = e.target.value;
     setEmployeeId(emplId);
   }
 
-  const fnExportDocument = async()=>{
-    let where = employeeId>0?{employeeId}:{};
+  const fnExportDocument = async () => {
+    let where = employeeId > 0 ? { employeeId } : {};
 
-    if(dateStart!=="" && dateEnd!==""){
+    if (dateStart !== "" && dateEnd !== "") {
       where = {
-        status:1,
+        status: 1,
         dateStart,
         dateEnd
       }
@@ -37,11 +37,11 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
         { title: 'No.', field: 'num', type: 'decimal', length: 20 },
         { title: 'Empleado', field: 'employeeName', type: 'String', length: 150 },
         { title: 'Proyecto', field: 'projectName', type: 'String', length: 100 },
-        { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 50},
+        { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 50 },
         { title: 'Estado', field: 'statusName', type: 'String', length: 50 },
-        { title: 'Año', field: 'year', type: 'String', length: 30},
-        { title: 'Mes', field: 'monthLetter', type: 'String', length: 50},
-        { title: 'Dias de Vacaciones', field: 'daysVacations', type: 'String', length: 50},
+        { title: 'Año', field: 'year', type: 'String', length: 30 },
+        { title: 'Mes', field: 'monthLetter', type: 'String', length: 50 },
+        { title: 'Dias de Vacaciones', field: 'daysVacations', type: 'String', length: 50 },
         { title: 'Descripcion', field: 'description', type: 'String', length: 100 },
         { title: 'Tipo', field: 'vacationType', type: 'String', length: 60 },
         { title: 'Fecha Inicio', field: 'dateStart', type: 'String', length: 50 },
@@ -55,7 +55,7 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
     setLoading(false);
   }
 
-  const fnGetData = ()=>{
+  const fnGetData = () => {
     if (enableGenerateReport === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
@@ -71,11 +71,11 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
 
     let url = `rrhh/reports/getVacationsByMonth?status=1`;
 
-    if(employeeId>0){
+    if (employeeId > 0) {
       url = `${url}&employeeId=${employeeId}`;
     }
 
-    if(dateStart!=="" && dateEnd!==""){
+    if (dateStart !== "" && dateEnd !== "") {
       url = `${url}&dateStart=${dateStart}&dateEnd=${dateEnd}`;
     }
     setLoading(true);
@@ -88,7 +88,7 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
       setTable({ ...table, data, actions: [newActions] });
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

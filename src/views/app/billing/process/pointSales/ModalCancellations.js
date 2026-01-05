@@ -125,7 +125,7 @@ const ModalCancellations = (props) => {
       typePrint: typeSheet
     }
     request.GETPdf('billing/process/cancellations/exportPDFReceipt', dataPrint, 'Recibo de Cancelacion.pdf', (err) => {
-      console.error(err);
+
       setLoading(false);
       setOpenModalPrint(false);
     });
@@ -151,7 +151,7 @@ const ModalCancellations = (props) => {
       setListTypePayments(clearListTypePayments);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setActiveTab("1");
@@ -173,7 +173,7 @@ const ModalCancellations = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

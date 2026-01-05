@@ -88,7 +88,7 @@ export const useCreditNotes = ({ setLoading, setCreditNotesDetail, setCreditNote
       setListDocuments(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -105,7 +105,7 @@ export const useCreditNotes = ({ setLoading, setCreditNotesDetail, setCreditNote
       setListProviders(providers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -120,7 +120,7 @@ export const useCreditNotes = ({ setLoading, setCreditNotesDetail, setCreditNote
       setListAccounts(listAccounts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

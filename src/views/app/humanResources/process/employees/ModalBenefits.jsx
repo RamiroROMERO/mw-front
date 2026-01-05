@@ -9,17 +9,17 @@ import { request } from '@Helpers/core'
 import ReactTable from '@Components/reactTable'
 import Confirmation from '@Containers/ui/confirmationMsg';
 
-const ModalBenefits = ({data, setOpen}) => {
-  const {employeeId, setLoading} = data;
+const ModalBenefits = ({ data, setOpen }) => {
+  const { employeeId, setLoading } = data;
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
 
   const benefitsValid = {
-    name: [(val)=>val!=="", "msg.required.input.name"],
-    value: [(val)=>validFloat(val)>0, "msg.required.input.value"]
+    name: [(val) => val !== "", "msg.required.input.name"],
+    value: [(val) => validFloat(val) > 0, "msg.required.input.value"]
   }
 
-  const {formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm} = useForm({
+  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
     name: '',
     value: 0,
@@ -27,16 +27,16 @@ const ModalBenefits = ({data, setOpen}) => {
     status: 1
   }, benefitsValid);
 
-  const {id, name, value, description, status} = formState;
+  const { id, name, value, description, status } = formState;
 
-  const {nameValid, valueValid} = formValidation;
+  const { nameValid, valueValid } = formValidation;
 
-  const fnEditBenefit = (item)=>{
+  const fnEditBenefit = (item) => {
     setBulkForm(item);
   }
 
-  const fnDeleteBenefit = (item)=>{
-    setBulkForm({id:item.id});
+  const fnDeleteBenefit = (item) => {
+    setBulkForm({ id: item.id });
     setOpenMsgQuestion(true);
   }
 
@@ -46,22 +46,22 @@ const ModalBenefits = ({data, setOpen}) => {
       {
         text: IntlMessages("table.column.name"),
         dataField: "name",
-        headerStyle: {width: "25%"}
+        headerStyle: { width: "25%" }
       },
       {
         text: IntlMessages("table.column.description"),
         dataField: "description",
-        headerStyle: {width: "45%"}
+        headerStyle: { width: "45%" }
       },
       {
         text: IntlMessages("table.column.value"),
         dataField: "value",
-        headerStyle: {width: "20%"}
+        headerStyle: { width: "20%" }
       },
       {
         text: IntlMessages("table.column.status"),
         dataField: "statusIcon",
-        headerStyle: {width: "10%"}
+        headerStyle: { width: "10%" }
       }
     ],
     data: [],
@@ -84,15 +84,15 @@ const ModalBenefits = ({data, setOpen}) => {
     ]
   });
 
-  const fnClearInputs = ()=>{
+  const fnClearInputs = () => {
     onResetForm();
     setSendForm(false);
   }
 
-  const fnGetData = ()=>{
+  const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/employeeBenefits?employeeId=${employeeId}`, (resp)=>{
-      const benefits = resp.data.map((item)=>{
+    request.GET(`rrhh/process/employeeBenefits?employeeId=${employeeId}`, (resp) => {
+      const benefits = resp.data.map((item) => {
         item.statusIcon = (item.status === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />
         return item;
@@ -102,15 +102,15 @@ const ModalBenefits = ({data, setOpen}) => {
       }
       setTable(tableData);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
 
-  const fnSave = ()=>{
+  const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
@@ -122,47 +122,43 @@ const ModalBenefits = ({data, setOpen}) => {
       status
     }
 
-    if(id === 0){
+    if (id === 0) {
       setLoading(true);
       request.POST('rrhh/process/employeeBenefits', newData, (resp) => {
-        onInputChange({target:{name:'id', value:resp.data.id}});
+        onInputChange({ target: { name: 'id', value: resp.data.id } });
         fnGetData();
         fnClearInputs();
         setLoading(false);
-      },(err)=>{
-        console.error(err);
+      }, (err) => {
         setLoading(false);
       });
-    }else{
+    } else {
       setLoading(true);
       request.PUT(`rrhh/process/employeeBenefits/${id}`, newData, () => {
         fnGetData();
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
   }
 
-  const fnDelete = () =>{
+  const fnDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/employeeBenefits/${id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fnGetData();
-  },[]);
+  }, []);
 
   const propsToMsgDelete = {
     open: openMsgQuestion,
@@ -174,72 +170,72 @@ const ModalBenefits = ({data, setOpen}) => {
 
   return (
     <>
-    <ModalBody>
-      <Row>
-        <Colxx xxs="12" md="8">
-          <InputField
-            name='name'
-            label='input.name'
-            value={name}
-            onChange={onInputChange}
-            type='text'
-            invalid={sendForm && !!nameValid}
-            feedbackText={sendForm && (nameValid || null)}
-          />
-        </Colxx>
-        <Colxx xxs="12" md="4">
-          <InputField
-            name='value'
-            label='input.value'
-            value={value}
-            onChange={onInputChange}
-            type='text'
-            invalid={sendForm && !!valueValid}
-            feedbackText={sendForm && (valueValid || null)}
-          />
-        </Colxx>
-      </Row>
-      <Row>
-        <Colxx xxs="12">
-          <InputField
-            name='description'
-            label='input.description'
-            value={description}
-            onChange={onInputChange}
-            type='textarea'
-            style={{resize:'none'}}
-          />
-        </Colxx>
-      </Row>
-      <Row>
-        <Colxx xxs="12">
-          <Checkbox
-            label="check.status"
-            name="status"
-            value={status}
-            onChange={onInputChange}
-          />
-        </Colxx>
-      </Row>
-      <Row className='mb-2'>
-        <Colxx xxs="12" align="right">
-          <Button color="secondary" onClick={fnClearInputs} className="mr-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
-          <Button color="primary" onClick={fnSave}><i className="iconsminds-save" /> {IntlMessages("button.save")}</Button>
-        </Colxx>
-      </Row>
-      <Row>
-        <Colxx xxs="12">
-          <ReactTable {...table}/>
-        </Colxx>
-      </Row>
-    </ModalBody>
-    <ModalFooter>
-      <Button color="danger" onClick={()=>{setOpen(false)}} >
-        <i className="bi bi-box-arrow-right"/>
-        {` ${IntlMessages('button.exit')}`}
-      </Button>
-    </ModalFooter>
-    <Confirmation {...propsToMsgDelete} />
+      <ModalBody>
+        <Row>
+          <Colxx xxs="12" md="8">
+            <InputField
+              name='name'
+              label='input.name'
+              value={name}
+              onChange={onInputChange}
+              type='text'
+              invalid={sendForm && !!nameValid}
+              feedbackText={sendForm && (nameValid || null)}
+            />
+          </Colxx>
+          <Colxx xxs="12" md="4">
+            <InputField
+              name='value'
+              label='input.value'
+              value={value}
+              onChange={onInputChange}
+              type='text'
+              invalid={sendForm && !!valueValid}
+              feedbackText={sendForm && (valueValid || null)}
+            />
+          </Colxx>
+        </Row>
+        <Row>
+          <Colxx xxs="12">
+            <InputField
+              name='description'
+              label='input.description'
+              value={description}
+              onChange={onInputChange}
+              type='textarea'
+              style={{ resize: 'none' }}
+            />
+          </Colxx>
+        </Row>
+        <Row>
+          <Colxx xxs="12">
+            <Checkbox
+              label="check.status"
+              name="status"
+              value={status}
+              onChange={onInputChange}
+            />
+          </Colxx>
+        </Row>
+        <Row className='mb-2'>
+          <Colxx xxs="12" align="right">
+            <Button color="secondary" onClick={fnClearInputs} className="mr-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
+            <Button color="primary" onClick={fnSave}><i className="iconsminds-save" /> {IntlMessages("button.save")}</Button>
+          </Colxx>
+        </Row>
+        <Row>
+          <Colxx xxs="12">
+            <ReactTable {...table} />
+          </Colxx>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />
+          {` ${IntlMessages('button.exit')}`}
+        </Button>
+      </ModalFooter>
+      <Confirmation {...propsToMsgDelete} />
     </>
   )
 }

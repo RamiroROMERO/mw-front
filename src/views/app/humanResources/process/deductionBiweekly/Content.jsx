@@ -45,7 +45,7 @@ const DeductionBiweekly = ({ setLoading }) => {
       setDataDeductions(deductions);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -64,7 +64,7 @@ const DeductionBiweekly = ({ setLoading }) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -79,7 +79,7 @@ const DeductionBiweekly = ({ setLoading }) => {
       setListBiweeklies(biweekly);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

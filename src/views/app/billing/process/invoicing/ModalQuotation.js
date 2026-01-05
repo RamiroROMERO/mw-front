@@ -51,7 +51,7 @@ const ModalQuotation = (props) => {
       setDocumentPath(resp);
       setOpenViewFile(true);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

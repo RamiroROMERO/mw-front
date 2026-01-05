@@ -68,7 +68,6 @@ export const useTypeProducts = ({ setLoading }) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -92,7 +91,6 @@ export const useTypeProducts = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
@@ -102,7 +100,6 @@ export const useTypeProducts = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -121,7 +118,6 @@ export const useTypeProducts = ({ setLoading }) => {
         setCurrentItem({});
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }

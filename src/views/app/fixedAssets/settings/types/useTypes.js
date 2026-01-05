@@ -49,7 +49,6 @@ export const useTypes = ({ setLoading }) => {
         fnGetTableData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -58,7 +57,6 @@ export const useTypes = ({ setLoading }) => {
         fnGetTableData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -76,7 +74,7 @@ export const useTypes = ({ setLoading }) => {
         fnClear();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -102,7 +100,6 @@ export const useTypes = ({ setLoading }) => {
       setTableData(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }

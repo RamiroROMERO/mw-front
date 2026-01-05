@@ -27,7 +27,6 @@ export const useRetentionDetail = ({ setLoading, setRetentionDetail }) => {
       setRetentionDetail(receipts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

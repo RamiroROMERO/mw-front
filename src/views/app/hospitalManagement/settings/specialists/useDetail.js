@@ -55,7 +55,6 @@ export const useDetail = ({ currentItem, fnGetData, setLoading, setCurrentItem }
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -64,7 +63,6 @@ export const useDetail = ({ currentItem, fnGetData, setLoading, setCurrentItem }
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }

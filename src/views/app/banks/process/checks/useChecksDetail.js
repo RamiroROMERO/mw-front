@@ -36,7 +36,7 @@ export const useChecksDetail = ({ setLoading }) => {
       setListLedgerAccount(listAccounts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, [])

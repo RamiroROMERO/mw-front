@@ -74,7 +74,6 @@ const Content = (props) => {
       setTable({ ...table, data });
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -82,8 +81,7 @@ const Content = (props) => {
   const viewRecord40 = () => {
     const record40 = dataCustomers.filter(elem => {
       return validInt(elem.id) === 40;
-    })[0];
-    console.log(record40);
+    })[0];;
   }
 
   useEffect(() => {

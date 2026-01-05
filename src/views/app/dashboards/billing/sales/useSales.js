@@ -117,7 +117,6 @@ export const useSales = ({ setLoading }) => {
 
       setLoading(false);
     }, err => {
-      console.log(err);
       setLoading(false);
     }, false);
 
@@ -144,7 +143,6 @@ export const useSales = ({ setLoading }) => {
       setDataMonthDetail(monthDetails);
       setLoading(false);
     }, err => {
-      console.log(err);
       setLoading(false);
     }, false);
   }

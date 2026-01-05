@@ -41,7 +41,7 @@ export const useStock = ({ setLoading }) => {
       setListProducts(products);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -55,7 +55,7 @@ export const useStock = ({ setLoading }) => {
       setListStores(stores);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

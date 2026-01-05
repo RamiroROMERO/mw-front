@@ -26,7 +26,7 @@ export const useSalesBySalesperson = ({ setLoading }) => {
         headerStyle: { width: "10%" },
         classes: 'd-md-none-table-cell',
         headerClasses: 'd-md-none-table-cell',
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatDate(row.original.date));
         }
       },
@@ -47,7 +47,7 @@ export const useSalesBySalesperson = ({ setLoading }) => {
         dataField: "qty",
         headerStyle: { 'width': '7%' },
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.qty, '', 2));
         }
       },
@@ -58,7 +58,7 @@ export const useSalesBySalesperson = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.price, '', 2));
         }
       },
@@ -69,7 +69,7 @@ export const useSalesBySalesperson = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell',
         headerClasses: 'd-xs-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.subtotal, '', 2));
         }
       },
@@ -80,7 +80,7 @@ export const useSalesBySalesperson = ({ setLoading }) => {
         classes: 'd-sm-none-table-cell',
         headerClasses: 'd-sm-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.commissionPercent, '', 2));
         }
       },
@@ -91,7 +91,7 @@ export const useSalesBySalesperson = ({ setLoading }) => {
         classes: 'd-sm-none-table-cell',
         headerClasses: 'd-sm-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.commissionValue, '', 2));
         }
       }
@@ -121,7 +121,6 @@ export const useSalesBySalesperson = ({ setLoading }) => {
       setTable({ ...table, data, actions: newActions });
       setLoading(false);
     }, err => {
-      console.log(err);
       setLoading(false);
     }, false);
   };
@@ -134,7 +133,6 @@ export const useSalesBySalesperson = ({ setLoading }) => {
       setOpenModalViewSummary(true);
       setLoading(false);
     }, err => {
-      console.log(err);
       setLoading(false);
     }, false);
   }
@@ -147,7 +145,6 @@ export const useSalesBySalesperson = ({ setLoading }) => {
       setOpenModalNewCustomers(true);
       setLoading(false);
     }, err => {
-      console.log(err);
       setLoading(false);
     }, false);
   }
@@ -167,7 +164,7 @@ export const useSalesBySalesperson = ({ setLoading }) => {
       setlistSellers(sellers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

@@ -5,16 +5,16 @@ import ReactTable from '@Components/reactTable'
 import Modal from '@Components/modal';
 import ModalDetailSeventh from './ModalDetailSeventh'
 
-const DetailTable = ({dataSeventhDay, listEmployees, setLoading}) => {
+const DetailTable = ({ dataSeventhDay, listEmployees, setLoading }) => {
   const [openModalDetail, setOpenModalDetail] = useState(false);
   const [dataDetailSeventh, setDataDetailSeventh] = useState([]);
   const [idFather, setIdFather] = useState(0);
   const [date, setDate] = useState("");
 
-  const fnGetDetail = (fatherId)=>{
+  const fnGetDetail = (fatherId) => {
     setLoading(true);
-    request.GET(`rrhh/process/payrollSevenDayDetails?fatherId=${fatherId}`, (resp)=>{
-      const payrollDetail = resp.data.map((item)=>{
+    request.GET(`rrhh/process/payrollSevenDayDetails?fatherId=${fatherId}`, (resp) => {
+      const payrollDetail = resp.data.map((item) => {
         item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />
         return item;
@@ -22,13 +22,13 @@ const DetailTable = ({dataSeventhDay, listEmployees, setLoading}) => {
       setDataDetailSeventh(payrollDetail);
       setOpenModalDetail(true);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
 
-  const fnViewDetail = (itemDeta) =>{
+  const fnViewDetail = (itemDeta) => {
     setDate(itemDeta.date);
     setIdFather(itemDeta.id);
     fnGetDetail(itemDeta.id);
@@ -40,31 +40,31 @@ const DetailTable = ({dataSeventhDay, listEmployees, setLoading}) => {
       {
         text: IntlMessages("table.column.date"),
         dataField: "date",
-        headerStyle: {width: "20%"}
+        headerStyle: { width: "20%" }
       },
       {
         text: IntlMessages("table.column.dateStart"),
         dataField: "startDate",
-        headerStyle: {width: "20%"}
+        headerStyle: { width: "20%" }
       },
       {
         text: IntlMessages("table.column.dateEnd"),
         dataField: "endDate",
-        headerStyle: {width: "20%"}
+        headerStyle: { width: "20%" }
       },
       {
         text: IntlMessages("table.column.total"),
         dataField: "total",
-        headerStyle: {width: "30%"},
-        style:{textAlign: 'right'},
-        formatter:(cell, row)=>{
-          return (formatNumber(cell,'', 2));
+        headerStyle: { width: "30%" },
+        style: { textAlign: 'right' },
+        formatter: (cell, row) => {
+          return (formatNumber(cell, '', 2));
         }
       },
       {
         text: IntlMessages("table.column.status"),
         dataField: "statusIcon",
-        headerStyle: {width: "10%"}
+        headerStyle: { width: "10%" }
       }
     ],
     data: [],
@@ -81,10 +81,10 @@ const DetailTable = ({dataSeventhDay, listEmployees, setLoading}) => {
     ]
   });
 
-  useEffect(()=>{
-    const dataTable = {...table, data: dataSeventhDay};
+  useEffect(() => {
+    const dataTable = { ...table, data: dataSeventhDay };
     setTable(dataTable);
-  },[dataSeventhDay]);
+  }, [dataSeventhDay]);
 
   const propsToModalDetailSeventh = {
     ModalContent: ModalDetailSeventh,
@@ -104,8 +104,8 @@ const DetailTable = ({dataSeventhDay, listEmployees, setLoading}) => {
 
   return (
     <>
-      <ReactTable {...table}/>
-      <Modal {...propsToModalDetailSeventh}/>
+      <ReactTable {...table} />
+      <Modal {...propsToModalDetailSeventh} />
     </>
   )
 }

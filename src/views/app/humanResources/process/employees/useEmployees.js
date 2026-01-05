@@ -162,7 +162,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       setOpenModalViewEmployees(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -277,17 +277,17 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
           setLoading(true);
           request.POST('rrhh/process/employeeHistory', dataHistory, () => {
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           }, false);
 
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
 
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -300,7 +300,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
         setLoading(false);
         fnGetAreaManager();
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -333,7 +333,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -418,7 +418,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     ]
     if (id > 0) {
       request.GETPdf('rrhh/process/employees/exportPDFCarnet', { employeesId }, 'Carnet de Empleado.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -436,7 +436,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       setListImmediateBoss(immediateBoss);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -457,7 +457,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       setListProjects(projectsList);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -469,7 +469,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       setCodeEmployee(dataProjects[0]?.codeEmployee || 0);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -506,7 +506,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       setDocumentPath(resp);
       setOpenViewFile(true);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -529,7 +529,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       setDocumentPath(resp);
       setOpenViewFile(true);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -587,7 +587,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       setListDepartments(deptos);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -603,7 +603,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       setListMunicipality(munic);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -617,7 +617,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       setListAreas(areas);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -631,7 +631,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       setListJobPositions(positions);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -645,7 +645,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       setListSchedules(schedules);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -663,7 +663,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

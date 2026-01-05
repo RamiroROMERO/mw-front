@@ -60,7 +60,7 @@ export const useModalAddProduct = ({ setLoading, currentItem, fnGetDataDetail, s
       setTable({ ...table, data });
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -97,7 +97,6 @@ export const useModalAddProduct = ({ setLoading, currentItem, fnGetDataDetail, s
           setOpen(false);
         }
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     });

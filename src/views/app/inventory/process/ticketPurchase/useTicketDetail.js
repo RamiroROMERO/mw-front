@@ -52,7 +52,7 @@ export const useTicketDetail = ({ setLoading }) => {
       setOpenModalProducts(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

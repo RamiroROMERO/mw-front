@@ -3,7 +3,7 @@ import { useForm } from '@Hooks'
 import { request } from '@Helpers/core';
 import { validFloat, validInt } from '@Helpers/Utils';
 
-export const useDeductions = ({setLoading, screenControl}) => {
+export const useDeductions = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [projectId, setProjectId] = useState(0);
   const [listEmployees, setListEmployees] = useState([]);
@@ -33,7 +33,7 @@ export const useDeductions = ({setLoading, screenControl}) => {
 
   const { id, date, typeId, employeeId, employeeName, value, description } = formState;
 
-  const onProjectChange = e =>{
+  const onProjectChange = e => {
     const project = e.target.value;
     setProjectId(project);
   }
@@ -51,12 +51,12 @@ export const useDeductions = ({setLoading, screenControl}) => {
       setDataDeductions(deductions);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
 
-  const fnConfirmDelete = () =>{
+  const fnConfirmDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/deductions/${id}`, () => {
@@ -64,7 +64,7 @@ export const useDeductions = ({setLoading, screenControl}) => {
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -84,7 +84,7 @@ export const useDeductions = ({setLoading, screenControl}) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -100,7 +100,7 @@ export const useDeductions = ({setLoading, screenControl}) => {
       setListTypeDeductions(listTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -116,15 +116,15 @@ export const useDeductions = ({setLoading, screenControl}) => {
       setListProjects(projectsList);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     const filterEmployees = listEmployees.filter(item => item.projectId === projectId);
     setListEmployeesByProject(filterEmployees);
-  },[projectId]);
+  }, [projectId]);
 
   const propsToDetailDeductions = {
     ...formState,

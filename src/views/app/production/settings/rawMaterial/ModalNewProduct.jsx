@@ -44,14 +44,12 @@ const ModalNewProduct = (props) => {
     }
     setLoading(true);
     request.POST('prodProducts', newData, (resp) => {
-      console.log(resp);
       fnGetData();
       fnGetProducts();
       setSendForm(false);
       setOpen(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

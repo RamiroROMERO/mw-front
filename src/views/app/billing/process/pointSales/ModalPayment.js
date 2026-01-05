@@ -57,11 +57,11 @@ const ModalPayment = (props) => {
         }
         setLoading(true);
         request.GETPdf('billing/process/invoices/exportInvoicePDF', dataPrint, 'Factura Detallada.pdf', (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
       setLoading(true);
@@ -79,7 +79,6 @@ const ModalPayment = (props) => {
           request.POST('billing/process/invoicePayments', payMethod, () => {
             setLoading(false);
           }, (err) => {
-            console.log(err);
             setLoading(false);
           }, false);
         }

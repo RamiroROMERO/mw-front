@@ -72,7 +72,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       setOpenModalViewRequisitions(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -87,7 +87,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       setRequisitionDetail(requisitionDeta);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -152,18 +152,18 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
             setLoading(true);
           });
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       }, false);
     } else {
@@ -184,18 +184,18 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
             setLoading(true);
           });
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         }, false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -208,7 +208,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
         userName: userData.name
       }
       request.GETPdf('inventory/process/inventoryTransactions/exportPDFRequisition', dataPrint, 'Requisición.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -232,11 +232,11 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       request.DELETE(`inventory/process/inventoryTransactionDetail?idFather=${id}`, () => {
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       }, false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -258,7 +258,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       setListDocuments(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -279,7 +279,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       setListDestinations(filter2);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -295,7 +295,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       setListWorkOrders(orders);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -310,7 +310,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       setListAccounts(listAccounts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

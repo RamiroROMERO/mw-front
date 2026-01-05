@@ -4,7 +4,6 @@ import Header from './Header';
 
 const ModalMW = (props) => {
   const { title, valueTitle = "", ModalContent, open, setOpen, maxWidth, data, fullscreen = false } = props;
-  // console.log({ title, fullscreen });
   return (
     <>
       <Modal

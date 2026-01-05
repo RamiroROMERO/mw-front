@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { IntlMessages } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 
-export const useControlPermissions = ({setLoading, adminControl}) => {
+export const useControlPermissions = ({ setLoading, adminControl }) => {
   const [listEmployees, setListEmployees] = useState([]);
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.005")?.active || false;
 
@@ -53,7 +53,7 @@ export const useControlPermissions = ({setLoading, adminControl}) => {
     actions: []
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
     request.GET('rrhh/process/employees/findSL?status=1', (resp) => {
       const employees = resp.data.map((item) => {
@@ -65,10 +65,10 @@ export const useControlPermissions = ({setLoading, adminControl}) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
-  },[]);
+  }, []);
 
   const propsToHeader = {
     listEmployees,

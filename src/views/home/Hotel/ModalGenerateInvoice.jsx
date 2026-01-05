@@ -9,8 +9,8 @@ import { useEffect, useState } from 'react'
 import { ReactTableEdit } from '@/components/reactTableEdit'
 import { request } from '@/helpers/core';
 
-const ModalGenerateInvoice = ({data, setOpen}) => {
-  const {bookingId, totalValPayments, totalValServices, listTypePayments, setListTypePayments, dataInvoice, creditDays, roomId, subtotal, billingToCompany, setLoading, setOpenModalInvoice, fnPrintInvoice} = data;
+const ModalGenerateInvoice = ({ data, setOpen }) => {
+  const { bookingId, totalValPayments, totalValServices, listTypePayments, setListTypePayments, dataInvoice, creditDays, roomId, subtotal, billingToCompany, setLoading, setOpenModalInvoice, fnPrintInvoice } = data;
 
   const { invoiceDate, documentCode, cashId, cashierId, documentType, price, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total } = dataInvoice;
 
@@ -93,9 +93,9 @@ const ModalGenerateInvoice = ({data, setOpen}) => {
       cashierId,
       invoiceDate,
       billingToCompany,
-      isCredit: documentType===1? false : true,
+      isCredit: documentType === 1 ? false : true,
       creditDays,
-      detailRoom:{
+      detailRoom: {
         roomId,
         qty: 1,
         price,
@@ -133,20 +133,19 @@ const ModalGenerateInvoice = ({data, setOpen}) => {
       setOpenModalInvoice(false);
       setLoading(false);
       fnPrintInvoice(resp.data.id);
-    },(err)=>{
-      console.error(err);
+    }, (err) => {
       setLoading(false);
     });
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     const totalPayMethod = listTypePayments.map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0);
     const calcDiff = validFloat(totalInvoice) - totalPayMethod;
     const newValue = {
       totalDifference: formatNumber(calcDiff, 'L. ', 2)
     }
     setBulkForm(newValue);
-  },[listTypePayments]);
+  }, [listTypePayments]);
 
   return (
     <>

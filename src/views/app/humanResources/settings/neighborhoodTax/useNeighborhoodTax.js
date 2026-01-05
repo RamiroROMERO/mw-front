@@ -4,7 +4,7 @@ import { useForm } from '@Hooks';
 import { validFloat } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
 
-export const useNeighborhoodTax = ({setLoading, screenControl}) => {
+export const useNeighborhoodTax = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataTax, setDataTax] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -25,7 +25,7 @@ export const useNeighborhoodTax = ({setLoading, screenControl}) => {
     rate: 0,
     total: 0,
     status: true
-  },neighborhoodTaxValidations);
+  }, neighborhoodTaxValidations);
 
   const { id, rangeInit, range, rangeEnd, rate, total, status } = formState;
 
@@ -36,7 +36,7 @@ export const useNeighborhoodTax = ({setLoading, screenControl}) => {
       setDataTax(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -72,7 +72,7 @@ export const useNeighborhoodTax = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -86,7 +86,7 @@ export const useNeighborhoodTax = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -104,7 +104,7 @@ export const useNeighborhoodTax = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

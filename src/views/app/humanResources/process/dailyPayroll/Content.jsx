@@ -72,7 +72,7 @@ const DailyPayroll = ({ setLoading }) => {
       setPayrollDetail(reportDetail);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -103,7 +103,7 @@ const DailyPayroll = ({ setLoading }) => {
       setDataTotals(resp.dataTotals);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     }, false);
   }
@@ -121,7 +121,7 @@ const DailyPayroll = ({ setLoading }) => {
         dataPrint.projectId = projectIdFilter
       }
       request.GETPdf('rrhh/process/dailyPayrolls/exportPDFPayroll', dataPrint, 'Planilla Diaria.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -149,7 +149,7 @@ const DailyPayroll = ({ setLoading }) => {
       setSendForm(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -175,7 +175,7 @@ const DailyPayroll = ({ setLoading }) => {
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -190,7 +190,7 @@ const DailyPayroll = ({ setLoading }) => {
       setListProjects(projects);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -210,7 +210,7 @@ const DailyPayroll = ({ setLoading }) => {
       setListManagers(filterManagers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -224,7 +224,7 @@ const DailyPayroll = ({ setLoading }) => {
       setListSchedules(schedules);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     request.GET('rrhh/settings/payrollDayTypes', (resp) => {
@@ -237,7 +237,7 @@ const DailyPayroll = ({ setLoading }) => {
       setListDaysTypes(dayTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

@@ -73,7 +73,6 @@ export const useOtherPurchases = ({ setLoading }) => {
     setLoading(true);
     request.GET("inventory/process/purchases?isExpense=1",
       (resp) => {
-        console.log(resp)
         const purchases = resp.data.map((item) => {
           item.provider = item.invProvider.name
           item.dateIn = formatDate(item.date)
@@ -88,7 +87,6 @@ export const useOtherPurchases = ({ setLoading }) => {
         setLoading(false);
       }, (err) => {
         setLoading(false);
-        console.log(err);
       })
 
   }
@@ -103,22 +101,18 @@ export const useOtherPurchases = ({ setLoading }) => {
       request.POST("inventory/process/purchases", formState,
         (resp) => {
           setLoading(false);
-          console.log(resp);
         },
         (err) => {
           setLoading(false);
-          console.log(err);
         },
         true);
     } else {
       request.PUT(`inventory/process/purchases/${validInt(id)}`, formState,
         (resp) => {
           setLoading(false);
-          console.log(resp);
         },
         (err) => {
           setLoading(false);
-          console.log(err);
         },
         true);
     }
@@ -161,7 +155,7 @@ export const useOtherPurchases = ({ setLoading }) => {
       setListDocuments(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -180,7 +174,7 @@ export const useOtherPurchases = ({ setLoading }) => {
       setListProviders(providers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -199,7 +193,7 @@ export const useOtherPurchases = ({ setLoading }) => {
       setListPaymentTypes(filterPayments);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -214,7 +208,7 @@ export const useOtherPurchases = ({ setLoading }) => {
       setListLedgerAccounts(listAccounts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

@@ -64,7 +64,7 @@ const ModalCashOut = (props) => {
   }
 
   const fnPrintCashOut = () => {
-    console.log(id)
+
   }
 
   const fnViewCashout = (item) => {
@@ -93,7 +93,7 @@ const ModalCashOut = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -104,13 +104,12 @@ const ModalCashOut = (props) => {
     }
     setLoading(true);
     request.PUT(`billing/process/invoiceExpenses/${id}`, dataCancel, (resp) => {
-      console.log(resp);
       fnGetCashOut();
       setOpenMsgCancelCashOut(false);
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -135,11 +134,10 @@ const ModalCashOut = (props) => {
     if (id === 0) {
       setLoading(true);
       request.POST('billing/process/invoiceExpenses', newData, (resp) => {
-        console.log(resp);
         fnGetCashOut();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

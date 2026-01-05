@@ -65,7 +65,7 @@ export const useProofWork = ({ setLoading, screenControl }) => {
       setOpenModalViewProofWork(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -93,7 +93,7 @@ export const useProofWork = ({ setLoading, screenControl }) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -106,7 +106,7 @@ export const useProofWork = ({ setLoading, screenControl }) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -123,7 +123,7 @@ export const useProofWork = ({ setLoading, screenControl }) => {
         userName: userData.name
       }
       request.GETPdf('rrhh/process/proofWork/exportPDFProofWork', dataPrint, 'Constancia de Trabajo.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -143,11 +143,9 @@ export const useProofWork = ({ setLoading, screenControl }) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/proofWork/${id}`, (resp) => {
-      console.log(resp);
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -169,7 +167,7 @@ export const useProofWork = ({ setLoading, screenControl }) => {
       setListImmediateBoss(filterManagers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

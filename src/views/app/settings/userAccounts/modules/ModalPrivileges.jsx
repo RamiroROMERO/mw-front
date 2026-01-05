@@ -95,7 +95,6 @@ const ModalPrivileges = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -118,23 +117,19 @@ const ModalPrivileges = (props) => {
     if (id > 0) {
       setLoading(true);
       request.PUT(`admin/moduleDetail/${id}`, dataPrivileges, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('admin/moduleDetail', dataPrivileges, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -148,7 +143,6 @@ const ModalPrivileges = (props) => {
       setCurrentItemDeta({});
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

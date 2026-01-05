@@ -259,7 +259,7 @@ const PointSales = (props) => {
       setOpenModalInvoices(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -298,7 +298,7 @@ const PointSales = (props) => {
       setOpenModalInvoices(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -389,19 +389,19 @@ const PointSales = (props) => {
             setOpenModalPayment(true);
             setLoading(false);
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           }, false);
 
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         }, false);
 
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       }, false);
     }
@@ -417,7 +417,7 @@ const PointSales = (props) => {
         setDocumentPath(resp);
         setOpenViewFile(true);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -435,11 +435,10 @@ const PointSales = (props) => {
     }
     setLoading(true);
     request.PUT(`billing/process/invoices/${id}`, dataCancel, (resp) => {
-      console.log(resp);
       setOpenMsgCancelInvoice(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -534,7 +533,7 @@ const PointSales = (props) => {
       setOpenModalProducts(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -702,7 +701,7 @@ const PointSales = (props) => {
       setListTypeDocuments(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -719,7 +718,7 @@ const PointSales = (props) => {
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -728,7 +727,7 @@ const PointSales = (props) => {
       setListAreas(areas);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -737,7 +736,7 @@ const PointSales = (props) => {
       setListWarehouse(warehouse);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -762,7 +761,7 @@ const PointSales = (props) => {
       setListCashiers(cashiers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -771,7 +770,7 @@ const PointSales = (props) => {
       setListCashBoxes(cashRegisters);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     request.GET('admin/paymentTypes', (resp) => {
@@ -790,7 +789,7 @@ const PointSales = (props) => {
       });
       setListTypePayments(payments);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -804,7 +803,7 @@ const PointSales = (props) => {
       setListLedgerAccount(listAccounts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     request.GET('billing/settings/expensesTypes', (resp) => {
@@ -812,7 +811,7 @@ const PointSales = (props) => {
       setListTypeExpenses(cashOut);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

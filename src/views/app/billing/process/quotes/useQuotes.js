@@ -122,7 +122,6 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
         elem.buttons = fnAddButtonDeleteToItem(elem.tempCode, elem);
         return elem;
       });
-      console.log(currentData);
       setDataDetails(currentData);
       setLoading(false);
     }, err => {
@@ -152,7 +151,6 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
   const fnSaveDocument = () => {
     setSendForm(true);
     if (!isFormValid) {
-      console.log('formulario invalido.!');
       return;
     }
     setLoading(true);
@@ -172,7 +170,6 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
         }
         setLoading(false);
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -189,7 +186,6 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
         }, () => { }, false);
         setLoading(false);
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -197,12 +193,11 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
 
   const fnPrintDocument = () => {
     if (validInt(id) <= 0) return;
-    console.log('print document!');
     request.GETPdfUrl('billing/process/quotes/exportPDF', { id }, (resp) => {
       setDocumentPath(resp);
       setOpenViewFile(true);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -234,7 +229,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
       setLoading(false);
       setOpenSeekCustomer(true);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -251,7 +246,6 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
         return currItem;
       });
       setSellerList(currSellers);
-      // console.log(data);
     });
   }
 
@@ -347,7 +341,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
       setOpenSeekProducts(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

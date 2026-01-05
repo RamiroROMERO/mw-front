@@ -233,7 +233,6 @@ export const useSalesReport = ({ setLoading }) => {
       setOpenModalSummary(true);
       setLoading(false);
     }, err => {
-      console.log(err);
       setLoading(false);
     }, false);
   };
@@ -249,18 +248,18 @@ export const useSalesReport = ({ setLoading }) => {
         { title: 'Cod. Documento', field: 'documentCode', type: 'String', length: 40 },
         { title: 'Num. Documento', field: 'documentId', type: 'String', length: 40 },
         { title: 'Cliente', field: 'customerName', type: 'String', length: 100 },
-        { title: 'CAI', field: 'numcai', type: 'String', length: 70},
-        { title: 'Almacen', field: 'storeName', type: 'String', length: 70},
-        { title: 'Cod. Producto', field: 'productCode', type: 'String', length: 70},
+        { title: 'CAI', field: 'numcai', type: 'String', length: 70 },
+        { title: 'Almacen', field: 'storeName', type: 'String', length: 70 },
+        { title: 'Cod. Producto', field: 'productCode', type: 'String', length: 70 },
         { title: 'Producto', field: 'productName', type: 'String', length: 100 },
-        { title: 'Unidad de Salida', field: 'undOut', type: 'String', length: 40},
-        { title: 'Cantidad', field: 'qty', type: 'decimal', length: 30, isSum: true, currency: true},
-        { title: 'Precio', field: 'price', type: 'decimal', length: 30, isSum: true, currency: true},
-        { title: 'Subtotal', field: 'subtotal', type: 'decimal', length: 30, isSum: true, currency: true},
-        { title: 'Descuento', field: 'discount', type: 'decimal', length: 30, isSum: true, currency: true},
-        { title: 'Impuesto', field: 'tax', type: 'decimal', length: 30, isSum: true, currency: true},
-        { title: 'Total', field: 'total', type: 'decimal', length: 30, isSum: true, currency: true},
-        { title: 'Costo', field: 'costValue', type: 'decimal', length: 30, isSum: true, currency: true},
+        { title: 'Unidad de Salida', field: 'undOut', type: 'String', length: 40 },
+        { title: 'Cantidad', field: 'qty', type: 'decimal', length: 30, isSum: true, currency: true },
+        { title: 'Precio', field: 'price', type: 'decimal', length: 30, isSum: true, currency: true },
+        { title: 'Subtotal', field: 'subtotal', type: 'decimal', length: 30, isSum: true, currency: true },
+        { title: 'Descuento', field: 'discount', type: 'decimal', length: 30, isSum: true, currency: true },
+        { title: 'Impuesto', field: 'tax', type: 'decimal', length: 30, isSum: true, currency: true },
+        { title: 'Total', field: 'total', type: 'decimal', length: 30, isSum: true, currency: true },
+        { title: 'Costo', field: 'costValue', type: 'decimal', length: 30, isSum: true, currency: true },
       ],
       headerData: [],
       reportTitle: "Reporte General de Ventas",
@@ -297,7 +296,6 @@ export const useSalesReport = ({ setLoading }) => {
       setTotals(totals);
       setLoading(false);
     }, err => {
-      console.log(err);
       setLoading(false);
     }, false);
   };
@@ -315,32 +313,30 @@ export const useSalesReport = ({ setLoading }) => {
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
     setLoading(true);
-    request.GET('admin/users?status=1', (resp) => {
-      const users = resp.data.map((item) => {
+    request.GET('admin/users/getSellers', (resp) => {
+      const sellers = resp.data.map((item) => {
         return {
           label: `${item.sellerCode} | ${item.name}`,
           value: item.id,
           code: item.sellerCode,
-          isSeller: item.isSeller,
-          isCashier: item.isCashier,
           name: item.name
         }
       });
-      const sellers = users.filter((item) => {
-        return item.isSeller === 1
-      });
-      const billers = users.filter((item) => {
-        return item.isCashier === 1
-      });
+      // const sellers = users.filter((item) => {
+      //   return item.isSeller === true
+      // });
+      // const billers = users.filter((item) => {
+      //   return item.isCashier === true
+      // });
       setlistSellers(sellers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -355,7 +351,7 @@ export const useSalesReport = ({ setLoading }) => {
       setListStores(stores);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -370,7 +366,7 @@ export const useSalesReport = ({ setLoading }) => {
       setListProducts(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

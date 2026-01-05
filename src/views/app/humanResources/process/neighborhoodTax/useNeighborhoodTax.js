@@ -90,7 +90,7 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
       setOpenModalPayrolls(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -110,7 +110,7 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
       setDataTotals(resp.dataTotals);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -146,7 +146,7 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
       setSendForm(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -216,7 +216,7 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -232,7 +232,7 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
       setListProjects(projects);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

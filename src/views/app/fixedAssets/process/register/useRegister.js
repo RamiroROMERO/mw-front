@@ -60,11 +60,8 @@ export const useRegister = ({ setLoading }) => {
         };
         return newItem;
       });
-      console.log(listData);
       setCompanyList(listData);
-    }, err => {
-      console.log(err);
-    });
+    }, err => { });
 
     request.GET("fixedAssets/settings/types", resp => {
       const { data } = resp;
@@ -76,9 +73,7 @@ export const useRegister = ({ setLoading }) => {
         return newItem;
       });
       setTypeList(listData);
-    }, err => {
-      console.log(err);
-    });
+    }, err => { });
     request.GET("fixedAssets/settings/areas", resp => {
       const { data } = resp;
       const listData = data.map(elem => {
@@ -89,9 +84,7 @@ export const useRegister = ({ setLoading }) => {
         return newItem;
       });
       setAreaList(listData);
-    }, err => {
-      console.log(err);
-    });
+    }, err => { });
     request.GET("fixedAssets/settings/statuses", resp => {
       const { data } = resp;
       const listData = data.map(elem => {
@@ -102,9 +95,7 @@ export const useRegister = ({ setLoading }) => {
         return newItem;
       });
       setStatusList(listData)
-    }, err => {
-      console.log(err);
-    });
+    }, err => { });
 
   }
 
@@ -121,8 +112,7 @@ export const useRegister = ({ setLoading }) => {
       setOpenSearch(false);
     }, err => {
       setLoading(false);
-      console.log(err);
-    })
+    });
 
   }
 

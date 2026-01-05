@@ -47,10 +47,9 @@ const ModalGenerateInvoice = (props) => {
         range: resp2.data.noRange
       }
       setBulkForm(newDocument);
-      console.log(resp2.data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -77,12 +76,12 @@ const ModalGenerateInvoice = (props) => {
         setDocumentPath(resp);
         setOpenViewFile(true);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

@@ -40,13 +40,11 @@ const ModalChangeStatus = (props) => {
     if (currentItem && currentItem.id > 0) {
       setLoading(true);
       request.PUT(`prodProjects/${currentItem.id}`, newData, (resp) => {
-        console.log(resp);
         setSendForm(false);
         fnGetData();
         setOpen(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }

@@ -67,28 +67,24 @@ const ModalAddBankAccount = (props) => {
     if (currentItem && currentItem.id > 0) {
       setLoading(true);
       request.PUT(`inventory/process/providerBanks/${currentItem.id}`, newData, (resp) => {
-        console.log(resp);
         fnGetBankAccounts(providerId);
         fnClearInputs();
         setOpen(false);
         setLoading(false);
         setSendForm(false)
       }, (err) => {
-        console.error(err);
         setLoading(false);
         setSendForm(false);
       });
     } else {
       setLoading(true);
       request.POST('inventory/process/providerBanks', newData, (resp) => {
-        console.log(resp);
         fnGetBankAccounts(providerId);
         fnClearInputs();
         setLoading(false);
         setSendForm(false);
         setOpen(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
         setSendForm(false);
       });

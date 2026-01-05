@@ -66,7 +66,7 @@ export const useVacations = ({ setLoading, screenControl }) => {
       setOpenModalVacations(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -93,7 +93,7 @@ export const useVacations = ({ setLoading, screenControl }) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -106,7 +106,7 @@ export const useVacations = ({ setLoading, screenControl }) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -123,7 +123,7 @@ export const useVacations = ({ setLoading, screenControl }) => {
         userName: userData.name
       }
       request.GETPdf('rrhh/process/vacations/exportPDFVacation', dataPrint, 'Solicitud de Vacaciones.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -146,7 +146,7 @@ export const useVacations = ({ setLoading, screenControl }) => {
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -168,7 +168,7 @@ export const useVacations = ({ setLoading, screenControl }) => {
       setListImmediateBoss(filterManagers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

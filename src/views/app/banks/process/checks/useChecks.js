@@ -164,7 +164,7 @@ export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) 
       setListDocto(docto);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -178,7 +178,7 @@ export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) 
       setListBanks(banks);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -192,7 +192,7 @@ export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) 
       setListProvider(providerValue);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, [])

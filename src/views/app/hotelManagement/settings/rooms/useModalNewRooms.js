@@ -3,7 +3,7 @@ import { validFloat } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import { useEffect, useState } from 'react';
 
-export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoomServices, fnGetData, setOpen, fnGetRoomImages}) => {
+export const useModalNewRooms = ({ currentItem, setLoading, listServices, dataRoomServices, fnGetData, setOpen, fnGetRoomImages }) => {
   const [sendForm, setSendForm] = useState(false);
   const [listServicesSelected, setListServicesSelected] = useState([]);
   const [listRoomServices, setRoomServices] = useState([]);
@@ -12,9 +12,9 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
   const [idImage, setIdImage] = useState(0);
 
   const validation = {
-    typeId: [(val)=>validFloat(val)>0, "msg.required.input.type"],
-    rate: [(val)=>validFloat(val)>0, "msg.required.input.rate"],
-    statusId: [(val)=>validFloat(val)>0, "msg.required.select.statusId"],
+    typeId: [(val) => validFloat(val) > 0, "msg.required.input.type"],
+    rate: [(val) => validFloat(val) > 0, "msg.required.input.rate"],
+    statusId: [(val) => validFloat(val) > 0, "msg.required.select.statusId"],
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
@@ -43,11 +43,11 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
 
   const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
-    if(formState.id === 0){
+    if (formState.id === 0) {
       setLoading(true);
       request.POST('hotel/settings/rooms', formState, (resp) => {
         // guardar los servicios
@@ -61,16 +61,16 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
           setLoading(true);
           request.POST('hotel/settings/roomServices', data, (resp) => {
             setLoading(false);
-          },(err)=>{
-            console.error(err);
+          }, (err) => {
+
             setLoading(false);
-          },false);
+          }, false);
 
         });
 
         // guardar galeria
-        if(dataImages && dataImages.length>0){
-            dataImages.forEach(item => {
+        if (dataImages && dataImages.length > 0) {
+          dataImages.forEach(item => {
             const data = {
               roomId: resp.data.id,
               name: item.name
@@ -79,10 +79,10 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
             setLoading(true);
             request.POST('hotel/settings/roomPictures', data, (resp) => {
               setLoading(false);
-            },(err)=>{
-              console.error(err);
+            }, (err) => {
+
               setLoading(false);
-            },false);
+            }, false);
           });
         }
 
@@ -90,12 +90,12 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
         setOpen(false);
         setListServicesSelected([]);
         setLoading(false);
-      },(err)=>{
-        console.error(err);
+      }, (err) => {
+
         setLoading(false);
       });
 
-    }else{
+    } else {
       setLoading(true);
       request.PUT(`hotel/settings/rooms/${formState.id}`, formState, () => {
         // actualizar los servicios
@@ -107,14 +107,14 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
           setLoading(true);
           request.PUT(`hotel/settings/roomServices/${item.idRoomService}`, data, (resp) => {
             setLoading(false);
-          },(err)=>{
-            console.error(err);
+          }, (err) => {
+
             setLoading(false);
-          },false);
+          }, false);
         });
 
         // guardar galeria
-        if(dataImages && dataImages.length>0){
+        if (dataImages && dataImages.length > 0) {
           dataImages.forEach(item => {
             const data = {
               roomId: formState.id,
@@ -124,10 +124,10 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
             setLoading(true);
             request.POST('hotel/settings/roomPictures', data, (resp) => {
               setLoading(false);
-            },(err)=>{
-              console.error(err);
+            }, (err) => {
+
               setLoading(false);
-            },false);
+            }, false);
           });
         }
 
@@ -135,7 +135,7 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
         setOpen(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -153,13 +153,13 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
       fnGetRoomImages(currentItem.id);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
 
-  useEffect(()=>{
-    if(formState.id===0){
+  useEffect(() => {
+    if (formState.id === 0) {
       const newList = listServices.map((item) => {
         item.checked = false;
         item.idRoomService = 0
@@ -167,12 +167,12 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
       });
       setRoomServices(newList);
       setListServicesSelected(newList);
-    }else{
+    } else {
       const newList = listServices.map((item) => {
-      const findService = dataRoomServices.find(item2 => item2.serviceId === item.id);
-        if(findService && findService.status===true){
+        const findService = dataRoomServices.find(item2 => item2.serviceId === item.id);
+        if (findService && findService.status === true) {
           item.checked = true;
-        }else{
+        } else {
           item.checked = false;
         }
         item.idRoomService = findService?.id || 0
@@ -181,7 +181,7 @@ export const useModalNewRooms = ({currentItem, setLoading, listServices, dataRoo
       setRoomServices(newList);
       setListServicesSelected(newList);
     }
-  },[]);
+  }, []);
 
   const propsToMsgDelete = {
     title: "alert.question.title",

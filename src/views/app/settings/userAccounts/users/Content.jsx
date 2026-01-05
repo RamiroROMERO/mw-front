@@ -67,7 +67,7 @@ const Users = (props) => {
     columns: [
       {
         text: IntlMessages("page.users.table.img"), dataField: "imgUser", headerStyle: { 'width': '15%' },
-        cell:({row})=>{
+        cell: ({ row }) => {
           return (
             <img
               alt={row.original.name}
@@ -117,7 +117,6 @@ const Users = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -146,23 +145,19 @@ const Users = (props) => {
     if (id > 0) {
       setLoading(true);
       request.PUT(`admin/users/${id}`, data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('admin/users', data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -181,7 +176,6 @@ const Users = (props) => {
       setListUserType(listUserTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }, []);
@@ -190,12 +184,10 @@ const Users = (props) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`admin/users/${currentItem.id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       setCurrentItem({});
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

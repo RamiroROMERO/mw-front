@@ -4,7 +4,7 @@ import { useForm } from '@/hooks';
 import moment from 'moment';
 import { useEffect, useState } from 'react'
 
-export const useModalAddRes = ({currentReservation, setLoading, currentPage=null, search=null, fnGetData=null, setOpen, listCustomers, listRooms, fnGetRooms}) => {
+export const useModalAddRes = ({ currentReservation, setLoading, currentPage = null, search = null, fnGetData = null, setOpen, listCustomers, listRooms, fnGetRooms }) => {
   const [activeTab, setActiveTab] = useState('1');
   const [sendForm, setSendForm] = useState(false);
   const [customerPhone, setCustomerPhone] = useState("");
@@ -24,13 +24,13 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
 
   const validation = {
     date: [(val) => val !== "", "msg.required.input.date"],
-    customerId: [(val)=>validFloat(val)>0, "msg.required.select.customer"],
-    roomId: [(val)=>validFloat(val)>0, "msg.required.select.room"],
+    customerId: [(val) => validFloat(val) > 0, "msg.required.select.customer"],
+    roomId: [(val) => validFloat(val) > 0, "msg.required.select.room"],
     checkInDate: [(val) => val !== "", "msg.required.input.checkInDate"],
     checkOutDate: [(val) => val !== "", "msg.required.input.checkOutDate"],
-    statusId: [(val)=>validFloat(val)>0, "msg.required.select.statusId"],
-    totalNights: [(val)=>validFloat(val)>0, "msg.required.input.totalNights"],
-    paymentStatusId: [(val)=>validFloat(val)>0, "msg.required.select.paymentStatusId"]
+    statusId: [(val) => validFloat(val) > 0, "msg.required.select.statusId"],
+    totalNights: [(val) => validFloat(val) > 0, "msg.required.input.totalNights"],
+    paymentStatusId: [(val) => validFloat(val) > 0, "msg.required.select.paymentStatusId"]
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
@@ -52,18 +52,18 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
     channelId: currentReservation?.channelId || 0
   }, validation);
 
-  const {id, checkInDate, checkOutDate, statusId, paymentStatusId, customerId, roomId} = formState;
+  const { id, checkInDate, checkOutDate, statusId, paymentStatusId, customerId, roomId } = formState;
 
   const onCustomerChange = e => {
     const custId = validInt(e.target.value);
 
-    onBulkForm({customerId: custId});
+    onBulkForm({ customerId: custId });
   }
 
   const onRoomChange = e => {
     const roomId = e.target.value;
 
-    onBulkForm({roomId});
+    onBulkForm({ roomId });
   }
 
   const onCheckInDate = e => {
@@ -96,7 +96,7 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
 
   const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
     const totalPeople = validInt(formState.qtyAdults) + validInt(formState.qtyChild);
@@ -106,13 +106,9 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
     formState.baseRate = currentRoom?.rate;
 
     if (validInt(id) === 0) {
-      // if (fnCreate === false) {
-      //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      //   return;
-      // }
       setLoading(true);
       request.POST('hotel/process/bookings', formState, (resp) => {
-        const {data} = resp;
+        const { data } = resp;
         onBulkForm(data);
         setLoading(false);
 
@@ -124,15 +120,14 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
         setLoading(true);
         request.PUT(`hotel/settings/rooms/${roomId}`, dataUpdate, () => {
           setLoading(false);
-          if(fnGetData) fnGetData(currentPage, search);
+          if (fnGetData) fnGetData(currentPage, search);
           fnGetRooms();
         }, (err) => {
-          console.log(err);
           setLoading(false);
         }, false);
 
         //calendarizar reserva si el status es 5-Check-IN
-        if(statusId===5){
+        if (statusId === 5) {
           const dataCalendar = {
             bookingId: data.id
           }
@@ -141,29 +136,22 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
           request.POST('hotel/process/calendarBooking/programBooking', dataCalendar, (resp) => {
             setLoading(false);
           }, (err) => {
-            console.log(err);
             setLoading(false);
           })
         }
 
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
       setOpen(false);
     } else {
-      // if (fnUpdate === false) {
-      //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      //   return;
-      // }
       setLoading(true);
       request.PUT(`hotel/process/bookings/${id}`, formState, () => {
         setLoading(false);
-        if(fnGetData) fnGetData(currentPage, search);
+        if (fnGetData) fnGetData(currentPage, search);
         fnGetRooms();
         setOpen(false);
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -174,7 +162,7 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
     request.GET(`hotel/process/bookingCharges?bookingId=${id}`, (resp) => {
       const bookingCharges = resp.data.map((item) => {
         item.service = item?.serviceData?.name || ""
-        item.priceTotal = validFloat(item.price) + validFloat(item.price * (item.taxPercent/100))
+        item.priceTotal = validFloat(item.price) + validFloat(item.price * (item.taxPercent / 100))
         return item;
       });
       setDataServices(bookingCharges);
@@ -182,7 +170,6 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
       setTotalValServices(sumTotal);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -199,7 +186,6 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
       setTotalValPayments(sumTotal);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -210,7 +196,7 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
       status: 1
     }
 
-    if(statusId===3 || statusId===6 || statusId===7){
+    if (statusId === 3 || statusId === 6 || statusId === 7) {
       dataUpdate.status = 0
     }
 
@@ -219,24 +205,23 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
       setLoading(false);
 
       //actualizar status de la habitacion si la reservacion fue 3-cancelada, 6-check-out, 7-no se presento
-      if(statusId===3 || statusId===6 || statusId===7){
+      if (statusId === 3 || statusId === 6 || statusId === 7) {
         const dataUpdate = {
           statusId: 1
-      }
+        }
 
         setLoading(true);
         request.PUT(`hotel/settings/rooms/${roomId}`, dataUpdate, () => {
           setLoading(false);
           fnGetData(currentPage, search);
         }, (err) => {
-          console.log(err);
           setLoading(false);
         }, false);
         setOpen(false);
       }
 
       //calendarizar reserva si el status es 5-Check-IN
-      if(statusId===5){
+      if (statusId === 5) {
         const dataCalendar = {
           bookingId: id
         }
@@ -245,13 +230,11 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
         request.POST('hotel/process/calendarBooking/programBooking', dataCalendar, (resp) => {
           setLoading(false);
         }, (err) => {
-          console.log(err);
           setLoading(false);
         })
       }
 
     }, (err) => {
-      console.log(err);
       setLoading(false);
     })
     setOpen(false);
@@ -265,7 +248,6 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
     request.PUT(`hotel/process/bookings/${id}`, dataUpdate, () => {
       setLoading(false);
     }, (err) => {
-      console.log(err);
       setLoading(false);
     })
   }
@@ -293,7 +275,7 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
       setOpenMsgDeleteService(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -311,7 +293,7 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
       setOpenMsgDeletePayment(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -348,15 +330,15 @@ export const useModalAddRes = ({currentReservation, setLoading, currentPage=null
   useEffect(() => {
     const filter = listRooms.find(item => item.id === roomId);
     setLoading(true);
-    request.GET(`hotel/settings/roomServices?roomId=${roomId}`, (resp)=>{
+    request.GET(`hotel/settings/roomServices?roomId=${roomId}`, (resp) => {
       const data = resp.data;
-      if(filter){
+      if (filter) {
         filter.roomServices = data;
       }
       setCurrentRoom(filter);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }, [roomId]);

@@ -88,7 +88,6 @@ const Managers = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -109,23 +108,19 @@ const Managers = (props) => {
     if (id > 0) {
       setLoading(true);
       request.PUT(`prodResponsibles/${id}`, data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('prodResponsibles', data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -135,12 +130,10 @@ const Managers = (props) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`prodResponsibles/${currentItem.id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       setCurrentItem({});
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

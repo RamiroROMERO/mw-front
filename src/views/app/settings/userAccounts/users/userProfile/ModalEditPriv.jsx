@@ -44,12 +44,10 @@ const ModalEditPriv = (props) => {
 
     setLoading(true);
     request.PUT(`admin/userModules/${currentItemPriv.id}`, newData, (resp) => {
-      console.log(resp);
       fnGetData();
       setOpen(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

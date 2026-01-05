@@ -6,8 +6,8 @@ import { formatDate, IntlMessages } from '@Helpers/Utils'
 import { request } from '@Helpers/core'
 import ReactTable from '@Components/reactTable'
 
-const ModalVacations = ({setOpen, data}) => {
-  const {setLoading, employeeId} = data;
+const ModalVacations = ({ setOpen, data }) => {
+  const { setLoading, employeeId } = data;
 
   const [table, setTable] = useState({
     title: IntlMessages("page.employees.modal.vacations.title"),
@@ -15,30 +15,30 @@ const ModalVacations = ({setOpen, data}) => {
       {
         text: IntlMessages("table.column.date"),
         dataField: "date",
-        headerStyle: {width: "15%"},
-        cell:({row})=>{
+        headerStyle: { width: "15%" },
+        cell: ({ row }) => {
           return (formatDate(row.original.date));
         }
       },
       {
         text: IntlMessages("table.column.description"),
         dataField: "description",
-        headerStyle: {width: "25%"}
+        headerStyle: { width: "25%" }
       },
       {
         text: IntlMessages("page.permission.modal.table.column.time"),
         dataField: "time",
-        headerStyle: {width: "10%"}
+        headerStyle: { width: "10%" }
       },
       {
         text: IntlMessages("page.permission.modal.table.column.authorizedBy"),
         dataField: "authorizedBy",
-        headerStyle: {width: "15%"}
+        headerStyle: { width: "15%" }
       },
       {
         text: IntlMessages("table.column.status"),
         dataField: "statusIcon",
-        headerStyle: {width: "10%"}
+        headerStyle: { width: "10%" }
       }
     ],
     data: [],
@@ -48,7 +48,7 @@ const ModalVacations = ({setOpen, data}) => {
     actions: []
   });
 
-  const fnGetData = ()=>{
+  const fnGetData = () => {
     setLoading(true);
     request.GET(`rrhh/process/vacations?employeeId=${employeeId}`, (resp) => {
       const vacations = resp.data.map((item) => {
@@ -64,30 +64,30 @@ const ModalVacations = ({setOpen, data}) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fnGetData();
-  },[]);
+  }, []);
 
   return (
     <>
-    <ModalBody>
-      <Row>
-        <Colxx xxs="12">
-          <ReactTable {...table}/>
-        </Colxx>
-      </Row>
-    </ModalBody>
-    <ModalFooter>
-      <Button color="danger" onClick={()=>{setOpen(false)}} >
-        <i className="bi bi-box-arrow-right"/>
-        {` ${IntlMessages('button.exit')}`}
-      </Button>
-    </ModalFooter>
+      <ModalBody>
+        <Row>
+          <Colxx xxs="12">
+            <ReactTable {...table} />
+          </Colxx>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />
+          {` ${IntlMessages('button.exit')}`}
+        </Button>
+      </ModalFooter>
     </>
   )
 }

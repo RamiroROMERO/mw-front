@@ -40,7 +40,6 @@ const TransactionConcepts = (props) => {
   }
 
   const fnEditItem = (item) => {
-    console.log(item)
     setBulkForm(item);
   }
 
@@ -72,7 +71,7 @@ const TransactionConcepts = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -98,23 +97,21 @@ const TransactionConcepts = (props) => {
     if (id > 0) {
       setLoading(true);
       request.PUT(`accounting/settings/transactionConcepts/${id}`, data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('accounting/settings/transactionConcepts', data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -124,13 +121,12 @@ const TransactionConcepts = (props) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`accounting/settings/transactionConcepts/${currentItem.id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       fnClearInputs();
       setCurrentItem({});
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -147,7 +143,7 @@ const TransactionConcepts = (props) => {
       setListAccount(account);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     fnGetData();

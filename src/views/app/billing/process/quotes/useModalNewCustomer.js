@@ -32,14 +32,13 @@ export const useModalNewCustomer = ({ setLoading, setOpen, setCustomer }) => {
       console.info(data);
       setLoading(false);
     }, err => {
-      console.error(err);
+
       setLoading(false);
     })
   }
 
   const fnSaveCustomer = () => {
 
-    // console.log('save customer!');
     setSendForm(true);
     if (!isFormValid) return;
 

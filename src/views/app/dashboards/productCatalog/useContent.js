@@ -34,7 +34,7 @@ export const useContent = ({ setLoading }) => {
       window.scrollTo(0, 0);
       setLoading(false);
     }, err => {
-      console.error(err);
+
       setLoading(false);
     });
   }

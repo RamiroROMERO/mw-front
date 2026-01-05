@@ -7,7 +7,7 @@ import Modal from '@Components/modal';
 import ModalDetail from './ModalDetail';
 import ModalMoveEmployees from './ModalMoveEmployees';
 
-const DetailTable = ({id, dataProjects, listProjects, listCustomers, setBulkForm, fnGetData, onResetForm, setLoading}) => {
+const DetailTable = ({ id, dataProjects, listProjects, listCustomers, setBulkForm, fnGetData, onResetForm, setLoading }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [openModalDetail, setOpenModalDetail] = useState(false);
   const [openModalMoveEmployees, setOpenModalMoveEmployees] = useState(false);
@@ -15,35 +15,33 @@ const DetailTable = ({id, dataProjects, listProjects, listCustomers, setBulkForm
   const [listWorkShifts, setListWorkShifts] = useState([]);
   const [listEmployees, setListEmployees] = useState([]);
 
-  const fnAddDetail = (item)=>{
+  const fnAddDetail = (item) => {
     setCurrentItem(item);
     setOpenModalDetail(true);
   }
 
-  const fnEditProject = (item)=>{
+  const fnEditProject = (item) => {
     setBulkForm(item)
   }
 
-  const fnDeleteProject = (item)=>{
-    setBulkForm({id:item.id});
+  const fnDeleteProject = (item) => {
+    setBulkForm({ id: item.id });
     setOpenMsgQuestion(true);
   }
 
-  const fnDelete = () =>{
+  const fnDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/projects/${id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
 
-  const fnChangeProject = ()=>{
+  const fnChangeProject = () => {
     setOpenModalMoveEmployees(true);
   }
 
@@ -53,25 +51,25 @@ const DetailTable = ({id, dataProjects, listProjects, listCustomers, setBulkForm
       {
         text: IntlMessages("table.column.customer"),
         dataField: "customer",
-        headerStyle: {width: "35%"}
+        headerStyle: { width: "35%" }
       },
       {
         text: IntlMessages("page.project.table.nameProject"),
         dataField: "name",
-        headerStyle: {width: "25%"}
+        headerStyle: { width: "25%" }
       },
       {
         text: IntlMessages("table.column.dateStart"),
         dataField: "initDate",
-        headerStyle: {width: "15%"},
-        cell:({row})=>{
+        headerStyle: { width: "15%" },
+        cell: ({ row }) => {
           return (formatDate(row.original.initDate));
         }
       },
       {
         text: IntlMessages("table.column.status"),
         dataField: "statusIcon",
-        headerStyle: {width: "10%"}
+        headerStyle: { width: "10%" }
       },
     ],
     data: [],
@@ -108,14 +106,14 @@ const DetailTable = ({id, dataProjects, listProjects, listCustomers, setBulkForm
     ]
   });
 
-  useEffect(()=>{
-    const dataTable = {...table, data: dataProjects};
+  useEffect(() => {
+    const dataTable = { ...table, data: dataProjects };
     setTable(dataTable);
-  },[dataProjects]);
+  }, [dataProjects]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
-    request.GET('rrhhSchedules', (resp)=>{
+    request.GET('rrhhSchedules', (resp) => {
       const workShifts = resp.data.map((item) => {
         return {
           id: item.id,
@@ -125,13 +123,13 @@ const DetailTable = ({id, dataProjects, listProjects, listCustomers, setBulkForm
       });
       setListWorkShifts(workShifts);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
 
     setLoading(true);
-    request.GET('rrhh/process/employees/findSL', (resp)=>{
+    request.GET('rrhh/process/employees/findSL', (resp) => {
       const employees = resp.data.map((item) => {
         return {
           id: item.id,
@@ -141,11 +139,11 @@ const DetailTable = ({id, dataProjects, listProjects, listCustomers, setBulkForm
       });
       setListEmployees(employees);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
-  },[]);
+  }, []);
 
   const propsToMsgDelete = {
     open: openMsgQuestion,
@@ -187,10 +185,10 @@ const DetailTable = ({id, dataProjects, listProjects, listCustomers, setBulkForm
 
   return (
     <>
-      <ReactTable {...table}/>
+      <ReactTable {...table} />
       <Confirmation {...propsToMsgDelete} />
-      <Modal {...propsToModalDetail}/>
-      <Modal {...propsToModalMoveEmployees}/>
+      <Modal {...propsToModalDetail} />
+      <Modal {...propsToModalMoveEmployees} />
     </>
   )
 }

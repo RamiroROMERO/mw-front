@@ -54,7 +54,7 @@ const WorkOrders = (props) => {
       setOpenModalViewOrders(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -76,19 +76,17 @@ const WorkOrders = (props) => {
     if (id === 0) {
       setLoading(true);
       request.POST('accounting/process/workOrders', newData, (resp) => {
-        console.log(resp);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.PUT(`accounting/process/workOrders/${id}`, newData, (resp) => {
-        console.log(resp);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -98,7 +96,7 @@ const WorkOrders = (props) => {
     if (id > 0) {
       request.GETPdf('accounting/process/workOrders/exportPDFOrder', { id, userName: userData.name }, 'Orden de Compra.pdf',
         (err) => {
-          console.error(err);
+
           setLoading(false);
         });
     }
@@ -128,7 +126,7 @@ const WorkOrders = (props) => {
       setListLedgerAccount(listAccounts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

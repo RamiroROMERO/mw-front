@@ -76,7 +76,6 @@ const UseModalDistProducts = (props) => {
   const fnSaveDetaItem = () => {
     setSendForm(true)
     if (!isFormValid) {
-      console.log("formulario invalido!");
       return;
     }
     if (validFloat(localMinPrice) <= 0 && validFloat(localMedPrice) <= 0 && validFloat(localMaxPrice) <= 0) {

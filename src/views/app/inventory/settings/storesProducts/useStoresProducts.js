@@ -79,7 +79,6 @@ export const useStoresProducts = ({ setLoading }) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -103,7 +102,6 @@ export const useStoresProducts = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
@@ -113,7 +111,6 @@ export const useStoresProducts = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -132,7 +129,6 @@ export const useStoresProducts = ({ setLoading }) => {
         setCurrentItem({});
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -153,7 +149,6 @@ export const useStoresProducts = ({ setLoading }) => {
       setListWarehouse(listStores);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
     request.GET('inventory/settings/products', (resp) => {
@@ -166,7 +161,6 @@ export const useStoresProducts = ({ setLoading }) => {
       setListProducts(listProd);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
     request.GET('inventory/settings/locations', (resp) => {
@@ -179,7 +173,6 @@ export const useStoresProducts = ({ setLoading }) => {
       setListLocations(listLoc);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }, []);

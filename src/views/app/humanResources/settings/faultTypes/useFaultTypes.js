@@ -4,7 +4,7 @@ import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
 
-export const useFaultTypes = ({setLoading, screenControl}) => {
+export const useFaultTypes = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataFaultTypes, setDataFaultTypes] = useState([]);
   const [typesFault, setTypesFault] = useState([]);
@@ -36,7 +36,7 @@ export const useFaultTypes = ({setLoading, screenControl}) => {
       setDataFaultTypes(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -63,7 +63,7 @@ export const useFaultTypes = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -77,7 +77,7 @@ export const useFaultTypes = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -95,7 +95,7 @@ export const useFaultTypes = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -113,7 +113,7 @@ export const useFaultTypes = ({setLoading, screenControl}) => {
       setTypesFault([{ value: 0, label: 'Seleccione' }, ...company]);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     fnGetData();

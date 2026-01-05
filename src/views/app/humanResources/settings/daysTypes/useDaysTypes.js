@@ -35,7 +35,6 @@ export const useDaysTypes = ({ setLoading, screenControl }) => {
       setDataDaysTypes(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }
@@ -62,7 +61,6 @@ export const useDaysTypes = ({ setLoading, screenControl }) => {
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -76,7 +74,6 @@ export const useDaysTypes = ({ setLoading, screenControl }) => {
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -94,7 +91,7 @@ export const useDaysTypes = ({ setLoading, screenControl }) => {
         fnClear();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -114,7 +111,7 @@ export const useDaysTypes = ({ setLoading, screenControl }) => {
       setListAccount(account);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

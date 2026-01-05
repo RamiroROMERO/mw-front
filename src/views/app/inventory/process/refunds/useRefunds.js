@@ -71,7 +71,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       setOpenModalViewRefunds(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -93,7 +93,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       setRefundDetail(refundDeta);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -158,18 +158,18 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
             setLoading(true);
           });
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       }, false);
     } else {
@@ -190,18 +190,18 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
             setLoading(true);
           });
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         }, false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -214,7 +214,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
         userName: userData.name
       }
       request.GETPdf('inventory/process/inventoryTransactions/exportPDFRequisition', dataPrint, 'Ingresos y Reintegros.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -238,11 +238,11 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       request.DELETE(`inventory/process/inventoryTransactionDetail?idFather=${id}`, () => {
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       }, false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -262,7 +262,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       setListDocuments(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -283,7 +283,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       setListDestinations(filter2);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -298,7 +298,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       setListProviders(providers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -313,7 +313,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       setListAccounts(listAccounts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

@@ -3,7 +3,7 @@ import { request } from '@/helpers/core';
 import { IntlMessages } from '@Helpers/Utils'
 import notification from '@/containers/ui/Notifications';
 
-export const useDetailIncomes = ({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, days, hours, fnCreate, fnUpdate, setIncWeekly}) => {
+export const useDetailIncomes = ({ id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, days, hours, fnCreate, fnUpdate, setIncWeekly }) => {
 
   const [sendForm, setSendForm] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -26,15 +26,15 @@ export const useDetailIncomes = ({id, projectId, setProjectId, onResetForm, list
     }
   });
 
-  const fnClearInputs = ()=>{
+  const fnClearInputs = () => {
     onResetForm();
     setSendForm(false);
     setProjectId(0);
   }
 
-  const fnSave = () =>{
+  const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
@@ -64,7 +64,7 @@ export const useDetailIncomes = ({id, projectId, setProjectId, onResetForm, list
       }
     });
 
-    if(id === 0){
+    if (id === 0) {
       if (fnCreate === false) {
         notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
         setSendForm(false);
@@ -77,11 +77,11 @@ export const useDetailIncomes = ({id, projectId, setProjectId, onResetForm, list
         setProjectId(0);
         setSelectedItems([]);
         setLoading(false);
-      },(err)=>{
-        console.error(err);
+      }, (err) => {
+
         setLoading(false);
       });
-    }else{
+    } else {
       if (fnUpdate === false) {
         notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
         setSendForm(false);
@@ -93,20 +93,20 @@ export const useDetailIncomes = ({id, projectId, setProjectId, onResetForm, list
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
   }
 
-  useEffect(()=>{
-    const dataTable = {...table, data: listEmployeesByProject};
+  useEffect(() => {
+    const dataTable = { ...table, data: listEmployeesByProject };
     setTable(dataTable);
-  },[listEmployeesByProject, projectId]);
+  }, [listEmployeesByProject, projectId]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setIncWeekly(selectedItems[0]?.defaultSalary || 0);
-  },[selectedItems]);
+  }, [selectedItems]);
 
   return (
     {

@@ -61,7 +61,7 @@ const CheckRequest = (props) => {
     maxWidth: 'xl',
     data: {
       listRequest: [],
-      fnViewRequest: (data) => { console.log(data) }
+      fnViewRequest: (data) => { }
     }
   }
 

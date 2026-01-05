@@ -38,7 +38,6 @@ export const useCustomerTypes = ({ setLoading }) => {
       setTableData(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -61,7 +60,6 @@ export const useCustomerTypes = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
@@ -71,7 +69,6 @@ export const useCustomerTypes = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -89,7 +86,6 @@ export const useCustomerTypes = ({ setLoading }) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -108,7 +104,6 @@ export const useCustomerTypes = ({ setLoading }) => {
       setLoading(false);
       fnGetData();
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
     fnGetData();

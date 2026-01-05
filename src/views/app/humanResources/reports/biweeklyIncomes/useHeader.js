@@ -2,7 +2,7 @@ import { request } from '@/helpers/core';
 import { useForm } from '@/hooks';
 import notification from '@Containers/ui/Notifications';
 
-export const useHeader = ({setLoading, table, setTable, enableGenerateReport, listTypeIncomes}) => {
+export const useHeader = ({ setLoading, table, setTable, enableGenerateReport, listTypeIncomes }) => {
 
   const { formState, onInputChange } = useForm({
     projectId: 0,
@@ -10,27 +10,27 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport, li
     dateEnd: ''
   });
 
-  const {projectId, dateStart, dateEnd} = formState;
+  const { projectId, dateStart, dateEnd } = formState;
 
-  const fnExportDocument = async()=>{
-    let where = projectId>0?{projectId}:{};
+  const fnExportDocument = async () => {
+    let where = projectId > 0 ? { projectId } : {};
 
-    if(dateStart!=="" && dateEnd!==""){
+    if (dateStart !== "" && dateEnd !== "") {
       where = {
-        status:1,
+        status: 1,
         dateStart,
         dateEnd
       }
     }
 
-    if(projectId>0){
+    if (projectId > 0) {
       where.projectId = projectId;
     }
 
     const otherFields = [];
     const qtyDaysFields = [];
 
-    listTypeIncomes.map((item)=>{
+    listTypeIncomes.map((item) => {
       otherFields.push({
         id: item.value,
         title: `Total ${item.label}`,
@@ -39,7 +39,7 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport, li
         length: 50,
         isSum: true,
         currency: true
-      },{
+      }, {
         id: `qty-${item.value}`,
         title: `Cantidad ${item.label}`,
         field: `incQty${item.value}`,
@@ -66,13 +66,13 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport, li
       fields: [
         { title: 'No.', field: 'num', type: 'decimal', length: 20 },
         { title: 'Empleado', field: 'employeeName', type: 'String', length: 150 },
-        { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 40},
+        { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 40 },
         { title: 'Proyecto', field: 'projectName', type: 'String', length: 70 },
-        { title: 'Descripcion', field: 'description', type: 'String', length: 150},
+        { title: 'Descripcion', field: 'description', type: 'String', length: 150 },
         ...otherFields,
         // { title: 'Cantidad', field: 'qty', type: 'String', length: 50 },
         { title: 'Total Ingresos', field: 'value', type: 'decimal', length: 50, isSum: true, currency: true },
-        { title: 'Fecha', field: 'date', type: 'String', length: 40},
+        { title: 'Fecha', field: 'date', type: 'String', length: 40 },
       ],
       otherFields,
       headerData: [],
@@ -83,7 +83,7 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport, li
     setLoading(false);
   }
 
-  const fnGetData = ()=>{
+  const fnGetData = () => {
     // if (enableGenerateReport === false) {
     //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
     //   return;
@@ -99,11 +99,11 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport, li
 
     let url = `rrhh/reports/getOthersIncomes?status=1`;
 
-    if(projectId>0){
+    if (projectId > 0) {
       url = `${url}&projectId=${projectId}`;
     }
 
-    if(dateStart!=="" && dateEnd!==""){
+    if (dateStart !== "" && dateEnd !== "") {
       url = `${url}&dateStart=${dateStart}&dateEnd=${dateEnd}`;
     }
     setLoading(true);
@@ -116,7 +116,7 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport, li
       setTable({ ...table, data, actions: [newActions] });
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

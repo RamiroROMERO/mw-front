@@ -11,20 +11,20 @@ import ReactTable from '@Components/reactTable'
 import Confirmation from '@Containers/ui/confirmationMsg';
 import { RadioGroup } from '@Components/radioGroup'
 
-const ModalDeduccBonif = ({data, setOpen}) => {
-  const {employeeId, setLoading}=data;
+const ModalDeduccBonif = ({ data, setOpen }) => {
+  const { employeeId, setLoading } = data;
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
 
   const deduccBonifValid = {
-    typeId: [(val)=> validInt(val)>0, "msg.required.select.type"],
-    methodId: [(val)=> validInt(val)>0, "msg.required.select.method"],
-    value: [(val)=>validFloat(val)>0, "msg.required.input.value"],
-    name: [(val)=>val!=="", "msg.required.input.description"],
-    biWeekly: [(val)=> validInt(val)>0, "msg.required.select.biWeekly"]
+    typeId: [(val) => validInt(val) > 0, "msg.required.select.type"],
+    methodId: [(val) => validInt(val) > 0, "msg.required.select.method"],
+    value: [(val) => validFloat(val) > 0, "msg.required.input.value"],
+    name: [(val) => val !== "", "msg.required.input.description"],
+    biWeekly: [(val) => validInt(val) > 0, "msg.required.select.biWeekly"]
   }
 
-  const {formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm} = useForm({
+  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
     typeId: 0,
     methodId: 0,
@@ -32,18 +32,18 @@ const ModalDeduccBonif = ({data, setOpen}) => {
     name: '',
     biWeekly: 0,
     status: 1
-  },deduccBonifValid);
+  }, deduccBonifValid);
 
-  const {id, typeId, methodId, value, name, biWeekly, status} = formState;
+  const { id, typeId, methodId, value, name, biWeekly, status } = formState;
 
-  const {typeIdValid, methodIdValid, valueValid, nameValid, biWeeklyValid} = formValidation;
+  const { typeIdValid, methodIdValid, valueValid, nameValid, biWeeklyValid } = formValidation;
 
-  const fnEditDeduction = (item)=>{
+  const fnEditDeduction = (item) => {
     setBulkForm(item);
   }
 
-  const fnDeleteDeduction = (item)=>{
-    setBulkForm({id:item.id});
+  const fnDeleteDeduction = (item) => {
+    setBulkForm({ id: item.id });
     setOpenMsgQuestion(true);
   }
 
@@ -53,22 +53,22 @@ const ModalDeduccBonif = ({data, setOpen}) => {
       {
         text: IntlMessages("table.column.type"),
         dataField: "type",
-        headerStyle: {width: "25%"}
+        headerStyle: { width: "25%" }
       },
       {
         text: IntlMessages("table.column.description"),
         dataField: "name",
-        headerStyle: {width: "45%"}
+        headerStyle: { width: "45%" }
       },
       {
         text: IntlMessages("table.column.value"),
         dataField: "value",
-        headerStyle: {width: "20%"}
+        headerStyle: { width: "20%" }
       },
       {
         text: IntlMessages("table.column.status"),
         dataField: "statusIcon",
-        headerStyle: {width: "10%"}
+        headerStyle: { width: "10%" }
       }
     ],
     data: [],
@@ -91,16 +91,16 @@ const ModalDeduccBonif = ({data, setOpen}) => {
     ]
   });
 
-  const fnClearInputs = ()=>{
+  const fnClearInputs = () => {
     onResetForm();
     setSendForm(false);
   }
 
-  const fnGetData = ()=>{
+  const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/employeeDeducAllows?employeeId=${employeeId}`, (resp)=>{
-      const deduction = resp.data.map((item)=>{
-        item.type = item.typeId===1?'Deducción':'Bonificación'
+    request.GET(`rrhh/process/employeeDeducAllows?employeeId=${employeeId}`, (resp) => {
+      const deduction = resp.data.map((item) => {
+        item.type = item.typeId === 1 ? 'Deducción' : 'Bonificación'
         item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />
         return item;
@@ -110,15 +110,15 @@ const ModalDeduccBonif = ({data, setOpen}) => {
       }
       setTable(tableData);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
 
-  const fnSave = ()=>{
+  const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
@@ -132,47 +132,43 @@ const ModalDeduccBonif = ({data, setOpen}) => {
       status
     }
 
-    if(id === 0){
+    if (id === 0) {
       setLoading(true);
       request.POST('rrhh/process/employeeDeducAllows', newData, (resp) => {
-        onInputChange({target:{name:'id', value:resp.data.id}});
+        onInputChange({ target: { name: 'id', value: resp.data.id } });
         fnClearInputs();
         fnGetData();
         setLoading(false);
-      },(err)=>{
-        console.error(err);
+      }, (err) => {
         setLoading(false);
       });
-    }else{
+    } else {
       setLoading(true);
       request.PUT(`rrhh/process/employeeDeducAllows/${id}`, newData, () => {
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
   }
 
-  const fnDelete = () =>{
+  const fnDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/employeeDeducAllows/${id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fnGetData();
-  },[]);
+  }, []);
 
   const propsToMsgDelete = {
     open: openMsgQuestion,
@@ -184,108 +180,108 @@ const ModalDeduccBonif = ({data, setOpen}) => {
 
   return (
     <>
-    <ModalBody>
-      <Row>
-        <Colxx xxs="12" md="4">
-          <SimpleSelect
-            name="typeId"
-            label='select.type'
-            value={typeId}
-            onChange={onInputChange}
-            options={[
-              {id:1,name:'Deducción'},
-              {id:2,name:'Bonificación'}
-            ]}
-            invalid={sendForm && !!typeIdValid}
-            feedbackText={sendForm && (typeIdValid || null)}
-          />
-        </Colxx>
-        <Colxx xxs="12" md="4">
-          <SimpleSelect
-            name="methodId"
-            label='select.method'
-            value={methodId}
-            onChange={onInputChange}
-            options={[
-              {id:1,name:'Porcentaje'},
-              {id:2,name:'Valor'}
-            ]}
-            invalid={sendForm && !!methodIdValid}
-            feedbackText={sendForm && (methodIdValid || null)}
-          />
-        </Colxx>
-        <Colxx xxs="12" md="4">
-          <InputField
-            name='value'
-            label='input.value'
-            value={value}
-            onChange={onInputChange}
-            type='text'
-            invalid={sendForm && !!valueValid}
-            feedbackText={sendForm && (valueValid || null)}
-          />
-        </Colxx>
-      </Row>
-      <Row>
-        <Colxx xxs="12">
-          <InputField
-            name='name'
-            label='input.description'
-            value={name}
-            onChange={onInputChange}
-            type='text'
-            invalid={sendForm && !!nameValid}
-            feedbackText={sendForm && (nameValid || null)}
-          />
-        </Colxx>
-      </Row>
-      <Row>
-        <Colxx xxs="12">
-          <RadioGroup
-            label='page.employees.table.biWeekly'
-            name='biWeekly'
-            value={biWeekly}
-            onChange={onInputChange}
-            options={[
-              {id:1, label:'page.employees.option.first'},
-              {id:2, label:'page.employees.option.second'},
-              {id:3, label:'page.employees.option.both'}
-            ]}
-            display="flex"
-            invalid={sendForm && !!biWeeklyValid}
-            feedbackText={sendForm && (biWeeklyValid || null)}
-          />
-        </Colxx>
-      </Row>
-      <Row>
-        <Colxx xxs="12">
-          <Checkbox
-            label="check.status"
-            name="status"
-            value={status}
-            onChange={onInputChange}
-          />
-        </Colxx>
-      </Row>
-      <Row className='mb-2'>
-        <Colxx xxs="12" align="right">
-          <Button color="secondary" onClick={fnClearInputs} className="mr-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
-          <Button color="primary" onClick={fnSave}><i className="iconsminds-save" /> {IntlMessages("button.save")}</Button>
-        </Colxx>
-      </Row>
-      <Row>
-        <Colxx xxs="12">
-          <ReactTable {...table}/>
-        </Colxx>
-      </Row>
-    </ModalBody>
-    <ModalFooter>
-      <Button color="danger" onClick={()=>{setOpen(false)}} >
-        <i className="bi bi-box-arrow-right"/>
-        {` ${IntlMessages('button.exit')}`}
-      </Button>
-    </ModalFooter>
-    <Confirmation {...propsToMsgDelete} />
+      <ModalBody>
+        <Row>
+          <Colxx xxs="12" md="4">
+            <SimpleSelect
+              name="typeId"
+              label='select.type'
+              value={typeId}
+              onChange={onInputChange}
+              options={[
+                { id: 1, name: 'Deducción' },
+                { id: 2, name: 'Bonificación' }
+              ]}
+              invalid={sendForm && !!typeIdValid}
+              feedbackText={sendForm && (typeIdValid || null)}
+            />
+          </Colxx>
+          <Colxx xxs="12" md="4">
+            <SimpleSelect
+              name="methodId"
+              label='select.method'
+              value={methodId}
+              onChange={onInputChange}
+              options={[
+                { id: 1, name: 'Porcentaje' },
+                { id: 2, name: 'Valor' }
+              ]}
+              invalid={sendForm && !!methodIdValid}
+              feedbackText={sendForm && (methodIdValid || null)}
+            />
+          </Colxx>
+          <Colxx xxs="12" md="4">
+            <InputField
+              name='value'
+              label='input.value'
+              value={value}
+              onChange={onInputChange}
+              type='text'
+              invalid={sendForm && !!valueValid}
+              feedbackText={sendForm && (valueValid || null)}
+            />
+          </Colxx>
+        </Row>
+        <Row>
+          <Colxx xxs="12">
+            <InputField
+              name='name'
+              label='input.description'
+              value={name}
+              onChange={onInputChange}
+              type='text'
+              invalid={sendForm && !!nameValid}
+              feedbackText={sendForm && (nameValid || null)}
+            />
+          </Colxx>
+        </Row>
+        <Row>
+          <Colxx xxs="12">
+            <RadioGroup
+              label='page.employees.table.biWeekly'
+              name='biWeekly'
+              value={biWeekly}
+              onChange={onInputChange}
+              options={[
+                { id: 1, label: 'page.employees.option.first' },
+                { id: 2, label: 'page.employees.option.second' },
+                { id: 3, label: 'page.employees.option.both' }
+              ]}
+              display="flex"
+              invalid={sendForm && !!biWeeklyValid}
+              feedbackText={sendForm && (biWeeklyValid || null)}
+            />
+          </Colxx>
+        </Row>
+        <Row>
+          <Colxx xxs="12">
+            <Checkbox
+              label="check.status"
+              name="status"
+              value={status}
+              onChange={onInputChange}
+            />
+          </Colxx>
+        </Row>
+        <Row className='mb-2'>
+          <Colxx xxs="12" align="right">
+            <Button color="secondary" onClick={fnClearInputs} className="mr-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
+            <Button color="primary" onClick={fnSave}><i className="iconsminds-save" /> {IntlMessages("button.save")}</Button>
+          </Colxx>
+        </Row>
+        <Row>
+          <Colxx xxs="12">
+            <ReactTable {...table} />
+          </Colxx>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />
+          {` ${IntlMessages('button.exit')}`}
+        </Button>
+      </ModalFooter>
+      <Confirmation {...propsToMsgDelete} />
     </>
   )
 }

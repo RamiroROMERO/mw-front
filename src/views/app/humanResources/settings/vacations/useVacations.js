@@ -4,7 +4,7 @@ import { request } from '@Helpers/core'
 import { validFloat, validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
 
-export const useVacations = ({setLoading, screenControl}) => {
+export const useVacations = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataVacations, setDataVacations] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -36,7 +36,7 @@ export const useVacations = ({setLoading, screenControl}) => {
       setDataVacations(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -63,7 +63,7 @@ export const useVacations = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -77,7 +77,7 @@ export const useVacations = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -95,7 +95,7 @@ export const useVacations = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

@@ -79,7 +79,6 @@ const Destinations = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -98,23 +97,19 @@ const Destinations = (props) => {
     if (id > 0) {
       setLoading(true);
       request.PUT(`prodDestinations/${id}`, data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('prodDestinations', data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -124,12 +119,10 @@ const Destinations = (props) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`prodDestinations/${currentItem.id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       setCurrentItem({});
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

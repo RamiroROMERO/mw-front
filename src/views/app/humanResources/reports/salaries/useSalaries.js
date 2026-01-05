@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { formatDate, formatNumber, IntlMessages } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 
-export const useSalaries = ({setLoading, adminControl}) => {
+export const useSalaries = ({ setLoading, adminControl }) => {
   const [listEmployees, setListEmployees] = useState([]);
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.003")?.active || false;
 
@@ -28,7 +28,7 @@ export const useSalaries = ({setLoading, adminControl}) => {
         text: IntlMessages("table.column.dateIn"),
         dataField: "dateIn",
         headerStyle: { width: "15%" },
-        cell:({row})=>{
+        cell: ({ row }) => {
           return (formatDate(row.original.dateIn));
         }
       },
@@ -36,9 +36,9 @@ export const useSalaries = ({setLoading, adminControl}) => {
         text: IntlMessages("table.column.salary"),
         dataField: "defaultSalary",
         headerStyle: { width: "15%" },
-        style:{textAlign: 'right'},
-        cell:({row})=>{
-          return (formatNumber(row.original.defaultSalary,'', 2));
+        style: { textAlign: 'right' },
+        cell: ({ row }) => {
+          return (formatNumber(row.original.defaultSalary, '', 2));
         }
       },
       {
@@ -55,7 +55,7 @@ export const useSalaries = ({setLoading, adminControl}) => {
     actions: []
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
     request.GET('rrhh/process/employees/findSL', (resp) => {
       const employees = resp.data.map((item) => {
@@ -67,10 +67,10 @@ export const useSalaries = ({setLoading, adminControl}) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
-  },[])
+  }, [])
 
   const propsToHeader = {
     listEmployees,

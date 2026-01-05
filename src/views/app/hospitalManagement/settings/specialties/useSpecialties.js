@@ -17,7 +17,6 @@ export const useSpecialties = ({ setLoading }) => {
       setTable({ ...table, data });
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }

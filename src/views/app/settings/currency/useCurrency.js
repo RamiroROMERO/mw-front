@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms';
 
-export const useCurrency = ({setLoading}) => {
+export const useCurrency = ({ setLoading }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
   const listDecimalMark = [{ id: ".", name: ". (Punto)" }, { id: ",", name: ", (Coma)" }];
@@ -35,7 +35,6 @@ export const useCurrency = ({setLoading}) => {
       setTableData(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -58,7 +57,6 @@ export const useCurrency = ({setLoading}) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
@@ -68,7 +66,6 @@ export const useCurrency = ({setLoading}) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -86,7 +83,6 @@ export const useCurrency = ({setLoading}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }

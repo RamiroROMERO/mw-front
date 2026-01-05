@@ -35,7 +35,6 @@ export const useHeaderHR = ({ setopenModalAddSchedule, setListWorkSchedules, set
       setListWorkSchedules(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

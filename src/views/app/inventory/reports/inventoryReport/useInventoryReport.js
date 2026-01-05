@@ -38,7 +38,7 @@ export const useInventoryReport = ({ setLoading }) => {
       setListStores(stores);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -52,7 +52,7 @@ export const useInventoryReport = ({ setLoading }) => {
       setListProducts(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

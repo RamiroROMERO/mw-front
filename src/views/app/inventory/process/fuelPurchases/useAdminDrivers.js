@@ -38,7 +38,7 @@ export const useAdminDrivers = ({ setLoading, fnGetDataDrivers, dataDrivers }) =
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -111,7 +111,7 @@ export const useAdminDrivers = ({ setLoading, fnGetDataDrivers, dataDrivers }) =
         fnGetDataDrivers();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -121,7 +121,7 @@ export const useAdminDrivers = ({ setLoading, fnGetDataDrivers, dataDrivers }) =
         fnGetDataDrivers();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

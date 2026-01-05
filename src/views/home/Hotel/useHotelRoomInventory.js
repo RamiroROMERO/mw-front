@@ -29,7 +29,6 @@ export const useHotelRoomInventory = ({ setLoading }) => {
       });
       setTable({ ...table, columns });
     }, err => {
-      console.log(err);
       setLoading(false);
     });
   }, []);
@@ -49,7 +48,6 @@ export const useHotelRoomInventory = ({ setLoading }) => {
       });
       setTable({ ...table, columns: [...columns], data: dataForTable });
     }, err => {
-      console.log(err);
       setLoading(false);
     });
   }

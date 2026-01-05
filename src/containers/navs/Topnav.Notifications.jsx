@@ -62,7 +62,6 @@ const TopnavNotifications = () => {
   //     });
   //     setDatanotifications(listProjects);
   //   }, (err) => {
-  //     console.error(err);
   //   });
   // }, []);
 

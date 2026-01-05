@@ -100,7 +100,7 @@ export const useCustomers = ({ setLoading }) => {
       setOpenModalViewCust(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -117,7 +117,7 @@ export const useCustomers = ({ setLoading }) => {
       setListLedgerAccounts(listAccounts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -129,14 +129,14 @@ export const useCustomers = ({ setLoading }) => {
         }
       });
       setListDepartments(listDeptos);
-    }, err => console.log(err))
+    }, err => { })
 
     request.GET('admin/customerTypes', (resp) => {
       const listCustomersTypes = resp.data;
       setListTypeCustomers(listCustomersTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -225,22 +225,20 @@ export const useCustomers = ({ setLoading }) => {
     if (id > 0) {
       setLoading(true);
       request.PUT(`billing/settings/customers/${id}`, newData, (resp) => {
-        console.log(resp);
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('billing/settings/customers/', newData, (resp) => {
-        console.log(resp);
         setSendForm(false);
         onInputChange({ target: { name: 'id', value: resp.data.id } });
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -258,11 +256,10 @@ export const useCustomers = ({ setLoading }) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`billing/settings/customers/${id}`, (resp) => {
-      console.log(resp);
       fnNewCustomer();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

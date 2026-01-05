@@ -52,7 +52,6 @@ export const useNewEvent = ({ IntlMessages, idPatientFile, setLoading, fnGetEven
         setIdEvent(resp.data.id);
         fnGetEvents(idPatientFile);
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     } else {
@@ -60,7 +59,6 @@ export const useNewEvent = ({ IntlMessages, idPatientFile, setLoading, fnGetEven
         setLoading(false);
         fnGetEvents(idPatientFile);
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -75,7 +73,6 @@ export const useNewEvent = ({ IntlMessages, idPatientFile, setLoading, fnGetEven
       idEvent
     }
     request.GETPdf('hospital/process/expedients/exportPDFFileEvent', dataPrint, 'Registro de Atencion.pdf', (err) => {
-      // console.error(err);
       setLoading(false);
     });
   }

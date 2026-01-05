@@ -1,7 +1,7 @@
 import { request } from '@/helpers/core';
 import { useState } from 'react'
 
-export const useModalImages = ({productCode, fnGetImages, setLoading, setOpen}) => {
+export const useModalImages = ({ productCode, fnGetImages, setLoading, setOpen }) => {
   const [imagesUpload, setImagesUpload] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [idImage, setIdImage] = useState(0);
@@ -9,8 +9,8 @@ export const useModalImages = ({productCode, fnGetImages, setLoading, setOpen}) 
   const fnSave = () => {
 
     // guardar galeria
-    if(imagesUpload && imagesUpload.length>0){
-        imagesUpload.forEach(item => {
+    if (imagesUpload && imagesUpload.length > 0) {
+      imagesUpload.forEach(item => {
         const data = {
           productCode,
           name: item.name
@@ -19,8 +19,7 @@ export const useModalImages = ({productCode, fnGetImages, setLoading, setOpen}) 
         setLoading(true);
         request.POST('inventory/settings/productPictures', data, (resp) => {
           setLoading(false);
-        },(err)=>{
-          console.error(err);
+        }, (err) => {
           setLoading(false);
         });
       });
@@ -40,7 +39,6 @@ export const useModalImages = ({productCode, fnGetImages, setLoading, setOpen}) 
       fnGetImages();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

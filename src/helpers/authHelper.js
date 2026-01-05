@@ -11,7 +11,6 @@ const ProtectedRoute = ({
   const setComponent = (props) => {
     if (isAuthGuardActive) {
       const currentUser = getCurrentUser();
-      console.log(currentUser);
       if (currentUser) {
         if (roles) {
           if (roles.includes(currentUser.role)) {

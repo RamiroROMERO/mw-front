@@ -47,7 +47,7 @@ export const usePurchaseDeta = ({ setLoading, setPurchaseDetail }) => {
       setPurchaseDetail(purchaseDeta);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -81,7 +81,7 @@ export const usePurchaseDeta = ({ setLoading, setPurchaseDetail }) => {
       setOpenModalProducts(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

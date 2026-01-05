@@ -6,11 +6,11 @@ import { InputField } from '@/components/inputFields'
 import { request } from '@/helpers/core'
 
 const ModalAddLocations = ({ setOpen, data }) => {
-  const {setLoading, setListLocations} = data;
+  const { setLoading, setListLocations } = data;
 
   const [nameLocation, setNameLocation] = useState('')
 
-  const fnGetLocations = ()=>{
+  const fnGetLocations = () => {
     request.GET('inventory/settings/locations', (resp) => {
       const listLoc = resp.data.map((item) => {
         return {
@@ -21,22 +21,21 @@ const ModalAddLocations = ({ setOpen, data }) => {
       setListLocations(listLoc);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
 
-  const fnSaveLocation = ()=>{
-    if (nameLocation.length <3){
+  const fnSaveLocation = () => {
+    if (nameLocation.length < 3) {
       return
     }
-    const data = {name:nameLocation};
+    const data = { name: nameLocation };
     setLoading(true);
-    request.POST('inventory/settings/locations', data, (resp)=>{
+    request.POST('inventory/settings/locations', data, (resp) => {
       setLoading(false);
       fnGetLocations();
       setOpen(false)
-    }, err=>{
+    }, err => {
       setLoading(false);
       setOpen(false);
     });
@@ -52,7 +51,7 @@ const ModalAddLocations = ({ setOpen, data }) => {
               id="nameLocation"
               name="nameLocation"
               value={nameLocation}
-              onChange = {({target})=>setNameLocation(target.value)}
+              onChange={({ target }) => setNameLocation(target.value)}
             />
           </Colxx>
         </Row>

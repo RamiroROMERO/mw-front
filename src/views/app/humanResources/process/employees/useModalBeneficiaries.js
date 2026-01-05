@@ -99,7 +99,7 @@ export const useModalBeneficiaries = ({ employeeId, setLoading }) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -118,7 +118,7 @@ export const useModalBeneficiaries = ({ employeeId, setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -128,7 +128,7 @@ export const useModalBeneficiaries = ({ employeeId, setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -142,7 +142,7 @@ export const useModalBeneficiaries = ({ employeeId, setLoading }) => {
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

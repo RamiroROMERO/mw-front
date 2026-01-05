@@ -4,7 +4,7 @@ import { validFloat, validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
 
-export const useOvertime = ({setLoading, screenControl}) => {
+export const useOvertime = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataOvertime, setDataOvertime] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -40,7 +40,7 @@ export const useOvertime = ({setLoading, screenControl}) => {
       setDataOvertime(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -67,7 +67,7 @@ export const useOvertime = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -81,7 +81,7 @@ export const useOvertime = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -99,7 +99,7 @@ export const useOvertime = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

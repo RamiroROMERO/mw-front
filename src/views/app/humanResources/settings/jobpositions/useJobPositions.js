@@ -4,7 +4,7 @@ import { useForm } from '@/hooks';
 import { validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
 
-export const useJobPositions = ({setLoading, screenControl}) => {
+export const useJobPositions = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [listLevel, setListLevel] = useState([]);
   const [openModalLevel, setOpenModalLevel] = useState(false);
@@ -40,7 +40,7 @@ export const useJobPositions = ({setLoading, screenControl}) => {
       setDataJobPosition(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -58,7 +58,7 @@ export const useJobPositions = ({setLoading, screenControl}) => {
       setListLevel(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -93,7 +93,7 @@ export const useJobPositions = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -107,7 +107,7 @@ export const useJobPositions = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -125,7 +125,7 @@ export const useJobPositions = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

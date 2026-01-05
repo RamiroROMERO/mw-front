@@ -57,18 +57,14 @@ const Start = ({ match, loaded }) => {
         return item;
       });
       setDataCalendar(data);
-    }, (err) => {
-      console.error(err);
-    });
+    }, (err) => { });
     request.GET('prodProjects/findGroupByStatus', (resp) => {
       const data = resp.data.map((item) => {
         item.name = item.prodStep.name;
         return item;
       });
       setDataProjectsStatus(data);
-    }, (err) => {
-      console.error(err);
-    });
+    }, (err) => { });
   }, []);
 
   const propsToModalProjects = {

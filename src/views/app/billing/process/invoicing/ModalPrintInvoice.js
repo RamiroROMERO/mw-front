@@ -24,12 +24,12 @@ const ModalPrintInvoice = (props) => {
   const fnPrintInvoice = () => {
     if (typePrint === "1") {
       request.GETPdf('billing/process/invoices/exportPDF', { id, userName: userData.name }, 'Factura Detallada.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else if (typePrint === "3") {
       request.GETPdf('billing/process/invoices/exportPDFByType', { id, userName: userData.name }, 'Factura Resumida por Tipo.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

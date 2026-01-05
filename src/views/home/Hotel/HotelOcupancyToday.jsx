@@ -3,10 +3,11 @@ import { Badge, Button, Card, CardBody, CardTitle, Col, Row, Table } from 'react
 import DateCalendar from '@Components/dateCalendar';
 import { IntlMessages } from '@Helpers/Utils';
 import { request } from '@/helpers/core';
+import DateHelper from '@/helpers/DateHelper';
 
 export const HotelOccupancyToday = ({ setLoading, setCurrentReservation, setOpenModalAdd }) => {
 
-  const [currentDate, setCurrentDate] = useState(new Date().toJSON().substring(0, 10));
+  const [currentDate, setCurrentDate] = useState(DateHelper.getDate());
   const [dataOccupancy, setDataOccupancy] = useState([]);
   const [totalOccupancy, setTotalOccupancy] = useState(0);
 
@@ -31,7 +32,6 @@ export const HotelOccupancyToday = ({ setLoading, setCurrentReservation, setOpen
       setOpenModalAdd(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

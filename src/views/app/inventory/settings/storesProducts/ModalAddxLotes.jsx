@@ -6,24 +6,23 @@ import { request } from '@/helpers/core'
 import { SimpleSelect } from '@/components/simpleSelect'
 
 const ModalAddxLotes = ({ setOpen, data }) => {
-  const {setLoading, listWarehouse} = data;
+  const { setLoading, listWarehouse } = data;
 
   const [listProductType, setListProductType] = useState([]);
   const [warehouseId, setWarehouseId] = useState('0');
   const [productTypeId, setProductTypeId] = useState('');
 
-  const fnSaveLocation = ()=>{
-    if(validInt(warehouseId) === 0){
+  const fnSaveLocation = () => {
+    if (validInt(warehouseId) === 0) {
       return;
     }
 
-    if(validInt(productTypeId) === 0){
+    if (validInt(productTypeId) === 0) {
       return;
     }
 
-    const typeProductName = listProductType.find(elem=> validInt(elem.id) === validInt(productTypeId)).name;
-    const data = {warehouseId, productTypeId, typeProductName};
-    console.log(data);
+    const typeProductName = listProductType.find(elem => validInt(elem.id) === validInt(productTypeId)).name;
+    const data = { warehouseId, productTypeId, typeProductName };
     setLoading(true);
     setLoading(true);
     request.POST('inventory/settings/productsStore/addxLots', data, (resp) => {
@@ -35,13 +34,14 @@ const ModalAddxLotes = ({ setOpen, data }) => {
     });
   }
 
-  useEffect(()=>{
-    request.GET('inventory/settings/productsClassifications',(resp)=>{
-      const {data} = resp;
-      data.push({id:-1, name:'Todos'});
+  useEffect(() => {
+    request.GET('inventory/settings/productsClassifications', (resp) => {
+      const { data } = resp;
+      data.push({ id: -1, name: 'Todos' });
       setListProductType(data);
-    }, err=>{
-      console.log(err);
+      setLoading(false);
+    }, err => {
+      setLoading(false);
     })
   }, []);
 
@@ -55,8 +55,8 @@ const ModalAddxLotes = ({ setOpen, data }) => {
               name="warehouseId"
               id="warehouseId"
               value={warehouseId}
-              options = {listWarehouse}
-              onChange= {({target})=>setWarehouseId(target.value)}
+              options={listWarehouse}
+              onChange={({ target }) => setWarehouseId(target.value)}
             />
           </Colxx>
         </Row>
@@ -66,9 +66,9 @@ const ModalAddxLotes = ({ setOpen, data }) => {
               label="page.productsCatalog.modal.newProduct.title.type"
               name="productTypeId"
               id="productTypeId"
-              value={productTypeId }
-              options = {listProductType}
-              onChange= {({target})=>setProductTypeId(target.value)}
+              value={productTypeId}
+              options={listProductType}
+              onChange={({ target }) => setProductTypeId(target.value)}
             />
           </Colxx>
         </Row>

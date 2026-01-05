@@ -42,7 +42,6 @@ const useHotelAdmin = ({ setLoading }) => {
       setListRooms(rooms);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -64,7 +63,6 @@ const useHotelAdmin = ({ setLoading }) => {
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -78,7 +76,6 @@ const useHotelAdmin = ({ setLoading }) => {
       setListStatusBooking(bookingStatuses);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -92,7 +89,6 @@ const useHotelAdmin = ({ setLoading }) => {
       setListStatusPayment(bookingPayStatuses);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -106,7 +102,6 @@ const useHotelAdmin = ({ setLoading }) => {
       setListServices(products);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -120,7 +115,6 @@ const useHotelAdmin = ({ setLoading }) => {
       setListPaymenTypes(paymentTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -134,7 +128,6 @@ const useHotelAdmin = ({ setLoading }) => {
       setListBookingChannels(bookingChannels);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -154,7 +147,6 @@ const useHotelAdmin = ({ setLoading }) => {
       setListCountries(countries);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -168,7 +160,6 @@ const useHotelAdmin = ({ setLoading }) => {
       setListGenders(genders);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -182,7 +173,6 @@ const useHotelAdmin = ({ setLoading }) => {
       setListTypeTax(taxTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -196,7 +186,6 @@ const useHotelAdmin = ({ setLoading }) => {
       setListCompanies(customer);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 

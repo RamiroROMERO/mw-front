@@ -3,7 +3,7 @@ import { useForm } from '@Hooks'
 import { request } from '@Helpers/core';
 import { validFloat, validInt } from '@Helpers/Utils';
 
-export const useIncomes = ({setLoading, screenControl}) => {
+export const useIncomes = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [projectId, setProjectId] = useState(0);
   const [listEmployees, setListEmployees] = useState([]);
@@ -36,21 +36,21 @@ export const useIncomes = ({setLoading, screenControl}) => {
 
   const { id, hours } = formState;
 
-  const onProjectChange = e =>{
+  const onProjectChange = e => {
     const project = e.target.value;
     setProjectId(project);
   }
 
-  const onPercentChange = e =>{
+  const onPercentChange = e => {
     const percentVal = e.target.value;
 
     const payByHour = validFloat(incWeekly) / 30 / 8;
     const valHours = validFloat(payByHour, 4) * hours;
     const valHoursOver = (validFloat(percentVal) / 100) * valHours;
-    const totalPay = valHoursOver>0? valHours + valHoursOver : 0;
+    const totalPay = valHoursOver > 0 ? valHours + valHoursOver : 0;
 
     const newValue = {
-      value: validFloat(totalPay,2),
+      value: validFloat(totalPay, 2),
       days: 0
     }
 
@@ -58,32 +58,32 @@ export const useIncomes = ({setLoading, screenControl}) => {
     setPercent(percentVal);
   }
 
-  const onHoursChange = e =>{
+  const onHoursChange = e => {
     const hoursValue = e.target.value;
 
     const payByHour = validFloat(incWeekly) / 30 / 8;
     const valHours = validFloat(payByHour, 4) * hoursValue;
     const valHoursOver = (validFloat(percent) / 100) * valHours;
-    const totalPay = valHoursOver>0? valHours + valHoursOver : 0;
+    const totalPay = valHoursOver > 0 ? valHours + valHoursOver : 0;
 
     const newValue = {
       hours: hoursValue,
-      value: validFloat(totalPay,2),
+      value: validFloat(totalPay, 2),
       days: 0
     }
 
     onBulkForm(newValue);
   }
 
-  const onDaysIncChange = e =>{
+  const onDaysIncChange = e => {
     const daysValue = e.target.value;
 
-    const valDay = validFloat(incWeekly)/30;
+    const valDay = validFloat(incWeekly) / 30;
     const totalPay = valDay * validFloat(daysValue);
 
     const newValue = {
       days: daysValue,
-      value: validFloat(totalPay,2),
+      value: validFloat(totalPay, 2),
       hours: 0
     }
 
@@ -103,12 +103,12 @@ export const useIncomes = ({setLoading, screenControl}) => {
       setDataIncomes(incomes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
 
-  const fnConfirmDelete = () =>{
+  const fnConfirmDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/incomes/${id}`, () => {
@@ -116,7 +116,7 @@ export const useIncomes = ({setLoading, screenControl}) => {
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -137,7 +137,7 @@ export const useIncomes = ({setLoading, screenControl}) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -153,7 +153,7 @@ export const useIncomes = ({setLoading, screenControl}) => {
       setListTypeIncomes(listTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -169,15 +169,15 @@ export const useIncomes = ({setLoading, screenControl}) => {
       setListProjects(projectsList);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     const filterEmployees = listEmployees.filter(item => item.projectId === projectId);
     setListEmployeesByProject(filterEmployees);
-  },[projectId]);
+  }, [projectId]);
 
   const propsToDetailIncomes = {
     ...formState,

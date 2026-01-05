@@ -19,7 +19,6 @@ export const useSpecialist = ({ setLoading }) => {
       setTable({ ...table, data });
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }
@@ -88,7 +87,6 @@ export const useSpecialist = ({ setLoading }) => {
       setListSpecialties(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }, []);

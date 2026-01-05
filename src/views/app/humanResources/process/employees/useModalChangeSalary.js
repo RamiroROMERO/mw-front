@@ -3,7 +3,7 @@ import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks'
 import { useState } from 'react'
 
-export const useModalChangeSalary = ({setLoading}) => {
+export const useModalChangeSalary = ({ setLoading }) => {
   const [sendForm, setSendForm] = useState(false);
 
   const validations = {
@@ -16,7 +16,7 @@ export const useModalChangeSalary = ({setLoading}) => {
     jobPositionId: 0
   }, validations);
 
-  const {salary, jobPositionId} = formState;
+  const { salary, jobPositionId } = formState;
 
   const fnSave = () => {
     setSendForm(true);
@@ -25,12 +25,12 @@ export const useModalChangeSalary = ({setLoading}) => {
     }
 
     setLoading(true);
-    request.PUT(`rrhh/process/employees?jobPositionId=${jobPositionId}`, {defaultSalary: salary}, () => {
+    request.PUT(`rrhh/process/employees?jobPositionId=${jobPositionId}`, { defaultSalary: salary }, () => {
       onResetForm();
       setSendForm(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

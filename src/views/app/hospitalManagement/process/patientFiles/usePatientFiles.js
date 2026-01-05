@@ -59,7 +59,7 @@ export const usePatientFiles = ({ setLoading }) => {
     columns: [
       {
         text: IntlMessages("input.date"), dataField: "date", headerStyle: { 'width': '20%' },
-        cell:({row})=>{
+        cell: ({ row }) => {
           return (formatDate(row.original.date));
         }
       },
@@ -93,7 +93,7 @@ export const usePatientFiles = ({ setLoading }) => {
       setListCities(munic);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -123,14 +123,12 @@ export const usePatientFiles = ({ setLoading }) => {
       request.POST('hospital/process/expedients', formState, (resp) => {
         setLoading(false);
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
       request.PUT(`hospital/process/expedients/${id}`, formState, (resp) => {
         setLoading(false);
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -176,7 +174,6 @@ export const usePatientFiles = ({ setLoading }) => {
       setTableEvents({ ...tableEvents, data });
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }
@@ -212,7 +209,6 @@ export const usePatientFiles = ({ setLoading }) => {
       setListNationalities(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
 
@@ -226,7 +222,6 @@ export const usePatientFiles = ({ setLoading }) => {
       setListGenders(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
 
@@ -240,7 +235,6 @@ export const usePatientFiles = ({ setLoading }) => {
       setListCivilStatus(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
 
@@ -254,7 +248,6 @@ export const usePatientFiles = ({ setLoading }) => {
       setListStates(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
 
@@ -268,7 +261,6 @@ export const usePatientFiles = ({ setLoading }) => {
       setListAreas(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
 
@@ -282,7 +274,6 @@ export const usePatientFiles = ({ setLoading }) => {
       setListDoctors(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }, []);

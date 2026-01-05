@@ -30,7 +30,7 @@ export const useBookingStatus = ({ setLoading, screenControl }) => {
 
   const { id } = formState;
 
-  const fnGetData = (page=currentPage, searchText=search) => {
+  const fnGetData = (page = currentPage, searchText = search) => {
     // setLoading(true);
     // request.GET(`hotel/settings/bookingStatuses/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
     //   const data = resp.data.map((item) => {
@@ -42,7 +42,6 @@ export const useBookingStatus = ({ setLoading, screenControl }) => {
     //   setTotalPages(pageTotal);
     //   setLoading(false);
     // }, err => {
-    //   console.log(err)
     //   setLoading(false);
     // });
 
@@ -55,7 +54,6 @@ export const useBookingStatus = ({ setLoading, screenControl }) => {
       setDataStatus(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }
@@ -82,7 +80,6 @@ export const useBookingStatus = ({ setLoading, screenControl }) => {
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -96,7 +93,6 @@ export const useBookingStatus = ({ setLoading, screenControl }) => {
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -114,7 +110,7 @@ export const useBookingStatus = ({ setLoading, screenControl }) => {
         fnClear();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

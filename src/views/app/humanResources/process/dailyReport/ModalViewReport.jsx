@@ -6,31 +6,31 @@ import { request } from '@Helpers/core'
 import DateCalendar from '@Components/dateCalendar'
 import ReactTable from '@Components/reactTable'
 
-const ModalViewReport = ({data, setOpen}) => {
-  const {date, dataDailyReport, setEmployeesDetail, setBulkForm, setLoading, listProjects, setFilterProjects} = data;
+const ModalViewReport = ({ data, setOpen }) => {
+  const { date, dataDailyReport, setEmployeesDetail, setBulkForm, setLoading, listProjects, setFilterProjects } = data;
 
-  const fnViewReport = (itemRep)=>{
-    const filter = listProjects.filter((item)=>{
+  const fnViewReport = (itemRep) => {
+    const filter = listProjects.filter((item) => {
       return item.customerId === itemRep.customerId
     });
     setFilterProjects(filter);
     setLoading(true);
-    request.GET(`rrhh/process/dailyReportDetail?fatherId=${itemRep.id}`, (resp)=>{
-      const reportDetail = resp.data.map((item)=>{
+    request.GET(`rrhh/process/dailyReportDetail?fatherId=${itemRep.id}`, (resp) => {
+      const reportDetail = resp.data.map((item) => {
         return {
           id: item.id,
           date: item.date,
           employeeId: item.employeeId,
-          name: item.rrhhEmployee?`${item.rrhhEmployee.firstName} ${item.rrhhEmployee.secondName} ${item.rrhhEmployee.lastName}
-          ${item.rrhhEmployee.secondLastName}`:""
+          name: item.rrhhEmployee ? `${item.rrhhEmployee.firstName} ${item.rrhhEmployee.secondName} ${item.rrhhEmployee.lastName}
+          ${item.rrhhEmployee.secondLastName}` : ""
         }
       });
       setEmployeesDetail(reportDetail);
       setBulkForm(itemRep);
       setOpen(false);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
@@ -41,30 +41,30 @@ const ModalViewReport = ({data, setOpen}) => {
       {
         text: IntlMessages("table.column.date"),
         dataField: "date",
-        headerStyle: {width: "10%"},
-        cell:({row})=>{
+        headerStyle: { width: "10%" },
+        cell: ({ row }) => {
           return (formatDate(row.original.date));
         }
       },
       {
         text: IntlMessages("table.column.customer"),
         dataField: "customer",
-        headerStyle: {width: "35%"}
+        headerStyle: { width: "35%" }
       },
       {
         text: IntlMessages("table.column.project"),
         dataField: "project",
-        headerStyle: {width: "25%"}
+        headerStyle: { width: "25%" }
       },
       {
         text: IntlMessages("page.employees.select.workSchedule"),
         dataField: "turnName",
-        headerStyle: {width: "20%"}
+        headerStyle: { width: "20%" }
       },
       {
         text: IntlMessages("table.column.status"),
         dataField: "statusIcon",
-        headerStyle: {width: "10%"}
+        headerStyle: { width: "10%" }
       }
     ],
     data: dataDailyReport,
@@ -83,28 +83,28 @@ const ModalViewReport = ({data, setOpen}) => {
 
   return (
     <>
-    <ModalBody>
-      <Row>
-        <Colxx xxs="12" md="6">
-          <DateCalendar
-            name="date"
-            value={date}
-            label='select.date'
-            disabled
-          />
-        </Colxx>
-      </Row>
-      <Row>
-        <Colxx xxs="12">
-          <ReactTable {...table}/>
-        </Colxx>
-      </Row>
-    </ModalBody>
-    <ModalFooter>
-      <Button color="danger" onClick={()=>{setOpen(false)}} >
-        <i className="bi bi-box-arrow-right"/>{` ${IntlMessages('button.exit')}`}
-      </Button>
-    </ModalFooter>
+      <ModalBody>
+        <Row>
+          <Colxx xxs="12" md="6">
+            <DateCalendar
+              name="date"
+              value={date}
+              label='select.date'
+              disabled
+            />
+          </Colxx>
+        </Row>
+        <Row>
+          <Colxx xxs="12">
+            <ReactTable {...table} />
+          </Colxx>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />{` ${IntlMessages('button.exit')}`}
+        </Button>
+      </ModalFooter>
     </>
   )
 }

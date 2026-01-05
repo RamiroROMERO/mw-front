@@ -43,7 +43,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
     total: baseRate,
   }, invoicingValid);
 
-  const {invoiceDate, documentCode, billingToCompany, cashId, cashierId, documentType, price, qty, subtotal, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total} = formState;
+  const { invoiceDate, documentCode, billingToCompany, cashId, cashierId, documentType, price, qty, subtotal, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total } = formState;
 
   const onPriceChange = e => {
     const subtotal = validFloat(e.target.value * qty);
@@ -96,7 +96,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
 
   const onDiscountValueChange = e => {
     const discount = validFloat(e.target.value);
-    const discountPer = validFloat((e.target.value * 100)/subtotal);
+    const discountPer = validFloat((e.target.value * 100) / subtotal);
     const tax = validFloat((taxPercent * (subtotal - discount)) / 100);
     const otherTax = validFloat((otherTaxPercent * (subtotal - discount)) / 100);
     const totalCost = validFloat(subtotal - discount) + validFloat(tax) + validFloat(otherTax);
@@ -123,7 +123,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
 
   const onTaxValueChange = e => {
     const taxValue = validFloat(e.target.value);
-    const taxPercent = validFloat((taxValue * 100) /  (subtotal - discountValue));
+    const taxPercent = validFloat((taxValue * 100) / (subtotal - discountValue));
     const totalCost = validFloat(subtotal - discountValue) + validFloat(taxValue) + validFloat(otherTaxValue);
     const newTaxValue = {
       taxPercent,
@@ -146,7 +146,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
 
   const onOtherTaxValueChange = e => {
     const taxOtherValue = validFloat(e.target.value);
-    const taxOtherPercent = validFloat((taxOtherValue * 100) /  (subtotal - discountValue));
+    const taxOtherPercent = validFloat((taxOtherValue * 100) / (subtotal - discountValue));
     const totalCost = validFloat(subtotal - discountValue) + validFloat(taxValue) + validFloat(taxOtherValue);
     const newTaxValue = {
       otherTaxPercent: taxOtherPercent,
@@ -161,7 +161,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
     request.GET(`hotel/process/bookingCharges?bookingId=${bookingId}`, (resp) => {
       const bookingCharges = resp.data.map((item) => {
         item.service = item?.serviceData?.name || ""
-        item.priceTotal = validFloat(item.price) + validFloat(item.price * (item.taxPercent/100))
+        item.priceTotal = validFloat(item.price) + validFloat(item.price * (item.taxPercent / 100))
         return item;
       });
       setDataServices(bookingCharges);
@@ -169,7 +169,6 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
       setTotalValServices(sumTotal);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -186,7 +185,6 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
       setTotalValPayments(sumTotal);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -196,9 +194,9 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
     if (!isFormValid) {
       return;
     }
-    if(validInt(documentType) === 1){
+    if (validInt(documentType) === 1) {
       setOpenModalGenerateInvoice(true);
-    }else{
+    } else {
       const invoiceData = {
         documentCode,
         bookingId,
@@ -206,9 +204,9 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
         cashierId,
         invoiceDate,
         billingToCompany,
-        isCredit: documentType===1? false : true,
+        isCredit: documentType === 1 ? false : true,
         creditDays,
-        detailRoom:{
+        detailRoom: {
           roomId,
           qty: validFloat(qty),
           price: validFloat(price),
@@ -234,8 +232,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
       request.POST('hotel/process/bookings/generateInvoice', data, (resp) => {
         setOpen(false);
         setLoading(false);
-      },(err)=>{
-        console.error(err);
+      }, (err) => {
         setLoading(false);
       });
     }
@@ -244,13 +241,12 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
   useEffect(() => {
     request.GET('admin/paymentTypes/getForCustomers', (resp) => {
       const paymentTypes = resp.data.map((item) => {
-        item.value= 0
+        item.value = 0
         item.reference = ""
         return item
       });
       setListTypePayments(paymentTypes);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -266,7 +262,6 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
       setListTypeDocuments(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -287,7 +282,6 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
       setListCashiers(cashiers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -301,18 +295,17 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
       setListCashBoxes(cashRegisters);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
   }, []);
 
-  useEffect(()=>{
-    if(validInt(bookingId)>0){
+  useEffect(() => {
+    if (validInt(bookingId) > 0) {
       fnGetDataServices();
       fnGetDataPayments();
     }
-  },[bookingId]);
+  }, [bookingId]);
 
   useEffect(() => {
     const date1 = moment(checkInDate);

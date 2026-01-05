@@ -106,7 +106,6 @@ export const useSummaryByProduct = ({ setLoading }) => {
       setTotals(totals);
       setLoading(false);
     }, err => {
-      console.log(err);
       setLoading(false);
     }, false);
   };

@@ -49,8 +49,8 @@ export const useIncapacities = ({ setLoading, screenControl }) => {
     setLoading(true);
     request.GET('rrhh/process/incapacities', (resp) => {
       const incapacities = resp.data.map((item) => {
-        item.startDisability = item.startDisability==="0000-00-00"?"1900-01-01":item.startDisability
-        item.endDisability = item.endDisability==="0000-00-00"?"1900-01-01":item.endDisability
+        item.startDisability = item.startDisability === "0000-00-00" ? "1900-01-01" : item.startDisability
+        item.endDisability = item.endDisability === "0000-00-00" ? "1900-01-01" : item.endDisability
         item.employee = `${item.rrhhEmployee.firstName} ${item.rrhhEmployee.secondName} ${item.rrhhEmployee.lastName} 
         ${item.rrhhEmployee.secondLastName}`
         item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
@@ -61,7 +61,7 @@ export const useIncapacities = ({ setLoading, screenControl }) => {
       setOpenModalIncapacity(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -83,7 +83,7 @@ export const useIncapacities = ({ setLoading, screenControl }) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -96,7 +96,7 @@ export const useIncapacities = ({ setLoading, screenControl }) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -118,11 +118,9 @@ export const useIncapacities = ({ setLoading, screenControl }) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/incapacities/${id}`, (resp) => {
-      console.log(resp);
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -139,7 +137,7 @@ export const useIncapacities = ({ setLoading, screenControl }) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

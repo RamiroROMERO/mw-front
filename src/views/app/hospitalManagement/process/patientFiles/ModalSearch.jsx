@@ -6,13 +6,13 @@ import { request } from '@/helpers/core'
 import ReactTable from '@/components/reactTable'
 import { formatDate } from '@Helpers/Utils'
 
-const ModalSearch = ({data, setOpen}) => {
-  const {setLoading, onBulkForm, setListCities, fnGetEvents} = data;
+const ModalSearch = ({ data, setOpen }) => {
+  const { setLoading, onBulkForm, setListCities, fnGetEvents } = data;
 
-  const fnViewFile = (row)=>{
+  const fnViewFile = (row) => {
     setLoading(true);
-    request.GET(`admin/locateMunic?codeDepto=${row.estateCode}`, (resp)=>{
-      const munic = resp.data.map((item) =>{
+    request.GET(`admin/locateMunic?codeDepto=${row.estateCode}`, (resp) => {
+      const munic = resp.data.map((item) => {
         return {
           value: item.code,
           code: item.code,
@@ -24,8 +24,8 @@ const ModalSearch = ({data, setOpen}) => {
       onBulkForm(row);
       setOpen(false);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
 
@@ -35,21 +35,21 @@ const ModalSearch = ({data, setOpen}) => {
   const [table, setTable] = useState({
     title: IntlMessages("menu.hospitalManagement.patientFiles"),
     columns: [
-      { text: IntlMessages("input.codePhysic"), dataField: "code", headerStyle:{'width' : '15%'}},
-      { text: IntlMessages("table.column.dni"), dataField: "dni", headerStyle:{'width' : '25%'} },
-      { text: IntlMessages("table.column.name"), dataField: "name", headerStyle:{'width' : '45%'}},
+      { text: IntlMessages("input.codePhysic"), dataField: "code", headerStyle: { 'width': '15%' } },
+      { text: IntlMessages("table.column.dni"), dataField: "dni", headerStyle: { 'width': '25%' } },
+      { text: IntlMessages("table.column.name"), dataField: "name", headerStyle: { 'width': '45%' } },
       {
-        text: IntlMessages("table.column.dateIn"), dataField: "dateIn", headerStyle:{'width' : '15%'},
-        cell:({row})=>{
+        text: IntlMessages("table.column.dateIn"), dataField: "dateIn", headerStyle: { 'width': '15%' },
+        cell: ({ row }) => {
           return (formatDate(row.original.dateIn));
         }
       }
     ],
     data: [],
-    options:{
-      columnActions:'options'
+    options: {
+      columnActions: 'options'
     },
-    actions:[
+    actions: [
       {
         color: "primary",
         icon: "eye",
@@ -59,36 +59,35 @@ const ModalSearch = ({data, setOpen}) => {
     ]
   });
 
-  const fnGetData = ()=>{
+  const fnGetData = () => {
     setLoading(true);
-    request.GET('hospital/process/expedients', (resp)=>{
+    request.GET('hospital/process/expedients', (resp) => {
       const data = resp.data;
-      setTable({...table, data});
+      setTable({ ...table, data });
       setLoading(false);
-    }, err=>{
-      console.log(err)
+    }, err => {
       setLoading(false);
     });
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fnGetData();
-  },[]);
+  }, []);
 
   return (
     <>
-    <ModalBody>
-      <Row>
-        <Colxx xxs="12">
-          <ReactTable {...table}/>
-        </Colxx>
-      </Row>
-    </ModalBody>
-    <ModalFooter>
-      <Button color="danger" onClick={()=>{setOpen(false)}} >
-        <i className="bi bi-box-arrow-right"/>{` ${IntlMessages('button.exit')}`}
-      </Button>
-    </ModalFooter>
+      <ModalBody>
+        <Row>
+          <Colxx xxs="12">
+            <ReactTable {...table} />
+          </Colxx>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />{` ${IntlMessages('button.exit')}`}
+        </Button>
+      </ModalFooter>
     </>
   )
 }

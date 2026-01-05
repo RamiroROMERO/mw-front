@@ -93,7 +93,7 @@ export const useBankAccounts = ({ setLoading }) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -111,7 +111,7 @@ export const useBankAccounts = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -121,7 +121,7 @@ export const useBankAccounts = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -140,7 +140,7 @@ export const useBankAccounts = ({ setLoading }) => {
         setCurrentItem({});
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -158,7 +158,7 @@ export const useBankAccounts = ({ setLoading }) => {
       setListAccount(account);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     fnGetData();

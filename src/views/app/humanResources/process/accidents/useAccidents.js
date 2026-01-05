@@ -57,7 +57,7 @@ export const useAccidents = ({ setLoading, screenControl }) => {
     status: 1
   }, accidentValid);
 
-  const { id, typeId, stroke, fall, injury, other, startDisability, endDisability, affectedHead, affectedFace, affectedBody, affectedHands, affectedArms, affectedBack, affectedLags, affectedFeet, affectedOtherParts} = formState;
+  const { id, typeId, stroke, fall, injury, other, startDisability, endDisability, affectedHead, affectedFace, affectedBody, affectedHands, affectedArms, affectedBack, affectedLags, affectedFeet, affectedOtherParts } = formState;
 
   const fnNewAccident = () => {
     onResetForm();
@@ -84,7 +84,7 @@ export const useAccidents = ({ setLoading, screenControl }) => {
       setOpenModalAccidents(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -132,7 +132,7 @@ export const useAccidents = ({ setLoading, screenControl }) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -145,7 +145,7 @@ export const useAccidents = ({ setLoading, screenControl }) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -162,7 +162,7 @@ export const useAccidents = ({ setLoading, screenControl }) => {
         userName: userData.name
       }
       request.GETPdf('rrhh/process/accidents/exportPDFAccident', dataPrint, 'Reporte de Accidente e Incapacidad.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -185,7 +185,7 @@ export const useAccidents = ({ setLoading, screenControl }) => {
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -203,7 +203,7 @@ export const useAccidents = ({ setLoading, screenControl }) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

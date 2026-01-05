@@ -2,7 +2,7 @@ import { request } from '@/helpers/core';
 import { formatNumber, IntlMessages } from '@/helpers/Utils';
 import React, { useEffect, useState } from 'react'
 
-export const useBiweeklyIncomes = ({setLoading, adminControl}) => {
+export const useBiweeklyIncomes = ({ setLoading, adminControl }) => {
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.010")?.active || false;
   const [listProjects, setListProjects] = useState([]);
   const [listTypeIncomes, setListTypeIncomes] = useState([]);
@@ -44,7 +44,7 @@ export const useBiweeklyIncomes = ({setLoading, adminControl}) => {
         text: IntlMessages("table.column.value"),
         dataField: "value",
         headerStyle: { width: "10%" },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.value, '', 2));
         }
       },
@@ -58,7 +58,7 @@ export const useBiweeklyIncomes = ({setLoading, adminControl}) => {
     actions: []
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
     request.GET('rrhh/process/projects', (resp) => {
       const projectsList = resp.data.map((item) => {
@@ -71,7 +71,7 @@ export const useBiweeklyIncomes = ({setLoading, adminControl}) => {
       setListProjects(projectsList);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -87,7 +87,7 @@ export const useBiweeklyIncomes = ({setLoading, adminControl}) => {
       setListTypeIncomes(listTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

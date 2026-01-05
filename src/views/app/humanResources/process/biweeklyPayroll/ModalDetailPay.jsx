@@ -14,8 +14,8 @@ import Confirmation from '@Containers/ui/confirmationMsg';
 import createNotification from '@Containers/ui/Notifications';
 import moment from 'moment';
 
-const ModalDetailPay = ({setOpen, data}) => {
-  const {idPayroll, date, biweekId, listEmployees, listBiweeklies, listJobPositions, listPaymentMethod, setLoading, fnViewDetailPayroll, currentItem } = data;
+const ModalDetailPay = ({ setOpen, data }) => {
+  const { idPayroll, date, biweekId, listEmployees, listBiweeklies, listJobPositions, listPaymentMethod, setLoading, fnViewDetailPayroll, currentItem } = data;
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [disabledAbsence, setDisabledAbsence] = useState(false);
   const [disabledIhss, setDisabledIhss] = useState(false);
@@ -28,60 +28,60 @@ const ModalDetailPay = ({setOpen, data}) => {
   const [activeTab, setActiveTab] = useState('1');
 
   const detailPayValid = {
-    employeeId: [(val)=> validInt(val)>0, "msg.required.select.employeeId"],
-    methodPaymentId: [(val)=> validInt(val)>0, "msg.required.select.method"],
-    daysWorked: [(val)=> validInt(val)>0 && validInt(val)<=15, "msg.required.input.daysWorked"],
-    incBiweekly: [(val)=> validInt(val)>0, "msg.required.input.incBiweekly"],
+    employeeId: [(val) => validInt(val) > 0, "msg.required.select.employeeId"],
+    methodPaymentId: [(val) => validInt(val) > 0, "msg.required.select.method"],
+    daysWorked: [(val) => validInt(val) > 0 && validInt(val) <= 15, "msg.required.input.daysWorked"],
+    incBiweekly: [(val) => validInt(val) > 0, "msg.required.input.incBiweekly"],
   }
 
   const deductionValid = {
-    value: [(val)=> validInt(val)>0, "msg.required.input.value"],
-    description: [(val)=> val!=="", "msg.required.input.description"]
+    value: [(val) => validInt(val) > 0, "msg.required.input.value"],
+    description: [(val) => val !== "", "msg.required.input.description"]
   }
 
-  const {formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm} = useForm({
-    id: currentItem.id?currentItem.id:0,
+  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
+    id: currentItem.id ? currentItem.id : 0,
     fatherId: idPayroll,
-    employeeId: currentItem.employeeId?currentItem.employeeId:0,
-    jobPositionId: currentItem.jobPositionId?currentItem.jobPositionId:0,
-    methodPaymentId: currentItem.methodPaymentId?currentItem.methodPaymentId:0,
-    daysWorked: currentItem.daysWorked?currentItem.daysWorked:15,
-    excusedAbsence: currentItem.excusedAbsence?currentItem.excusedAbsence:0,
-    totalIncomes: currentItem.totalIncomes?currentItem.totalIncomes:0,
-    internalDeductions: currentItem.internalDeductions?currentItem.internalDeductions:0,
-    externalDeductions: currentItem.externalDeductions?currentItem.externalDeductions:0,
-    totalDeductions: currentItem.totalDeductions?currentItem.totalDeductions:0,
-    totalPayment: currentItem.totalPayment?currentItem.totalPayment:0,
-    incBiweekly: currentItem.incBiweekly?currentItem.incBiweekly:0,
-    incOvertime: currentItem.incOvertime?currentItem.incOvertime:0,
-    incValueHour: currentItem.incValueHour?currentItem.incValueHour:0,
-    incOthers: currentItem.incOthers?currentItem.incOthers:0,
-    incTotal: currentItem.totalIncomes?currentItem.totalIncomes:0,
-    deducIsr: currentItem.deducIsr?currentItem.deducIsr:0,
-    deducIhss: currentItem.deducIhss?currentItem.deducIhss:0,
-    deducRap: currentItem.deducRap?currentItem.deducRap:0,
-    deducAbsence: currentItem.deducAbsence?currentItem.deducAbsence:0,
-    deducTotal: currentItem.deducTotal?currentItem.deducTotal:0
+    employeeId: currentItem.employeeId ? currentItem.employeeId : 0,
+    jobPositionId: currentItem.jobPositionId ? currentItem.jobPositionId : 0,
+    methodPaymentId: currentItem.methodPaymentId ? currentItem.methodPaymentId : 0,
+    daysWorked: currentItem.daysWorked ? currentItem.daysWorked : 15,
+    excusedAbsence: currentItem.excusedAbsence ? currentItem.excusedAbsence : 0,
+    totalIncomes: currentItem.totalIncomes ? currentItem.totalIncomes : 0,
+    internalDeductions: currentItem.internalDeductions ? currentItem.internalDeductions : 0,
+    externalDeductions: currentItem.externalDeductions ? currentItem.externalDeductions : 0,
+    totalDeductions: currentItem.totalDeductions ? currentItem.totalDeductions : 0,
+    totalPayment: currentItem.totalPayment ? currentItem.totalPayment : 0,
+    incBiweekly: currentItem.incBiweekly ? currentItem.incBiweekly : 0,
+    incOvertime: currentItem.incOvertime ? currentItem.incOvertime : 0,
+    incValueHour: currentItem.incValueHour ? currentItem.incValueHour : 0,
+    incOthers: currentItem.incOthers ? currentItem.incOthers : 0,
+    incTotal: currentItem.totalIncomes ? currentItem.totalIncomes : 0,
+    deducIsr: currentItem.deducIsr ? currentItem.deducIsr : 0,
+    deducIhss: currentItem.deducIhss ? currentItem.deducIhss : 0,
+    deducRap: currentItem.deducRap ? currentItem.deducRap : 0,
+    deducAbsence: currentItem.deducAbsence ? currentItem.deducAbsence : 0,
+    deducTotal: currentItem.deducTotal ? currentItem.deducTotal : 0
   }, detailPayValid);
 
-  const {formState: formStateDeduc, formValidation: formValidationDeduc, isFormValid: isFormValidDeduc, onInputChange:
-    onInputChangeDeduc, onResetForm: onResetFormDeduc, setBulkForm: setBulkFormDeduc} = useForm({
-    id: 0,
-    value: 0,
-    description: ''
-  }, deductionValid);
+  const { formState: formStateDeduc, formValidation: formValidationDeduc, isFormValid: isFormValidDeduc, onInputChange:
+    onInputChangeDeduc, onResetForm: onResetFormDeduc, setBulkForm: setBulkFormDeduc } = useForm({
+      id: 0,
+      value: 0,
+      description: ''
+    }, deductionValid);
 
-  const {id, fatherId, employeeId, jobPositionId, methodPaymentId, daysWorked, excusedAbsence, totalIncomes, internalDeductions,
+  const { id, fatherId, employeeId, jobPositionId, methodPaymentId, daysWorked, excusedAbsence, totalIncomes, internalDeductions,
     externalDeductions, incBiweekly, totalDeductions, totalPayment, incOvertime, incValueHour, incOthers, incTotal, deducIsr,
-    deducIhss, deducRap, deducAbsence, deducTotal} = formState;
+    deducIhss, deducRap, deducAbsence, deducTotal } = formState;
 
-  const {id: idExtDeducc, value, description} = formStateDeduc;
+  const { id: idExtDeducc, value, description } = formStateDeduc;
 
-  const {employeeIdValid, methodPaymentIdValid, daysWorkedValid, incBiweeklyValid} = formValidation;
+  const { employeeIdValid, methodPaymentIdValid, daysWorkedValid, incBiweeklyValid } = formValidation;
 
-  const {valueValid, descriptionValid} = formValidationDeduc;
+  const { valueValid, descriptionValid } = formValidationDeduc;
 
-  const onOvertimeChange = e=>{
+  const onOvertimeChange = e => {
     const overtime = e.target.value;
 
     const totalOver = validFloat(overtime) * validFloat(incValueHour);
@@ -98,7 +98,7 @@ const ModalDetailPay = ({setOpen, data}) => {
     setBulkForm(newValue);
   }
 
-  const onValHourChange = e=>{
+  const onValHourChange = e => {
     const valHour = e.target.value;
 
     const totalOver = validFloat(incOvertime) * validFloat(valHour);
@@ -115,7 +115,7 @@ const ModalDetailPay = ({setOpen, data}) => {
     setBulkForm(newValue);
   }
 
-  const onOthersIncChange = e=>{
+  const onOthersIncChange = e => {
     const others = e.target.value;
 
     const totalOver = validFloat(incOvertime) * validFloat(incValueHour);
@@ -132,7 +132,7 @@ const ModalDetailPay = ({setOpen, data}) => {
     setBulkForm(newValue);
   }
 
-  const onIsrChange = e=>{
+  const onIsrChange = e => {
     const totalIsr = e.target.value;
 
     const totalIntDeduc = validFloat(totalIsr) + validFloat(deducIhss) + validFloat(deducRap) + validFloat(deducAbsence);
@@ -150,7 +150,7 @@ const ModalDetailPay = ({setOpen, data}) => {
     setBulkForm(newValue);
   }
 
-  const onIhssChange = e=>{
+  const onIhssChange = e => {
     const totalIhss = e.target.value;
 
     const totalIntDeduc = validFloat(deducIsr) + validFloat(totalIhss) + validFloat(deducRap) + validFloat(deducAbsence);
@@ -168,7 +168,7 @@ const ModalDetailPay = ({setOpen, data}) => {
     setBulkForm(newValue);
   }
 
-  const onRapChange = e=>{
+  const onRapChange = e => {
     const totalRap = e.target.value;
 
     const totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(totalRap) + validFloat(deducAbsence);
@@ -186,21 +186,21 @@ const ModalDetailPay = ({setOpen, data}) => {
     setBulkForm(newValue);
   }
 
-  const onDaysChange = e=>{
+  const onDaysChange = e => {
     const totalDays = e.target.value;
 
     let totalAbsence = 0;
     let totalIntDeduc = 0;
 
-    if(validFloat(totalDays)<15){
+    if (validFloat(totalDays) < 15) {
       setDisabledAbsence(false);
-      totalAbsence = (validFloat(incBiweekly)/15) * (15 - validFloat(totalDays));
-      if(validInt(excusedAbsence) === 1){
+      totalAbsence = (validFloat(incBiweekly) / 15) * (15 - validFloat(totalDays));
+      if (validInt(excusedAbsence) === 1) {
         totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap);
-      }else{
+      } else {
         totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap) + totalAbsence;
       }
-    }else{
+    } else {
       totalAbsence = 0;
       totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap);
       setDisabledAbsence(true);
@@ -221,15 +221,15 @@ const ModalDetailPay = ({setOpen, data}) => {
     setBulkForm(newValue);
   }
 
-  const onAbsenceChange = e=>{
+  const onAbsenceChange = e => {
     const absence = e.target.value;
 
-    const totalAbsence = (validFloat(incBiweekly)/15) * (15 - daysWorked);
+    const totalAbsence = (validFloat(incBiweekly) / 15) * (15 - daysWorked);
     let totalIntDeduc = 0;
 
-    if(validInt(absence) === 1){
+    if (validInt(absence) === 1) {
       totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap);
-    }else{
+    } else {
       totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap) + totalAbsence;
     }
 
@@ -248,18 +248,18 @@ const ModalDetailPay = ({setOpen, data}) => {
     setBulkForm(newValue);
   }
 
-  const fnCalDeductions = (dataDeductions, dataLoans)=>{
+  const fnCalDeductions = (dataDeductions, dataLoans) => {
     let totalAbsence = 0;
     let totalIntDeduc = 0;
-    if(daysWorked<15){
+    if (daysWorked < 15) {
       setDisabledAbsence(false);
-      totalAbsence = (validFloat(incBiweekly)/15) * (15 - daysWorked);
-      if(validInt(excusedAbsence) === 1){
+      totalAbsence = (validFloat(incBiweekly) / 15) * (15 - daysWorked);
+      if (validInt(excusedAbsence) === 1) {
         totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap);
-      }else{
+      } else {
         totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap) + totalAbsence;
       }
-    }else{
+    } else {
       totalAbsence = 0;
       totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap);
       setDisabledAbsence(true);
@@ -279,62 +279,62 @@ const ModalDetailPay = ({setOpen, data}) => {
     });
   }
 
-  const getDeductions = (loans=dataLoans)=>{
+  const getDeductions = (loans = dataLoans) => {
     setExtDeducDetail([]);
     setLoading(true);
-    request.GET(`rrhh/process/biweeklyDeductions?biweekId=${biweekId}&employeeId=${employeeId}`, (resp)=>{
+    request.GET(`rrhh/process/biweeklyDeductions?biweekId=${biweekId}&employeeId=${employeeId}`, (resp) => {
       const deductions = resp.data;
       fnCalDeductions(deductions, loans)
       setExtDeducDetail(deductions);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
 
-  const fnGetLoans = ()=>{
+  const fnGetLoans = () => {
     setDataLoans([]);
-    const findBiweek = listBiweeklies.find((item)=>{
+    const findBiweek = listBiweeklies.find((item) => {
       return item.value === validInt(biweekId);
     });
     const dateStart = findBiweek.dateIn;
     const dateEnd = findBiweek.dateOut;
     setLoading(true);
-    request.GET(`rrhh/process/paymentPlans/getQuoteByDate?dateStart=${dateStart}&dateEnd=${dateEnd}&employeeId=${employeeId}`, (resp)=>{
+    request.GET(`rrhh/process/paymentPlans/getQuoteByDate?dateStart=${dateStart}&dateEnd=${dateEnd}&employeeId=${employeeId}`, (resp) => {
       const loans = resp.data;
       getDeductions(loans);
       setDataLoans(loans)
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
 
-  const onEmployeeChange = e=>{
+  const onEmployeeChange = e => {
     const employee = e.target.value;
 
     // Llenar informacion del empleado
-    const filterEmployees = listEmployees.filter((item)=>{
+    const filterEmployees = listEmployees.filter((item) => {
       return item.value === employee;
     });
 
     const detaEmployee = filterEmployees[0];
 
-    if(detaEmployee.deductionsIhss===2){
+    if (detaEmployee.deductionsIhss === 2) {
       setDisabledIhss(true);
-    }else{
+    } else {
       setDisabledIhss(false);
     }
 
-    if(detaEmployee.deductionsRap===2){
+    if (detaEmployee.deductionsRap === 2) {
       setDisabledRap(true);
-    }else{
+    } else {
       setDisabledRap(false);
     }
 
-    const findBiweek = listBiweeklies.find((item)=>{
+    const findBiweek = listBiweeklies.find((item) => {
       return item.value === validInt(biweekId);
     });
     const dateStart = findBiweek.dateIn;
@@ -342,18 +342,18 @@ const ModalDetailPay = ({setOpen, data}) => {
 
     // buscar deducciones externas para el empleado seleccionado
     setLoading(true);
-    request.GET(`rrhh/process/biweeklyDeductions?biweekId=${biweekId}&employeeId=${employee}`, (resp)=>{
+    request.GET(`rrhh/process/biweeklyDeductions?biweekId=${biweekId}&employeeId=${employee}`, (resp) => {
       const deductions = resp.data;
 
       // buscar prestamos
       setLoading(true);
-      request.GET(`rrhh/process/paymentPlans/getQuoteByDate?dateStart=${dateStart}&dateEnd=${dateEnd}&employeeId=${employee}`, (resp)=>{
+      request.GET(`rrhh/process/paymentPlans/getQuoteByDate?dateStart=${dateStart}&dateEnd=${dateEnd}&employeeId=${employee}`, (resp) => {
         const loans = resp.data;
 
         // buscar permisos
         setLoading(true);
-        request.GET(`rrhh/process/permissions/findByDate?dateStart=${dateStart}&dateEnd=${dateEnd}&employeeId=${employee}`, (resp)=>{
-          const permissions = resp.data.map(item =>{
+        request.GET(`rrhh/process/permissions/findByDate?dateStart=${dateStart}&dateEnd=${dateEnd}&employeeId=${employee}`, (resp) => {
+          const permissions = resp.data.map(item => {
             const date1 = moment(item.dateStart);
             const date2 = moment(item.dateEnd);
             const daysDiff = date2.diff(date1, 'days');
@@ -367,10 +367,10 @@ const ModalDetailPay = ({setOpen, data}) => {
           let daysPerm = permissions.map(item => validFloat(item.daysDiff)).reduce((prev, curr) => prev + curr, 0);
           let hoursPerm = permissions.map(item => validFloat(item.hoursDiff)).reduce((prev, curr) => prev + curr, 0);
 
-          if(daysPerm===0 && hoursPerm>8){
+          if (daysPerm === 0 && hoursPerm > 8) {
             daysPerm = 1;
             hoursPerm = 0;
-          }else if(daysPerm>0){
+          } else if (daysPerm > 0) {
             daysPerm = daysPerm;
             hoursPerm = 0;
           }
@@ -380,26 +380,26 @@ const ModalDetailPay = ({setOpen, data}) => {
           let totalDays = 15;
           let excusedAbsence = 0;
 
-          if(daysPerm>0){
+          if (daysPerm > 0) {
             totalDays = totalDays - daysPerm;
             setDisabledAbsence(false);
-            totalAbsence = (validFloat(validFloat(detaEmployee.defaultSalary)/2)/15) * daysPerm;
+            totalAbsence = (validFloat(validFloat(detaEmployee.defaultSalary) / 2) / 15) * daysPerm;
             totalIntDeduc = totalAbsence
             excusedAbsence = 2;
-          }else if(hoursPerm>0){
-            totalDays = totalDays - (hoursPerm/8);
+          } else if (hoursPerm > 0) {
+            totalDays = totalDays - (hoursPerm / 8);
             setDisabledAbsence(false);
-            totalAbsence = ((validFloat(validFloat(detaEmployee.defaultSalary)/2)/15)/8) * hoursPerm;
+            totalAbsence = ((validFloat(validFloat(detaEmployee.defaultSalary) / 2) / 15) / 8) * hoursPerm;
             totalIntDeduc = totalAbsence
             excusedAbsence = 2;
-          }else{
+          } else {
             setDisabledAbsence(true);
             totalAbsence = 0
             totalIntDeduc = 0
             excusedAbsence = 0;
           }
 
-          const totalInc = (validFloat(detaEmployee.defaultSalary)/2) + validFloat(incOthers);
+          const totalInc = (validFloat(detaEmployee.defaultSalary) / 2) + validFloat(incOthers);
           const valueDeduc = deductions.map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0);
           const valueLoans = loans.map(item => validFloat(item.valueQuote)).reduce((prev, curr) => prev + curr, 0);
           const totalExtDeduc = validFloat(valueDeduc) + validFloat(valueLoans);
@@ -416,40 +416,40 @@ const ModalDetailPay = ({setOpen, data}) => {
             employeeId: employee,
             jobPositionId: detaEmployee.jobPositionId,
             methodPaymentId: detaEmployee.paymentMethod,
-            incBiweekly: validFloat(detaEmployee.defaultSalary)/2,
+            incBiweekly: validFloat(detaEmployee.defaultSalary) / 2,
             totalIncomes: totalInc,
             incTotal: totalInc
           });
 
           setLoading(false);
-        }, (err)=>{
-          console.error(err);
+        }, (err) => {
+
           setLoading(false);
         });
 
         setDataLoans(loans);
         setLoading(false);
-      }, (err)=>{
-        console.error(err);
+      }, (err) => {
+
         setLoading(false);
       });
 
       setExtDeducDetail(deductions);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
 
-  const fnAddDeductionExternal = ()=>{
+  const fnAddDeductionExternal = () => {
     setSendFormDeduc(true);
-    if(!isFormValidDeduc){
+    if (!isFormValidDeduc) {
       return;
     }
 
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
@@ -465,16 +465,14 @@ const ModalDetailPay = ({setOpen, data}) => {
     const totalExtDeduc = validFloat(value) + validFloat(externalDeductions);
     const totalDeduc = validFloat(value) + validFloat(totalDeductions);
     const totalPay = validFloat(totalIncomes) - totalDeduc;
-    setBulkForm({externalDeductions: totalExtDeduc, totalDeductions: totalDeduc, totalPayment: totalPay});
+    setBulkForm({ externalDeductions: totalExtDeduc, totalDeductions: totalDeduc, totalPayment: totalPay });
 
-    if(idExtDeducc===0){
+    if (idExtDeducc === 0) {
       setLoading(true);
       request.POST('rrhh/process/biweeklyDeductions', newDeduction, (resp) => {
-        console.log(resp);
         getDeductions();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -484,28 +482,26 @@ const ModalDetailPay = ({setOpen, data}) => {
     onResetFormDeduc();
   }
 
-  const fnDeleteDeductionExternal = (item)=>{
-    setBulkFormDeduc({id:item.id});
+  const fnDeleteDeductionExternal = (item) => {
+    setBulkFormDeduc({ id: item.id });
     setOpenMsgQuestion(true);
   }
 
-  const fnOkDeleteDeduction = ()=>{
-    const newData = extDeducDetail.filter((item)=>{
+  const fnOkDeleteDeduction = () => {
+    const newData = extDeducDetail.filter((item) => {
       return item.id !== idExtDeducc;
     });
 
     const sumDeduc = newData.map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0);
     const totalDeduc = sumDeduc + validFloat(internalDeductions);
     const totalPay = validFloat(totalIncomes) - totalDeduc;
-    setBulkForm({externalDeductions: sumDeduc, totalDeductions: totalDeduc, totalPayment: totalPay});
+    setBulkForm({ externalDeductions: sumDeduc, totalDeductions: totalDeduc, totalPayment: totalPay });
 
-    if(idExtDeducc>0){
+    if (idExtDeducc > 0) {
       setLoading(true);
       request.DELETE(`rrhh/process/biweeklyDeductions/${idExtDeducc}`, (resp) => {
-        console.log(resp);
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -514,18 +510,18 @@ const ModalDetailPay = ({setOpen, data}) => {
     setOpenMsgQuestion(false);
   }
 
-  const fnSaveDetailPayroll = ()=>{
-    if(fatherId===0){
+  const fnSaveDetailPayroll = () => {
+    if (fatherId === 0) {
       return;
     }
 
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
-    if(validInt(daysWorked)<15 && excusedAbsence===0){
-      createNotification('warning','msg.required.select.excusedAbsence', 'alert.warning.title');
+    if (validInt(daysWorked) < 15 && excusedAbsence === 0) {
+      createNotification('warning', 'msg.required.select.excusedAbsence', 'alert.warning.title');
       return;
     }
 
@@ -551,21 +547,19 @@ const ModalDetailPay = ({setOpen, data}) => {
       deducTotal
     }
 
-    if(id===0){
+    if (id === 0) {
       setLoading(true);
       request.POST('rrhh/process/payrollBiweeklyDetail', newData, (resp) => {
-        console.log(resp);
         fnViewDetailPayroll(idPayroll);
 
-        // actualizar estado de la cuota del prestamo
-        if(dataLoans.length>0){
-          let dataUpdate = { status: 1}
+        if (dataLoans.length > 0) {
+          let dataUpdate = { status: 1 }
           let id = dataLoans[0].id;
           setLoading(true);
           request.PUT(`rrhh/process/paymentPlanDetails/${id}`, dataUpdate, () => {
             setLoading(false);
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           });
         }
@@ -573,36 +567,36 @@ const ModalDetailPay = ({setOpen, data}) => {
         setOpen(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
-    }else{
+    } else {
       setLoading(true);
       request.PUT(`rrhh/process/payrollBiweeklyDetail/${id}`, newData, () => {
         fnViewDetailPayroll(idPayroll);
         setOpen(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
 
   }
 
-  useEffect(()=>{
-    if(validInt(daysWorked)<15){
+  useEffect(() => {
+    if (validInt(daysWorked) < 15) {
       setDisabledAbsence(false);
-    }else{
+    } else {
       setDisabledAbsence(true);
     }
-  },[]);
+  }, []);
 
-  useEffect(()=>{
-    if(id>0){
+  useEffect(() => {
+    if (id > 0) {
       fnGetLoans();
     }
-  },[]);
+  }, []);
 
   const propsToMsgDeleteDeducction = {
     open: openMsgQuestion,
@@ -674,7 +668,7 @@ const ModalDetailPay = ({setOpen, data}) => {
                       onChange={onEmployeeChange}
                       invalid={sendForm && !!employeeIdValid}
                       feedbackText={sendForm && (employeeIdValid || null)}
-                      isDisabled={currentItem.id?true:false}
+                      isDisabled={currentItem.id ? true : false}
                     />
                   </Colxx>
                   <Colxx xxs="12" sm="4" lg="4" xl="3">
@@ -716,8 +710,8 @@ const ModalDetailPay = ({setOpen, data}) => {
                       value={excusedAbsence}
                       onChange={onAbsenceChange}
                       options={[
-                        {id:1, label:'option.yes', disabled:disabledAbsence},
-                        {id:2, label:'option.no', disabled:disabledAbsence},
+                        { id: 1, label: 'option.yes', disabled: disabledAbsence },
+                        { id: 2, label: 'option.no', disabled: disabledAbsence },
                       ]}
                       display="flex"
                     />
@@ -879,14 +873,14 @@ const ModalDetailPay = ({setOpen, data}) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {extDeducDetail.map((item,idx) =>{
+                        {extDeducDetail.map((item, idx) => {
                           return (
                             <tr id={`tr-table-invoiceDetail-${item.id}`} key={idx}>
                               <td>{item.description}</td>
                               <td>{item.value}</td>
                               <td align='right'>
                                 <Button type="button" className="btn-circle-table" color="danger" title="Eliminar"
-                                  onClick={() => {fnDeleteDeductionExternal(item)}} key={`buttons2-${idx}`}>
+                                  onClick={() => { fnDeleteDeductionExternal(item) }} key={`buttons2-${idx}`}>
                                   <i className='bi bi-trash' />
                                 </Button>
                               </td>
@@ -898,38 +892,38 @@ const ModalDetailPay = ({setOpen, data}) => {
                   </Colxx>
                 </Row>
                 {
-                  dataLoans.length>0?(
+                  dataLoans.length > 0 ? (
                     <>
-                    <hr/>
-                    <Row>
-                      <Colxx xxs="12">
-                        <h6>Prestamos</h6>
-                        <Table bordered hover size='sm'>
-                          <thead>
-                            <tr>
-                              <th width="10%">{IntlMessages('table.column.no')}</th>
-                              <th width="10%">{IntlMessages('table.column.date')}</th>
-                              <th width="60%">{IntlMessages('table.column.description')}</th>
-                              <th width="20%">{IntlMessages('table.column.value')}</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {dataLoans.map((item,idx) =>{
-                              return (
-                                <tr id={`tr-table-invoiceDetail-${item.id}`} key={idx}>
-                                  <td>{item.noQuote}</td>
-                                  <td>{formatDate(item.date)}</td>
-                                  <td>{item.description}</td>
-                                  <td>{item.valueQuote}</td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </Table>
-                      </Colxx>
-                    </Row>
+                      <hr />
+                      <Row>
+                        <Colxx xxs="12">
+                          <h6>Prestamos</h6>
+                          <Table bordered hover size='sm'>
+                            <thead>
+                              <tr>
+                                <th width="10%">{IntlMessages('table.column.no')}</th>
+                                <th width="10%">{IntlMessages('table.column.date')}</th>
+                                <th width="60%">{IntlMessages('table.column.description')}</th>
+                                <th width="20%">{IntlMessages('table.column.value')}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {dataLoans.map((item, idx) => {
+                                return (
+                                  <tr id={`tr-table-invoiceDetail-${item.id}`} key={idx}>
+                                    <td>{item.noQuote}</td>
+                                    <td>{formatDate(item.date)}</td>
+                                    <td>{item.description}</td>
+                                    <td>{item.valueQuote}</td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </Table>
+                        </Colxx>
+                      </Row>
                     </>
-                  ):null
+                  ) : null
                 }
               </TabPane>
             </TabContent>
@@ -958,7 +952,7 @@ const ModalDetailPay = ({setOpen, data}) => {
                 </tr>
                 <tr>
                   <th width="25%">{IntlMessages('table.column.totalPayment')}</th>
-                  <td align='right' width="15%"><b>{formatNumber(totalPayment,'L. ',2)}</b></td>
+                  <td align='right' width="15%"><b>{formatNumber(totalPayment, 'L. ', 2)}</b></td>
                 </tr>
               </tbody>
             </Table>
@@ -969,12 +963,12 @@ const ModalDetailPay = ({setOpen, data}) => {
         <Button color="primary" onClick={fnSaveDetailPayroll}>
           <i className="iconsminds-save" />{` ${IntlMessages("button.save")}`}
         </Button>
-        <Button color="danger" onClick={()=>{setOpen(false)}} >
-          <i className="bi bi-box-arrow-right"/>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />
           {` ${IntlMessages('button.exit')}`}
         </Button>
       </ModalFooter>
-      <Confirmation {...propsToMsgDeleteDeducction}/>
+      <Confirmation {...propsToMsgDeleteDeducction} />
     </>
   )
 }

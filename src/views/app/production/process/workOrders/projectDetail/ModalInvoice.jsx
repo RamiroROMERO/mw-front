@@ -41,12 +41,10 @@ const ModalInvoice = (props) => {
 
     setLoading(true);
     request.POST('prodOrderPayments', newData, (resp) => {
-      console.log(resp);
       fnGetPayment();
       setOpen(false)
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

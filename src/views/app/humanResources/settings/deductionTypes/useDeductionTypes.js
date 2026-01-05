@@ -40,7 +40,6 @@ export const useDeductionTypes = ({ setLoading, screenControl }) => {
       setDataDeductions(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }
@@ -62,7 +61,6 @@ export const useDeductionTypes = ({ setLoading, screenControl }) => {
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -75,7 +73,6 @@ export const useDeductionTypes = ({ setLoading, screenControl }) => {
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -93,7 +90,6 @@ export const useDeductionTypes = ({ setLoading, screenControl }) => {
         fnClear();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -113,7 +109,7 @@ export const useDeductionTypes = ({ setLoading, screenControl }) => {
       setListAccount(account);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

@@ -188,7 +188,6 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
       setTotals(totals);
       setLoading(false);
     }, err => {
-      console.log(err);
       setLoading(false);
     }, false);
   };
@@ -206,7 +205,7 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

@@ -85,7 +85,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
       setOpenModalPurchases(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -151,18 +151,18 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
             request.POST('inventory/process/purchaseDetail', detailPurchase, () => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
             setLoading(true);
           });
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -182,18 +182,18 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
             request.POST('inventory/process/purchaseDetail', detailPurchase, () => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
             setLoading(true);
           });
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         }, false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -206,7 +206,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
         userName: userData.name
       }
       request.GETPdf('inventory/process/purchases/exportPDFPurchase', dataPrint, 'Compra de Inventario.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -224,11 +224,9 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     }
     setLoading(true);
     request.PUT(`inventory/process/purchases/${id}`, dataCancel, (resp) => {
-      console.log(resp);
       setOpenMsgCancelPurchase(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -260,7 +258,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
       setOpenModalViewOrders(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -278,7 +276,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
       setOpenModalViewOrders(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -345,7 +343,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
       setListDocuments(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -354,7 +352,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
       setListStores(stores);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -372,7 +370,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
       setListProviders(providers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -390,7 +388,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
       setListPaymentTypes(filterPayments);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { request } from '@/helpers/core';
 import { IntlMessages } from '@Helpers/Utils';
 
-export const useGeneralVacations = ({setLoading, adminControl}) => {
+export const useGeneralVacations = ({ setLoading, adminControl }) => {
   const [listEmployees, setListEmployees] = useState([]);
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.012")?.active || false;
 
@@ -53,7 +53,7 @@ export const useGeneralVacations = ({setLoading, adminControl}) => {
     actions: []
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
     request.GET('rrhh/process/employees/findSL?status=1', (resp) => {
       const employees = resp.data.map((item) => {
@@ -65,10 +65,10 @@ export const useGeneralVacations = ({setLoading, adminControl}) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
-  },[]);
+  }, []);
 
   const propsToHeader = {
     listEmployees,

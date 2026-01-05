@@ -79,7 +79,6 @@ const OrdersTypes = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -97,23 +96,19 @@ const OrdersTypes = (props) => {
     if (id > 0) {
       setLoading(true);
       request.PUT(`prodOrderTypes/${id}`, data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('prodOrderTypes', data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -123,12 +118,10 @@ const OrdersTypes = (props) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`prodOrderTypes/${currentItem.id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       setCurrentItem({});
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

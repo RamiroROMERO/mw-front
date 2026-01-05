@@ -6,7 +6,7 @@ import notification from '@Containers/ui/Notifications';
 import moment from 'moment';
 import { request } from '@Helpers/core';
 
-export const useAttendanceControl = ({setLoading}) => {
+export const useAttendanceControl = ({ setLoading }) => {
   const [sendForm, setSendForm] = useState(false);
   const [nameFile, setNameFile] = useState(IntlMessages("button.chooseFile"));
   const [dataAttendance, setDataAttendance] = useState([]);
@@ -21,26 +21,26 @@ export const useAttendanceControl = ({setLoading}) => {
     dateOut: ''
   }, AttendanceControlValid);
 
-  const {dateIn, dateOut} = formState;
+  const { dateIn, dateOut } = formState;
 
-  const fnClearInputs = ()=>{
+  const fnClearInputs = () => {
     onResetForm();
     setNameFile("");
     setDataAttendance([]);
     setSendForm(false);
   }
 
-  const fnImportExcel = event =>{
+  const fnImportExcel = event => {
     setLoading(true);
     const file = event.target.files?.[0];
     setNameFile(file.name);
-    if(file){
+    if (file) {
       const reader = new FileReader();
       reader.onload = e => {
         const data = e.target?.result;
 
         // get excel data
-        const requiredColumns = ['Nombre','Número de empleado'];
+        const requiredColumns = ['Nombre', 'Número de empleado'];
         const priceCalculateColumns = [];
         const startColumn = "A"; const startRow = 2;
         const endColumn = "R"; const endRow = 1000;
@@ -51,7 +51,7 @@ export const useAttendanceControl = ({setLoading}) => {
           endColumn, endRow,
           false
         );
-        if(excelData?.error === ExcelErrors.ISEMPTY) {
+        if (excelData?.error === ExcelErrors.ISEMPTY) {
           // fetchError(messages["error.message.excelIsEmpty"] as string);
           console.log("excelIsEmpty");
           return;
@@ -66,7 +66,6 @@ export const useAttendanceControl = ({setLoading}) => {
           console.log("excelAllZeroValues");
           return;
         }
-        // console.log(excelData);
 
         const dataFormatted = excelData.data.map((item) => {
           const cleanedItem = cleanedObjectKeys(item);
@@ -89,14 +88,14 @@ export const useAttendanceControl = ({setLoading}) => {
 
   const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
     const initDate = formatDate(dateIn);
     const endDate = formatDate(dateOut);
 
-    if(dataAttendance.length===0){
+    if (dataAttendance.length === 0) {
       notification('warning', 'msg.required.data.attendanceControl', 'alert.warning.title');
       return;
     }
@@ -104,7 +103,7 @@ export const useAttendanceControl = ({setLoading}) => {
     // validar que los datos esten entre el rango de fechas seleccionado
     const filterData = dataAttendance.filter(item => item.date >= initDate && item.date <= endDate);
 
-    if(filterData.length===0){
+    if (filterData.length === 0) {
       notification('warning', 'msg.required.dataAttendance.filterData', 'alert.warning.title');
       return;
     }
@@ -121,9 +120,9 @@ export const useAttendanceControl = ({setLoading}) => {
     request.POST('rrhh/proccess/attendanceControl/createMany', dataToSave, (resp) => {
       fnClearInputs();
       setLoading(false);
-    },(err)=>{
+    }, (err) => {
       fnClearInputs();
-      console.error(err);
+
       setLoading(false);
     });
 

@@ -6,7 +6,7 @@ import { useForm } from '@/hooks';
 import notification from '@/containers/ui/Notifications';
 import { getMonthLetter } from '@Helpers/Utils';
 
-export const useScheduling = ({setLoading}) => {
+export const useScheduling = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [dataCalendar, setDataCalendar] = useState([]);
@@ -104,7 +104,7 @@ export const useScheduling = ({setLoading}) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -126,7 +126,7 @@ export const useScheduling = ({setLoading}) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -136,7 +136,7 @@ export const useScheduling = ({setLoading}) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -155,7 +155,7 @@ export const useScheduling = ({setLoading}) => {
         setCurrentItem({});
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

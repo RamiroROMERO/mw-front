@@ -4,7 +4,7 @@ import { request } from '@Helpers/core'
 import { validInt } from '@Helpers/Utils'
 import notification from '@Containers/ui/Notifications'
 
-export const useAdmonitions = ({setLoading, screenControl}) => {
+export const useAdmonitions = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [listEmployees, setListEmployees] = useState([]);
   const [listManagers, setListManagers] = useState([]);
@@ -75,7 +75,7 @@ export const useAdmonitions = ({setLoading, screenControl}) => {
       setOpenModalAdmonition(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -163,14 +163,14 @@ export const useAdmonitions = ({setLoading, screenControl}) => {
           request.PUT(`rrhh/process/employees/${employeeId}`, editData, () => {
             setLoading(false);
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           });
         }
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -183,14 +183,13 @@ export const useAdmonitions = ({setLoading, screenControl}) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
   }
 
   const fnGenerateDismiss = () => {
-    console.log(appointmentDate)
     const newData = {
       ...formState,
       appointmentDate: appointmentDate === "" ? "1900-01-01" : appointmentDate,
@@ -217,12 +216,12 @@ export const useAdmonitions = ({setLoading, screenControl}) => {
           setOpenMsgDismissal(false);
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -240,23 +239,23 @@ export const useAdmonitions = ({setLoading, screenControl}) => {
       }
       if (validInt(documentTypeId) === 1) {
         request.GETPdf('rrhh/process/admonitions/exportPDFAdmonition', dataPrint, 'Amonestación.pdf', (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       } else if (validInt(documentTypeId) === 2) {
         request.GETPdf('rrhh/process/admonitions/exportPDFCitation', dataPrint, 'Citación.pdf', (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       } else if (validInt(documentTypeId) === 3) {
         request.GETPdf('rrhh/process/admonitions/exportPDFAbandonment', dataPrint, 'Acta de Abandono de Labores.pdf', (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       }
       else if (validInt(documentTypeId) === 4) {
         request.GETPdf('rrhh/process/admonitions/exportPDFProbationaryDismissal', dataPrint, 'Despido en Periodo de Prueba.pdf', (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       }
@@ -283,7 +282,7 @@ export const useAdmonitions = ({setLoading, screenControl}) => {
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -305,7 +304,7 @@ export const useAdmonitions = ({setLoading, screenControl}) => {
       setListManagers(filterManagers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -320,7 +319,7 @@ export const useAdmonitions = ({setLoading, screenControl}) => {
       setListOffenses(faulTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

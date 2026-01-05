@@ -5,7 +5,7 @@ import { IntlMessages } from '@Helpers/Utils'
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 
-export const useModalDeductions = ({idPayroll, dataDetailPayroll, setLoading, setOpen, fnViewDetailPayroll, listTypeDeductions}) => {
+export const useModalDeductions = ({ idPayroll, dataDetailPayroll, setLoading, setOpen, fnViewDetailPayroll, listTypeDeductions }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [sendForm, setSendForm] = useState(false);
 
@@ -24,7 +24,7 @@ export const useModalDeductions = ({idPayroll, dataDetailPayroll, setLoading, se
     description: ''
   }, deductionsValid);
 
-  const {typeId, value, description} = formState;
+  const { typeId, value, description } = formState;
 
   const [table, setTable] = useState({
     title: IntlMessages("page.projects.table.employees.title"),
@@ -44,9 +44,9 @@ export const useModalDeductions = ({idPayroll, dataDetailPayroll, setLoading, se
     }
   });
 
-  const fnSave = ()=>{
+  const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
@@ -69,7 +69,7 @@ export const useModalDeductions = ({idPayroll, dataDetailPayroll, setLoading, se
 
     // actualizar detalle de planilla
     selectedItems.forEach(element => {
-      const findDetail = dataDetailPayroll.find((item)=>item.id===element.value);
+      const findDetail = dataDetailPayroll.find((item) => item.id === element.value);
 
       const totalExtDeduc = validFloat(value) + validFloat(findDetail.externalDeductions);
       const totalDeduc = validFloat(value) + validFloat(findDetail.totalDeductions);
@@ -84,9 +84,9 @@ export const useModalDeductions = ({idPayroll, dataDetailPayroll, setLoading, se
       request.PUT(`rrhh/process/weeklyPayrollDetails/${element.value}`, dataUpdate, () => {
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
-      },false);
+      }, false);
     });
 
     setLoading(true);
@@ -96,23 +96,23 @@ export const useModalDeductions = ({idPayroll, dataDetailPayroll, setLoading, se
       fnViewDetailPayroll(idPayroll);
       setOpen(false);
       setLoading(false);
-    },(err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
 
-  useEffect(()=>{
-    const listEmployeesByPayroll = dataDetailPayroll.map((item)=>{
+  useEffect(() => {
+    const listEmployeesByPayroll = dataDetailPayroll.map((item) => {
       return {
         idPayrollDeta: item.id,
         value: item.id,
         label: item.employee
       }
     });
-    const dataTable = {...table, data: listEmployeesByPayroll};
+    const dataTable = { ...table, data: listEmployeesByPayroll };
     setTable(dataTable);
-  },[]);
+  }, []);
 
   return (
     {

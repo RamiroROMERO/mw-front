@@ -85,7 +85,7 @@ export const useProviders = ({ setLoading }) => {
       setOpenModalViewProv(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -104,20 +104,16 @@ export const useProviders = ({ setLoading }) => {
     if (formState.id > 0) {
       setLoading(true);
       request.PUT(`inventory/process/providers/${formState.id}`, newData, (resp) => {
-        console.log(resp);
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('inventory/process/providers', newData, (resp) => {
-        console.log(resp);
         onInputChange({ target: { name: 'id', value: resp.data.id } });
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -128,7 +124,6 @@ export const useProviders = ({ setLoading }) => {
       setDataBankAccounts(resp.data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setDataBankAccounts([]);
       setLoading(false);
     });
@@ -142,7 +137,7 @@ export const useProviders = ({ setLoading }) => {
   }
 
   const fnPrintProvider = () => {
-    console.log('Print');
+
   }
 
   const fnDeleteProvider = () => {
@@ -155,17 +150,13 @@ export const useProviders = ({ setLoading }) => {
     setOpenMsgDeleteProv(false);
     setLoading(true);
     request.DELETE(`inventory/process/providers/${id}`, (resp) => {
-      console.log(resp);
       fnNewProvider();
       setLoading(false);
       // eliminar cuentas bancarias asignadas a ese proveedor
       request.DELETE(`inventory/process/providerBanks?providerId=${id}`, (resp2) => {
-        console.log(resp2);
       }, (err) => {
-        console.error(err);
       });
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -190,7 +181,7 @@ export const useProviders = ({ setLoading }) => {
   }
 
   const fnTransfer = () => {
-    console.log('Nuevo Boton 2');
+
   }
 
   const fnEditAccount = (item) => {
@@ -216,12 +207,10 @@ export const useProviders = ({ setLoading }) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`inventory/process/providerBanks/${currentItemBankAccount.id}`, (resp) => {
-      console.log(resp);
       fnGetBankAccounts(id);
       setCurrentItemBankAccount({});
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -238,7 +227,7 @@ export const useProviders = ({ setLoading }) => {
       setListTypeProviders(dataType);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -252,7 +241,7 @@ export const useProviders = ({ setLoading }) => {
       setListLedgerAccounts(listAccounts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -266,7 +255,7 @@ export const useProviders = ({ setLoading }) => {
       setListBanks(banks);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

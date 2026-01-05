@@ -42,7 +42,7 @@ export const useAdminCars = ({ setLoading, fnGetDataCars, dataCars }) => {
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -122,7 +122,7 @@ export const useAdminCars = ({ setLoading, fnGetDataCars, dataCars }) => {
         fnGetDataCars();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -132,7 +132,7 @@ export const useAdminCars = ({ setLoading, fnGetDataCars, dataCars }) => {
         fnGetDataCars();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

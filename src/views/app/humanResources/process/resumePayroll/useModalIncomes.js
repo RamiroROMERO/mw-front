@@ -5,7 +5,7 @@ import { IntlMessages } from '@Helpers/Utils'
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 
-export const useModalIncomes = ({idPayroll, dataDetailPayroll, setLoading, setOpen, fnViewDetailPayroll, listTypeIncomes}) => {
+export const useModalIncomes = ({ idPayroll, dataDetailPayroll, setLoading, setOpen, fnViewDetailPayroll, listTypeIncomes }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [sendForm, setSendForm] = useState(false);
 
@@ -26,7 +26,7 @@ export const useModalIncomes = ({idPayroll, dataDetailPayroll, setLoading, setOp
     description: ''
   }, incomesValid);
 
-  const {typeId, days, hours, value, description} = formState;
+  const { typeId, days, hours, value, description } = formState;
 
   const [table, setTable] = useState({
     title: IntlMessages("page.projects.table.employees.title"),
@@ -46,9 +46,9 @@ export const useModalIncomes = ({idPayroll, dataDetailPayroll, setLoading, setOp
     }
   });
 
-  const fnSave = ()=>{
+  const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
@@ -73,7 +73,7 @@ export const useModalIncomes = ({idPayroll, dataDetailPayroll, setLoading, setOp
 
     // actualizar detalle de planilla
     selectedItems.forEach(element => {
-      const findDetail = dataDetailPayroll.find((item)=>item.id===element.value);
+      const findDetail = dataDetailPayroll.find((item) => item.id === element.value);
 
       const totalInc = validFloat(findDetail.totalIncomes) + validFloat(value);
       const totalPay = totalInc - validFloat(findDetail.totalDeductions);
@@ -88,9 +88,9 @@ export const useModalIncomes = ({idPayroll, dataDetailPayroll, setLoading, setOp
       request.PUT(`rrhh/process/weeklyPayrollDetails/${element.value}`, dataUpdate, () => {
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
-      },false);
+      }, false);
     });
 
     setLoading(true);
@@ -100,23 +100,23 @@ export const useModalIncomes = ({idPayroll, dataDetailPayroll, setLoading, setOp
       fnViewDetailPayroll(idPayroll);
       setOpen(false);
       setLoading(false);
-    },(err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
 
-  useEffect(()=>{
-    const listEmployeesByPayroll = dataDetailPayroll.map((item)=>{
+  useEffect(() => {
+    const listEmployeesByPayroll = dataDetailPayroll.map((item) => {
       return {
         idPayrollDeta: item.id,
         value: item.id,
         label: item.employee
       }
     });
-    const dataTable = {...table, data: listEmployeesByPayroll};
+    const dataTable = { ...table, data: listEmployeesByPayroll };
     setTable(dataTable);
-  },[]);
+  }, []);
 
   return (
     {

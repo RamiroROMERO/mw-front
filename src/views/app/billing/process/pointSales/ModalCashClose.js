@@ -164,7 +164,7 @@ const ModalCashclose = (props) => {
       setActiveTab("1");
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -199,7 +199,7 @@ const ModalCashclose = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -210,12 +210,11 @@ const ModalCashclose = (props) => {
     }
     setLoading(true);
     request.PUT(`billing/process/cashClose/${id}`, dataCancel, (resp) => {
-      console.log(resp);
       fnGetCashClose();
       setOpenMsgCancelCashClose(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -250,14 +249,13 @@ const ModalCashclose = (props) => {
       status: 1
     }
     request.POST(`billing/process/cashClose`, newData, (resp) => {
-      console.log(resp);
       fnGetCashClose();
       setOpenMsgSaveCashClose(false);
       setOpen(false);
       localStorage.setItem('dataCashBox_current', JSON.stringify({}));
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

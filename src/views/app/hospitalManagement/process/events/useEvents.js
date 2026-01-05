@@ -51,7 +51,6 @@ export const useEvents = ({ setLoading }) => {
       setOpenMsgCloseEvent(false);
       fnGetData();
     }, (err) => {
-      console.log(err);
       setLoading(false);
     });
   }
@@ -110,7 +109,6 @@ export const useEvents = ({ setLoading }) => {
       setTable({ ...table, data });
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }
@@ -128,7 +126,6 @@ export const useEvents = ({ setLoading }) => {
       setListAreas(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
 
@@ -142,7 +139,6 @@ export const useEvents = ({ setLoading }) => {
       setListDoctors(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
 
@@ -156,7 +152,6 @@ export const useEvents = ({ setLoading }) => {
       setListPatients(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
 
@@ -170,7 +165,6 @@ export const useEvents = ({ setLoading }) => {
       setListStores(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
 
@@ -184,7 +178,6 @@ export const useEvents = ({ setLoading }) => {
       setListReasons(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
 
@@ -198,7 +191,6 @@ export const useEvents = ({ setLoading }) => {
       setListRooms(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }, []);

@@ -25,7 +25,6 @@ export const useContentHR = ({ setLoading }) => {
       setListProjects(projectsList);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -41,7 +40,6 @@ export const useContentHR = ({ setLoading }) => {
       setListTurns(workShifts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }, []);

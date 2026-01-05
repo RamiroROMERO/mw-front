@@ -4,7 +4,7 @@ import { request } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms';
 import notification from '@Containers/ui/Notifications';
 
-export const useHeader = ({setLoading, table, setTable, listCustomers, enableGenerateReport}) => {
+export const useHeader = ({ setLoading, table, setTable, listCustomers, enableGenerateReport }) => {
   const [sendForm, setSendForm] = useState(false);
   const [listProjects, setListProjects] = useState([]);
 
@@ -18,13 +18,13 @@ export const useHeader = ({setLoading, table, setTable, listCustomers, enableGen
     turnId: 0
   }, validation);
 
-  const {customerId, projectId, turnId} = formState;
+  const { customerId, projectId, turnId } = formState;
 
-  const onCustomerChange = e =>{
+  const onCustomerChange = e => {
     const customer = e.target.value;
 
     setLoading(true);
-    request.GET(`rrhh/process/projects?customerId=${customer}`, (resp)=>{
+    request.GET(`rrhh/process/projects?customerId=${customer}`, (resp) => {
       const projects = resp.data.map((item) => {
         return {
           id: item.id,
@@ -34,15 +34,15 @@ export const useHeader = ({setLoading, table, setTable, listCustomers, enableGen
       });
       setListProjects(projects);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
 
-    onBulkForm({customerId: customer});
+    onBulkForm({ customerId: customer });
   }
 
-  const fnExportDocument = async()=>{
+  const fnExportDocument = async () => {
     const filterCustomer = listCustomers.find(item => item.value === customerId);
     setLoading(true);
     let data = {
@@ -53,8 +53,8 @@ export const useHeader = ({setLoading, table, setTable, listCustomers, enableGen
       fields: [
         { title: 'No.', field: 'num', type: 'decimal', length: 20 },
         { title: 'Empleado', field: 'employeeName', type: 'String', length: 120 },
-        { title: 'Proyecto', field: 'project', type: 'String', length: 100},
-        { title: 'Turno', field: 'workShifts', type: 'String', length: 100},
+        { title: 'Proyecto', field: 'project', type: 'String', length: 100 },
+        { title: 'Turno', field: 'workShifts', type: 'String', length: 100 },
         { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 40 }
       ],
       headerData: [
@@ -67,7 +67,7 @@ export const useHeader = ({setLoading, table, setTable, listCustomers, enableGen
     setLoading(false);
   }
 
-  const fnGetData = ()=>{
+  const fnGetData = () => {
     if (enableGenerateReport === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
@@ -78,10 +78,10 @@ export const useHeader = ({setLoading, table, setTable, listCustomers, enableGen
     }
     let url = `rrhh/process/projectDetail?customerId=${customerId}&status=1`;
 
-    if(projectId>0){
+    if (projectId > 0) {
       url = `${url}&projectId=${projectId}`;
     }
-    if(turnId>0){
+    if (turnId > 0) {
       url = `${url}&turnId=${turnId}`;
     }
 
@@ -105,12 +105,12 @@ export const useHeader = ({setLoading, table, setTable, listCustomers, enableGen
       setTable({ ...table, data: projectDeta, actions: [newActions] });
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
 
-  const fnClear = ()=>{
+  const fnClear = () => {
     onResetForm();
     setSendForm(false);
   }

@@ -72,7 +72,6 @@ export const useStore = ({ setLoading }) => {
       setDataTable(data)
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -86,23 +85,19 @@ export const useStore = ({ setLoading }) => {
     if (currentItem.id > 0) {
       setLoading(true);
       request.PUT(`inventory/settings/stores/${currentItem.id}`, formState, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('inventory/settings/stores', formState, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -122,7 +117,6 @@ export const useStore = ({ setLoading }) => {
         setCurrentItem({});
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -141,7 +135,6 @@ export const useStore = ({ setLoading }) => {
       setLoading(false);
       fnGetData();
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }, []);

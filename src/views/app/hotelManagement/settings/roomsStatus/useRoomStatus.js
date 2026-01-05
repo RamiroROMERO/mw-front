@@ -10,7 +10,7 @@ export const useRoomStatus = ({ setLoading, screenControl }) => {
   const [dataStatus, setDataStatus] = useState([]);
   const [sendForm, setSendForm] = useState(false);
 
-   // paginacion
+  // paginacion
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [search, setSearch] = useState("");
@@ -30,7 +30,7 @@ export const useRoomStatus = ({ setLoading, screenControl }) => {
 
   const { id } = formState;
 
-  const fnGetData = (page=currentPage, searchText=search) => {
+  const fnGetData = (page = currentPage, searchText = search) => {
     setLoading(true);
     request.GET(`hotel/settings/roomStatus/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
       const data = resp.data.map((item) => {
@@ -42,7 +42,6 @@ export const useRoomStatus = ({ setLoading, screenControl }) => {
       setTotalPages(pageTotal);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }
@@ -69,7 +68,6 @@ export const useRoomStatus = ({ setLoading, screenControl }) => {
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -83,7 +81,6 @@ export const useRoomStatus = ({ setLoading, screenControl }) => {
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -101,7 +98,6 @@ export const useRoomStatus = ({ setLoading, screenControl }) => {
         fnClear();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }

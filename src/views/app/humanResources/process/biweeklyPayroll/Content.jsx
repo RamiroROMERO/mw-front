@@ -77,7 +77,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
               onInputChange({ target: { name: 'id', value: resp2.data.id } });
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             });
           } else {
@@ -86,7 +86,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
           }
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       }
@@ -95,7 +95,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
       request.PUT(`rrhh/process/payrollBiweeklies/${id}`, newData, () => {
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -114,7 +114,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
       setOpenModalPayrolls(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -133,7 +133,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
       setDataDetailPayroll(payrollDeta);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -181,11 +181,9 @@ const BiweeklyPayroll = ({ setLoading }) => {
     }
     setLoading(true);
     request.PUT(`rrhh/process/payrollBiweeklies/${id}`, dataCancel, (resp) => {
-      console.log(resp);
       setOpenMsgQuestion(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -204,7 +202,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
       employeeId
     }
     request.GETPdf('rrhh/process/payrollBiweeklies/exportPDFReceipt', dataPrint, 'Comprobante de Pago.pdf', (err) => {
-      console.error(err);
+
       setLoading(false);
       setOpenModalPrint(false);
     });
@@ -221,7 +219,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -238,7 +236,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
       setListBiweeklies(biweekly);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -253,7 +251,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
       setListJobPositions(positions);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -263,7 +261,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
       setListPaymentMethod(paymentMethod);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

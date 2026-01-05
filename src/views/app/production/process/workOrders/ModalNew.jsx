@@ -73,7 +73,6 @@ const ModalNew = (props) => {
 
     setLoading(true);
     request.POST('prodProjects', newData, (resp) => {
-      console.log(resp);
       fnGetData();
       setOpen(false);
       history(
@@ -82,7 +81,6 @@ const ModalNew = (props) => {
       );
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

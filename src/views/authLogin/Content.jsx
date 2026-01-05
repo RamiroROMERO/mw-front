@@ -43,7 +43,6 @@ const Login = ({ loading, error, loginUserAction }) => {
       setErrors(error);
       NotificationManager.warning(error, 'Login Error', 3000, null, null, '');
     }
-    console.log(error);
   }, [error]);
 
   const onUserLogin = (values) => {

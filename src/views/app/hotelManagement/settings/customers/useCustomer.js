@@ -36,7 +36,7 @@ export const useCustomer = ({ setLoading, screenControl }) => {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
     }
-    setCurrentItem({id:item.id});
+    setCurrentItem({ id: item.id });
     setOpenMsgQuestion(true);
   }
 
@@ -52,7 +52,7 @@ export const useCustomer = ({ setLoading, screenControl }) => {
         setCurrentItem({});
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -91,9 +91,9 @@ export const useCustomer = ({ setLoading, screenControl }) => {
     }],
   });
 
-  const fnGetData = ()=>{
+  const fnGetData = () => {
     setLoading(true);
-    request.GET(`hotel/settings/customers`, (resp)=>{
+    request.GET(`hotel/settings/customers`, (resp) => {
       const data = resp.data.map((item) => {
         item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;
@@ -103,8 +103,8 @@ export const useCustomer = ({ setLoading, screenControl }) => {
       }
       setTable(tableData);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
@@ -120,7 +120,7 @@ export const useCustomer = ({ setLoading, screenControl }) => {
       setListCountries(countries);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -134,7 +134,7 @@ export const useCustomer = ({ setLoading, screenControl }) => {
       setListGenders(genders);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -148,7 +148,7 @@ export const useCustomer = ({ setLoading, screenControl }) => {
       setListTypeTax(taxTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -162,7 +162,7 @@ export const useCustomer = ({ setLoading, screenControl }) => {
       setListCompanies(customer);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

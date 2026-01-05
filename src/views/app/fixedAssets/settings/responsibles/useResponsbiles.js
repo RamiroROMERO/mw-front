@@ -44,7 +44,6 @@ export const useResponsibles = ({ setLoading }) => {
         fnGetTableData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -53,7 +52,6 @@ export const useResponsibles = ({ setLoading }) => {
         fnGetTableData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -71,7 +69,6 @@ export const useResponsibles = ({ setLoading }) => {
         fnClear();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -105,7 +102,6 @@ export const useResponsibles = ({ setLoading }) => {
       setTableData(data);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }

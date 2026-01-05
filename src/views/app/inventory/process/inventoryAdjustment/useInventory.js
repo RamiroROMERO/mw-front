@@ -55,7 +55,7 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
       setOpenModalViewInventoryAd(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -70,7 +70,7 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
       setInventoryDetail(adjustDeta);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -128,18 +128,18 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
             setLoading(true);
           });
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       }, false);
     } else {
@@ -160,18 +160,18 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
             setLoading(true);
           });
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         }, false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -185,7 +185,7 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
         userName: userData.name
       }
       request.GETPdf('inventory/process/inventoryTransactions/exportPDFRequisition', dataPrint, 'Inventario Físico.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -209,11 +209,11 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
       request.DELETE(`inventory/process/inventoryTransactionDetail?idFather=${id}`, () => {
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       }, false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -239,7 +239,7 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
       setListDocuments(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -255,7 +255,7 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
       setListStores(stores);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

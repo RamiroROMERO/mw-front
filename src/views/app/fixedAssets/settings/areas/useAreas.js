@@ -71,7 +71,6 @@ export const useAreas = ({ setLoading }) => {
         fnGetTableData();
         onResetForm();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -80,7 +79,6 @@ export const useAreas = ({ setLoading }) => {
         fnGetTableData();
         onResetForm();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -130,7 +128,6 @@ export const useAreas = ({ setLoading }) => {
       setTable({ ...table, data: listData });
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }

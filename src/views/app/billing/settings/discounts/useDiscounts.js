@@ -41,7 +41,6 @@ const useDiscounts = ({ setLoading }) => {
 
   const fnEditItem = (item) => {
     setCurrentItem(item);
-    console.log({ item })
     setSendForm(false);
     setBulkForm({ ...item });
   }
@@ -57,7 +56,7 @@ const useDiscounts = ({ setLoading }) => {
       setTableData(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   };
@@ -76,23 +75,21 @@ const useDiscounts = ({ setLoading }) => {
     if (currentItem && currentItem.id > 0) {
       setLoading(true);
       request.PUT(`admin/discounts/${currentItem.id}`, data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('admin/discounts', data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -111,7 +108,7 @@ const useDiscounts = ({ setLoading }) => {
         setCurrentItem({});
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -130,7 +127,7 @@ const useDiscounts = ({ setLoading }) => {
       setLoading(false);
       fnGetData();
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, [])

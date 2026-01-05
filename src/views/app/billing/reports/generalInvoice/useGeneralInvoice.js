@@ -130,7 +130,6 @@ export const useGeneralInvoice = ({ setLoading }) => {
       setTotals(totals);
       setLoading(false);
     }, err => {
-      console.log(err);
       setLoading(false);
     }, false);
   };
@@ -148,7 +147,7 @@ export const useGeneralInvoice = ({ setLoading }) => {
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

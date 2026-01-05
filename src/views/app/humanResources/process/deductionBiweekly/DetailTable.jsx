@@ -1,31 +1,29 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { IntlMessages, formatDate, formatNumber } from '@Helpers/Utils'
 import { request } from '@Helpers/core';
 import ReactTable from '@Components/reactTable'
 import Confirmation from '@Containers/ui/confirmationMsg';
 
-const DetailTable = ({id, dataDeductions, setBulkForm, onResetForm, fnGetData, setLoading}) => {
+const DetailTable = ({ id, dataDeductions, setBulkForm, onResetForm, fnGetData, setLoading }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
 
-  const fnEditDeduction = (item)=>{
+  const fnEditDeduction = (item) => {
     setBulkForm(item);
   }
 
-  const fnDeleteDeduction = (item)=>{
-    setBulkForm({id:item.id});
+  const fnDeleteDeduction = (item) => {
+    setBulkForm({ id: item.id });
     setOpenMsgQuestion(true);
   }
 
-  const fnDelete = () =>{
+  const fnDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/biweeklyDeductions/${id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -36,28 +34,28 @@ const DetailTable = ({id, dataDeductions, setBulkForm, onResetForm, fnGetData, s
       {
         text: IntlMessages("table.column.date"),
         dataField: "date",
-        headerStyle: {width: "20%"},
-        cell:({row})=>{
+        headerStyle: { width: "20%" },
+        cell: ({ row }) => {
           return (formatDate(row.original.date));
         }
       },
       {
         text: IntlMessages("table.column.biweekly"),
         dataField: "biweekly",
-        headerStyle: {width: "25%"}
+        headerStyle: { width: "25%" }
       },
       {
         text: IntlMessages("table.column.employee"),
         dataField: "employee",
-        headerStyle: {width: "45%"}
+        headerStyle: { width: "45%" }
       },
       {
         text: IntlMessages("table.column.value"),
         dataField: "value",
-        headerStyle: {width: "10%"},
-        style:{textAlign: 'right'},
-        cell:({row})=>{
-          return (formatNumber(row.original.value,'', 2));
+        headerStyle: { width: "10%" },
+        style: { textAlign: 'right' },
+        cell: ({ row }) => {
+          return (formatNumber(row.original.value, '', 2));
         }
       }
     ],
@@ -81,10 +79,10 @@ const DetailTable = ({id, dataDeductions, setBulkForm, onResetForm, fnGetData, s
     ]
   });
 
-  useEffect(()=>{
-    const dataTable = {...table, data: dataDeductions};
+  useEffect(() => {
+    const dataTable = { ...table, data: dataDeductions };
     setTable(dataTable);
-  },[dataDeductions]);
+  }, [dataDeductions]);
 
   const propsToMsgDelete = {
     open: openMsgQuestion,
@@ -96,8 +94,8 @@ const DetailTable = ({id, dataDeductions, setBulkForm, onResetForm, fnGetData, s
 
   return (
     <>
-      <ReactTable {...table}/>
-      <Confirmation {...propsToMsgDelete}/>
+      <ReactTable {...table} />
+      <Confirmation {...propsToMsgDelete} />
     </>
   )
 }

@@ -29,9 +29,9 @@ export const useServices = ({ setLoading, screenControl }) => {
 
   const { id } = formState;
 
-  const fnGetData = (page=currentPage, searchText=search) => {
+  const fnGetData = (page = currentPage, searchText = search) => {
     setLoading(true);
-    request.GET(`hotel/settings/services/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp)=>{
+    request.GET(`hotel/settings/services/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
       const data = resp.data.map(item => {
         item.typeName = item?.typeData?.name || ""
         item.levelName = item?.levelData?.name || ""
@@ -43,8 +43,8 @@ export const useServices = ({ setLoading, screenControl }) => {
       setDataServices(data);
       setTotalPages(pageTotal);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
@@ -54,7 +54,7 @@ export const useServices = ({ setLoading, screenControl }) => {
     setSendForm(false);
   }
 
-    const fnSaveDocument = () => {
+  const fnSaveDocument = () => {
     setSendForm(true);
     if (!isFormValid) {
       return;
@@ -71,7 +71,6 @@ export const useServices = ({ setLoading, screenControl }) => {
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -85,7 +84,6 @@ export const useServices = ({ setLoading, screenControl }) => {
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -103,7 +101,7 @@ export const useServices = ({ setLoading, screenControl }) => {
         fnClear();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

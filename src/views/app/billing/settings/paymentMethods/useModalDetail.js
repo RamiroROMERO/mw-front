@@ -17,8 +17,6 @@ export const useModalDetail = ({ setLoading, selectedItem }) => {
   const [currentItemDetail, setCurrentItemDetail] = useState({});
   const [msgQuestionDeleteDetail, setMsgQuestionDeleteDetail] = useState(false);
 
-  console.log(selectedItem);
-
   const { formState, formValidation, onInputChange, onBulkForm, onResetForm, isFormValid } = useForm({
     id: 0,
     idFather: selectedItem || 0,
@@ -103,7 +101,7 @@ export const useModalDetail = ({ setLoading, selectedItem }) => {
       setContCtasList(listAccount);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

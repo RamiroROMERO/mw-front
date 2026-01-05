@@ -82,7 +82,7 @@ const DailyReport = ({ setLoading }) => {
       setOpenModalViewReport(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -126,14 +126,14 @@ const DailyReport = ({ setLoading }) => {
           request.POST('rrhh/process/dailyReportDetail', employeesDeta, () => {
             setLoading(false);
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           }, false);
         });
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -151,18 +151,18 @@ const DailyReport = ({ setLoading }) => {
             request.POST('rrhh/process/dailyReportDetail', employeesDeta, () => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
           });
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         }, false);
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -181,7 +181,7 @@ const DailyReport = ({ setLoading }) => {
         dataPrint.projectId = projectId
       }
       request.GETPdf('rrhh/process/dailyReports/exportPDFDailyDeta', dataPrint, 'Reporte Diario Detallado.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -204,7 +204,7 @@ const DailyReport = ({ setLoading }) => {
       setEmployeesDetail([]);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -224,7 +224,7 @@ const DailyReport = ({ setLoading }) => {
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -239,7 +239,7 @@ const DailyReport = ({ setLoading }) => {
       setListProjects(projects);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -258,7 +258,7 @@ const DailyReport = ({ setLoading }) => {
       setListManagers(filterManagers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -272,7 +272,7 @@ const DailyReport = ({ setLoading }) => {
       setListSchedules(schedules);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     request.GET('rrhh/settings/payrollDayTypes', (resp) => {
@@ -285,7 +285,7 @@ const DailyReport = ({ setLoading }) => {
       setListDaysTypes(dayTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

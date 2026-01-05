@@ -4,7 +4,7 @@ import { useForm } from '@Hooks/useForms';
 import { useState } from 'react'
 import notification from '@Containers/ui/Notifications';
 
-export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) => {
+export const useHeader = ({ setLoading, table, setTable, enableGenerateReport }) => {
   const [sendForm, setSendForm] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
@@ -16,20 +16,20 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
     projectId: 0
   }, validation);
 
-  const {projectId} = formState;
+  const { projectId } = formState;
 
-  const fnExportDocument = ()=>{
+  const fnExportDocument = () => {
     const dataPrint = {
       projectId,
       userName: userData.name
     }
     request.GETPdf('rrhh/process/projectDetail/exportPDFProjectTransfers', dataPrint, 'Reporte de Traslado de Proyectos.pdf', (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
 
-  const fnGetData = ()=>{
+  const fnGetData = () => {
     if (enableGenerateReport === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
@@ -59,7 +59,7 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
       setTable({ ...table, data: projectDeta, actions: [newActions] });
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

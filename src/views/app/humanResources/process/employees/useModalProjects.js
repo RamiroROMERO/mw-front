@@ -3,7 +3,7 @@ import { IntlMessages, formatDate, validFloat, validInt } from '@Helpers/Utils'
 import { useForm } from '@Hooks'
 import { request } from '@Helpers/core'
 
-export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, fnGetProjects, fnGetProjectEmployee}) => {
+export const useModalProjects = ({ employeeId, turnId, listProjects, setLoading, fnGetProjects, fnGetProjectEmployee }) => {
   const [nextCode, setNextCode] = useState(0);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
@@ -15,7 +15,7 @@ export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, 
     dateIn: [(val) => val !== '', "msg.required.select.dateIn"]
   }
 
-  const {formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm} = useForm({
+  const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
     id: 0,
     customerId: 0,
     projectId: 0,
@@ -27,7 +27,7 @@ export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, 
     status: 1
   }, projectsValid);
 
-  const {id, customerId, projectId, codeEmployee, dateIn, dateOut, status} = formState;
+  const { id, customerId, projectId, codeEmployee, dateIn, dateOut, status } = formState;
 
   const onCustomerChange = e => {
     const customer = e.target.value;
@@ -38,7 +38,7 @@ export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, 
     onBulkForm({ customerId: customer });
   }
 
-  const onProjectChange = e =>{
+  const onProjectChange = e => {
     const project = e.target.value;
 
     const filterProjects = listProjects.find(item => item.id === project);
@@ -50,16 +50,16 @@ export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, 
     onBulkForm({ projectId: project, codeEmployee: codeEmpl });
   }
 
-  const fnEditDocto = (item)=>{
-    item.dateOut = item.dateOut==="1900-01-01"?"":item.dateOut
+  const fnEditDocto = (item) => {
+    item.dateOut = item.dateOut === "1900-01-01" ? "" : item.dateOut
     item.codeEmployee = item?.codeEmployee || ''
     const filterProjects = listProjects.filter(item2 => item2.customerId === item.customerId);
     setListProjectsCust(filterProjects);
     onBulkForm(item);
   }
 
-  const fnDeleteDocto = (item)=>{
-    onBulkForm({id:item.id});
+  const fnDeleteDocto = (item) => {
+    onBulkForm({ id: item.id });
     setOpenMsgQuestion(true);
   }
 
@@ -69,38 +69,38 @@ export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, 
       {
         text: IntlMessages("table.column.code"),
         dataField: "codeEmployee",
-        headerStyle: {width: "15%"}
+        headerStyle: { width: "15%" }
       },
       {
         text: IntlMessages("table.column.customer"),
         dataField: "customer",
-        headerStyle: {width: "30%"}
+        headerStyle: { width: "30%" }
       },
       {
         text: IntlMessages("page.project.table.nameProject"),
         dataField: "nameProject",
-        headerStyle: {width: "25%"}
+        headerStyle: { width: "25%" }
       },
       {
         text: IntlMessages("table.column.dateStart"),
         dataField: "dateIn",
-        headerStyle: {width: "15%"},
-        cell:({row})=>{
+        headerStyle: { width: "15%" },
+        cell: ({ row }) => {
           return (formatDate(row.original.dateIn));
         }
       },
       {
         text: IntlMessages("table.column.dateEnd"),
         dataField: "dateOut",
-        headerStyle: {width: "15%"},
-        cell:({row})=>{
+        headerStyle: { width: "15%" },
+        cell: ({ row }) => {
           return (formatDate(row.original.dateOut));
         }
       },
       {
         text: IntlMessages("table.column.status"),
         dataField: "statusIcon",
-        headerStyle: {width: "10%"}
+        headerStyle: { width: "10%" }
       }
     ],
     data: [],
@@ -123,15 +123,15 @@ export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, 
     ]
   });
 
-  const fnClearInputs = ()=>{
+  const fnClearInputs = () => {
     onResetForm();
     setSendForm(false);
   }
 
-  const fnGetData = ()=>{
+  const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/projectDetail?employeeId=${employeeId}`, (resp)=>{
-      const dataProjects = resp.data.map((item)=>{
+    request.GET(`rrhh/process/projectDetail?employeeId=${employeeId}`, (resp) => {
+      const dataProjects = resp.data.map((item) => {
         item.customer = item?.facCliente?.name || ""
         item.nameProject = item?.rrhhProject?.name || ""
         item.statusIcon = (item.status === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> :
@@ -143,15 +143,15 @@ export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, 
       }
       setTable(tableData);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
 
-  const fnSave = ()=>{
+  const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
@@ -162,16 +162,14 @@ export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, 
       employeeId,
       codeEmployee,
       dateIn,
-      dateOut: dateOut===""?"1900-01-01":dateOut,
+      dateOut: dateOut === "" ? "1900-01-01" : dateOut,
       status
     }
 
-    if(id === 0){
+    if (id === 0) {
       setLoading(true);
       request.POST('rrhh/process/projectDetail', newData, (resp) => {
-        onInputChange({target:{name:'id', value:resp.data.id}});
-
-        // actualizar correlativo del proyecto
+        onInputChange({ target: { name: 'id', value: resp.data.id } });
         const dataUpdate = {
           corre: nextCode
         }
@@ -180,7 +178,6 @@ export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, 
           setLoading(false);
           fnGetProjects();
         }, (err) => {
-          console.error(err);
           setLoading(false);
         });
 
@@ -188,40 +185,36 @@ export const useModalProjects = ({employeeId, turnId, listProjects, setLoading, 
         fnGetProjectEmployee(employeeId);
         fnClearInputs();
         setLoading(false);
-      },(err)=>{
-        console.error(err);
+      }, (err) => {
         setLoading(false);
       });
-    }else{
+    } else {
       setLoading(true);
       request.PUT(`rrhh/process/projectDetail/${id}`, newData, () => {
         fnGetData();
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
   }
 
-  const fnDelete = () =>{
+  const fnDelete = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/projectDetail/${id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fnGetData();
-  },[]);
+  }, []);
 
   const propsToMsgDelete = {
     open: openMsgQuestion,

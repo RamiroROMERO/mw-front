@@ -4,7 +4,7 @@ import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import createNotification from '@/containers/ui/Notifications';
 
-export const useCompanyInf = ({setLoading}) => {
+export const useCompanyInf = ({ setLoading }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [checkActive, setCheckActive] = useState(true);
   const [sendForm, setSendForm] = useState(false);
@@ -51,7 +51,7 @@ export const useCompanyInf = ({setLoading}) => {
     status: true
   }, companyValid);
 
-  const {id} = formState;
+  const { id } = formState;
 
   const checkChange = (item) => {
     onInputChange(item);
@@ -69,7 +69,6 @@ export const useCompanyInf = ({setLoading}) => {
       setTableData(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -94,7 +93,6 @@ export const useCompanyInf = ({setLoading}) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
@@ -104,7 +102,6 @@ export const useCompanyInf = ({setLoading}) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -122,7 +119,6 @@ export const useCompanyInf = ({setLoading}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }

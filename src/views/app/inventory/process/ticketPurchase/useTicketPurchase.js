@@ -80,7 +80,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
       setOpenModalViewOrders(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -98,7 +98,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
       setOpenModalViewOrders(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -124,7 +124,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
       setListDocuments(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -139,7 +139,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
       setListProviders(providers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -158,7 +158,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
       setListPaymentTypes(filterPayments);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -173,7 +173,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
       setListAccounts(account);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -188,7 +188,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
       setListStores(stores);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

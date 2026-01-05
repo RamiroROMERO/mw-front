@@ -8,8 +8,8 @@ import ReactTable from '@Components/reactTable'
 import DateCalendar from '@Components/dateCalendar'
 import { InputField } from '@Components/inputFields'
 
-const ModalViewHistory = ({setOpen, data}) => {
-  const {employeeId, employeeName, dateIn, setLoading} = data;
+const ModalViewHistory = ({ setOpen, data }) => {
+  const { employeeId, employeeName, dateIn, setLoading } = data;
 
   const [table, setTable] = useState({
     title: IntlMessages("page.employees.modal.viewHistory.table.title"),
@@ -17,25 +17,25 @@ const ModalViewHistory = ({setOpen, data}) => {
       {
         text: IntlMessages("table.column.dateDeparture"),
         dataField: "date",
-        headerStyle: {width: "15%"},
-        cell:({row})=>{
+        headerStyle: { width: "15%" },
+        cell: ({ row }) => {
           return (formatDate(row.original.date));
         }
       },
       {
         text: IntlMessages("page.employees.modal.viewHistory.table.comment"),
         dataField: "reason",
-        headerStyle: {width: "55%"}
+        headerStyle: { width: "55%" }
       },
       {
         text: IntlMessages("page.employees.modal.viewHistory.table.column.status"),
         dataField: "statusName",
-        headerStyle: {width: "15%"}
+        headerStyle: { width: "15%" }
       },
       {
         text: IntlMessages("page.employees.modal.viewHistory.table.column.isHireable"),
         dataField: "hireable",
-        headerStyle: {width: "15%"}
+        headerStyle: { width: "15%" }
       }
     ],
     data: [],
@@ -45,10 +45,10 @@ const ModalViewHistory = ({setOpen, data}) => {
     actions: []
   });
 
-  const fnGetData = ()=>{
+  const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/employeeHistory?employeeId=${employeeId}`, (resp)=>{
-      const history = resp.data.map((item)=>{
+    request.GET(`rrhh/process/employeeHistory?employeeId=${employeeId}`, (resp) => {
+      const history = resp.data.map((item) => {
         item.hireable = item.isHireable === true ? 'Si' : 'No'
         item.statusName = item.status === true ? 'Activo' : 'Inactivo'
         return item;
@@ -58,47 +58,47 @@ const ModalViewHistory = ({setOpen, data}) => {
       }
       setTable(tableData);
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
+
       setLoading(false);
     });
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fnGetData();
-  },[]);
+  }, []);
 
   return (
     <>
-    <ModalBody>
-      <Row>
-        <Colxx xxs={12} md={8}>
-          <InputField
-            name='employeeName'
-            label='select.employee'
-            value={employeeName}
-            disabled
-          />
-        </Colxx>
-        <Colxx xxs={12} md={4}>
-          <DateCalendar
-            name="date"
-            value={dateIn}
-            label='select.dateIn'
-            disabled
-          />
-        </Colxx>
-        <Colxx xxs="12">
-          <ReactTable {...table}/>
-        </Colxx>
-      </Row>
-    </ModalBody>
-    <ModalFooter>
-      <Button color="danger" onClick={()=>{setOpen(false)}} >
-        <i className="bi bi-box-arrow-right"/>
-        {` ${IntlMessages('button.exit')}`}
-      </Button>
-    </ModalFooter>
+      <ModalBody>
+        <Row>
+          <Colxx xxs={12} md={8}>
+            <InputField
+              name='employeeName'
+              label='select.employee'
+              value={employeeName}
+              disabled
+            />
+          </Colxx>
+          <Colxx xxs={12} md={4}>
+            <DateCalendar
+              name="date"
+              value={dateIn}
+              label='select.dateIn'
+              disabled
+            />
+          </Colxx>
+          <Colxx xxs="12">
+            <ReactTable {...table} />
+          </Colxx>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />
+          {` ${IntlMessages('button.exit')}`}
+        </Button>
+      </ModalFooter>
     </>
   )
 }

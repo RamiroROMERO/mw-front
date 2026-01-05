@@ -82,14 +82,13 @@ const ModalCashOpening = (props) => {
     localStorage.setItem('dataCashBox_current', JSON.stringify({}));
     setLoading(true);
     request.POST('validCashier', { email: userData.email, password: cashierPass }, (resp) => {
-      console.log(resp);
       localStorage.setItem('dataCashBox_current', JSON.stringify(dataCashBox));
       setBulkFormDetail(formDetail);
       setBulkFormIndex(formIndex);
       setOpen(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       notification('error', 'msg.error.userPass', 'alert.error.title');
       setLoading(false);
     }, false);

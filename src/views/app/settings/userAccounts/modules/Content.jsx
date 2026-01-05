@@ -100,7 +100,6 @@ const Modules = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -120,23 +119,19 @@ const Modules = (props) => {
     if (id > 0) {
       setLoading(true);
       request.PUT(`admin/modules/${id}`, data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('admin/modules', data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -146,12 +141,10 @@ const Modules = (props) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`admin/modules/${currentItem.id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       setCurrentItem({});
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

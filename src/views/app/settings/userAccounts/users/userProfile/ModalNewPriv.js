@@ -81,7 +81,6 @@ const ModalNewPriv = (props) => {
       setOpen(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

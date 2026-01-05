@@ -68,7 +68,7 @@ export const usePrintCarnet = ({ setLoading, screenControl }) => {
     }
 
     request.GETPdf('rrhh/process/employees/exportPDFCarnet', { employeesId: employeesSelected }, 'Carnet de Empleado.pdf', (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -86,7 +86,7 @@ export const usePrintCarnet = ({ setLoading, screenControl }) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

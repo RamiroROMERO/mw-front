@@ -46,32 +46,32 @@ const ModalPrintCashClose = (props) => {
     }
     if (validInt(typePrint) === 1) {
       request.GETPdf('billing/process/cashClose/exportPDFSummary', dataPrint, 'Cierre de Caja Resumido.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else if (validInt(typePrint) === 2) {
       request.GETPdf('billing/process/cashClose/exportPDFDetail', dataPrint, 'Cierre de Caja Detallado.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else if (validInt(typePrint) === 3) {
       request.GETPdf('billing/process/cashClose/exportPDFByArea', dataPrint, 'Cierre de Caja por Area de Facturación', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else if (validInt(typePrint) === 5) {
       request.GETPdf('billing/process/cashClose/exportPDFDaily', dataPrint, 'Cierre de Caja Global', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else if (validInt(typePrint) === 7) {
       request.GETPdf('billing/process/cashClose/exportPDFExpenses', dataPrint, 'Detalle de Gastos', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else if (validInt(typePrint) === 8) {
       request.GETPdf('billing/process/cashClose/exportPDFCancellations', dataPrint, 'Detalle de Cancelaciones', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

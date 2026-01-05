@@ -47,7 +47,7 @@ const ModalDeliveryDoc = (props) => {
       setDocumentPath(resp);
       setOpenViewFile(true);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

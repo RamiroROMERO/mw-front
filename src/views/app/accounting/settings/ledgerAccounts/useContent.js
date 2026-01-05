@@ -103,7 +103,7 @@ export const useContent = ({ setLoading }) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -121,7 +121,7 @@ export const useContent = ({ setLoading }) => {
         setCurrentItem({});
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -189,7 +189,7 @@ export const useContent = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -199,7 +199,7 @@ export const useContent = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -217,7 +217,7 @@ export const useContent = ({ setLoading }) => {
       setlistTypeAcount(accountTypes)
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -231,7 +231,7 @@ export const useContent = ({ setLoading }) => {
       setlistTypeSpent(spentTypes)
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

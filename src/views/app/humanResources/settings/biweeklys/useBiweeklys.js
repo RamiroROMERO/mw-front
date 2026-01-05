@@ -4,7 +4,7 @@ import { request } from '@Helpers/core'
 import { formatDate, validInt } from '@Helpers/Utils'
 import notification from '@Containers/ui/Notifications';
 
-export const useBiweeklys = ({setLoading, screenControl}) => {
+export const useBiweeklys = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataBiweeklies, setDataBiweeklies] = useState([]);
   const [sendForm, setSendForm] = useState(false);
@@ -40,38 +40,38 @@ export const useBiweeklys = ({setLoading, screenControl}) => {
       setDataBiweeklies(biweeklies);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
 
-   const fnClearInputs = ()=>{
+  const fnClearInputs = () => {
     onResetForm();
     setSendForm(false);
   }
 
-  const fnSave = ()=>{
+  const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
-    if(formState.id === 0){
+    if (formState.id === 0) {
       if (fnCreate === false) {
         notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
         return;
       }
       setLoading(true);
       request.POST('rrhh/process/byweeklies', formState, (resp) => {
-        onInputChange({target:{name:'id', value:resp.data.id}});
+        onInputChange({ target: { name: 'id', value: resp.data.id } });
         fnGetData();
         fnClearInputs();
         setLoading(false);
-      },(err)=>{
-        console.error(err);
+      }, (err) => {
+
         setLoading(false);
       });
-    }else{
+    } else {
       if (fnUpdate === false) {
         notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
         return;
@@ -82,7 +82,7 @@ export const useBiweeklys = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -100,7 +100,7 @@ export const useBiweeklys = ({setLoading, screenControl}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

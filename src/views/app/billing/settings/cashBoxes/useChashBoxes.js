@@ -48,7 +48,7 @@ const useChashBoxes = ({ setLoading }) => {
       setTableData(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -67,7 +67,7 @@ const useChashBoxes = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -77,7 +77,7 @@ const useChashBoxes = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -98,7 +98,7 @@ const useChashBoxes = ({ setLoading }) => {
       setLoading(false);
       fnGetData();
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -112,7 +112,7 @@ const useChashBoxes = ({ setLoading }) => {
       setListBillingArea(area);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -131,7 +131,7 @@ const useChashBoxes = ({ setLoading }) => {
         setSelectedItem({})
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

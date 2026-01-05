@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { Button, Card, CardBody, Row } from 'reactstrap'
 import { IntlMessages } from '@Helpers/Utils'
@@ -7,15 +7,15 @@ import DateCalendar from '@Components/dateCalendar'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { request } from '@Helpers/core'
 
-const DetailDeduction = ({id, date, biweekId, employeeId, description, value, listEmployees, listBiweeklies, onResetForm,
-onInputChange, fnGetData, setLoading, formValidation, isFormValid}) => {
+const DetailDeduction = ({ id, date, biweekId, employeeId, description, value, listEmployees, listBiweeklies, onResetForm,
+  onInputChange, fnGetData, setLoading, formValidation, isFormValid }) => {
 
   const [sendForm, setSendForm] = useState(false);
-  const {dateValid, biweekIdValid, employeeIdValid, valueValid, descriptionValid} = formValidation;
+  const { dateValid, biweekIdValid, employeeIdValid, valueValid, descriptionValid } = formValidation;
 
-  const fnSave = ()=>{
+  const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
@@ -27,19 +27,19 @@ onInputChange, fnGetData, setLoading, formValidation, isFormValid}) => {
       value
     }
 
-    if(id === 0){
+    if (id === 0) {
       setLoading(true);
       request.POST('rrhh/process/biweeklyDeductions', newData, (resp) => {
-        onInputChange({target:{name:'id', value:resp.data.id}});
+        onInputChange({ target: { name: 'id', value: resp.data.id } });
         fnGetData();
         onResetForm();
         setSendForm(false);
         setLoading(false);
-      },(err)=>{
-        console.error(err);
+      }, (err) => {
+
         setLoading(false);
       });
-    }else{
+    } else {
       setLoading(true);
       request.PUT(`rrhh/process/biweeklyDeductions/${id}`, newData, () => {
         fnGetData();
@@ -47,13 +47,13 @@ onInputChange, fnGetData, setLoading, formValidation, isFormValid}) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
   }
 
-  const fnClearInputs = ()=>{
+  const fnClearInputs = () => {
     onResetForm();
     setSendForm(false);
   }
@@ -120,10 +120,10 @@ onInputChange, fnGetData, setLoading, formValidation, isFormValid}) => {
         <Row>
           <Colxx xxs="12" className="div-action-button-container">
             <Button color="secondary" onClick={fnClearInputs}>
-              <i className="bi bi-stars"/> {IntlMessages("button.clear")}
+              <i className="bi bi-stars" /> {IntlMessages("button.clear")}
             </Button>
             <Button color="primary" onClick={fnSave}>
-              <i className="iconsminds-save"/> {IntlMessages("button.save")}
+              <i className="iconsminds-save" /> {IntlMessages("button.save")}
             </Button>
           </Colxx>
         </Row>

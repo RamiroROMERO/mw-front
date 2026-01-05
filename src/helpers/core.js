@@ -24,12 +24,18 @@ const fnGetToken = () => {
   }
   if (isTokenExpired(dataUser.token)) {
     logoutUser();
-    console.log('dont logged!')
     localStorage.removeItem('mw_current_user');
     // window.location.href = "#/login";
     return;
   }
   return dataUser.token;
+}
+
+const moveScrollTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
 const request = {
@@ -39,7 +45,7 @@ const request = {
       behavior: "smooth"
     });
   },
-  GET: (url, fnSuccess, fnError) => {
+  GET: (url, fnSuccess, fnError, fnFinaly = undefined) => {
     const baseUrl = url.split('?')[0];
     const token = urlPublic.includes(baseUrl) ? '' : fnGetToken();
     fetch(`${urlAPI}${url}`, {
@@ -54,30 +60,132 @@ const request = {
       })
       .then((response) => {
         if (response.status === 'success' || response.status === 200) {
-          if (typeof fnSuccess === 'function') {
-            fnSuccess(response);
-          } else {
-            console.log(response);
-          }
-        } else if (typeof fnError === 'function') {
-          fnError(response);
+          if (typeof fnSuccess === 'function') fnSuccess(response);
         } else {
+          if (typeof fnError === 'function') fnError(response);
           console.error(response);
         }
         return response;
       })
       .catch((err) => {
-        console.log(err.status);
-        if (err)
-          if (typeof fnError === 'function') {
-            fnError(err);
-          } else {
-            console.error(err);
-          }
+        if (err && typeof fnError === 'function') fnError(err);
+        console.error(err);
         return err;
       });
   },
-
+  POST: (url, data, success, error, showMessage = true, fnFinaly = undefined) => {
+    const baseUrl = url.split("?")[0];
+    const token = urlPublic.includes(baseUrl) ? '' : fnGetToken();
+    if (data) {
+      Object.keys(data).map(item => {
+        if (data[item] instanceof Date) {
+          data[item] = new Date(`${data[item].toJSON().substring(0, 10)}T${data[item].toLocaleTimeString()}.000Z`)
+        }
+      })
+    }
+    fetch(`${urlAPI}${url}`, {
+      async: true,
+      crossDomain: true,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      contentType: 'JSON',
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((response) => {
+        if (response.status === 'success' || response.status === 200) {
+          if (typeof success === 'function') success(response);
+          if (showMessage) notification('success', 'msg.save.record', 'alert.success.title');
+        } else {
+          if (typeof error === 'function') error(response);
+          if (showMessage) notification('error', 'msg.save.record.error', 'alert.error.title');
+          console.error(response);
+        }
+        return response;
+      })
+      .catch((err) => {
+        if (typeof error === 'function') error(err);
+        if (showMessage) notification('error', 'msg.save.record.error', 'alert.error.title');
+        console.error(err);
+        return err;
+      });
+  },
+  PUT: (url, data, fnSuccess, fnError, showMessage = true, fnFinaly = undefined) => {
+    const baseUrl = url.split("?")[0];
+    const token = urlPublic.includes(baseUrl) ? '' : fnGetToken();
+    if (data) {
+      Object.keys(data).map(item => {
+        if (data[item] instanceof Date) {
+          data[item] = new Date(`${data[item].toJSON().substring(0, 10)}T${data[item].toLocaleTimeString()}.000Z`)
+        }
+      })
+    }
+    fetch(`${urlAPI}${url}`, {
+      async: true,
+      crossDomain: true,
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${token}`
+      },
+      contentType: 'JSON',
+      body: JSON.stringify(data)
+    }).then((response) => {
+      return response.json();
+    })
+      .then((response) => {
+        if (response.status === "success" || response.status === 200) {
+          if (typeof fnSuccess === 'function') fnSuccess(response);
+          if (showMessage) notification('success', 'msg.update.record', 'alert.success.title');
+        } else {
+          if (typeof fnError === 'function') fnError(response);
+          if (showMessage) notification('error', 'msg.update.record.error', 'alert.error.title');
+          console.error(response)
+        }
+        return response;
+      })
+      .catch((err) => {
+        if (typeof fnError === 'function') fnError(err);
+        if (showMessage) notification('error', 'msg.update.record.error', 'alert.error.title');
+        console.error(err);
+        return err;
+      });
+  },
+  DELETE: (url, fnSuccess, fnError, showMessage = true, fnFinaly = undefined) => {
+    const token = fnGetToken();
+    fetch(`${urlAPI}${url}`, {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((response) => {
+        if (response.status === "success" || response.status === 200) {
+          if (typeof fnSuccess === 'function') fnSuccess(response);
+          if (showMessage) notification('success', 'msg.delete.record', 'alert.success.title');
+        } else {
+          if (typeof fnError === 'function') fnError(response);
+          if (showMessage) notification('error', 'msg.delete.record.error', 'alert.error.title');
+          console.error(response);
+        }
+        return response;
+      })
+      .catch(err => {
+        if (typeof fnError === 'function') fnError(err);
+        if (showMessage) notification('error', 'msg.delete.record.error', 'alert.error.title');
+        console.error(err);
+        return err;
+      });
+  },
   getJSON: async (url, params, onSuccess) => {
 
     const qtyParams = Object.keys(params).length;
@@ -164,15 +272,12 @@ const request = {
         if (typeof fnSuccess === 'function') {
           fnSuccess(url);
         } else {
-          console.log(url);
         }
+        return url;
       })
       .catch((err) => {
-        if (typeof fnError === 'function') {
-          fnError(err);
-        } else {
-          console.error(err);
-        }
+        if (typeof fnError === 'function') fnError(err);
+        console.error(err);
         return err;
       });
   },
@@ -230,57 +335,6 @@ const request = {
     const fileObjectURL = URL.createObjectURL(fileBlob);
     return fileObjectURL;
   },
-  POST: (url, data, success, error, showMessage = true) => {
-    const baseUrl = url.split("?")[0];
-    const token = urlPublic.includes(baseUrl) ? '' : fnGetToken();
-    if (data) {
-      Object.keys(data).map(item => {
-        if (data[item] instanceof Date) {
-          data[item] = new Date(`${data[item].toJSON().substring(0, 10)}T${data[item].toLocaleTimeString()}.000Z`)
-        }
-      })
-    }
-    fetch(`${urlAPI}${url}`, {
-      async: true,
-      crossDomain: true,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      contentType: 'JSON',
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((response) => {
-        if (response.status === 'success' || response.status === 200) {
-          if (typeof success === 'function') {
-            success(response);
-          } else {
-            console.info(response);
-          }
-          if (showMessage) notification('success', 'msg.save.record', 'alert.success.title');
-        } else if (typeof error === 'function') {
-          error(response);
-          if (showMessage) notification('error', 'msg.save.record.error', 'alert.error.title');
-        } else {
-          console.error(response);
-        }
-        return response;
-      })
-      .catch((err) => {
-        if (typeof error === 'function') {
-          error(err);
-          if (showMessage) notification('error', 'msg.save.record.error', 'alert.error.title');
-        } else {
-          console.error(err);
-        }
-        return err;
-      });
-  },
-
   uploadFiles: (url, files = [], fnSuccess, fnError) => {
     if (files.length <= 0) {
       return;
@@ -288,10 +342,8 @@ const request = {
 
     const formData = new FormData();
     files.forEach(item => {
-      console.log(item.name);
       formData.append('files', item.file);
     });
-    console.log("formData", formData);
     const token = fnGetToken();
     fetch(`${urlAPI}${url}`, {
       method: 'POST',
@@ -304,121 +356,23 @@ const request = {
     })
       .then((response) => {
         if (response.status === "success" || response.status === 200) {
-          if (typeof fnSuccess === 'function') {
-            fnSuccess(response);
-          } else {
-            console.info(response);
-          }
-          return notification('success', 'msg.upload.record', 'alert.success.title');
-        } else if (typeof fnError === 'function') {
-          fnError(response);
-          return notification('error', 'msg.upload.record.error', 'alert.error.title');
+          if (typeof fnSuccess === 'function') fnSuccess(response);
+          notification('success', 'msg.upload.record', 'alert.success.title');
         } else {
+          if (typeof fnError === 'function') fnError(response);
           console.error(response)
+          notification('error', 'msg.upload.record.error', 'alert.error.title');
         }
         return response;
       })
       .catch((err) => {
-        if (typeof fnError === 'function') {
-          fnError(err);
-          return notification('error', 'msg.upload.record.error', 'alert.error.title');
-        } else {
-          console.error(err);
-        }
+        if (typeof fnError === 'function') fnError(err);
+        notification('error', 'msg.upload.record.error', 'alert.error.title');
+        console.error(err);
         return err;
       });
   },
-  PUT: (url, data, fnSuccess, fnError, showMessage = true) => {
-    const baseUrl = url.split("?")[0];
-    const token = urlPublic.includes(baseUrl) ? '' : fnGetToken();
-    if (data) {
-      Object.keys(data).map(item => {
-        if (data[item] instanceof Date) {
-          data[item] = new Date(`${data[item].toJSON().substring(0, 10)}T${data[item].toLocaleTimeString()}.000Z`)
-        }
-      })
-    }
-    fetch(`${urlAPI}${url}`, {
-      async: true,
-      crossDomain: true,
-      method: 'PUT',
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${token}`
-      },
-      contentType: 'JSON',
-      body: JSON.stringify(data)
-    }).then((response) => {
-      return response.json();
-    })
-      .then((response) => {
-        if (response.status === "success" || response.status === 200) {
-          if (typeof fnSuccess === 'function') {
-            fnSuccess(response);
-          } else {
-            console.info(response);
-          }
-          if (showMessage) notification('success', 'msg.update.record', 'alert.success.title');
-        } else if (typeof fnError === 'function') {
-          fnError(response);
-          if (showMessage) notification('error', 'msg.update.record.error', 'alert.error.title');
-        } else {
-          console.error(response)
-        }
-        return response;
-      })
-      .catch((err) => {
-        if (typeof fnError === 'function') {
-          fnError(err);
-          if (showMessage) notification('error', 'msg.update.record.error', 'alert.error.title');
-        } else {
-          console.error(err);
-        }
-        return err;
-      });
-  },
-  DELETE: (url, fnSuccess, fnError, showMessage = true) => {
-    const token = fnGetToken();
-    fetch(`${urlAPI}${url}`, {
-      method: 'DELETE',
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${token}`
-      }
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((response) => {
-        if (response.status === "success" || response.status === 200) {
-          if (typeof fnSuccess === 'function') {
-            fnSuccess(response)
-          } else {
-            console.info(response);
-          }
-          if (showMessage) notification('success', 'msg.delete.record', 'alert.success.title');
-        } else if (typeof fnError === 'function') {
-          fnError(response);
-        } else {
-          console.error(response);
-          if (showMessage) notification('error', 'msg.delete.record.error', 'alert.error.title');
-        }
-        return response;
-      })
-      .catch(err => {
-        if (typeof fnError === 'function') {
-          fnError(err);
-          if (showMessage) notification('error', 'msg.delete.record.error', 'alert.error.title');
-        } else {
-          console.error(err);
-        }
-        return err;
-      });
-  }
+
 };
 
-const fnTest = () => {
-  return 'texto';
-};
-
-export { request, fnTest };
+export { request, moveScrollTop };

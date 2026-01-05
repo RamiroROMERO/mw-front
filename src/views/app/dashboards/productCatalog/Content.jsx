@@ -44,7 +44,6 @@ const Content = ({ setLoading }) => {
           </Alert>
         </Colxx>}
         {productList.map(prod => {
-          // console.log(prod);
           return (
             <Colxx xxs={12} sm={6} lg={4} xl={3}>
               <CardProduct

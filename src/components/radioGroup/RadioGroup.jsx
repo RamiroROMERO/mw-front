@@ -9,7 +9,6 @@ export const RadioGroup = ({ label, name, value, onChange, options = [], feedbac
   }
   lengths = lengths.sort((a, b) => { return a - b });
   const maxlength = lengths[lengths.length - 1] * 15;
-  // console.log(feedbackText);
   return (
     <>
       <div className={feedbackText ? 'div-label-border mb-1' : 'div-label-border'}>

@@ -2,7 +2,7 @@ import { request } from '@/helpers/core';
 import { formatNumber, IntlMessages } from '@/helpers/Utils';
 import { useEffect, useState } from 'react'
 
-export const usePaymentsHistory = ({setLoading, adminControl}) => {
+export const usePaymentsHistory = ({ setLoading, adminControl }) => {
   const [listEmployees, setListEmployees] = useState([]);
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.013")?.active || false;
 
@@ -17,7 +17,7 @@ export const usePaymentsHistory = ({setLoading, adminControl}) => {
       {
         text: IntlMessages("table.column.employee"),
         dataField: "employee",
-        headerStyle: {width: "25%"}
+        headerStyle: { width: "25%" }
       },
       {
         text: IntlMessages("table.column.dateIn"),
@@ -27,32 +27,32 @@ export const usePaymentsHistory = ({setLoading, adminControl}) => {
       {
         text: IntlMessages("page.resumePayroll.table.jobPosition"),
         dataField: "jobPosition",
-        headerStyle: {width: "15%"}
+        headerStyle: { width: "15%" }
       },
       {
         text: IntlMessages("page.resumePayroll.table.totalIncome"),
         dataField: "totalIncomes",
-        headerStyle: {width: "15%"},
-        style:{textAlign: 'right'},
-        cell: ({row}) => {
+        headerStyle: { width: "15%" },
+        style: { textAlign: 'right' },
+        cell: ({ row }) => {
           return (formatNumber(row.original.totalIncomes, '', 2));
         }
       },
       {
         text: IntlMessages("page.resumePayroll.table.totalDeductions"),
         dataField: "totalDeductions",
-        headerStyle: {width: "15%"},
-        style:{textAlign: 'right'},
-        cell: ({row}) => {
+        headerStyle: { width: "15%" },
+        style: { textAlign: 'right' },
+        cell: ({ row }) => {
           return (formatNumber(row.original.totalDeductions, '', 2));
         }
       },
       {
         text: IntlMessages("table.column.totalPay"),
         dataField: "totalPayment",
-        headerStyle: {width: "15%"},
-        style:{textAlign: 'right'},
-        cell: ({row}) => {
+        headerStyle: { width: "15%" },
+        style: { textAlign: 'right' },
+        cell: ({ row }) => {
           return (formatNumber(row.original.totalPayment, '', 2));
         }
       }
@@ -65,7 +65,7 @@ export const usePaymentsHistory = ({setLoading, adminControl}) => {
     actions: []
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
     request.GET('rrhh/process/employees/findSL?status=1', (resp) => {
       const employees = resp.data.map((item) => {
@@ -77,10 +77,10 @@ export const usePaymentsHistory = ({setLoading, adminControl}) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
-  },[]);
+  }, []);
 
   const propsToHeader = {
     listEmployees,

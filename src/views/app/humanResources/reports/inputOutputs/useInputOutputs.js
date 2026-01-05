@@ -3,7 +3,7 @@ import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
 
-export const useInputOutputs = ({setLoading, adminControl}) => {
+export const useInputOutputs = ({ setLoading, adminControl }) => {
   const [dataInput, setDataInput] = useState([]);
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.001")?.active || false;
 
@@ -27,7 +27,7 @@ export const useInputOutputs = ({setLoading, adminControl}) => {
       setDataInput(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

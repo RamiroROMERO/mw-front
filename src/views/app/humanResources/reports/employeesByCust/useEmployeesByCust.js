@@ -60,7 +60,7 @@ export const useEmployeesByCust = ({ setLoading, adminControl }) => {
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -76,7 +76,7 @@ export const useEmployeesByCust = ({ setLoading, adminControl }) => {
       setListWorkShifts(workShifts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

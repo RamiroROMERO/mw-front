@@ -29,12 +29,12 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
   const { id, turnId, employeeId, dateIn, dateOut } = formState;
 
   const fnEditDetail = (item) => {
-    item.dateOut = item.dateOut==="1900-01-01"?"":item.dateOut
+    item.dateOut = item.dateOut === "1900-01-01" ? "" : item.dateOut
     setCodeEmployee(item?.codeEmployee || '')
     onBulkForm(item);
   }
 
-  const fnClearInputs = ()=>{
+  const fnClearInputs = () => {
     onResetForm();
     setSendForm(false);
   }
@@ -56,7 +56,7 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -67,7 +67,7 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
       {
         text: IntlMessages("table.column.code"),
         dataField: "codeEmployee",
-        headerStyle: {width: "15%"}
+        headerStyle: { width: "15%" }
       },
       {
         text: IntlMessages("select.workShifts"),
@@ -83,7 +83,7 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
         text: IntlMessages("select.dateIn"),
         dataField: "dateIn",
         headerStyle: { width: "15%" },
-        cell:({row})=>{
+        cell: ({ row }) => {
           return (formatDate(row.original.dateIn));
         }
       },
@@ -91,14 +91,14 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
         text: IntlMessages("select.dateOut"),
         dataField: "dateOutVal",
         headerStyle: { width: "15%" },
-        cell:({row})=>{
-          return (row.original.dateOutVal===""?"":formatDate(row.original.dateOutVal));
+        cell: ({ row }) => {
+          return (row.original.dateOutVal === "" ? "" : formatDate(row.original.dateOutVal));
         }
       },
       {
         text: IntlMessages("table.column.status"),
         dataField: "statusIcon",
-        headerStyle: {width: "10%"}
+        headerStyle: { width: "10%" }
       },
     ],
     data: [],
@@ -128,7 +128,7 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
       const projectDeta = resp.data.map((item) => {
         item.workShifts = item.rrhhSchedule?.name || ''
         item.employee = `${item.rrhhEmployee?.firstName || ''} ${item.rrhhEmployee?.secondName || ''} ${item.rrhhEmployee?.lastName || ''} ${item.rrhhEmployee?.secondLastName || ''}`
-        item.dateOutVal = item.dateOut==="1900-01-01"?"":item.dateOut
+        item.dateOutVal = item.dateOut === "1900-01-01" ? "" : item.dateOut
         item.statusIcon = item.status === true || item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />
         return item;
@@ -136,7 +136,7 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
       setTable({ ...table, data: projectDeta });
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -152,7 +152,7 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
       projectId: currentItem.id,
       turnId,
       dateIn,
-      dateOut: dateOut===""?"1900-01-01":dateOut,
+      dateOut: dateOut === "" ? "1900-01-01" : dateOut,
       employeeId,
       codeEmployee
     }
@@ -183,13 +183,13 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
           setNextCode(nextCodeP);
           fnGetProjects();
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
 
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -205,7 +205,7 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

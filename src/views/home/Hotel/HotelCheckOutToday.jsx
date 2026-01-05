@@ -6,10 +6,11 @@ import { request } from '@/helpers/core';
 import Modal from '@Components/modal';
 import ModalInvoice from './ModalInvoice';
 import ViewPdf from '@/components/ViewPDF/ViewPdf';
+import DateHelper from '@/helpers/DateHelper';
 
 export const HotelCheckOutToday = ({ setLoading }) => {
 
-  const [currentDate, setCurrentDate] = useState(new Date().toJSON().substring(0, 10));
+  const [currentDate, setCurrentDate] = useState(DateHelper.getDate());
   const [dataCurrentCheckOut, setDataCurrentCheckOut] = useState([]);
   const [totalCheckOut, setTotalCheckOut] = useState(0);
   const [bookingId, setBookingId] = useState(0);
@@ -41,15 +42,14 @@ export const HotelCheckOutToday = ({ setLoading }) => {
     request.GET(`hotel/process/bookings/${id}`, (resp) => {
       setDataBooking(resp.data);
       const invoiceId = resp?.data?.invoiceId || 0;
-      if(validInt(invoiceId)>0){
+      if (validInt(invoiceId) > 0) {
         fnPrintInvoice(invoiceId);
         setInvoiceId(invoiceId);
-      }else{
+      } else {
         setOpenModalInvoice(true);
       }
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -73,7 +73,6 @@ export const HotelCheckOutToday = ({ setLoading }) => {
       setDocumentPath(resp);
       setOpenViewFile(true);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -161,8 +160,8 @@ export const HotelCheckOutToday = ({ setLoading }) => {
           </Card>
         </Col>
       </Row>
-      <Modal {...propsToModalInvoice}/>
-      <Modal {...propsToViewPDF}/>
+      <Modal {...propsToModalInvoice} />
+      <Modal {...propsToViewPDF} />
     </>
   )
 }

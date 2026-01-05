@@ -30,7 +30,9 @@ const FormEmployee = ({ codeEmployee, nationalityId, dni, firstName, secondName,
       const nameFile = resp.data[0].name;
       fnGetImgEmployee(nameFile);
       setBulkForm({ pathImage: nameFile })
-    }, err => { console.log(err) });
+    }, err => {
+
+    });
   };
 
   return (

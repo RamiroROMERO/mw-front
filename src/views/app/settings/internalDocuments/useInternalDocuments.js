@@ -4,7 +4,7 @@ import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import notification from '@/containers/ui/Notifications';
 
-export const useInternalDocuments = ({setLoading}) => {
+export const useInternalDocuments = ({ setLoading }) => {
   const [listComp, setListComp] = useState([]);
   const [listTaxDoc, setListTaxDoc] = useState([]);
   const [tableData, setTableData] = useState([]);
@@ -59,7 +59,6 @@ export const useInternalDocuments = ({setLoading}) => {
       setTableData(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -76,7 +75,6 @@ export const useInternalDocuments = ({setLoading}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -101,7 +99,6 @@ export const useInternalDocuments = ({setLoading}) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
@@ -111,7 +108,6 @@ export const useInternalDocuments = ({setLoading}) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -124,7 +120,6 @@ export const useInternalDocuments = ({setLoading}) => {
       setListComp(companies)
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -134,7 +129,6 @@ export const useInternalDocuments = ({setLoading}) => {
       setListTaxDoc(setTaxDoc)
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 

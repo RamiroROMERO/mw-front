@@ -55,7 +55,6 @@ export const useModalCompProduct = ({ setLoading, fatherCode }) => {
     //   const deta = resp.data;
     //   setDetaDist(deta);
     // }, err => {
-    //   console.error(err);
     // });
   }
 

@@ -104,7 +104,7 @@ const PurchaseOrders = (props) => {
       setOrderDetail(ordersDeta);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -131,7 +131,7 @@ const PurchaseOrders = (props) => {
       setOpenModalViewOrders(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -187,23 +187,23 @@ const PurchaseOrders = (props) => {
             request.POST('inventory/process/purchaseOrderDetail', productDeta, (resp3) => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
           });
           // imprimir la orden de compra
           request.GETPdf('inventory/process/purchaseOrders/exportPDFOrder', { id, userName: userData.name }, 'Orden de Compra.pdf',
             (err) => {
-              console.error(err);
+
               setLoading(false);
             });
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         }, false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -220,7 +220,7 @@ const PurchaseOrders = (props) => {
           request.POST('inventory/process/purchaseOrderDetail', productDeta, (resp2) => {
             setLoading(false);
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           }, false);
         });
@@ -228,12 +228,12 @@ const PurchaseOrders = (props) => {
         // imprimir la orden de compra
         request.GETPdf('inventory/process/purchaseOrders/exportPDFOrder', { id: resp.data.id, userName: userData.name }, 'Orden de Compra.pdf',
           (err) => {
-            console.error(err);
+
             setLoading(false);
           });
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -243,7 +243,7 @@ const PurchaseOrders = (props) => {
     if (id > 0) {
       request.GETPdf('inventory/process/purchaseOrders/exportPDFOrder', { id, userName: userData.name }, 'Orden de Compra.pdf',
         (err) => {
-          console.error(err);
+
           setLoading(false);
         });
     }
@@ -272,12 +272,12 @@ const PurchaseOrders = (props) => {
         fnNewPurchaseOrder();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -336,7 +336,7 @@ const PurchaseOrders = (props) => {
       setDataPurchases(purchase);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -357,7 +357,7 @@ const PurchaseOrders = (props) => {
       setListPaymentTypes(filterPayments);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -375,7 +375,7 @@ const PurchaseOrders = (props) => {
       setListProviders(providers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -397,7 +397,7 @@ const PurchaseOrders = (props) => {
       setDataProducts(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -412,7 +412,7 @@ const PurchaseOrders = (props) => {
       setListWorkOrders(orders);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -427,7 +427,7 @@ const PurchaseOrders = (props) => {
       setListTypeDocument(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -441,7 +441,7 @@ const PurchaseOrders = (props) => {
       setListLedgerAccounts(listAccounts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

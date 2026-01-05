@@ -3,7 +3,7 @@ import { request } from '@/helpers/core';
 import { IntlMessages } from '@Helpers/Utils'
 import notification from '@/containers/ui/Notifications';
 
-export const useDetailDeductions = ({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, fnCreate, fnUpdate}) => {
+export const useDetailDeductions = ({ id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, fnCreate, fnUpdate }) => {
 
   const [sendForm, setSendForm] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -26,15 +26,15 @@ export const useDetailDeductions = ({id, projectId, setProjectId, onResetForm, l
     }
   });
 
-  const fnClearInputs = ()=>{
+  const fnClearInputs = () => {
     onResetForm();
     setSendForm(false);
     setProjectId(0);
   }
 
-  const fnSave = () =>{
+  const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
@@ -60,7 +60,7 @@ export const useDetailDeductions = ({id, projectId, setProjectId, onResetForm, l
       }
     });
 
-    if(id === 0){
+    if (id === 0) {
       if (fnCreate === false) {
         notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
         setSendForm(false);
@@ -73,11 +73,11 @@ export const useDetailDeductions = ({id, projectId, setProjectId, onResetForm, l
         setProjectId(0);
         setSelectedItems([]);
         setLoading(false);
-      },(err)=>{
-        console.error(err);
+      }, (err) => {
+
         setLoading(false);
       });
-    }else{
+    } else {
       if (fnUpdate === false) {
         notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
         setSendForm(false);
@@ -89,16 +89,16 @@ export const useDetailDeductions = ({id, projectId, setProjectId, onResetForm, l
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
   }
 
-  useEffect(()=>{
-    const dataTable = {...table, data: listEmployeesByProject};
+  useEffect(() => {
+    const dataTable = { ...table, data: listEmployeesByProject };
     setTable(dataTable);
-  },[listEmployeesByProject, projectId]);
+  }, [listEmployeesByProject, projectId]);
 
   return (
     {

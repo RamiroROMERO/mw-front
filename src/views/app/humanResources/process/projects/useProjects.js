@@ -62,7 +62,7 @@ export const useProjects = ({ setLoading, screenControl, adminControl }) => {
       setListProjects(projectsList);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -87,7 +87,7 @@ export const useProjects = ({ setLoading, screenControl, adminControl }) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -103,7 +103,7 @@ export const useProjects = ({ setLoading, screenControl, adminControl }) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -122,7 +122,7 @@ export const useProjects = ({ setLoading, screenControl, adminControl }) => {
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -143,7 +143,7 @@ export const useProjects = ({ setLoading, screenControl, adminControl }) => {
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -159,7 +159,7 @@ export const useProjects = ({ setLoading, screenControl, adminControl }) => {
       setListWorkShifts(workShifts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -175,7 +175,7 @@ export const useProjects = ({ setLoading, screenControl, adminControl }) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

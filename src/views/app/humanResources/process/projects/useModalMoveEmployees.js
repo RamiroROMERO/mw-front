@@ -48,7 +48,7 @@ const useModalMoveEmployees = ({ setLoading, listProjects, fnGetProjects }) => {
     onBulkForm({ customerId: customer });
   }
 
-  const onProjectDestinationChange = e =>{
+  const onProjectDestinationChange = e => {
     const project = e.target.value;
 
     const filterProjects = listProjects.find(item => item.id === project);
@@ -72,7 +72,7 @@ const useModalMoveEmployees = ({ setLoading, listProjects, fnGetProjects }) => {
       setTable({ ...table, data: projectDeta });
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -91,7 +91,7 @@ const useModalMoveEmployees = ({ setLoading, listProjects, fnGetProjects }) => {
       return
     }
 
-    let nextCodeP = validFloat(nextCode)-1;
+    let nextCodeP = validFloat(nextCode) - 1;
     const newData = selectedItems.map(item => {
       nextCodeP++;
       return {
@@ -101,7 +101,7 @@ const useModalMoveEmployees = ({ setLoading, listProjects, fnGetProjects }) => {
         turnId,
         codeEmployee: `${codeProject}-${nextCodeP}`,
         dateIn,
-        dateOut: dateOut===""?"1900-01-01":dateOut,
+        dateOut: dateOut === "" ? "1900-01-01" : dateOut,
         reason,
         prevProjectId: item.projectId
       }
@@ -120,7 +120,7 @@ const useModalMoveEmployees = ({ setLoading, listProjects, fnGetProjects }) => {
         request.PUT(`rrhh/process/projectDetail/${element.id}`, dataUpdate, () => {
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       });
@@ -134,7 +134,7 @@ const useModalMoveEmployees = ({ setLoading, listProjects, fnGetProjects }) => {
         setLoading(false);
         fnGetProjects();
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
 
@@ -145,7 +145,7 @@ const useModalMoveEmployees = ({ setLoading, listProjects, fnGetProjects }) => {
       setSendForm(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -161,8 +161,8 @@ const useModalMoveEmployees = ({ setLoading, listProjects, fnGetProjects }) => {
       {
         text: IntlMessages("table.column.dateStart"),
         dataField: "initDate",
-        headerStyle: {width: "15%"},
-        cell:({row})=>{
+        headerStyle: { width: "15%" },
+        cell: ({ row }) => {
           return (formatDate(row.original.dateIn));
         }
       },

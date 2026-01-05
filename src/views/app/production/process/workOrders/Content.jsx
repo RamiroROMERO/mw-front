@@ -130,7 +130,6 @@ const WorkOrders = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -147,7 +146,6 @@ const WorkOrders = (props) => {
       setListCustomers(listCustomer);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -161,7 +159,6 @@ const WorkOrders = (props) => {
       setListManagers(listManager);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -175,7 +172,6 @@ const WorkOrders = (props) => {
       setListTypeProducts(listTypeProduct);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -189,7 +185,6 @@ const WorkOrders = (props) => {
       setListTypeProjects(listTypeProject);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -203,7 +198,6 @@ const WorkOrders = (props) => {
       setListDestinations(listDestination);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -211,7 +205,6 @@ const WorkOrders = (props) => {
       setListStatus(resp.data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -222,12 +215,10 @@ const WorkOrders = (props) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`prodProjects/${currentItem.id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       setCurrentItem({});
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

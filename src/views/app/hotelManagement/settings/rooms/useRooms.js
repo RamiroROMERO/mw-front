@@ -63,7 +63,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
       }
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -76,7 +76,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
       setOpenModalNew(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -162,7 +162,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -177,7 +177,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
       setListServices(services);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -192,7 +192,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
       setListTypes(roomTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -207,7 +207,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
       setListLevels(roomLevels);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -222,7 +222,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
       setListStatus(roomStatus);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -237,7 +237,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
       setListMealPlan(roomMealTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

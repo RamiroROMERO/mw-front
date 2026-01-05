@@ -5,7 +5,7 @@ import { getCurrentDate, validInt } from '@Helpers/Utils';
 import moment from 'moment';
 import notification from '@Containers/ui/Notifications';
 
-export const usePermissions = ({setLoading, screenControl}) => {
+export const usePermissions = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [listImmediateBoss, setListImmediateBoss] = useState([]);
   const [listEmployees, setListEmployees] = useState([]);
@@ -79,7 +79,7 @@ export const usePermissions = ({setLoading, screenControl}) => {
       setOpenModalPermission(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -114,7 +114,7 @@ export const usePermissions = ({setLoading, screenControl}) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -127,7 +127,7 @@ export const usePermissions = ({setLoading, screenControl}) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -144,7 +144,7 @@ export const usePermissions = ({setLoading, screenControl}) => {
         userName: userData.name
       }
       request.GETPdf('rrhh/process/permissions/exportPDFPermission', dataPrint, 'Solicitud de Permiso.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -164,11 +164,9 @@ export const usePermissions = ({setLoading, screenControl}) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`rrhh/process/permissions/${id}`, (resp) => {
-      console.log(resp);
       onResetForm();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -190,7 +188,7 @@ export const usePermissions = ({setLoading, screenControl}) => {
       setListImmediateBoss(filterManagers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

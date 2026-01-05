@@ -63,7 +63,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       setOpenModalViewTransfers(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -78,7 +78,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       setTransferDetail(requisitionDeta);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -140,18 +140,18 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
             setLoading(true);
           });
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       }, false);
     } else {
@@ -172,18 +172,18 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
             setLoading(true);
           });
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         }, false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -196,7 +196,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
         userName: userData.name
       }
       request.GETPdf('inventory/process/inventoryTransactions/exportPDFRequisition', dataPrint, 'Traslado entre Almacenes.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -220,11 +220,11 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       request.DELETE(`inventory/process/inventoryTransactionDetail?idFather=${id}`, () => {
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       }, false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -244,7 +244,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       setListDocuments(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -260,7 +260,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       setListStores(stores);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -275,7 +275,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       setListAccounts(listAccounts);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

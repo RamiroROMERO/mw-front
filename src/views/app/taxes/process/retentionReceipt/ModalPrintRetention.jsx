@@ -22,7 +22,6 @@ const ModalPrintRetention = ({ setOpen, data }) => {
       typePrint
     }
     request.GETPdf('tax/process/withholdingReceipts/exportPDFRetReceipt', dataPrint, 'Comprobante de Retención.pdf', (err) => {
-      console.error(err);
       setOpen(false);
       setLoading(false);
     });

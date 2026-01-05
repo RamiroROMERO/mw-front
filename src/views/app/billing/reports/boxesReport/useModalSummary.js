@@ -4,7 +4,7 @@ import { request } from '@/helpers/core';
 import { useForm } from '@/hooks';
 import { formatNumber, IntlMessages } from '@/helpers/Utils';
 
-export const useModalSummary = ({setLoading}) => {
+export const useModalSummary = ({ setLoading }) => {
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
     cashId: false,
@@ -20,7 +20,7 @@ export const useModalSummary = ({setLoading}) => {
       {
         text: IntlMessages("table.column.cashName"),
         dataField: "cashName",
-        headerStyle: { width: "20%"}
+        headerStyle: { width: "20%" }
       },
       {
         text: IntlMessages("table.column.cashierName"),
@@ -39,7 +39,7 @@ export const useModalSummary = ({setLoading}) => {
         classes: 'd-sm-none-table-cell',
         headerClasses: 'd-sm-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.total, '', 2));
         }
       }
@@ -64,28 +64,28 @@ export const useModalSummary = ({setLoading}) => {
 
     let hideShowColumns = {};
     let url = "";
-    if(cashId===true && cashierId===false && paymentTypeId===false){
+    if (cashId === true && cashierId === false && paymentTypeId === false) {
       url = "billing/reports/cash/resume/cash";
-      hideShowColumns = {cashName: true, cashierName: false, paymentTypeName: false};
-    }else if(cashId===true && cashierId===true && paymentTypeId===false){
+      hideShowColumns = { cashName: true, cashierName: false, paymentTypeName: false };
+    } else if (cashId === true && cashierId === true && paymentTypeId === false) {
       url = "billing/reports/cash/resume/cashCashier";
-      hideShowColumns = {cashName: true, cashierName: true, paymentTypeName: false};
-    }else if(cashId===true && cashierId===true && paymentTypeId===true){
+      hideShowColumns = { cashName: true, cashierName: true, paymentTypeName: false };
+    } else if (cashId === true && cashierId === true && paymentTypeId === true) {
       url = "billing/reports/cash/resume/cashCashierPaymentType";
-      hideShowColumns = {cashName: true, cashierName: true, paymentTypeName: true};
-    }else if(cashId===true && cashierId===false && paymentTypeId===true){
+      hideShowColumns = { cashName: true, cashierName: true, paymentTypeName: true };
+    } else if (cashId === true && cashierId === false && paymentTypeId === true) {
       url = "billing/reports/cash/resume/cashPaymentType";
-      hideShowColumns = {cashName: true, cashierName: false, paymentTypeName: true};
-    }else if(cashId===false && cashierId===true && paymentTypeId===false){
+      hideShowColumns = { cashName: true, cashierName: false, paymentTypeName: true };
+    } else if (cashId === false && cashierId === true && paymentTypeId === false) {
       url = "billing/reports/cash/resume/cashier";
-      hideShowColumns = {cashName: false, cashierName: true, paymentTypeName: false};
-    }else if(cashId===false && cashierId===true && paymentTypeId===true){
+      hideShowColumns = { cashName: false, cashierName: true, paymentTypeName: false };
+    } else if (cashId === false && cashierId === true && paymentTypeId === true) {
       url = "billing/reports/cash/resume/cashierPaymentType";
-      hideShowColumns = {cashName: false, cashierName: true, paymentTypeName: true};
-    }else if(cashId===false && cashierId===false && paymentTypeId===true){
+      hideShowColumns = { cashName: false, cashierName: true, paymentTypeName: true };
+    } else if (cashId === false && cashierId === false && paymentTypeId === true) {
       url = "billing/reports/cash/resume/paymentType";
-      hideShowColumns = {cashName: false, cashierName: false, paymentTypeName: true};
-    }else{
+      hideShowColumns = { cashName: false, cashierName: false, paymentTypeName: true };
+    } else {
       notification('warning', 'msg.select', 'alert.warning.title');
       return;
     }
@@ -96,7 +96,6 @@ export const useModalSummary = ({setLoading}) => {
       setTable({ ...table, data, actions: newActions, hideShowColumns });
       setLoading(false);
     }, err => {
-      console.log(err);
       setLoading(false);
     }, false);
   }

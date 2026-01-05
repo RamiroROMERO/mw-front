@@ -206,7 +206,7 @@ const ModalProcessOrder = ({ data, setOpen }) => {
               fnGetDocuments(orderId);
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             }, false);
             setLoading(true);
@@ -220,7 +220,7 @@ const ModalProcessOrder = ({ data, setOpen }) => {
               fnViewOrderDetail(orderId);
               setLoading(false);
             }, (err) => {
-              console.error(err);
+
               setLoading(false);
             });
           }
@@ -245,17 +245,17 @@ const ModalProcessOrder = ({ data, setOpen }) => {
           request.POST('accounting/process/workOrderDetail', detailWorkOrder, (resp3) => {
             setLoading(false)
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           }, false);
         }
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

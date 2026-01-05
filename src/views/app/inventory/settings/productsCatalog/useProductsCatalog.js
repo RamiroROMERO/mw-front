@@ -157,7 +157,6 @@ const useProductsCatalog = ({ setLoading }) => {
       setListClassifications(classifications);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
     request.GET('inventory/settings/measurementUnits', (resp) => {
@@ -177,7 +176,6 @@ const useProductsCatalog = ({ setLoading }) => {
       setListMeasurementUnits(measurementUnits);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
     request.GET('inventory/settings/trademarks', (resp) => {
@@ -190,7 +188,6 @@ const useProductsCatalog = ({ setLoading }) => {
       setListMarks(trademarks);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }, []);
@@ -218,7 +215,6 @@ const useProductsCatalog = ({ setLoading }) => {
       setOpenModalProducts(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -226,7 +222,6 @@ const useProductsCatalog = ({ setLoading }) => {
   const fnSaveProduct = () => {
     setSendForm(true);
     if (!isFormValid) {
-      console.log("faltan datos!", formValidation, formState);
       return;
     }
 
@@ -279,7 +274,6 @@ const useProductsCatalog = ({ setLoading }) => {
       request.PUT(`inventory/settings/products/${id}`, newData, () => {
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
@@ -288,7 +282,6 @@ const useProductsCatalog = ({ setLoading }) => {
         onInputChange({ target: { name: 'id', value: resp.data.id } });
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -313,7 +306,6 @@ const useProductsCatalog = ({ setLoading }) => {
         fnNewProduct();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -340,10 +332,10 @@ const useProductsCatalog = ({ setLoading }) => {
     setDataImages([]);
 
     setLoading(true);
-    request.GET(`inventory/settings/productPictures?productCode=${id}`, (resp)=>{
-      const {data} = resp;
+    request.GET(`inventory/settings/productPictures?productCode=${id}`, (resp) => {
+      const { data } = resp;
 
-      if(data.length>0){
+      if (data.length > 0) {
         data.map(async (item) => {
           const imageUrl = `${PATH_FILES.GET.PICTURES}${item.name}`;
           const imageObjectURL = await request.getFile(imageUrl);
@@ -352,8 +344,7 @@ const useProductsCatalog = ({ setLoading }) => {
         });
       }
       setLoading(false);
-    }, (err)=>{
-      console.error(err);
+    }, (err) => {
       setLoading(false);
     });
   }

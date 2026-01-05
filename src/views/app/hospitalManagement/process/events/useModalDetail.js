@@ -31,7 +31,6 @@ export const useModalDetail = ({ setLoading, currentItem }) => {
       setTable({ ...table, data });
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }

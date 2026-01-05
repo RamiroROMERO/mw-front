@@ -37,7 +37,7 @@ const SeventhDay = ({ setLoading }) => {
       setDataSeventhDay(payrolls);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -57,7 +57,7 @@ const SeventhDay = ({ setLoading }) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

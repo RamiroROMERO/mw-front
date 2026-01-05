@@ -7,14 +7,14 @@ import { request } from '@Helpers/core'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import createNotification from '@Containers/ui/Notifications'
 
-const ModalEditDetail = ({setOpen, data}) => {
-  const {date, id, idFather, employeeId, value, notes, listEmployees, onInputChange, setLoading, fnGetDetail} = data;
+const ModalEditDetail = ({ setOpen, data }) => {
+  const { date, id, idFather, employeeId, value, notes, listEmployees, onInputChange, setLoading, fnGetDetail } = data;
 
   const [disableEmployee, setDisableEmployee] = useState(false);
 
-  const fnSave = ()=>{
-    if(validFloat(value)===0){
-      createNotification('warning','msg.required.input.value', 'alert.warning.title');
+  const fnSave = () => {
+    if (validFloat(value) === 0) {
+      createNotification('warning', 'msg.required.input.value', 'alert.warning.title');
       return;
     }
 
@@ -26,35 +26,35 @@ const ModalEditDetail = ({setOpen, data}) => {
       notes
     }
 
-    if(id === 0){
+    if (id === 0) {
       setLoading(true);
       request.POST('rrhh/process/payrollSevenDayDetails', newData, (resp) => {
-        onInputChange({target:{name:'id', value:resp.data.id}});
+        onInputChange({ target: { name: 'id', value: resp.data.id } });
         fnGetDetail(idFather);
         setOpen(false);
         setLoading(false);
-      },(err)=>{
-        console.error(err);
+      }, (err) => {
+
         setLoading(false);
       });
-    }else{
+    } else {
       setLoading(true);
       request.PUT(`rrhh/process/payrollSevenDayDetails/${id}`, newData, (resp) => {
         fnGetDetail(idFather);
         setLoading(false);
         setOpen(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
   }
 
-  useEffect(()=>{
-    if(id>0){
+  useEffect(() => {
+    if (id > 0) {
       setDisableEmployee(true)
-    }else setDisableEmployee(false);
-  },[]);
+    } else setDisableEmployee(false);
+  }, []);
 
   return (
     <>
@@ -86,17 +86,17 @@ const ModalEditDetail = ({setOpen, data}) => {
               value={notes}
               onChange={onInputChange}
               type="textarea"
-              style={{resize:'none'}}
+              style={{ resize: 'none' }}
             />
           </Colxx>
         </Row>
       </ModalBody>
       <ModalFooter>
         <Button color="primary" onClick={fnSave}>
-          <i className="iconsminds-save"/> {IntlMessages("button.save")}
+          <i className="iconsminds-save" /> {IntlMessages("button.save")}
         </Button>
-        <Button color="danger" onClick={()=>{setOpen(false)}} >
-          <i className="bi bi-box-arrow-right"/>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />
           {` ${IntlMessages('button.exit')}`}
         </Button>
       </ModalFooter>

@@ -68,7 +68,7 @@ const useBillingAreas = ({ setLoading }) => {
       setOpenModalViewDocument(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -99,7 +99,7 @@ const useBillingAreas = ({ setLoading }) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -108,7 +108,7 @@ const useBillingAreas = ({ setLoading }) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -147,7 +147,7 @@ const useBillingAreas = ({ setLoading }) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -165,7 +165,7 @@ const useBillingAreas = ({ setLoading }) => {
       setListLedgerAccount(listAccount);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -179,7 +179,7 @@ const useBillingAreas = ({ setLoading }) => {
       setListStores(store);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
     setLoading(true);
@@ -193,7 +193,7 @@ const useBillingAreas = ({ setLoading }) => {
       setListDocument(documents);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

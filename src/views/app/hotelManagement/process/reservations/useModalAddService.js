@@ -3,12 +3,12 @@ import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import { useState } from 'react'
 
-export const useModalAddService = ({bookingId, currentService, setLoading, fnGetDataServices, listServices, setOpen}) => {
+export const useModalAddService = ({ bookingId, currentService, setLoading, fnGetDataServices, listServices, setOpen }) => {
   const [sendForm, setSendForm] = useState(false);
 
   const validation = {
     date: [(val) => val !== "", "msg.required.input.date"],
-    serviceId: [(val)=>validFloat(val)>0, "msg.required.select.service"]
+    serviceId: [(val) => validFloat(val) > 0, "msg.required.select.service"]
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
@@ -25,7 +25,7 @@ export const useModalAddService = ({bookingId, currentService, setLoading, fnGet
     total: currentService?.total || 0
   }, validation);
 
-  const {id, qty, price, subtotal, taxPercent} = formState;
+  const { id, qty, price, subtotal, taxPercent } = formState;
 
   const onServiceChange = e => {
     const service = validInt(e.target.value);
@@ -43,7 +43,7 @@ export const useModalAddService = ({bookingId, currentService, setLoading, fnGet
     const qtyVal = e.target.value;
 
     const subtotalVal = (validFloat(qtyVal) * validFloat(price));
-    const taxValue = (subtotalVal * taxPercent)/100;
+    const taxValue = (subtotalVal * taxPercent) / 100;
     const totalVal = subtotalVal + taxValue;
 
     onBulkForm({
@@ -58,7 +58,7 @@ export const useModalAddService = ({bookingId, currentService, setLoading, fnGet
     const priceVal = e.target.value;
 
     const subtotalVal = (validFloat(qty) * validFloat(priceVal));
-    const taxValue = (subtotalVal * taxPercent)/100;
+    const taxValue = (subtotalVal * taxPercent) / 100;
     const totalVal = subtotalVal + taxValue;
 
     onBulkForm({
@@ -72,7 +72,7 @@ export const useModalAddService = ({bookingId, currentService, setLoading, fnGet
   const onTaxPercentChange = e => {
     const taxPercentVal = e.target.value;
 
-    const taxValue = (subtotal * validFloat(taxPercentVal))/100;
+    const taxValue = (subtotal * validFloat(taxPercentVal)) / 100;
     const totalVal = subtotal + taxValue;
 
     onBulkForm({
@@ -85,7 +85,7 @@ export const useModalAddService = ({bookingId, currentService, setLoading, fnGet
   const onTaxChange = e => {
     const taxVal = e.target.value;
 
-    const taxPercentVal = (validFloat(taxVal) * 100)/ validFloat(subtotal);
+    const taxPercentVal = (validFloat(taxVal) * 100) / validFloat(subtotal);
     const totalVal = subtotal + validFloat(taxVal);
 
     onBulkForm({
@@ -97,20 +97,19 @@ export const useModalAddService = ({bookingId, currentService, setLoading, fnGet
 
   const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
     if (validInt(id) === 0) {
       setLoading(true);
       request.POST('hotel/process/bookingCharges', formState, (resp) => {
-        const {data} = resp;
+        const { data } = resp;
         onBulkForm(data);
         setLoading(false);
         fnGetDataServices();
         setOpen(false);
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -120,7 +119,6 @@ export const useModalAddService = ({bookingId, currentService, setLoading, fnGet
         fnGetDataServices();
         setOpen(false);
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }

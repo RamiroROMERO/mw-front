@@ -84,7 +84,6 @@ const RawMaterial = (props) => {
       setOpenModalView(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -102,7 +101,6 @@ const RawMaterial = (props) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -119,7 +117,6 @@ const RawMaterial = (props) => {
       setListProducts(products);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

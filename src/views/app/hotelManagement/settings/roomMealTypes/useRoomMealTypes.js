@@ -28,7 +28,7 @@ export const useRoomMealTypes = ({ setLoading, screenControl }) => {
 
   const { id } = formState;
 
-  const fnGetData = (page=currentPage, searchText=search) => {
+  const fnGetData = (page = currentPage, searchText = search) => {
     setLoading(true);
     request.GET(`hotel/settings/roomMealTypes/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
       const data = resp.data.map((item) => {
@@ -40,12 +40,11 @@ export const useRoomMealTypes = ({ setLoading, screenControl }) => {
       setTotalPages(pageTotal);
       setLoading(false);
     }, err => {
-      console.log(err)
       setLoading(false);
     });
   }
 
-    const fnClear = () => {
+  const fnClear = () => {
     onResetForm();
     setSendForm(false);
   }
@@ -67,7 +66,6 @@ export const useRoomMealTypes = ({ setLoading, screenControl }) => {
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       })
     } else {
@@ -81,7 +79,6 @@ export const useRoomMealTypes = ({ setLoading, screenControl }) => {
         fnGetData();
         fnClear();
       }, (err) => {
-        console.log(err);
         setLoading(false);
       });
     }
@@ -99,7 +96,7 @@ export const useRoomMealTypes = ({ setLoading, screenControl }) => {
         fnClear();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

@@ -119,10 +119,8 @@ const ProjectDetail = (props) => {
     if (projectData && projectData.id > 0) {
       setLoading(true);
       request.PUT(`prodProjects/${projectData.id}`, newData, (resp) => {
-        console.log(resp);
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -151,7 +149,6 @@ const ProjectDetail = (props) => {
       setDataProducts(dataProd);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -176,7 +173,6 @@ const ProjectDetail = (props) => {
       setManufacturingGallery(imgManufact);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -201,7 +197,6 @@ const ProjectDetail = (props) => {
       }
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -221,23 +216,19 @@ const ProjectDetail = (props) => {
     if (currentItemProd && currentItemProd.id > 0) {
       setLoading(true);
       request.PUT(`prodOrderProducts/${currentItemProd.id}`, data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetProducts();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
       setLoading(true);
       request.POST('prodOrderProducts', data, (resp) => {
-        console.log(resp);
         fnClearInputs();
         fnGetProducts();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -252,12 +243,10 @@ const ProjectDetail = (props) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`prodOrderProducts/${currentItemProd.id}`, (resp) => {
-      console.log(resp);
       fnGetProducts();
       setCurrentItemProd({});
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -294,7 +283,6 @@ const ProjectDetail = (props) => {
       setListCustomers(listCustomer);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -308,7 +296,6 @@ const ProjectDetail = (props) => {
       setListManagers(listManager);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -322,7 +309,6 @@ const ProjectDetail = (props) => {
       setListTypeProducts(listTypeProduct);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -336,7 +322,6 @@ const ProjectDetail = (props) => {
       setListTypeProjects(listTypeProject);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -350,7 +335,6 @@ const ProjectDetail = (props) => {
       setListDestinations(listDestination);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -364,7 +348,6 @@ const ProjectDetail = (props) => {
       setListStatus(listSteps);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
     fnGetProducts();
@@ -381,11 +364,9 @@ const ProjectDetail = (props) => {
       type: 1
     }
     request.POST('prodOrderImages', dataImages, (res) => {
-      console.log(res);
       fnGetImages();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -399,18 +380,15 @@ const ProjectDetail = (props) => {
       type: 2
     }
     request.POST('prodOrderImages', dataImages, (res) => {
-      console.log(res);
       fnGetImages();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
 
   const fnPrintProject = () => {
     request.GETPdf('prodProjects/exportPDF', { id: projectData.id, userName: userData.name }, 'Boleta.pdf', (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

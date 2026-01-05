@@ -2,37 +2,37 @@ import { request } from '@Helpers/core';
 import { useState } from 'react'
 import notification from '@Containers/ui/Notifications';
 
-export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) => {
+export const useHeader = ({ setLoading, table, setTable, enableGenerateReport }) => {
   const [employeeId, setEmployeeId] = useState(0);
   const [salaryParam, setSalaryParam] = useState(true);
   const [bankAccountParam, setBankAccountParam] = useState(false);
 
-  const onEmployeeId = e =>{
+  const onEmployeeId = e => {
     const emplId = e.target.value;
     setEmployeeId(emplId);
   }
 
-  const onSalaryChange = e =>{
+  const onSalaryChange = e => {
     const value = e.target.checked;
     setSalaryParam(value);
   }
 
-  const onBankAccountChange = e =>{
+  const onBankAccountChange = e => {
     const value = e.target.checked;
     setBankAccountParam(value);
   }
 
-  const fnExportDocument = async()=>{
-    const where = employeeId>0?{id: employeeId, status: 1}:{status: 1};
+  const fnExportDocument = async () => {
+    const where = employeeId > 0 ? { id: employeeId, status: 1 } : { status: 1 };
     const nameXLSXFile = "Reporte de Salarios y Cuentas Bancarias.xlsx";
 
     let otherFields = [];
 
-    if(salaryParam === true){
+    if (salaryParam === true) {
       otherFields.push({ title: 'Salario', field: 'defaultSalary', type: 'String', length: 70 });
     }
 
-    if(bankAccountParam === true){
+    if (bankAccountParam === true) {
       otherFields.push({ title: 'Número de Cuenta', field: 'accountNumber', type: 'String', length: 60 });
     }
 
@@ -55,7 +55,7 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
     setLoading(false);
   }
 
-  const fnGetData = ()=>{
+  const fnGetData = () => {
     if (enableGenerateReport === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
@@ -71,7 +71,7 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
 
     let url = `rrhh/process/employees?status=1`;
 
-    if(employeeId>0){
+    if (employeeId > 0) {
       url = `${url}&id=${employeeId}`;
     }
 
@@ -85,7 +85,7 @@ export const useHeader = ({setLoading, table, setTable, enableGenerateReport}) =
       setTable({ ...table, data: dataEmployees, actions: [newActions] });
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

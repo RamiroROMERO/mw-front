@@ -260,7 +260,6 @@ const UserProfile = (props) => {
       setListModulesDetail(filterPriv);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
 
@@ -283,10 +282,8 @@ const UserProfile = (props) => {
     setLoading(true);
     request.PUT(`admin/users/${userData.id}`, data, (resp) => {
       setSendForm(false);
-      console.log(resp);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -302,12 +299,10 @@ const UserProfile = (props) => {
         fnFilterByModule(activeFirstTab, userModules);
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
     request.GET(`admin/users/${userId}`, resp => {
@@ -316,9 +311,7 @@ const UserProfile = (props) => {
       onBulkFormSettings({
         isCashier, isSeller, isLogIn, cashierEditInvoice, cashierNullInvoice, cashierRePrintInvoice, cashierEditPrice, cashierType, sellerIsSupervisor, sellerCode, sellerMinPercentCommiss, sellerMedPercentCommiss, sellerMaxPercentCommiss, sellerApplyCommiss
       })
-    }, err => {
-      console.error(err);
-    })
+    }, err => { });
   }
 
   useEffect(() => {
@@ -333,7 +326,6 @@ const UserProfile = (props) => {
       setListUserType(listUserTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
     fnGetData();
@@ -392,10 +384,9 @@ const UserProfile = (props) => {
 
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
-    }, err => { console.log(err) });
+    }, err => { });
   };
 
   const fnBack = () => {
@@ -420,12 +411,10 @@ const UserProfile = (props) => {
       validNewPassword
     }
     request.PUT(`admin/users/changePassword/${userData.id}`, dataPass, (resp) => {
-      console.log(resp);
       setSendFormPass(false);
       onResetFormPass();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -434,12 +423,10 @@ const UserProfile = (props) => {
     setOpenMsgQuestion(false);
     setLoading(true);
     request.DELETE(`admin/userModules/${currentItemPriv.id}`, (resp) => {
-      console.log(resp);
       fnGetData();
       setCurrentItemPriv({});
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -452,7 +439,6 @@ const UserProfile = (props) => {
       setLoading(false);
     }, err => {
       setLoading(false);
-      console.error(err);
     })
 
   }

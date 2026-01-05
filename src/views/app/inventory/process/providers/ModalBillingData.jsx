@@ -46,11 +46,9 @@ const ModalBillingData = (props) => {
     }
     setLoading(true);
     request.PUT(`inventory/process/providers/${currentItem.id}`, newData, (resp) => {
-      console.log(resp);
       setOpen(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

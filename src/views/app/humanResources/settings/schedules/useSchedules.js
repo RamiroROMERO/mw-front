@@ -4,7 +4,7 @@ import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
 
-export const useSchedules = ({setLoading, screenControl}) => {
+export const useSchedules = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [dataSchedules, setDataSchedules] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -54,7 +54,7 @@ export const useSchedules = ({setLoading, screenControl}) => {
       setDataSchedules(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -170,7 +170,7 @@ export const useSchedules = ({setLoading, screenControl}) => {
         onResetForm();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -184,13 +184,13 @@ export const useSchedules = ({setLoading, screenControl}) => {
         onResetForm();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
   }
 
-   const fnDisableDocument = () => {
+  const fnDisableDocument = () => {
     setOpenMsgQuestion(false);
     const data = {
       status: 0
@@ -202,13 +202,13 @@ export const useSchedules = ({setLoading, screenControl}) => {
         onResetForm();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
   }
 
-  const propsToDetailSchedules = {...formState, onInputChange, onResetForm, fnSave }
+  const propsToDetailSchedules = { ...formState, onInputChange, onResetForm, fnSave }
 
   const propsToDetailTable = {
     dataSchedules, onBulkForm, setOpenMsgQuestion, fnDelete

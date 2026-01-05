@@ -32,7 +32,6 @@ export const useHospitalization = ({ currentItem, setLoading, fnGetData, setOpen
       fnGetData();
       setOpen(false);
     }, (err) => {
-      console.log(err);
       setLoading(false);
     });
   }

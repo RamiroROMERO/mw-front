@@ -50,12 +50,10 @@ const ModalAddMaterial = (props) => {
     }
     setLoading(true);
     request.POST('prodRMStocks', newData, (resp) => {
-      console.log(resp);
       fnGetData();
       setOpen(false);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }

@@ -4,7 +4,7 @@ import { useForm } from '@Hooks/useForms';
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 
-export const useModalAddSchedule = ({projectId, currentItem, setLoading, fnGetData, setOpen}) => {
+export const useModalAddSchedule = ({ projectId, currentItem, setLoading, fnGetData, setOpen }) => {
   const [sendForm, setSendForm] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
 
@@ -24,7 +24,7 @@ export const useModalAddSchedule = ({projectId, currentItem, setLoading, fnGetDa
     typeId: currentItem?.typeId || 0
   }, projectsValid);
 
-  const {id} = formState;
+  const { id } = formState;
 
   const [table, setTable] = useState({
     title: IntlMessages("page.home.table.detail.title"),
@@ -54,7 +54,6 @@ export const useModalAddSchedule = ({projectId, currentItem, setLoading, fnGetDa
       setTable({ ...table, data: projectDeta });
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -74,7 +73,6 @@ export const useModalAddSchedule = ({projectId, currentItem, setLoading, fnGetDa
         setOpen(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
         notification('error', err.messages[0].description, 'alert.error.title', '', 0);
         setLoading(false);
       }, false);
@@ -87,7 +85,6 @@ export const useModalAddSchedule = ({projectId, currentItem, setLoading, fnGetDa
         setOpen(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -113,7 +110,6 @@ export const useModalAddSchedule = ({projectId, currentItem, setLoading, fnGetDa
         setOpen(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }

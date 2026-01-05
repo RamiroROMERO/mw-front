@@ -36,7 +36,7 @@ export const usePaymentMethods = ({ setLoading }) => {
       setTableData(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -55,7 +55,7 @@ export const usePaymentMethods = ({ setLoading }) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -74,7 +74,7 @@ export const usePaymentMethods = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -84,7 +84,7 @@ export const usePaymentMethods = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

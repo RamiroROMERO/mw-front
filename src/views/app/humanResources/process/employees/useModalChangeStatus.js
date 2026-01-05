@@ -3,7 +3,7 @@ import { getCurrentDate } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import { useState } from 'react'
 
-export const useModalChangeStatus = ({setLoading, employeeId, statusEmployee, setOpen, setBulkForm}) => {
+export const useModalChangeStatus = ({ setLoading, employeeId, statusEmployee, setOpen, setBulkForm }) => {
   const [sendForm, setSendForm] = useState(false);
 
   const validations = {
@@ -19,9 +19,9 @@ export const useModalChangeStatus = ({setLoading, employeeId, statusEmployee, se
     isHireable: true
   }, validations);
 
-  const {date, status} = formState;
+  const { date, status } = formState;
 
-  const fnClearInputs = ()=>{
+  const fnClearInputs = () => {
     onResetForm();
     setSendForm(false);
   }
@@ -36,7 +36,7 @@ export const useModalChangeStatus = ({setLoading, employeeId, statusEmployee, se
       status
     }
 
-    if(status===true){
+    if (status === true) {
       dataUpdate.dateIn = date;
     }
 
@@ -52,12 +52,12 @@ export const useModalChangeStatus = ({setLoading, employeeId, statusEmployee, se
         setBulkForm(dataUpdate);
 
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
 
       //si el status es false desactivarlo en los proyectos
-      if(status===false){
+      if (status === false) {
         const projectUpdate = {
           status: false
         }
@@ -65,13 +65,13 @@ export const useModalChangeStatus = ({setLoading, employeeId, statusEmployee, se
         request.PUT(`rrhh/process/projectDetail?employeeId=${employeeId}`, projectUpdate, () => {
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       }
 
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }

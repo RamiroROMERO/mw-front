@@ -38,7 +38,7 @@ const LevelForm = (props) => {
         fnLevels();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -53,7 +53,7 @@ const LevelForm = (props) => {
         fnLevels();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }

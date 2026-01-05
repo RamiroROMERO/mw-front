@@ -108,7 +108,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       setOpenModalPayrolls(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -149,7 +149,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       setOpenModalPayrolls(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -172,7 +172,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       setDataTotals(resp.dataTotals);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -295,7 +295,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       }
 
       request.GETPdf('rrhh/process/weeklyPayrolls/exportPDFPayroll', dataPrint, 'Planilla Quincenal.pdf', (err) => {
-        console.error(err);
+
         setLoading(false);
       });
       setLoading(false);
@@ -336,7 +336,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else if (typePayroll === 2 || typePayroll === 3) {
@@ -354,7 +354,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     } else {
@@ -371,7 +371,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         setOpenModalSelectEmployees(true);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -404,7 +404,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       setDocumentPath(resp);
       setOpenViewFile(true);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -450,7 +450,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         fnNewPayroll();
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -471,7 +471,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -487,7 +487,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       setListProjects(projects);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -503,7 +503,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       setListTypeDeductions(listTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -517,7 +517,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -532,7 +532,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       setListJobPositions(positions);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -542,7 +542,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       setListPaymentMethod(paymentMethod);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -557,7 +557,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       setListSchedules(rrhhSchedules);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -573,7 +573,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       setListTypeIncomes(listTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

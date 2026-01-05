@@ -57,7 +57,7 @@ export const useReservation = ({ setLoading, screenControl }) => {
       setTable(tableData);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -73,7 +73,7 @@ export const useReservation = ({ setLoading, screenControl }) => {
       setListRooms(rooms);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -154,7 +154,7 @@ export const useReservation = ({ setLoading, screenControl }) => {
       setListCustomers(customers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -168,7 +168,7 @@ export const useReservation = ({ setLoading, screenControl }) => {
       setListStatusBooking(bookingStatuses);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -182,7 +182,7 @@ export const useReservation = ({ setLoading, screenControl }) => {
       setListStatusPayment(bookingPayStatuses);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -196,7 +196,7 @@ export const useReservation = ({ setLoading, screenControl }) => {
       setListServices(products);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -210,7 +210,7 @@ export const useReservation = ({ setLoading, screenControl }) => {
       setListPaymenTypes(paymentTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -224,7 +224,7 @@ export const useReservation = ({ setLoading, screenControl }) => {
       setListBookingChannels(bookingChannels);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 

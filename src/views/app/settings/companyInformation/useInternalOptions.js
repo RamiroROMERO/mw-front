@@ -3,7 +3,7 @@ import { request } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 
-export const useInternalOptions = ({companyId, setLoading, setOpen}) => {
+export const useInternalOptions = ({ companyId, setLoading, setOpen }) => {
 
   const { formState, onInputChange, onBulkForm } = useForm({
     id: 0,
@@ -39,7 +39,6 @@ export const useInternalOptions = ({companyId, setLoading, setOpen}) => {
       }
       setLoading(false);
     }, err => {
-      console.error(err);
       setLoading(false);
     });
   }, [])
@@ -52,7 +51,6 @@ export const useInternalOptions = ({companyId, setLoading, setOpen}) => {
         setOpen(false);
         setLoading(false);
       }, err => {
-        console.log(err)
         setOpen(false);
         setLoading(false);
       });
@@ -61,7 +59,6 @@ export const useInternalOptions = ({companyId, setLoading, setOpen}) => {
         setOpen(false)
         setLoading(false);
       }, err => {
-        console.log(err)
         setOpen(false)
         setLoading(false);
       })

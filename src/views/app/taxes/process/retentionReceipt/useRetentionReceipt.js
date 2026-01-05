@@ -66,7 +66,6 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
       setOpenModalRetention(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -85,7 +84,6 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
       setListDocto(docto);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -130,16 +128,13 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
             request.POST('tax/process/withholdingReceiptDetail', productDeta, () => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
               setLoading(false);
             }, false);
           });
         }, (err) => {
-          console.error(err);
           setLoading(false);
         }, false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
@@ -176,17 +171,14 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
             request.POST('tax/process/withholdingReceiptDetail', productDeta, (resp2) => {
               setLoading(false);
             }, (err) => {
-              console.error(err);
               setLoading(false);
             }, false);
           });
         }, (err) => {
-          console.error(err);
           setLoading(false);
         });
 
       }, (err) => {
-        console.error(err);
         setLoading(false);
       }, false);
     }
@@ -215,12 +207,10 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
         fnNewRetention();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -254,7 +244,6 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
       setOpenModalBillToPay(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -271,7 +260,6 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
       setListProvider(providerValue);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
     setLoading(true);
@@ -286,7 +274,6 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
       setListTypesRetention(retention);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
     fnGetDocuments();

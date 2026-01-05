@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { formatNumber, IntlMessages } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 
-export const useControlVacations = ({setLoading, adminControl}) => {
+export const useControlVacations = ({ setLoading, adminControl }) => {
   const [listEmployees, setListEmployees] = useState([]);
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.004")?.active || false;
 
@@ -59,7 +59,7 @@ export const useControlVacations = ({setLoading, adminControl}) => {
         dataField: "payDaysPending",
         headerStyle: { width: "9%" },
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.payDaysPending, '', 2));
         }
       },
@@ -80,7 +80,7 @@ export const useControlVacations = ({setLoading, adminControl}) => {
     setTable
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
     request.GET('rrhh/process/employees/findSL?status=1', (resp) => {
       const employees = resp.data.map((item) => {
@@ -92,10 +92,10 @@ export const useControlVacations = ({setLoading, adminControl}) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
-  },[])
+  }, [])
 
   return (
     {

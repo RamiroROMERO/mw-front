@@ -26,7 +26,7 @@ export const useBoxesReport = ({ setLoading }) => {
         headerStyle: { width: "10%" },
         classes: 'd-md-none-table-cell',
         headerClasses: 'd-md-none-table-cell',
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatDate(row.original.date));
         }
       },
@@ -54,7 +54,7 @@ export const useBoxesReport = ({ setLoading }) => {
         classes: 'd-sm-none-table-cell',
         headerClasses: 'd-sm-none-table-cell',
         style: { textAlign: 'right' },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (formatNumber(row.original.total, '', 2));
         }
       }
@@ -84,7 +84,6 @@ export const useBoxesReport = ({ setLoading }) => {
       setTable({ ...table, data, actions: newActions });
       setLoading(false);
     }, err => {
-      console.log(err);
       setLoading(false);
     }, false);
   };
@@ -108,7 +107,7 @@ export const useBoxesReport = ({ setLoading }) => {
       setListCashiers(cashiers);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -123,7 +122,7 @@ export const useBoxesReport = ({ setLoading }) => {
       setListPaymentMethods(paymentMethod);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -138,7 +137,7 @@ export const useBoxesReport = ({ setLoading }) => {
       setListCashRegisters(cashRegisters);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);

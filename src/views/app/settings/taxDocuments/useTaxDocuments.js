@@ -3,7 +3,7 @@ import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import React, { useEffect, useState } from 'react'
 
-export const useTaxDocuments = ({setLoading}) => {
+export const useTaxDocuments = ({ setLoading }) => {
 
   const [listCompany, setlistCompany] = useState([]);
   const [tableData, setTableData] = useState([]);
@@ -56,7 +56,6 @@ export const useTaxDocuments = ({setLoading}) => {
       setTableData(data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -81,7 +80,6 @@ export const useTaxDocuments = ({setLoading}) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     } else {
@@ -91,7 +89,6 @@ export const useTaxDocuments = ({setLoading}) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -109,7 +106,6 @@ export const useTaxDocuments = ({setLoading}) => {
         fnClearInputs();
         setLoading(false);
       }, (err) => {
-        console.error(err);
         setLoading(false);
       });
     }
@@ -127,7 +123,6 @@ export const useTaxDocuments = ({setLoading}) => {
       setlistCompany(company);
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
     fnGetData();

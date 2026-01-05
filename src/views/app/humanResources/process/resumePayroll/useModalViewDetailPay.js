@@ -4,7 +4,7 @@ import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import moment from 'moment';
 
-export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEnd, notes, currentItemDeta, setLoading, listEmployees, listTypeDeductions, listTypeIncomes, fnViewDetailPayroll, setOpen }) => {
+export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateEnd, notes, currentItemDeta, setLoading, listEmployees, listTypeDeductions, listTypeIncomes, fnViewDetailPayroll, setOpen }) => {
   const [activeTab, setActiveTab] = useState('1');
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
   const [percent, setPercent] = useState(0);
@@ -22,9 +22,9 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
   const [disabledRap, setDisabledRap] = useState(false);
 
   const detailPayValid = {
-    employeeId: [(val)=> validInt(val)>0, "msg.required.select.employeeId"],
-    methodPaymentId: [(val)=> validInt(val)>0, "msg.required.select.method"],
-    daysWorked: [(val)=> validInt(val)>0, "msg.required.input.daysWorked"]
+    employeeId: [(val) => validInt(val) > 0, "msg.required.select.employeeId"],
+    methodPaymentId: [(val) => validInt(val) > 0, "msg.required.select.method"],
+    daysWorked: [(val) => validInt(val) > 0, "msg.required.input.daysWorked"]
   }
 
   const deductionValid = {
@@ -95,27 +95,27 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
 
   const { id: idExtDeducc, typeId, value, description } = formStateDeduc;
 
-  const { idInc, typeIdInc, daysInc, hoursInc, valueInc, descriptionInc} = formStateIncomes;
+  const { idInc, typeIdInc, daysInc, hoursInc, valueInc, descriptionInc } = formStateIncomes;
 
-  const onEmployeeChange = e=>{
+  const onEmployeeChange = e => {
     const employeeId = e.target.value;
 
     // Llenar informacion del empleado
-    const filterEmployees = listEmployees.filter((item)=>{
+    const filterEmployees = listEmployees.filter((item) => {
       return item.value === employeeId;
     });
 
     const detaEmployee = filterEmployees[0];
 
-    if(detaEmployee.deductionsIhss===2){
+    if (detaEmployee.deductionsIhss === 2) {
       setDisabledIhss(true);
-    }else{
+    } else {
       setDisabledIhss(false);
     }
 
-    if(detaEmployee.deductionsRap===2){
+    if (detaEmployee.deductionsRap === 2) {
       setDisabledRap(true);
-    }else{
+    } else {
       setDisabledRap(false);
     }
 
@@ -144,8 +144,8 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
       });
 
       const dataDeductions = [];
-      if(detail.loansDeta){
-        detail.loansDeta.map((item)=>{
+      if (detail.loansDeta) {
+        detail.loansDeta.map((item) => {
           const dataLoans = {
             id: item.id,
             fatherId: id,
@@ -160,8 +160,8 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
         setDataLoans(detail.loansDeta);
       }
 
-      if(detail.deductionsDeta){
-        detail.deductionsDeta.map((item)=>{
+      if (detail.deductionsDeta) {
+        detail.deductionsDeta.map((item) => {
           const dataDeduc = {
             id: item.id,
             fatherId: id,
@@ -179,21 +179,21 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
 
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
 
-  const onDaysChange = e=>{
+  const onDaysChange = e => {
     const totalDays = e.target.value;
 
     let totalAbsence = 0;
     let totalIntDeduc = 0;
 
-    if(validFloat(totalDays)<15){
-      totalAbsence = (validFloat(incWeekly)/15) * (15 - validFloat(totalDays));
+    if (validFloat(totalDays) < 15) {
+      totalAbsence = (validFloat(incWeekly) / 15) * (15 - validFloat(totalDays));
       totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap) + totalAbsence;
-    }else{
+    } else {
       totalAbsence = 0;
       totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap);
     }
@@ -213,15 +213,15 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     onBulkForm(newValue);
   }
 
-  const onAbsenceChange = e=>{
+  const onAbsenceChange = e => {
     const absence = e.target.value;
 
-    const totalAbsence = (validFloat(incWeekly)/15) * (15 - daysWorked);
+    const totalAbsence = (validFloat(incWeekly) / 15) * (15 - daysWorked);
     let totalIntDeduc = 0;
 
-    if(validInt(absence) === 1){
+    if (validInt(absence) === 1) {
       totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap);
-    }else{
+    } else {
       totalIntDeduc = validFloat(deducIsr) + validFloat(deducIhss) + validFloat(deducRap) + totalAbsence;
     }
 
@@ -240,16 +240,16 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     onBulkForm(newValue);
   }
 
-  const onPercentChange = e =>{
+  const onPercentChange = e => {
     const percentVal = e.target.value;
 
     const payByHour = validFloat(incWeekly) / 15 / 8;
     const valHours = validFloat(payByHour, 4) * hoursInc;
     const valHoursOver = (validFloat(percentVal) / 100) * valHours;
-    const totalPay = valHoursOver>0? valHours + valHoursOver : 0;
+    const totalPay = valHoursOver > 0 ? valHours + valHoursOver : 0;
 
     const newValue = {
-      valueInc: validFloat(totalPay,2),
+      valueInc: validFloat(totalPay, 2),
       daysInc: 0
     }
 
@@ -257,32 +257,32 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     setPercent(percentVal);
   }
 
-  const onHoursChange = e =>{
+  const onHoursChange = e => {
     const hoursValue = e.target.value;
 
     const payByHour = validFloat(incWeekly) / 15 / 8;
     const valHours = validFloat(payByHour, 4) * hoursValue;
     const valHoursOver = (validFloat(percent) / 100) * valHours;
-    const totalPay = valHoursOver>0? valHours + valHoursOver : 0;
+    const totalPay = valHoursOver > 0 ? valHours + valHoursOver : 0;
 
     const newValue = {
       hoursInc: hoursValue,
-      valueInc: validFloat(totalPay,2),
+      valueInc: validFloat(totalPay, 2),
       daysInc: 0
     }
 
     onBulkFormIncomes(newValue);
   }
 
-  const onDaysIncChange = e =>{
+  const onDaysIncChange = e => {
     const daysValue = e.target.value;
 
-    const valDay = validFloat(incWeekly)/15;
+    const valDay = validFloat(incWeekly) / 15;
     const totalPay = valDay * validFloat(daysValue);
 
     const newValue = {
       daysInc: daysValue,
-      valueInc: validFloat(totalPay,2),
+      valueInc: validFloat(totalPay, 2),
       hoursInc: 0
     }
 
@@ -382,30 +382,30 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
       setExtDeducDetail(deductions);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
 
-  const fnGetIncomes = ()=>{
+  const fnGetIncomes = () => {
     setLoading(true);
     request.GET(`rrhh/process/weeklyPayrollIncomes?fatherId=${id}`, (resp) => {
       const incomes = resp.data;
       setIncomesDetail(incomes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
 
-  const fnGetAttendance = ()=>{
+  const fnGetAttendance = () => {
     setLoading(true);
     request.GET(`rrhh/proccess/attendanceControl/findDetail?employeeId=${employeeId}&dateStart=${dateStart}&dateEnd=${dateEnd}&turnId=${turnId}`, (resp) => {
       setDataAttendance(resp.data);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -428,9 +428,9 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     }
 
     let allDeductions = [];
-    if(idExtDeducc > 0){
+    if (idExtDeducc > 0) {
       allDeductions = extDeducDetail.filter(item => item.id !== idExtDeducc);
-    }else{
+    } else {
       allDeductions = extDeducDetail;
     }
 
@@ -458,16 +458,16 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
           fnViewDetailPayroll(currentItemDeta.fatherId);
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
 
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
-    }else{
+    } else {
       setLoading(true);
       request.PUT(`rrhh/process/weeklyPayrollDeductions/${idExtDeducc}`, newDeduction, (resp) => {
         setSendFormDeduc(false);
@@ -486,13 +486,13 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
           fnViewDetailPayroll(currentItemDeta.fatherId);
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
 
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -536,12 +536,12 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
           fnViewDetailPayroll(currentItemDeta.fatherId);
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -570,9 +570,9 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     }
 
     let allIncomes = [];
-    if(idInc > 0){
+    if (idInc > 0) {
       allIncomes = incomesDetail.filter(item => item.id !== idInc);
-    }else{
+    } else {
       allIncomes = incomesDetail;
     }
 
@@ -601,20 +601,20 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
           fnViewDetailPayroll(currentItemDeta.fatherId);
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
         setLoading(false);
 
         // actualizar vacaciones del empleado cuando se genera una planilla de vacaciones
-        if(typePayroll===4){
+        if (typePayroll === 4) {
           fnNewVacations(daysInc, resp.data.id);
         }
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
-    }else{
+    } else {
       setLoading(true);
       request.PUT(`rrhh/process/weeklyPayrollIncomes/${idInc}`, newIncome, (resp) => {
         setSendFormIncomes(false);
@@ -632,17 +632,17 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
           fnViewDetailPayroll(currentItemDeta.fatherId);
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
         setLoading(false);
 
         // actualizar vacaciones del empleado cuando se genera una planilla de vacaciones
-        if(typePayroll===4){
+        if (typePayroll === 4) {
           fnUpdateVacations(daysInc, idInc);
         }
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -684,8 +684,8 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
         onResetFormIncomes();
         setSendFormIncomes(false);
 
-         // actualizar totales
-         const newTotals = {
+        // actualizar totales
+        const newTotals = {
           daysWorked: sumDays,
           totalIncomes: sumIncomes,
           totalPayment: totalPay
@@ -696,23 +696,23 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
           fnViewDetailPayroll(currentItemDeta.fatherId);
           setLoading(false);
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
         setLoading(false);
 
         // eliminar vacaciones ingresadas
-        if(typePayroll===4){
+        if (typePayroll === 4) {
           setLoading(true);
           request.DELETE(`rrhh/process/vacations?payrollId=${idInc}`, () => {
             setLoading(false);
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           });
         }
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -721,25 +721,25 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     setOpenMsgDeleteIncomes(false);
   }
 
-  const fnClearInputsIncomes = ()=>{
+  const fnClearInputsIncomes = () => {
     onResetFormIncomes();
     setSendFormIncomes(false);
     setPercent(0);
   }
 
-  const fnClearInputsDeductions = ()=>{
+  const fnClearInputsDeductions = () => {
     onResetFormDeduc();
     setSendFormDeduc(false);
     setPercent(0);
   }
 
   const fnSaveDetailPayroll = () => {
-    if(fatherId===0){
+    if (fatherId === 0) {
       return;
     }
 
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
@@ -767,20 +767,20 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
       deducTotal
     }
 
-    if(id===0){
+    if (id === 0) {
       setLoading(true);
       request.POST('rrhh/process/weeklyPayrollDetails', newData, (resp) => {
         fnViewDetailPayroll(idPayroll);
 
         // actualizar estado de la cuota del prestamo
-        if(dataLoans.length>0){
-          let dataUpdate = { status: 1}
+        if (dataLoans.length > 0) {
+          let dataUpdate = { status: 1 }
           let id = dataLoans[0].id;
           setLoading(true);
           request.PUT(`rrhh/process/paymentPlanDetails/${id}`, dataUpdate, () => {
             setLoading(false);
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           });
         }
@@ -793,7 +793,7 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
             fnGetDeductions();
             setLoading(false);
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           });
         });
@@ -806,7 +806,7 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
             fnGetIncomes();
             setLoading(false);
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           });
         });
@@ -814,17 +814,17 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
         setOpen(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
-    }else{
+    } else {
       setLoading(true);
       request.PUT(`rrhh/process/weeklyPayrollDetails/${id}`, formState, () => {
         fnViewDetailPayroll(currentItemDeta.fatherId);
         setOpen(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -835,12 +835,12 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
 
     // calcular rango de fechas para agregarlas en la tabla de vacaciones
     let daysSumMondays = 0;
-    if(daysVacations===1){
+    if (daysVacations === 1) {
       daysSumMondays = 0;
-    }else if(daysVacations>6){
-      const mondays = validInt(daysVacations/6);
+    } else if (daysVacations > 6) {
+      const mondays = validInt(daysVacations / 6);
       daysSumMondays = daysVacations + mondays;
-    }else{
+    } else {
       daysSumMondays = daysVacations;
     }
 
@@ -854,9 +854,9 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
 
     //confirmar que se agregaron la cantidad correcta de dias a la fecha
     const confirmDays = getDaysDiffExcMonday(dateInit, date2);
-    if(confirmDays > daysVacations){
+    if (confirmDays > daysVacations) {
       const days = confirmDays - daysVacations;
-      date2 = date2.subtract(days,'days');
+      date2 = date2.subtract(days, 'days');
     }
 
     const newData = {
@@ -878,7 +878,7 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     request.POST('rrhh/process/vacations', newData, (resp) => {
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -888,12 +888,12 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
 
     // calcular rango de fechas para agregarlas en la tabla de vacaciones
     let daysSumMondays = 0;
-    if(daysVacations===1){
+    if (daysVacations === 1) {
       daysSumMondays = 0;
-    }else if(daysVacations>6){
-      const mondays = validInt(daysVacations/6);
+    } else if (daysVacations > 6) {
+      const mondays = validInt(daysVacations / 6);
       daysSumMondays = daysVacations + mondays;
-    }else{
+    } else {
       daysSumMondays = daysVacations;
     }
 
@@ -907,9 +907,9 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
 
     //confirmar que se agregaron la cantidad correcta de dias a la fecha
     const confirmDays = getDaysDiffExcMonday(dateInit, date2);
-    if(confirmDays > daysVacations){
+    if (confirmDays > daysVacations) {
       const days = confirmDays - daysVacations;
-      date2 = date2.subtract(days,'days');
+      date2 = date2.subtract(days, 'days');
     }
 
     const newData = {
@@ -925,13 +925,13 @@ export const useModalViewDetailPay = ({idPayroll, typePayroll, dateStart, dateEn
     request.PUT(`rrhh/process/vacations?payrollId=${idPayrollIncome}`, newData, (resp) => {
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
 
   useEffect(() => {
-    if(id>0){
+    if (id > 0) {
       fnGetDeductions();
       fnGetIncomes();
       fnGetAttendance();

@@ -6,8 +6,8 @@ import { ReactTableEdit } from '@Components/reactTableEdit';
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 
-const ModalSelectEmployees = ({setOpen, data}) => {
-  const {typeId, date, customerId, projectId, dateStart, dateEnd, notes, status, userId, listEmployeesByProject, setListEmployeesByProject, onInputChange, setLoading, setSendForm, fnViewDetailPayroll} = data;
+const ModalSelectEmployees = ({ setOpen, data }) => {
+  const { typeId, date, customerId, projectId, dateStart, dateEnd, notes, status, userId, listEmployeesByProject, setListEmployeesByProject, onInputChange, setLoading, setSendForm, fnViewDetailPayroll } = data;
 
   const [table, setTable] = useState({
     title: IntlMessages("page.projects.table.employees.title"),
@@ -16,19 +16,19 @@ const ModalSelectEmployees = ({setOpen, data}) => {
         label: "select.employee",
         field: "employeeName",
         headerStyle: { textAlign: 'left', width: '80%' },
-        bodyStyle: {width: '80%'}
+        bodyStyle: { width: '80%' }
       },
       {
         label: "table.column.daysPending",
         field: "daysPending",
         headerStyle: { textAlign: 'center', width: "20%" },
-        bodyStyle: {width: '20%'}
+        bodyStyle: { width: '20%' }
       },
       {
         label: "table.column.daysToPay",
         field: "daysToPay",
         headerStyle: { textAlign: 'center', width: "20%" },
-        bodyStyle: {width: '20%'},
+        bodyStyle: { width: '20%' },
         isEditable: true
       },
     ],
@@ -61,7 +61,7 @@ const ModalSelectEmployees = ({setOpen, data}) => {
       dataEmployees: filterEmployees
     }
 
-    if(filterEmployees.length>0){
+    if (filterEmployees.length > 0) {
       request.POST('rrhh/process/weeklyPayrolls/generateVacationPayroll', newData, (resp) => {
         if (validInt(resp.data.id) > 0) {
           onInputChange({ target: { name: 'id', value: resp.data.id } });
@@ -71,7 +71,7 @@ const ModalSelectEmployees = ({setOpen, data}) => {
         setLoading(false);
         setOpen(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -82,17 +82,17 @@ const ModalSelectEmployees = ({setOpen, data}) => {
       <ModalBody>
         <Row>
           <Colxx xxs="12">
-            <ReactTableEdit {...table}/>
+            <ReactTableEdit {...table} />
           </Colxx>
         </Row>
       </ModalBody>
       <ModalFooter>
-        <Button color="danger" onClick={()=>{setOpen(false)}} >
-          <i className="bi bi-box-arrow-right"/>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />
           {` ${IntlMessages('button.exit')}`}
         </Button>
         <Button color="primary" onClick={fnGeneratePayroll}>
-          <i className="bi bi-cash-coin"/> {IntlMessages("button.generatePayroll")}
+          <i className="bi bi-cash-coin" /> {IntlMessages("button.generatePayroll")}
         </Button>
       </ModalFooter>
     </>

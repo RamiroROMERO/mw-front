@@ -3,7 +3,7 @@ import { request } from '@/helpers/core';
 import { useForm } from '@/hooks'
 import React, { useEffect } from 'react'
 
-export const useMailOptionsModal = ({data, setOpen }) => {
+export const useMailOptionsModal = ({ data, setOpen }) => {
   const { companyId, setLoading } = data;
   const { formState, onInputChange, onBulkForm } = useForm({
     id: 0,
@@ -34,7 +34,6 @@ export const useMailOptionsModal = ({data, setOpen }) => {
       }
       setLoading(false);
     }, err => {
-      console.error(err);
       setLoading(false);
     });
   }, [])
@@ -47,7 +46,6 @@ export const useMailOptionsModal = ({data, setOpen }) => {
         setOpen(false);
         setLoading(false);
       }, err => {
-        console.log(err)
         setOpen(false);
         setLoading(false);
       });
@@ -56,7 +54,6 @@ export const useMailOptionsModal = ({data, setOpen }) => {
         setOpen(false)
         setLoading(false);
       }, err => {
-        console.log(err)
         setOpen(false)
         setLoading(false);
       })

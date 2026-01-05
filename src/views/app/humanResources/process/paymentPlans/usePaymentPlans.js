@@ -4,7 +4,7 @@ import { request } from '@Helpers/core'
 import { validFloat, validInt, IntlMessages } from '@Helpers/Utils'
 import notification from '@Containers/ui/Notifications';
 
-export const usePaymentPlans = ({setLoading, screenControl}) => {
+export const usePaymentPlans = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [projectId, setProjectId] = useState(0);
   const [listEmployees, setListEmployees] = useState([]);
@@ -48,7 +48,7 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
 
   const { id, date, typeId, employeeId, employeeName, value, noQuotes, valueQuote, valueInterest, valueCapital, dateStart, deductionMethod, description, notes } = formState;
 
-  const onProjectChange = e =>{
+  const onProjectChange = e => {
     const project = e.target.value;
     setProjectId(project);
     setSelectedItems([]);
@@ -116,7 +116,7 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
       const paymentPlans = resp.data.map((item) => {
         item.employee = `${item.rrhhEmployee.firstName} ${item.rrhhEmployee.secondName} ${item.rrhhEmployee.lastName}
         ${item.rrhhEmployee.secondLastName}`
-        item.dateStart = item.dateStart===null?'1900-01-01':item.dateStart
+        item.dateStart = item.dateStart === null ? '1900-01-01' : item.dateStart
         item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />
         return item;
@@ -125,7 +125,7 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
       setOpenModalPaymentPlans(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -142,7 +142,7 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
       setDataPayPlanDetail(paymentPlanDeta);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -205,11 +205,11 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
             fnViewPaymentPlans(resp.data.id);
             setLoading(false);
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           });
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       });
@@ -224,7 +224,7 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -252,7 +252,7 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
       fnNewPaymentPlan();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -271,11 +271,9 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
     setOpenMsgDelete(false);
     setLoading(true);
     request.DELETE(`rrhh/process/paymentPlans/${id}`, (resp) => {
-      console.log(resp);
       fnNewPaymentPlan();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -293,7 +291,7 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -309,7 +307,7 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
       setListTypeDeductions(listTypes);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -325,20 +323,20 @@ export const usePaymentPlans = ({setLoading, screenControl}) => {
       setListProjects(projectsList);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);
 
-  useEffect(()=>{
-    const dataTable = {...table, data: listEmployeesByProject};
+  useEffect(() => {
+    const dataTable = { ...table, data: listEmployeesByProject };
     setTable(dataTable);
-  },[listEmployeesByProject]);
+  }, [listEmployeesByProject]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const filterEmployees = listEmployees.filter(item => item.projectId === projectId);
     setListEmployeesByProject(filterEmployees);
-  },[projectId]);
+  }, [projectId]);
 
   const propsToControlPanel = {
     fnNew: fnNewPaymentPlan,

@@ -4,7 +4,7 @@ import { request } from '@Helpers/core'
 import { validFloat, IntlMessages } from '@Helpers/Utils'
 import notification from '@Containers/ui/Notifications';
 
-export const usePaymentBenefits = ({setLoading, screenControl}) => {
+export const usePaymentBenefits = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const [projectId, setProjectId] = useState(0);
   const [listEmployees, setListEmployees] = useState([]);
@@ -41,7 +41,7 @@ export const usePaymentBenefits = ({setLoading, screenControl}) => {
 
   const { id, date, employeeId, employeeName, value, noQuotes, valueQuote, startDate, description, notes } = formState;
 
-  const onProjectChange = e =>{
+  const onProjectChange = e => {
     const project = e.target.value;
     setProjectId(project);
     setSelectedItems([]);
@@ -82,7 +82,7 @@ export const usePaymentBenefits = ({setLoading, screenControl}) => {
     request.GET('rrhh/process/benefitsPaymentPlans', (resp) => {
       const payments = resp.data.map((item) => {
         item.employee = `${item?.employeeData?.firstName || ""} ${item?.employeeData?.secondName || ""} ${item?.employeeData?.lastName || ""} ${item?.employeeData?.secondLastName || ""}`
-        item.startDate = item.startDate===null?'1900-01-01':item.startDate
+        item.startDate = item.startDate === null ? '1900-01-01' : item.startDate
         item.statusIcon = item.status === true ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />
         return item;
@@ -91,7 +91,7 @@ export const usePaymentBenefits = ({setLoading, screenControl}) => {
       setOpenModalPayments(true);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -107,12 +107,12 @@ export const usePaymentBenefits = ({setLoading, screenControl}) => {
       setDataPayDetail(paymentsDeta);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
 
-    const fnSavePaymentPlan = () => {
+  const fnSavePaymentPlan = () => {
     setSendForm(true);
     if (!isFormValid) {
       return;
@@ -157,17 +157,17 @@ export const usePaymentBenefits = ({setLoading, screenControl}) => {
           setSendForm(false);
           setLoading(false);
           // Generar cuotas
-          const dataDetail = {id: resp.data.id}
+          const dataDetail = { id: resp.data.id }
           setLoading(true);
           request.POST(`rrhh/process/benefitsPaymentPlans/generateCuotes`, dataDetail, (resp2) => {
             setDataPayDetail(resp2.data);
             setLoading(false);
           }, (err) => {
-            console.error(err);
+
             setLoading(false);
           });
         }, (err) => {
-          console.error(err);
+
           setLoading(false);
         });
       });
@@ -182,7 +182,7 @@ export const usePaymentBenefits = ({setLoading, screenControl}) => {
         setSendForm(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
@@ -210,7 +210,7 @@ export const usePaymentBenefits = ({setLoading, screenControl}) => {
       fnNewPayment();
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }
@@ -229,11 +229,9 @@ export const usePaymentBenefits = ({setLoading, screenControl}) => {
     setOpenMsgDelete(false);
     setLoading(true);
     request.DELETE(`rrhh/process/benefitsPaymentPlans/${id}`, (resp) => {
-      console.log(resp);
       fnNewPayment();
       setLoading(false);
     }, (err) => {
-      console.error(err);
       setLoading(false);
     });
   }
@@ -251,7 +249,7 @@ export const usePaymentBenefits = ({setLoading, screenControl}) => {
       setListEmployees(employees);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
 
@@ -267,20 +265,20 @@ export const usePaymentBenefits = ({setLoading, screenControl}) => {
       setListProjects(projectsList);
       setLoading(false);
     }, (err) => {
-      console.error(err);
+
       setLoading(false);
     });
   }, []);
 
-  useEffect(()=>{
-    const dataTable = {...table, data: listEmployeesByProject};
+  useEffect(() => {
+    const dataTable = { ...table, data: listEmployeesByProject };
     setTable(dataTable);
-  },[listEmployeesByProject]);
+  }, [listEmployeesByProject]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const filterEmployees = listEmployees.filter(item => item.projectId === projectId);
     setListEmployeesByProject(filterEmployees);
-  },[projectId]);
+  }, [projectId]);
 
   const propsToControlPanel = {
     fnNew: fnNewPayment,

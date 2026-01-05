@@ -2,7 +2,7 @@ import { request } from '@/helpers/core';
 import { useForm } from '@/hooks';
 import { useState } from 'react'
 
-export const useModalNewCust = ({currentItem, setLoading, fnGetData, setOpen}) => {
+export const useModalNewCust = ({ currentItem, setLoading, fnGetData, setOpen }) => {
   const [sendForm, setSendForm] = useState(false);
 
   const validation = {
@@ -42,29 +42,29 @@ export const useModalNewCust = ({currentItem, setLoading, fnGetData, setOpen}) =
 
   const fnSave = () => {
     setSendForm(true);
-    if(!isFormValid){
+    if (!isFormValid) {
       return;
     }
 
-    if(formState.id === 0){
+    if (formState.id === 0) {
       setLoading(true);
       request.POST('hotel/settings/customers', formState, (resp) => {
         fnGetData();
         setOpen(false);
         setLoading(false);
-      },(err)=>{
-        console.error(err);
+      }, (err) => {
+
         setLoading(false);
       });
 
-    }else{
+    } else {
       setLoading(true);
       request.PUT(`hotel/settings/customers/${formState.id}`, formState, () => {
         fnGetData();
         setOpen(false);
         setLoading(false);
       }, (err) => {
-        console.error(err);
+
         setLoading(false);
       });
     }
