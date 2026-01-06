@@ -63,7 +63,7 @@ const DetailPermission = ({employeeId, date, typeId, applicationTypeId, dateStar
               label="page.permissions.select.applicationType"
               onChange={onInputChange}
               options={[
-                {id:1, name:"Cargo a Vacaciones"},
+                // {id:1, name:"Cargo a Vacaciones"},
                 {id:2, name:"Con Goce de Sueldo"},
                 {id:3, name:"Sin Goce de Sueldo"}
               ]}
@@ -190,14 +190,14 @@ const DetailPermission = ({employeeId, date, typeId, applicationTypeId, dateStar
                   feedbackText={sendForm && (authorizedByIdValid || null)}
                 />
               </Colxx>
-              <Colxx xxs="12" xs="6" sm="12">
+              {/* <Colxx xxs="12" xs="6" sm="12">
                 <Checkbox
                   label="page.permissions.check.withPay"
                   name="withPayment"
                   value={withPayment}
                   onChange={onInputChange}
                 />
-              </Colxx>
+              </Colxx> */}
             </Row>
           </Colxx>
         </Row>

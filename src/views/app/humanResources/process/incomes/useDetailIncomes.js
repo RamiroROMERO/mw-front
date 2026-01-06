@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { request } from '@/helpers/core';
-import { IntlMessages } from '@Helpers/Utils'
+import { formatNumber, IntlMessages } from '@Helpers/Utils'
 import notification from '@/containers/ui/Notifications';
 
 export const useDetailIncomes = ({ id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, days, hours, fnCreate, fnUpdate, setIncWeekly }) => {
@@ -14,7 +14,15 @@ export const useDetailIncomes = ({ id, projectId, setProjectId, onResetForm, lis
       {
         text: IntlMessages("select.employee"),
         dataField: "label",
-        headerStyle: { width: "100%" }
+        headerStyle: { width: "75%" }
+      },
+      {
+        text: IntlMessages("table.column.defaultSalary"),
+        dataField: "defaultSalary",
+        headerStyle: { width: "25%" },
+        cell:({row})=>{
+          return (formatNumber(row.original.defaultSalary, '', 2));
+        }
       },
     ],
     data: [],

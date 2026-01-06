@@ -909,11 +909,11 @@ const data = [
             label: 'menu.faultTypes',
             to: `${adminRoot}/humanResources/settings/faultTypes`,
           },
-          {
-            icon: 'bi bi-calendar-event',
-            label: 'menu.biweeklys',
-            to: `${adminRoot}/humanResources/settings/biweeklys`,
-          },
+          // {
+          //   icon: 'bi bi-calendar-event',
+          //   label: 'menu.biweeklys',
+          //   to: `${adminRoot}/humanResources/settings/biweeklys`,
+          // },
           {
             icon: 'bi bi-list-ul',
             label: 'menu.humanResources.deductionTypes',
@@ -1032,11 +1032,11 @@ const data = [
             label: 'menu.fourteenthMonth',
             to: `${adminRoot}/humanResources/process/fourteenthMonth`,
           },
-          {
-            icon: 'bi bi-cash-coin',
-            label: 'menu.vacationPayroll',
-            to: `${adminRoot}/humanResources/process/vacationPayroll`,
-          },
+          // {
+          //   icon: 'bi bi-cash-coin',
+          //   label: 'menu.vacationPayroll',
+          //   to: `${adminRoot}/humanResources/process/vacationPayroll`,
+          // },
           {
             icon: 'bi bi-percent',
             label: 'menu.neighborhoodTaxPayroll',

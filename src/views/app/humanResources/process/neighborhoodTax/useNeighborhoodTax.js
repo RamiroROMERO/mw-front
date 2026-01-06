@@ -172,6 +172,7 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
         ],
         otherFields: [],
         otherFields2: [],
+        qtyDaysFields: [],
         headerData: [],
         reportTitle: "Planilla de Impuesto Vecinal",
         nameXLSXFile: "Planilla de Impuesto Vecinal.xlsx",

@@ -15,7 +15,7 @@ export const useJobPositions = ({ setLoading, screenControl }) => {
   const jobPositionValid = {
     levelId: [(val) => val !== 0, "msg.required.select.levelId"],
     name: [(val) => val !== "", "msg.required.input.name"],
-    maxHours: [(val) => val !== 0, "msg.required.input.maxHours"]
+    // maxHours: [(val) => val !== 0, "msg.required.input.maxHours"]
   }
 
   const { formState, formValidation, isFormValid, onResetForm, onBulkForm, onInputChange } = useForm({

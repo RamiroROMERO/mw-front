@@ -44,12 +44,13 @@ export const useHeader = ({ setLoading, table, setTable, listCustomers, enableGe
 
   const fnExportDocument = async () => {
     const filterCustomer = listCustomers.find(item => item.value === customerId);
+    let where = {customerId, status: 1};
+    if(validInt(projectId)>0) where = {...where, projectId};
+    if(validInt(turnId)>0) where = {...where, turnId};
+
     setLoading(true);
     let data = {
-      where: {
-        customerId,
-        status: 1
-      },
+      where,
       fields: [
         { title: 'No.', field: 'num', type: 'decimal', length: 20 },
         { title: 'Empleado', field: 'employeeName', type: 'String', length: 120 },

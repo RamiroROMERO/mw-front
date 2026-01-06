@@ -45,7 +45,7 @@ const DetailJobPosition = ({levelId, name, description, maxHours, status, fnForm
               type="textarea"
             />
           </Colxx>
-          <Colxx xss="12" xs="6" lg="12">
+          {/* <Colxx xss="12" xs="6" lg="12">
             <InputField
               name="maxHours"
               onChange={onInputChange}
@@ -55,7 +55,7 @@ const DetailJobPosition = ({levelId, name, description, maxHours, status, fnForm
               invalid={sendForm && !!maxHoursValid}
               feedbackText={sendForm && (maxHoursValid || null)}
             />
-            </Colxx>
+            </Colxx> */}
           <Colxx xss="12" xs="6" lg="12">
             <Checkbox
               name="status"

@@ -451,8 +451,8 @@ const enLang = {
   "button.updateStatus": "Update Status",
   "button.updatePayment": "Update Payment",
   "button.images": "Images",
-  "button.inclusionSheet": "Inclusion Sheet",
-  "button.exclusionSheet": "Exclusion Sheet",
+  "button.inclusionSheet": "Entry Sheet",
+  "button.exclusionSheet": "Output Sheet",
   "button.permissions": "Permissions",
   "button.vacations": "Vacations",
   "button.incapacities": "Incapacities",
@@ -726,7 +726,7 @@ const enLang = {
   "modal.viewDocument.title": "Document",
   "modal.viewDocument.invoice": "Invoice #",
   "modal.viewDocument.proofPayment": "Proof of Payment",
-  "modal.viewDocument.inclusionSheet": "Inclusion Sheet",
+  "modal.viewDocument.inclusionSheet": "Document",
   "modal.viewDocument.quote": "Quote #",
   "modal.confirm.title": "Confirm",
   "modal.printDocument.title": "Print Document",
@@ -899,6 +899,7 @@ const enLang = {
   "table.column.room": "Room",
   "table.column.roomType": "Room Type",
   "table.column.totalPay": "Total Payment",
+  "table.column.defaultSalary": "Default Salary",
 
   /* 02.User Login, Logout, Register */
   "user.login-title": "Login",
