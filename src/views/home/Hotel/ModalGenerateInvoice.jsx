@@ -12,7 +12,7 @@ import { request } from '@/helpers/core';
 const ModalGenerateInvoice = ({ data, setOpen }) => {
   const { bookingId, totalValPayments, totalValServices, listTypePayments, setListTypePayments, dataInvoice, creditDays, roomId, subtotal, billingToCompany, setLoading, setOpenModalInvoice, fnPrintInvoice } = data;
 
-  const { invoiceDate, documentCode, cashId, cashierId, documentType, price, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total } = dataInvoice;
+  const { invoiceDate, documentCode, cashId, cashierId, documentType, price, qty, discountPercent, discountValue, taxPercent, taxValue, otherTaxPercent, otherTaxValue, total } = dataInvoice;
 
   const totalInvoice = (totalValServices + total) - totalValPayments;
 
@@ -97,7 +97,7 @@ const ModalGenerateInvoice = ({ data, setOpen }) => {
       creditDays,
       detailRoom: {
         roomId,
-        qty: 1,
+        qty,
         price,
         subtotal,
         discountPercent,
