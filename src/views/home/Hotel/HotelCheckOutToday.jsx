@@ -66,7 +66,7 @@ export const HotelCheckOutToday = ({ setLoading }) => {
     const dataPrint = {
       id: idInvoice,
       userName: userData.name,
-      typePrint: 1
+      typePrint: 3
     }
 
     request.GETPdfUrl('hotel/process/bookings/exportInvoicePDF', dataPrint, (resp) => {
