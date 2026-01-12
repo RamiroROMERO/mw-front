@@ -46,7 +46,7 @@ const useHotelAdmin = ({ setLoading }) => {
     });
   }
 
-  useEffect(() => {
+  const fnGetCustomers = () => {
     setLoading(true);
     request.GET('billing/settings/customers?status=1', (resp) => {
       const customers = resp.data.map((item) => {
@@ -65,6 +65,9 @@ const useHotelAdmin = ({ setLoading }) => {
     }, (err) => {
       setLoading(false);
     });
+  }
+
+  useEffect(() => {
 
     setLoading(true);
     request.GET('hotel/settings/bookingStatuses?type=1', (resp) => {
@@ -132,6 +135,7 @@ const useHotelAdmin = ({ setLoading }) => {
     });
 
     fnGetRooms();
+    fnGetCustomers();
 
   }, []);
 
@@ -224,7 +228,7 @@ const useHotelAdmin = ({ setLoading }) => {
       listTypeTax,
       currentItem: null,
       setLoading,
-      fnGetData: () => { }
+      fnGetData: fnGetCustomers
     }
   }
 

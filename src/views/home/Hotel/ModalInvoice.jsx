@@ -193,7 +193,7 @@ const ModalInvoice = ({data, setOpen}) => {
                     <Colxx xxs={6} md={6} lg={3} xl={6}>
                       <TextTitle
                         title='input.pendingPayment'
-                        subTitle={formatNumber((totalValServices + validFloat(dataBooking?.baseRate || 0)) - totalValPayments, 'L.', 2)}
+                        subTitle={formatNumber((totalValServices + validFloat(totalCost)) - totalValPayments, 'L.', 2)}
                       />
                     </Colxx>
                     <Colxx xxs={6} md={6} lg={3} xl={6}>

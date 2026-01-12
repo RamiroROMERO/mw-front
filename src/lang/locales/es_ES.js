@@ -261,6 +261,8 @@ const esLang = {
   "msg.required.input.checkOutDate": "Por favor seleccione la fecha de salida!",
   "msg.required.input.totalNights": "Por favor ingrese el total de noches!",
   "msg.required.select.paymentStatusId": "Por favor seleccione el estado del pago!",
+  "msg.required.input.baseRate": "Por favor ingrese la tarifa estandar!",
+  "msg.required.input.qtyAdults": "La cantidad de adultos no puede ser mayor a la capacidad de la habitacion!",
   /* Require Others */
   "msg.required.radio.creditRequest": "Por favor seleccione un estado de crédito!",
   "msg.required.radio.type": "Por favor seleccione un tipo de producto!",

@@ -3,6 +3,7 @@ import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import moment from 'moment';
 import { useEffect, useState } from 'react'
+import createNotification from "@/containers/ui/Notifications";
 
 export const useModalAddRes = ({ currentReservation, setLoading, currentPage = null, search = null, fnGetData = null, setOpen, listCustomers, listRooms, fnGetRooms }) => {
   const [activeTab, setActiveTab] = useState('1');
@@ -30,7 +31,9 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
     checkOutDate: [(val) => val !== "", "msg.required.input.checkOutDate"],
     statusId: [(val) => validFloat(val) > 0, "msg.required.select.statusId"],
     totalNights: [(val) => validFloat(val) > 0, "msg.required.input.totalNights"],
-    paymentStatusId: [(val) => validFloat(val) > 0, "msg.required.select.paymentStatusId"]
+    baseRate: [(val) => validFloat(val) > 0, "msg.required.input.baseRate"],
+    paymentStatusId: [(val) => validFloat(val) > 0, "msg.required.select.paymentStatusId"],
+    qtyAdults: [(val) => validFloat(val) > 0 && validFloat(val) <= validInt(currentRoom.capacity), "msg.required.input.qtyAdults"]
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
@@ -44,6 +47,7 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
     statusId: currentReservation?.statusId || 0,
     totalNights: currentReservation?.totalNights || 0,
     baseRate: currentReservation?.baseRate || currentRoom?.rate || 0,
+    totalCost: currentReservation?.baseRate || currentRoom?.rate || 0,
     qtyAdults: currentReservation?.qtyAdults || 0,
     qtyChild: currentReservation?.qtyChild || 0,
     others: currentReservation?.others || "",
@@ -52,7 +56,7 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
     channelId: currentReservation?.channelId || 0
   }, validation);
 
-  const { id, checkInDate, checkOutDate, statusId, paymentStatusId, customerId, roomId } = formState;
+  const { id, checkInDate, checkOutDate, baseRate, statusId, paymentStatusId, customerId, roomId } = formState;
 
   const onCustomerChange = e => {
     const custId = validInt(e.target.value);
@@ -73,9 +77,12 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
     const date2 = moment(checkOutDate);
     const daysDiff = date2.diff(date1, 'days');
 
+    const totalCost = (validInt(daysDiff) * validFloat(baseRate)) + validFloat(totalValServices);
+
     const newOutDate = {
       totalNights: validInt(daysDiff),
-      checkInDate: dateValue
+      checkInDate: dateValue,
+      totalCost
     }
     onBulkForm(newOutDate);
   }
@@ -87,9 +94,28 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
     const date2 = moment(dateValue);
     const daysDiff = date2.diff(date1, 'days');
 
+    const totalCost = (validInt(daysDiff) * validFloat(baseRate)) + validFloat(totalValServices);
+
     const newOutDate = {
       totalNights: validInt(daysDiff),
-      checkOutDate: dateValue
+      checkOutDate: dateValue,
+      totalCost
+    }
+    onBulkForm(newOutDate);
+  }
+
+  const onBaseRateChange = e => {
+    const valueRate = e.target.value;
+
+    const date1 = moment(checkInDate);
+    const date2 = moment(checkOutDate);
+    const daysDiff = date2.diff(date1, 'days');
+
+    const totalCost = (validInt(daysDiff) * validFloat(valueRate)) + validFloat(totalValServices);
+
+    const newOutDate = {
+      baseRate: e.target.value,
+      totalCost
     }
     onBulkForm(newOutDate);
   }
@@ -103,7 +129,11 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
 
     formState.personQty = totalPeople;
     formState.status = 1;
-    formState.baseRate = currentRoom?.rate;
+
+    if(validInt(formState.qtyAdults) > validInt(currentRoom?.capacity)){
+      createNotification('warning', 'msg.required.input.qtyAdults', 'alert.warning.title');
+      return
+    }
 
     if (validInt(id) === 0) {
       setLoading(true);
@@ -213,7 +243,7 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
         setLoading(true);
         request.PUT(`hotel/settings/rooms/${roomId}`, dataUpdate, () => {
           setLoading(false);
-          fnGetData(currentPage, search);
+          if (fnGetData) fnGetData(currentPage, search);
         }, (err) => {
           setLoading(false);
         }, false);
@@ -228,6 +258,7 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
 
         setLoading(true);
         request.POST('hotel/process/calendarBooking/programBooking', dataCalendar, (resp) => {
+          if (fnGetData) fnGetData(currentPage, search);
           setLoading(false);
         }, (err) => {
           setLoading(false);
@@ -335,6 +366,20 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
       if (filter) {
         filter.roomServices = data;
       }
+
+      const date1 = moment(checkInDate);
+      const date2 = moment(checkOutDate);
+      const daysDiff = date2.diff(date1, 'days');
+
+      const totalCost = (validInt(daysDiff) * validFloat(filter?.rate || 0)) + validFloat(totalValServices);
+
+      const newdata = {
+        baseRate: filter?.rate || 0,
+        totalCost
+      }
+
+      onBulkForm(newdata);
+
       setCurrentRoom(filter);
       setLoading(false);
     }, (err) => {
@@ -371,6 +416,7 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
       onInputChange,
       onCheckInDate,
       onCheckOutDate,
+      onBaseRateChange,
       fnSave,
       fnSaveStatus,
       fnSavePayment,

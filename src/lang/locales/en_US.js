@@ -260,6 +260,8 @@ const enLang = {
   "msg.required.input.checkInDate": "Please select the check in date!",
   "msg.required.input.checkOutDate": "Please select the check out date!",
   "msg.required.input.totalNights": "Please enter the total number of nights!",
+  "msg.required.input.baseRate": "Please enter the base rate!",
+  "msg.required.input.qtyAdults": "The number of adults cannot exceed the room's capacity!",
   /* Require Others */
   "msg.required.radio.creditRequest": "Please select a credit status!",
   "msg.required.radio.type": "Please select a product type!",

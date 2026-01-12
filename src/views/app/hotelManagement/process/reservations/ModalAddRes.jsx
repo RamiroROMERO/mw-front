@@ -15,11 +15,11 @@ import ModalAddPayments from './ModalAddPayments';
 const ModalAddRes = ({data, setOpen}) => {
   const {currentReservation, currentPage=null, search=null, listCustomers, listStatusBooking, listStatusPayment, listServices, listPaymentTypes, listBookingChannels, listRooms, setLoading, fnGetData=null, fnGetRooms} = data;
 
-  const {formState, formValidation, sendForm, customerEmail, customerPhone, currentPayment, currentService, currentRoom, dataServices, dataPayments, roomsAvailables, totalValServices, totalValPayments, activeTab, propsToMsgDeleteService, propsToMsgDeletePayment, openModalAddPayment, openModalAddService, setActiveTab, setOpenModalAddPayment, setOpenModalAddService, onInputChange, onCustomerChange, onRoomChange, onCheckInDate, onCheckOutDate, fnSave, fnSavePayment, fnSaveStatus, fnAddPayment, fnAddService, fnGetDataPayments, fnGetDataServices, fnDeleteService, fnDeletePayment } = useModalAddRes({currentReservation, setLoading, currentPage, search, fnGetData, setOpen, listCustomers, listRooms, fnGetRooms});
+  const {formState, formValidation, sendForm, customerEmail, customerPhone, currentPayment, currentService, currentRoom, dataServices, dataPayments, roomsAvailables, totalValServices, totalValPayments, activeTab, propsToMsgDeleteService, propsToMsgDeletePayment, openModalAddPayment, openModalAddService, setActiveTab, setOpenModalAddPayment, setOpenModalAddService, onInputChange, onCustomerChange, onRoomChange, onCheckInDate, onCheckOutDate, onBaseRateChange, fnSave, fnSavePayment, fnSaveStatus, fnAddPayment, fnAddService, fnGetDataPayments, fnGetDataServices, fnDeleteService, fnDeletePayment } = useModalAddRes({currentReservation, setLoading, currentPage, search, fnGetData, setOpen, listCustomers, listRooms, fnGetRooms});
 
-  const {id, date, customerId, roomId, checkInDate, checkOutDate, statusId, totalNights, qtyAdults, qtyChild, others, notes, paymentStatusId, channelId} = formState;
+  const {id, date, customerId, roomId, checkInDate, checkOutDate, statusId, baseRate, totalCost, totalNights, qtyAdults, qtyChild, others, notes, paymentStatusId, channelId} = formState;
 
-  const {dateValid, customerIdValid, roomIdValid, checkInDateValid, checkOutDateValid, statusIdValid, totalNightsValid, paymentStatusIdValid} = formValidation;
+  const {dateValid, customerIdValid, roomIdValid, checkInDateValid, checkOutDateValid, statusIdValid, totalNightsValid, paymentStatusIdValid, baseRateValid, qtyAdultsValid} = formValidation;
 
   const roomServices = currentRoom?.roomServices || [];
 
@@ -184,10 +184,12 @@ const ModalAddRes = ({data, setOpen}) => {
                           </Colxx>
                           <Colxx xxs={6} sm={4} md={6} lg={6}>
                             <InputField
-                              name="rate"
+                              name="baseRate"
                               label='input.rate'
-                              value={formatNumber(currentRoom?.rate || 0, 'L.', 2)}
-                              disabled
+                              value={baseRate}
+                              onChange={onBaseRateChange}
+                              invalid={sendForm && !!baseRateValid}
+                              feedbackText={sendForm && (baseRateValid || null)}
                             />
                           </Colxx>
                           <Colxx xs={6} sm={4} md={12} lg={6}>
@@ -260,6 +262,8 @@ const ModalAddRes = ({data, setOpen}) => {
                               label='input.qtyAdults'
                               value={qtyAdults}
                               onChange={onInputChange}
+                              invalid={sendForm && !!qtyAdultsValid}
+                              feedbackText={sendForm && (qtyAdultsValid || null)}
                             />
                           </Colxx>
                           <Colxx xxs={6} sm={4} md={12} lg={12} xl={6}>
@@ -323,9 +327,9 @@ const ModalAddRes = ({data, setOpen}) => {
                         <Row>
                           <Colxx xxs={6} md={6} lg={12} xl={6}>
                             <InputField
-                              name="totalValServices"
+                              name="totalCost"
                               label='input.totalCost'
-                              value={formatNumber(totalValServices + validFloat(currentRoom?.rate || 0), 'L.', 2)}
+                              value={totalCost}
                               disabled
                             />
                           </Colxx>
@@ -341,7 +345,7 @@ const ModalAddRes = ({data, setOpen}) => {
                             <InputField
                               name="totalValServices"
                               label='input.pendingPayment'
-                              value={formatNumber((totalValServices + validFloat(currentRoom?.rate || 0)) - totalValPayments, 'L.', 2)}
+                              value={formatNumber((totalValServices + validFloat(totalCost)) - totalValPayments, 'L.', 2)}
                               disabled
                             />
                           </Colxx>
