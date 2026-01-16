@@ -262,6 +262,7 @@ const enLang = {
   "msg.required.input.totalNights": "Please enter the total number of nights!",
   "msg.required.input.baseRate": "Please enter the base rate!",
   "msg.required.input.qtyAdults": "The number of adults cannot exceed the room's capacity!",
+  "msg.required.input.qtyRooms": "Please enter the number of rooms!",
   /* Require Others */
   "msg.required.radio.creditRequest": "Please select a credit status!",
   "msg.required.radio.type": "Please select a product type!",
@@ -272,6 +273,7 @@ const enLang = {
   "msg.required.calcCashClose": "Please calculate the cash close before saving it!",
   "msg.required.data.attendanceControl": "Please enter an attendance file!",
   "msg.required.dataAttendance.filterData": "The uploaded file is not within the selected date range!",
+  "msg.required.detailQuote.quoteHotel": "Please enter the room details!",
   /* Other Messages */
   "msg.save.record": "Record Saved Successfully",
   "msg.save.record.error": "Error Saving Record",
@@ -610,6 +612,12 @@ const enLang = {
   "input.otherTaxPercent": "Other Tax %",
   "input.otherTaxValue": "Other Tax",
   "input.creditDays": "Credit Days",
+  "input.qtyRooms": "Qty Rooms",
+  "input.priceUsd": "Price USD",
+  "input.priceLps": "Price Lps.",
+  "input.subtotalUsd": "Subtotal USD",
+  "input.subtotalLps": "Subtotal Lps.",
+  "input.exchangeRate": "Exchange Rate",
   /* Selects */
   "select.department": "Department",
   "select.municipality": "Municipality",
@@ -902,6 +910,12 @@ const enLang = {
   "table.column.roomType": "Room Type",
   "table.column.totalPay": "Total Payment",
   "table.column.defaultSalary": "Default Salary",
+  "table.column.valueTax15": "Tax 15%",
+  "table.column.valueTax4": "Tax 4%",
+  "table.column.qtyNight": "Nights",
+  "table.column.qtyRooms": "Rooms",
+  "table.column.priceLps": "Price Lps.",
+  "table.column.subtotalLps": "Subtotal Lps.",
 
   /* 02.User Login, Logout, Register */
   "user.login-title": "Login",
@@ -1170,6 +1184,7 @@ const enLang = {
   "menu.countries": "Countries",
   "menu.generalVacations": "General Vacation",
   "menu.paymentsHistory": "Payments History",
+  "menu.hotelManagement.quotes": "Quotes",
   /* 04.Error Page */
   "pages.error-title": "Ooops... looks like an error occurred!",
   "pages.error-code": "Error code",
@@ -2907,6 +2922,9 @@ const enLang = {
   "page.hotel.modal.addReservations.label.invoiceDetail": "Invoice Detail",
   "page.hotel.select.cashierId": "Cashier",
   "page.hotel.modal.invoice.paymentDetail.reference": "Reference",
+  "page.hotel.quotes": "Quotes",
+  "page.hotel.modal.quote.title": "Add/Edit Quote",
+  "page.hotel.modal.addReservations.label.totals": "Totals",
   "button.newCustomer": "New Customer",
   "menu.quotes": "Quotes",
   "common.code": "Code",

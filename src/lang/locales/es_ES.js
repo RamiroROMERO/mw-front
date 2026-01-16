@@ -263,6 +263,7 @@ const esLang = {
   "msg.required.select.paymentStatusId": "Por favor seleccione el estado del pago!",
   "msg.required.input.baseRate": "Por favor ingrese la tarifa estandar!",
   "msg.required.input.qtyAdults": "La cantidad de adultos no puede ser mayor a la capacidad de la habitacion!",
+  "msg.required.input.qtyRooms": "Por favor ingrese la cantidad de habitaciones!",
   /* Require Others */
   "msg.required.radio.creditRequest": "Por favor seleccione un estado de crédito!",
   "msg.required.radio.type": "Por favor seleccione un tipo de producto!",
@@ -273,6 +274,7 @@ const esLang = {
   "msg.required.calcCashClose": "Por favor calcule el cierre antes de guardarlo!",
   "msg.required.data.attendanceControl": "Por favor ingrese un archivo de asistencia!",
   "msg.required.dataAttendance.filterData": "El archivo subido no esta dentro del rango de fechas seleccionadas!",
+  "msg.required.detailQuote.quoteHotel": "Por favor ingrese el detalle de las habitaciones!",
   /* Other Messages */
   "msg.save.record": "Registro Guardado Exitosamente",
   "msg.save.record.error": "Error al Guardar el Registro",
@@ -615,6 +617,12 @@ const esLang = {
   "input.otherTaxPercent": "Otro % Impuesto",
   "input.otherTaxValue": "Otro Impuesto",
   "input.creditDays": "Dias Credito",
+  "input.qtyRooms": "Cant. Hab.",
+  "input.priceUsd": "Precio USD",
+  "input.priceLps": "Precio Lps.",
+  "input.subtotalUsd": "Subtotal USD",
+  "input.subtotalLps": "Subtotal Lps.",
+  "input.exchangeRate": "Taza de Cambio",
   /* Selects */
   "select.department": "Departamento",
   "select.municipality": "Municipio",
@@ -909,6 +917,12 @@ const esLang = {
   "table.column.roomType": "Tipo de Habitacion",
   "table.column.totalPay": "Total Pago",
   "table.column.defaultSalary": "Salario",
+  "table.column.valueTax15": "Impuesto 15%",
+  "table.column.valueTax4": "Impuesto 4%",
+  "table.column.qtyNight": "Noches",
+  "table.column.qtyRooms": "Cant. Hab.",
+  "table.column.priceLps": "Precio Lps.",
+  "table.column.subtotalLps": "Subtotal Lps.",
 
   /* 02.Inicio de sesión de usuario, cierre de sesión, registro */
   'user.login-title': 'Iniciar sesión',
@@ -1177,6 +1191,7 @@ const esLang = {
   "menu.countries": "Paises",
   "menu.generalVacations": "General de Vacaciones",
   "menu.paymentsHistory": "Historial de Pagos",
+  "menu.hotelManagement.quotes": "Cotizaciones",
   /* 04.Error  */
   'pages.error-title': 'Vaya, parece que ha ocurrido un error!',
   'pages.error-code': 'Código de error',
@@ -2921,6 +2936,9 @@ const esLang = {
   "page.hotel.modal.addReservations.label.invoiceDetail": "Detalle de Factura",
   "page.hotel.select.cashierId": "Cajero",
   "page.hotel.modal.invoice.paymentDetail.reference": "Referencia",
+  "page.hotel.quotes": "Cotizaciones",
+  "page.hotel.modal.quote.title": "Agregar/Editar Cotizacion",
+  "page.hotel.modal.addReservations.label.totals": "Totales",
   "button.newCustomer": "Nuevo Cliente",
   "button.searchCustomer": "Buscar Cliente",
   "page.common.label.totals": "Totales",

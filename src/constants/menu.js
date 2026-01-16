@@ -173,6 +173,11 @@ const data = [
           icon: 'bi bi-card-checklist',
           label: 'menu.hotelManagement.reservations',
           to: `${adminRoot}/hotelManagement/process/reservations`,
+        },{
+          id: 'hotelManagement-process-quotes',
+          icon: 'bi bi-file-earmark-medical',
+          label: 'menu.hotelManagement.quotes',
+          to: `${adminRoot}/hotelManagement/process/quotes`,
         }, {
           id: 'hotelManagement-process-restaurantOrders',
           icon: 'bi bi-file-earmark-post',
