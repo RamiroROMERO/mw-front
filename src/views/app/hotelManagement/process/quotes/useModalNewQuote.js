@@ -57,12 +57,13 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
     priceUsd: currentDetail?.priceUsd || 0,
     priceLps: currentDetail?.priceLps || 0,
     subtotalUsd: currentDetail?.subtotalUsd || 0,
-    subtotalLps: currentDetail?.subtotalLps || 0
+    subtotalLps: currentDetail?.subtotalLps || 0,
+    notes:  currentDetail?.notes || "",
   }, validationDeta);
 
   const {id, customerId, checkInDate, checkOutDate, subtotal, percentDiscount, discount, percentTax1, valueTax1, percentTax2, valueTax2, usdChange} = formState;
 
-  const {roomId, qtyNight, qtyRooms, priceUsd, priceLps, subtotalUsd, subtotalLps} = formStateDeta;
+  const {roomId, qtyNight, qtyRooms, priceUsd, priceLps, subtotalUsd, subtotalLps, notes} = formStateDeta;
 
   const onQtyNightChange = e => {
     const valueQtyNight = e.target.value;
@@ -260,7 +261,7 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
     setLoading(true);
     request.GET(`${API_URLS.HOTEL_PROC_QUOTE_DETAIL}?idFather=${id}`, (resp) => {
       const data = resp.data.map(item => {
-        item.roomName = item?.roomData?.name || ""
+        item.roomName = item?.roomData?.typeData?.name || ""
         return item
       });
       setDetailQuote(data);
@@ -303,13 +304,14 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
       const newItem = {
         id: tempCode,
         roomId,
-        roomName: filterRooms?.name || "",
+        roomName: filterRooms?.label || "",
         qtyNight,
         qtyRooms,
         priceUsd,
         priceLps,
         subtotalUsd,
-        subtotalLps
+        subtotalLps,
+        notes
       }
 
       setDetailQuote([...detailQuote, newItem]);
@@ -370,7 +372,12 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
     const valueUsd = validFloat(usdChange)>0 ? rate / validFloat(usdChange) : priceUsd;
     const subtotalUSD = valueUsd * qtyNight * qtyRooms;
 
+    const date1 = moment(checkInDate);
+    const date2 = moment(checkOutDate);
+    const daysDiff = date2.diff(date1, 'days');
+
     const newRoom = {
+      qtyNight: daysDiff,
       priceLps: filterRooms?.rate || 0,
       subtotalLps: subtotal,
       priceUsd: valueUsd,

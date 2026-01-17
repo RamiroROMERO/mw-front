@@ -8,7 +8,7 @@ import ModalNewQuote from './ModalNewQuote';
 
 const Content = ({setLoading, screenControl}) => {
 
-  const {currentPage, currentItem, search, table, listCustomers, listRooms, openModalAdd, propsToViewPDF, setOpenModalAdd, fnGetData, fnPrintPdf} = useQuotes({setLoading, screenControl});
+  const {currentPage, currentItem, search, table, listCustomers, listRooms, listTypesRooms, openModalAdd, propsToViewPDF, setOpenModalAdd, fnGetData, fnPrintPdf} = useQuotes({setLoading, screenControl});
 
   const propsToNewQuote = {
     ModalContent: ModalNewQuote,
@@ -22,6 +22,7 @@ const Content = ({setLoading, screenControl}) => {
       search,
       listCustomers,
       listRooms,
+      listTypesRooms,
       setLoading,
       fnGetData,
       fnPrintPdf

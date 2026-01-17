@@ -10,13 +10,13 @@ import { ContainerWithLabel } from '@/components/containerWithLabel';
 import Confirmation from '@/containers/ui/confirmationMsg';
 
 const ModalNewQuote = ({data, setOpen}) => {
-  const {currentItem, listCustomers, listRooms, setLoading, fnGetData, fnPrintPdf} = data;
+  const {currentItem, listCustomers, listRooms, listTypesRooms, setLoading, fnGetData, fnPrintPdf} = data;
 
-  const {detailQuote, formState, formValidation, sendForm, onInputChange, onQtyNightChange, onQtyRoomsChange, onPriceLpsChange, onPriceUsdChange, onUsdChange, onDiscountPercentChange, onTaxPercentChange, onOtherTaxPercentChange, onCheckInDate, onCheckOutDate, formStateDeta, formValidationDeta, sendFormDeta, onInputChangeDeta, fnSave, fnAddDetail, fnEditDetail, fnDeleteDetail, propsToMsgDeleteDetail} = useModalNewQuote({currentItem, setLoading, fnGetData, listCustomers, listRooms, setOpen, fnPrintPdf});
+  const {detailQuote, formState, formValidation, sendForm, onInputChange, onQtyNightChange, onQtyRoomsChange, onPriceLpsChange, onPriceUsdChange, onUsdChange, onDiscountPercentChange, onTaxPercentChange, onOtherTaxPercentChange, onCheckInDate, onCheckOutDate, formStateDeta, formValidationDeta, sendFormDeta, onInputChangeDeta, fnSave, fnAddDetail, fnEditDetail, fnDeleteDetail, propsToMsgDeleteDetail} = useModalNewQuote({currentItem, setLoading, fnGetData, listCustomers, listRooms, listTypesRooms, setOpen, fnPrintPdf});
 
   const {date, customerId, dni, name, phone, email, checkInDate, checkOutDate, subtotal, percentDiscount, discount, percentTax1, valueTax1, percentTax2, valueTax2, total, usdChange } = formState;
 
-  const {roomId, qtyNight, qtyRooms, priceUsd, priceLps, subtotalUsd, subtotalLps } = formStateDeta;
+  const {roomId, qtyNight, qtyRooms, priceUsd, priceLps, subtotalUsd, subtotalLps, notes } = formStateDeta;
 
   const {dateValid, nameValid, checkInDateValid, checkOutDateValid} = formValidation;
 
@@ -119,10 +119,11 @@ const ModalNewQuote = ({data, setOpen}) => {
                     label='select.roomId'
                     name='roomId'
                     inputValue={roomId}
-                    options={listRooms}
+                    options={formStateDeta.id ? listRooms : listTypesRooms}
                     onChange={onInputChangeDeta}
                     invalid={sendFormDeta && !!roomIdValid}
                     feedbackText={sendFormDeta && (roomIdValid || null)}
+                    isDisabled={formStateDeta.id ? true : false}
                   />
                 </Colxx>
                 <Colxx xxs={6} sm={4} md={6} lg={3} xl={2}>
@@ -188,7 +189,15 @@ const ModalNewQuote = ({data, setOpen}) => {
                     disabled
                   />
                 </Colxx>
-                <Colxx xxs={6} sm={8} md={12} lg={9} xl={6} align="right">
+                <Colxx xxs={12} sm={12} md={6} lg={7} xl={6}>
+                  <InputField
+                    name="notes"
+                    label='input.notes'
+                    value={notes}
+                    onChange={onInputChangeDeta}
+                  />
+                </Colxx>
+                <Colxx xxs={6} sm={12} md={6} lg={2} xl={12} align="right">
                   <Button type="button" className="btn-circle-table" color="outline-primary" title="New"
                     onClick={fnAddDetail}>
                     <i className='bi bi-plus' />
@@ -234,7 +243,7 @@ const ModalNewQuote = ({data, setOpen}) => {
                     <tfoot>
                       <tr>
                         <td colSpan={4} align='right'><b>TOTAL</b></td>
-                        <td align="right"><b>{formatNumber(total, 'L. ', 2)}</b></td>
+                        <td align="right"><b>{formatNumber(subtotal, 'L. ', 2)}</b></td>
                         <td></td>
                       </tr>
                     </tfoot>

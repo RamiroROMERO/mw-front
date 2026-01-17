@@ -9,6 +9,7 @@ export const useQuotes = ({ setLoading, screenControl }) => {
   const [openModalAdd, setOpenModalAdd] = useState(false);
   const [listCustomers, setListCustomers] = useState([]);
   const [listRooms, setListRooms] = useState([]);
+  const [listTypesRooms, setListTypesRooms] = useState([]);
   const [currentItem, setCurrentItem] = useState({});
 
   // paginacion
@@ -162,10 +163,16 @@ export const useQuotes = ({ setLoading, screenControl }) => {
     setLoading(true);
     request.GET('hotel/settings/rooms', (resp) => {
       const rooms = resp.data.map((item) => {
-        item.label = item.name
+        item.label = item?.typeData?.name || ""
         item.value = item.id
         return item;
       });
+
+      const filterTypeRooms = [
+        ...new Map(rooms.map(item => [item.typeId, item])).values()
+      ];
+
+      setListTypesRooms(filterTypeRooms);
       setListRooms(rooms);
       setLoading(false);
     }, (err) => {
@@ -195,6 +202,7 @@ export const useQuotes = ({ setLoading, screenControl }) => {
       table,
       listCustomers,
       listRooms,
+      listTypesRooms,
       openModalAdd,
       propsToViewPDF,
       setOpenModalAdd,
