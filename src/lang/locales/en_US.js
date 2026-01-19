@@ -346,6 +346,7 @@ const enLang = {
   "button.referralGuide": "Referral Guide",
   "button.deliver": "Deliver",
   "button.add": "Add",
+  "button.addItem": "Add Item",
   "button.newPoduct": "Create Product",
   "button.addRawMaterial": "Add Raw Material",
   "button.deducRawMaterial": "Deduct Raw Material",

@@ -198,13 +198,14 @@ const ModalNewQuote = ({data, setOpen}) => {
                   />
                 </Colxx>
                 <Colxx xxs={6} sm={12} md={6} lg={2} xl={12} align="right">
-                  <Button type="button" className="btn-circle-table" color="outline-primary" title="New"
+                  <Button color="outline-primary"
                     onClick={fnAddDetail}>
                     <i className='bi bi-plus' />
+                    {IntlMessages("button.addItem")}
                   </Button>
                 </Colxx>
               </Row>
-              <Row>
+              <Row className='mt-3'>
                 <Colxx xxs={12}>
                   <Table bordered hover size='sm'>
                     <thead>

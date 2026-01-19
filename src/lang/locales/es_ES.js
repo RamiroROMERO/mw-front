@@ -347,6 +347,7 @@ const esLang = {
   "button.referralGuide": "Guia de Remisión",
   "button.deliver": "Entrega",
   "button.add": "Agregar",
+  "button.addItem": "Agregar Item",
   "button.newPoduct": "Crear Producto",
   "button.addRawMaterial": "Agregar Materia Prima",
   "button.deducRawMaterial": "Deducir Materia Prima",
@@ -622,7 +623,7 @@ const esLang = {
   "input.priceLps": "Precio Lps.",
   "input.subtotalUsd": "Subtotal USD",
   "input.subtotalLps": "Subtotal Lps.",
-  "input.exchangeRate": "Taza de Cambio",
+  "input.exchangeRate": "Tasa de Cambio",
   /* Selects */
   "select.department": "Departamento",
   "select.municipality": "Municipio",

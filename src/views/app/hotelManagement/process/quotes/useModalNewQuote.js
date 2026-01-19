@@ -314,7 +314,9 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
         notes
       }
 
-      setDetailQuote([...detailQuote, newItem]);
+      const filterDetail = detailQuote.filter(item => item.id !== formStateDeta.id);
+
+      setDetailQuote([...filterDetail, newItem]);
     }
 
     onResetFormDeta();
@@ -342,6 +344,7 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
       const filterDetail = detailQuote.filter(item => item.id !== currentDetail.id);
 
       setDetailQuote(filterDetail);
+      setCurrentDetail({});
       setOpenMsgDelete(false);
     }
   }
@@ -377,7 +380,7 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
     const daysDiff = date2.diff(date1, 'days');
 
     const newRoom = {
-      qtyNight: daysDiff,
+      qtyNight: validInt(daysDiff),
       priceLps: filterRooms?.rate || 0,
       subtotalLps: subtotal,
       priceUsd: valueUsd,
