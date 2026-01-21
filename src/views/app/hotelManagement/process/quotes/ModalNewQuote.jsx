@@ -221,7 +221,7 @@ const ModalNewQuote = ({data, setOpen}) => {
                     <tbody>
                       {detailQuote.map((item, idx) => {
                         return (
-                          <tr id={`tr-table-invoiceDetail-${item.id}`} key={idx}>
+                          <tr id={`tr-table-invoiceDetail-${item.idTemp}`} key={idx}>
                             <th className='d-md-none-table-cell' scope="row">{item.roomName}</th>
                             <th scope="row">{item.qtyNight}</th>
                             <td className='d-xs-none-table-cell' align='right'>{item.qtyRooms}</td>

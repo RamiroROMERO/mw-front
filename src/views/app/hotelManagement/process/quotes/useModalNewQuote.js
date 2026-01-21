@@ -11,6 +11,7 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
   const [sendForm, setSendForm] = useState(false);
   const [sendFormDeta, setSendFormDeta] = useState(false);
   const [detailQuote, setDetailQuote] = useState([]);
+  const [itemsDeleted, setItemsDeleted] = useState([]);
   const [currentDetail, setCurrentDetail] = useState({});
   const [openMsgDelete, setOpenMsgDelete] = useState(false);
 
@@ -63,7 +64,7 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
 
   const {id, customerId, checkInDate, checkOutDate, subtotal, percentDiscount, discount, percentTax1, valueTax1, percentTax2, valueTax2, usdChange} = formState;
 
-  const {roomId, qtyNight, qtyRooms, priceUsd, priceLps, subtotalUsd, subtotalLps, notes} = formStateDeta;
+  const {id: idDetail, roomId, qtyNight, qtyRooms, priceUsd, priceLps, subtotalUsd, subtotalLps, notes} = formStateDeta;
 
   const onQtyNightChange = e => {
     const valueQtyNight = e.target.value;
@@ -216,58 +217,37 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
       return
     }
 
-    if (validInt(id) === 0) {
-      setLoading(true);
-      request.POST(API_URLS.HOTEL_PROC_QUOTES, formState, (resp) => {
-        // guardar el detalle de la cotizacion
-        detailQuote.forEach(item => {
-          const data = {
-            idFather: resp.data.id,
-            ...item
-          }
+    formState.usdChange = validFloat(usdChange)
 
-          setLoading(true);
-          request.POST(API_URLS.HOTEL_PROC_QUOTE_DETAIL, data, (resp) => {
-            setLoading(false);
-          }, (err) => {
-
-            setLoading(false);
-          }, false);
-
-        });
-
-        fnGetData();
-        setOpen(false);
-        setDetailQuote([]);
-        fnPrintPdf(resp.data);
-        setLoading(false);
-      }, (err) => {
-
-        setLoading(false);
-      });
-    }else{
-      setLoading(true);
-      request.PUT(`${API_URLS.HOTEL_PROC_QUOTES}/${id}`, formState, () => {
-        setLoading(false);
-        fnGetData();
-        setOpen(false);
-      }, (err) => {
-        setLoading(false);
-      });
+    const data = {
+      quote: formState,
+      details: detailQuote,
+      deleteDetails: itemsDeleted
     }
+
+    setLoading(true);
+    request.POST(API_URLS.HOTEL_PROC_QUOTES_FULL, data, (resp) => {
+      fnGetData();
+      setOpen(false);
+      setDetailQuote([]);
+      fnPrintPdf(resp.data.quote);
+      setLoading(false);
+    }, (err) => {
+      setLoading(false);
+    });
   }
 
   const fnViewDetail = () => {
     setLoading(true);
     request.GET(`${API_URLS.HOTEL_PROC_QUOTE_DETAIL}?idFather=${id}`, (resp) => {
       const data = resp.data.map(item => {
+        item.idTemp = item.id
         item.roomName = item?.roomData?.typeData?.name || ""
         return item
       });
       setDetailQuote(data);
       setLoading(false);
     }, (err) => {
-
       setLoading(false);
     });
   }
@@ -278,75 +258,45 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
       return;
     }
 
-    if(id>0){
-      if(formStateDeta.id>0){
-        setLoading(true);
-        request.PUT(`${API_URLS.HOTEL_PROC_QUOTE_DETAIL}/${formStateDeta.id}`, formStateDeta, () => {
-          setLoading(false);
-          fnViewDetail();
-        }, (err) => {
-          setLoading(false);
-        });
-      }else{
-        formStateDeta.idFather = id;
-        setLoading(true);
-        request.POST(API_URLS.HOTEL_PROC_QUOTE_DETAIL, formStateDeta, (resp) => {
-          setLoading(false);
-          fnViewDetail();
-        }, (err) => {
-          setLoading(false);
-        }, false);
-      }
-    }else{
-      const filterRooms = listRooms.find(item => item.id === roomId);
+    const filterRooms = listRooms.find(item => item.id === roomId);
 
-      const tempCode = RandomCodeGenerator();
-      const newItem = {
-        id: tempCode,
-        roomId,
-        roomName: filterRooms?.label || "",
-        qtyNight,
-        qtyRooms,
-        priceUsd,
-        priceLps,
-        subtotalUsd,
-        subtotalLps,
-        notes
-      }
-
-      const filterDetail = detailQuote.filter(item => item.id !== formStateDeta.id);
-
-      setDetailQuote([...filterDetail, newItem]);
+    const tempCode = RandomCodeGenerator();
+    const newItem = {
+      id: idDetail,
+      idTemp: tempCode,
+      roomId,
+      roomName: filterRooms?.label || "",
+      qtyNight,
+      qtyRooms,
+      priceUsd: validFloat(priceUsd),
+      priceLps: validFloat(priceLps),
+      subtotalUsd: validFloat(subtotalUsd),
+      subtotalLps: validFloat(subtotalLps),
+      notes
     }
 
+    const filterDetail = detailQuote.filter(item => item.id !== formStateDeta.id);
+
+    setDetailQuote([...filterDetail, newItem]);
     onResetFormDeta();
+    setCurrentDetail({});
     setSendFormDeta(false);
   }
 
   const fnDeleteDetail = (item) => {
-    setCurrentDetail({id: item.id});
+    const id = item?.idTemp || item.id;
+    setCurrentDetail({idTemp: id});
     setOpenMsgDelete(true);
   }
 
   const fnOkDeleteDetail = () => {
-    if(id>0){
-      setLoading(true);
-      request.DELETE(`${API_URLS.HOTEL_PROC_QUOTE_DETAIL}/${currentDetail.id}`, () => {
-        fnViewDetail();
-        setCurrentDetail({});
-        setOpenMsgDelete(false);
-        setLoading(false);
-      }, (err) => {
+    const filterDetail = detailQuote.filter(item => item.idTemp !== currentDetail.idTemp);
+    const filterItemDeleted = detailQuote.find(item => item.id === currentDetail.idTemp);
 
-        setLoading(false);
-      });
-    }else{
-      const filterDetail = detailQuote.filter(item => item.id !== currentDetail.id);
-
-      setDetailQuote(filterDetail);
-      setCurrentDetail({});
-      setOpenMsgDelete(false);
-    }
+    setDetailQuote(filterDetail);
+    filterItemDeleted?setItemsDeleted([...itemsDeleted, filterItemDeleted.id]):setItemsDeleted([...itemsDeleted])
+    setCurrentDetail({});
+    setOpenMsgDelete(false);
   }
 
   const fnEditDetail = (item) => {

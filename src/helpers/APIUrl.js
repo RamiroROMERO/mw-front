@@ -3,4 +3,5 @@ export const API_URLS = {
   "FAC_PROC_QUOTES_DETAIL": "billing/process/quoteDetails/",
   "HOTEL_PROC_QUOTES": 'hotel/process/quotes',
   "HOTEL_PROC_QUOTE_DETAIL": 'hotel/process/quoteDetails',
+  "HOTEL_PROC_QUOTES_FULL": 'hotel/process/quotes/full'
 };
