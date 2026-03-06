@@ -27,6 +27,9 @@ const NeighborhoodTaxPayroll = React.lazy(() => import('@/views/app/humanResourc
 const AttendanceControl = React.lazy(() => import('@/views/app/humanResources/process/attendanceControl'));
 const Incomes = React.lazy(() => import('@/views/app/humanResources/process/incomes'));
 const PaymentBenefits = React.lazy(() => import('@/views/app/humanResources/process/paymentBenefits'));
+const MeetingNotices = React.lazy(() => import('@/views/app/humanResources/process/meetingNotices'));
+const Absences = React.lazy(() => import('@/views/app/humanResources/process/absences'));
+const CalculationBenefits = React.lazy(() => import('@/views/app/humanResources/process/calculationBenefits'));
 
 const HRProcessRoutes = (props) => {
   const { setLoading } = props;
@@ -49,6 +52,10 @@ const HRProcessRoutes = (props) => {
       element={<Permissions setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
+      path="/absences"
+      element={<Absences setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
       path="/vacations"
       element={<Vacations setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
@@ -63,6 +70,10 @@ const HRProcessRoutes = (props) => {
       index
       path="/admonitions"
       element={<Admonitions setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/meetingNotices"
+      element={<MeetingNotices setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
       path="/proofWork"
@@ -131,6 +142,10 @@ const HRProcessRoutes = (props) => {
       index
       path="/incomes"
       element={<Incomes setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/calculationBenefits"
+      element={<CalculationBenefits setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
       path="/paymentBenefits"

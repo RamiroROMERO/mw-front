@@ -41,6 +41,9 @@ const DataTable = ({ title, columns = [], data = [], options = {}, actions = [],
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+
+    autoResetPageIndex: false,
+
     state: {
       rowSelection,
       sorting,
@@ -75,6 +78,15 @@ const DataTable = ({ title, columns = [], data = [], options = {}, actions = [],
       ...hideShowColumns
     }));
   }, [data]);
+
+  // regresar a la página 1 si la página actual se queda vacía
+  useEffect(() => {
+    const currentRowModel = tableInstance.getPaginationRowModel();
+
+    if (currentRowModel.rows.length === 0 && tableInstance.getState().pagination.pageIndex > 0) {
+      tableInstance.setPageIndex(0);
+    }
+  }, [data, filtering]);
 
   return (
     <>

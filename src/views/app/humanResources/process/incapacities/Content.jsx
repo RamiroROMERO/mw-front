@@ -9,7 +9,7 @@ import { useIncapacities } from './useIncapacities'
 
 const Incapacities = ({ setLoading, screenControl }) => {
 
-  const {dataIncapacities, setBulkForm, openModalIncapacity, setOpenModalIncapacity, propsToControlPanel, propsToDetailIncapacity, propsToMsgDelete} = useIncapacities({setLoading, screenControl});
+  const {dataIncapacities, setBulkForm, openModalIncapacity, setOpenModalIncapacity, propsToControlPanel, propsToDetailIncapacity, propsToMsgDelete, propsToViewPDF} = useIncapacities({setLoading, screenControl});
 
   const propsToModalIncapacity = {
     ModalContent: ModalViewIncapacity,
@@ -37,6 +37,7 @@ const Incapacities = ({ setLoading, screenControl }) => {
         </Colxx>
       </Row>
       <Modal {...propsToModalIncapacity} />
+      <Modal {...propsToViewPDF}/>
       <Confirmation {...propsToMsgDelete} />
     </>
   )

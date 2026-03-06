@@ -7,11 +7,11 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import ReactTable from '@Components/reactTable';
 import { useDetailDeductions } from './useDetailDeductions'
 
-const DetailDeductions = ({id, date, employeeName, typeId, value, description, projectId, setProjectId, onProjectChange, onResetForm, listEmployeesByProject, listTypeDeductions, listProjects, onInputChange, fnGetData, setLoading, formValidation, isFormValid, fnCreate, fnUpdate}) => {
+const DetailDeductions = ({id, date, employeeName, typeId, value, description, projectId, setProjectId, onProjectChange, onResetForm, listEmployeesByProject, listTypeDeductions, listProjects, setIncWeekly, onInputChange, onTypeIdChange, fnGetData, setLoading, formValidation, isFormValid, fnCreate, fnUpdate}) => {
 
   const {dateValid, typeIdValid, valueValid, descriptionValid} = formValidation;
 
-  const {table, sendForm, fnSave, fnClearInputs} = useDetailDeductions({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, fnCreate, fnUpdate});
+  const {table, sendForm, fnSave, fnClearInputs} = useDetailDeductions({id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, setIncWeekly, fnCreate, fnUpdate});
 
   return (
     <Card>
@@ -72,7 +72,7 @@ const DetailDeductions = ({id, date, employeeName, typeId, value, description, p
                   name='typeId'
                   inputValue={typeId}
                   options={listTypeDeductions}
-                  onChange={onInputChange}
+                  onChange={onTypeIdChange}
                   invalid={sendForm && !!typeIdValid}
                   feedbackText={sendForm && (typeIdValid || null)}
                 />

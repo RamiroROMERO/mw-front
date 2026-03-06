@@ -12,7 +12,7 @@ import { usePaymentPlans } from './usePaymentPlans'
 
 const PaymentPlans = ({ setLoading, screenControl }) => {
 
-  const {projectId, listProjects, dataPaymentPlans, table, setBulkForm, openModalPaymentPlans, setOpenModalPaymentPlans, onProjectChange, setDataPayPlanDetail, fnViewPaymentPlans, propsToControlPanel, propsToDetailPayment, propsToDetailTable, propsToMsgCancel, propsToMsgDelete} = usePaymentPlans({setLoading, screenControl})
+  const {projectId, listProjects, dataPaymentPlans, table, setBulkForm, openModalPaymentPlans, setOpenModalPaymentPlans, onProjectChange, setDataPayPlanDetail, fnViewPaymentPlans, propsToControlPanel, propsToDetailPayment, propsToDetailTable, propsToMsgCancel, propsToMsgDelete, propsToMsgLiquidatePlan} = usePaymentPlans({setLoading, screenControl})
 
   const propsToModalPaymentPlan = {
     ModalContent: ModalViewPayPlans,
@@ -70,6 +70,7 @@ const PaymentPlans = ({ setLoading, screenControl }) => {
       <Modal {...propsToModalPaymentPlan} />
       <Confirmation {...propsToMsgCancel} />
       <Confirmation {...propsToMsgDelete} />
+      <Confirmation {...propsToMsgLiquidatePlan} />
     </>
   )
 }

@@ -11,9 +11,7 @@ import UploadFile from '@Components/uploadFile'
 import DateTimeCalendar from '@Components/dateTimeCalendar'
 
 const DetailAdmonition = ({documentTypeId,employeeId,offenseDate,offenseTypeId,admonitionTypeId,description,notes,reportManagerId,
-  offenseId,appointmentDate,witnessId,abandonmentDate1,abandonmentDate2,abandonmentDate3, status,listEmployees,listManagers,listOffenses,
-  filePath,setFilePath,filterFaults,setFilterFaults,setBulkForm,onInputChange,showDocto1, setShowDocto1,showDocto2, setShowDocto2,
-  showDocto3, setShowDocto3,showOffense, setShowOffense,showReportM, setShowReportM, formValidation, sendForm}) => {
+  offenseId,appointmentDate,witnessId,abandonmentDate1,abandonmentDate2,abandonmentDate3, status,listEmployees,listManagers,listOffenses, filePath,setFilePath,filterFaults,setFilterFaults,setBulkForm,onInputChange,showDocto1, setShowDocto1,showDocto2, setShowDocto2, showDocto3, setShowDocto3,showOffense, setShowOffense,showReportM, setShowReportM, formValidation, sendForm, listTypeAdmonitions, listTypeDocuments}) => {
 
   const {employeeIdValid, documentTypeIdValid, offenseDateValid} = formValidation;
 
@@ -71,17 +69,12 @@ const DetailAdmonition = ({documentTypeId,employeeId,offenseDate,offenseTypeId,a
         />
       </Colxx>
       <Colxx xxs="12" sm="6" lg="4" xl="3">
-        <SimpleSelect
+        <SearchSelect
           name="documentTypeId"
-          value={documentTypeId}
+          inputValue={documentTypeId}
           label="page.admonition.select.typeDocument"
           onChange={onTypeDocumentChange}
-          options={[
-            {id:1, name:"Amonestación"},
-            {id:2, name:"Citación"},
-            {id:3, name:"Acta de Abandono"},
-            {id:4, name:"Despido en Periodo de Prueba"}
-          ]}
+          options={listTypeDocuments}
           invalid={sendForm && !!documentTypeIdValid}
           feedbackText={sendForm && (documentTypeIdValid || null)}
         />
@@ -137,16 +130,12 @@ const DetailAdmonition = ({documentTypeId,employeeId,offenseDate,offenseTypeId,a
         />
       </Colxx>
       <Colxx xxs="12" md="6" lg="4" xl="3" style={{display:showDocto1}}>
-        <SimpleSelect
+        <SearchSelect
           name="admonitionTypeId"
-          value={admonitionTypeId}
+          inputValue={admonitionTypeId}
           label="page.admonition.select.typeAdmonition"
           onChange={onInputChange}
-          options={[
-            {id:1, name:"Suspensión"},
-            {id:2, name:"Despido"},
-            {id:3, name:"Audiencia de Descargo"}
-          ]}
+          options={listTypeAdmonitions}
         />
       </Colxx>
       <Colxx xxs="12" sm="6" lg="4" xl="3" style={{display:showReportM}}>

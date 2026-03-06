@@ -281,6 +281,8 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
             setLoading(false);
           }, false);
 
+          setOpenModalProjects(true);
+
         }, (err) => {
 
           setLoading(false);

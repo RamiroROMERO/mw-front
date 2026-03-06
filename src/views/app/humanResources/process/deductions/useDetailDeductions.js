@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { request } from '@/helpers/core';
-import { IntlMessages } from '@Helpers/Utils'
+import { formatNumber, IntlMessages } from '@Helpers/Utils'
 import notification from '@/containers/ui/Notifications';
 
-export const useDetailDeductions = ({ id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, fnCreate, fnUpdate }) => {
+export const useDetailDeductions = ({ id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, setIncWeekly, fnCreate, fnUpdate }) => {
 
   const [sendForm, setSendForm] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -14,8 +14,16 @@ export const useDetailDeductions = ({ id, projectId, setProjectId, onResetForm, 
       {
         text: IntlMessages("select.employee"),
         dataField: "label",
-        headerStyle: { width: "100%" }
+        headerStyle: { width: "75%" }
       },
+      {
+        text: IntlMessages("table.column.defaultSalary"),
+        dataField: "defaultSalary",
+        headerStyle: { width: "25%" },
+        cell:({row})=>{
+          return (formatNumber(row.original.defaultSalary, '', 2));
+        }
+      }
     ],
     data: [],
     options: {
@@ -99,6 +107,10 @@ export const useDetailDeductions = ({ id, projectId, setProjectId, onResetForm, 
     const dataTable = { ...table, data: listEmployeesByProject };
     setTable(dataTable);
   }, [listEmployeesByProject, projectId]);
+
+  useEffect(() => {
+    setIncWeekly(selectedItems[0]?.defaultSalary || 0);
+  }, [selectedItems]);
 
   return (
     {

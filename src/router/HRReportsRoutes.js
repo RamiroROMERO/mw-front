@@ -8,6 +8,7 @@ const InputOutputs = React.lazy(() => import('@/views/app/humanResources/reports
 const EmployeesByCust = React.lazy(() => import('@/views/app/humanResources/reports/employeesByCust'));
 const ControlVacations = React.lazy(() => import('@/views/app/humanResources/reports/controlVacations'));
 const ControlPermissions = React.lazy(() => import('@/views/app/humanResources/reports/controlPermissions'));
+const ControlAbsences = React.lazy(() => import('@/views/app/humanResources/reports/controlAbsences'));
 const ControlIncapacities = React.lazy(() => import('@/views/app/humanResources/reports/controlIncapacities'));
 const GeneralVacations = React.lazy(() => import('@/views/app/humanResources/reports/generalVacations'));
 const PendingPayments = React.lazy(() => import('@/views/app/humanResources/reports/pendingPayments'));
@@ -17,6 +18,7 @@ const ProjectTransfers = React.lazy(() => import('@/views/app/humanResources/rep
 const BiweeklyIncomes = React.lazy(() => import('@/views/app/humanResources/reports/biweeklyIncomes'));
 const NewStaff = React.lazy(() => import('@/views/app/humanResources/reports/newStaff'));
 const PaymentsHistory = React.lazy(() => import('@/views/app/humanResources/reports/paymentsHistory'));
+const PendingBenefits = React.lazy(() => import('@/views/app/humanResources/reports/pendingBenefits'));
 
 const HRReportsRoutes = (props) => {
   const { setLoading } = props;
@@ -47,6 +49,10 @@ const HRReportsRoutes = (props) => {
       element={<ControlPermissions setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
+      path="/controlAbsences"
+      element={<ControlAbsences setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
       path="/controlIncapacities"
       element={<ControlIncapacities setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
@@ -57,6 +63,10 @@ const HRReportsRoutes = (props) => {
       index
       path="/pendingPayments"
       element={<PendingPayments setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/pendingBenefits"
+      element={<PendingBenefits setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
       path="/staffDepartures"

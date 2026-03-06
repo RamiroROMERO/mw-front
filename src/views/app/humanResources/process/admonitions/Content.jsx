@@ -9,7 +9,7 @@ import { useAdmonitions } from './useAdmonitions'
 
 const Admonitions = ({ setLoading, screenControl }) => {
 
-  const {dataAdmonitions, listOffenses, openModalAdmonition, setBulkForm, setFilePath, setFilterFaults, setOpenModalAdmonition, setShowDocto1, setShowDocto2, setShowDocto3, setShowOffense, setShowReportM, propsToControlPanel, propsToDetailAdmonition, propsToMsgCancel, propsToMsgDismissal} = useAdmonitions({setLoading, screenControl});
+  const {dataAdmonitions, listOffenses, openModalAdmonition, setBulkForm, setFilePath, setFilterFaults, setOpenModalAdmonition, setShowDocto1, setShowDocto2, setShowDocto3, setShowOffense, setShowReportM, propsToControlPanel, propsToDetailAdmonition, propsToMsgCancel, propsToMsgDismissal, propsToViewPDF} = useAdmonitions({setLoading, screenControl});
 
   const propsToModalAdmonition = {
     ModalContent: ModalViewAdmonition,
@@ -47,6 +47,7 @@ const Admonitions = ({ setLoading, screenControl }) => {
       <Modal {...propsToModalAdmonition} />
       <Confirmation {...propsToMsgCancel} />
       <Confirmation {...propsToMsgDismissal} />
+      <Modal {...propsToViewPDF}/>
     </>
   )
 }

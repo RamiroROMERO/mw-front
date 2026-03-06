@@ -412,6 +412,9 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
 
   // agregar deducciones internas
   const fnAddDeductionExternal = () => {
+    if (fatherId === 0) {
+      return;
+    }
     setSendFormDeduc(true);
     if (!isFormValidDeduc) {
       return;
@@ -500,10 +503,16 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
 
   // editar decucciones externas
   const fnEditDeductionExternal = (item) => {
+    if (fatherId === 0) {
+      return;
+    }
     onBulkFormDeduc(item);
   }
 
   const fnDeleteDeductionExternal = (item) => {
+    if (fatherId === 0) {
+      return;
+    }
     onBulkFormDeduc({ id: item.id });
     setOpenMsgQuestion(true);
   }
@@ -552,6 +561,9 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
 
   //guardar detalle de ingresos
   const fnAddIncomes = () => {
+    if (fatherId === 0) {
+      return;
+    }
     setSendFormIncomes(true);
     if (!isFormValidIncomes) {
       return;
@@ -650,6 +662,9 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
 
   // editar ingresos
   const fnEditIncomes = (item) => {
+    if (fatherId === 0) {
+      return;
+    }
     const newValue = {
       idInc: item.id,
       typeIdInc: item.typeId,
@@ -663,6 +678,9 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
   }
 
   const fnDeleteIncomes = (item) => {
+    if (fatherId === 0) {
+      return;
+    }
     onBulkFormIncomes({ idInc: item.id });
     setOpenMsgDeleteIncomes(true);
   }
@@ -934,6 +952,14 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
     if (id > 0) {
       fnGetDeductions();
       fnGetIncomes();
+      fnGetAttendance();
+    }else{
+      const incomes = currentItemDeta?.incomesDeta || [];
+      const otherIncomes = currentItemDeta?.othersIncomes || [];
+      const deductions = currentItemDeta?.othersDeductions || [];
+      const loans = currentItemDeta?.loansDeta || [];
+      setIncomesDetail([...incomes, ...otherIncomes]);
+      setExtDeducDetail([...deductions, ...loans]);
       fnGetAttendance();
     }
   }, []);

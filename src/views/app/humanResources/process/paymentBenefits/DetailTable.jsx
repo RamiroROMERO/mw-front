@@ -3,8 +3,31 @@ import { IntlMessages, formatDate, formatNumber } from '@Helpers/Utils';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { Row } from 'reactstrap';
 import ReactTable from '@Components/reactTable'
+import { request } from '@/helpers/core';
+import Confirmation from '@/containers/ui/confirmationMsg';
 
-const DetailTable = ({dataPayDetail}) => {
+const DetailTable = ({id, dataPayDetail, setLoading, fnViewPaymentDetail}) => {
+  const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
+  const [idQuote, setIdQuote] = useState(0);
+
+  const fnEditDocument = (item) => {
+    setIdQuote(item.id);
+    setOpenMsgQuestion(true);
+  }
+
+  const fnCkeckQuote = () => {
+    setOpenMsgQuestion(false);
+    setLoading(true);
+    const editData = {
+      status: 1
+    }
+    request.PUT(`rrhh/process/benefitsPaymentPlanDetails/${idQuote}`, editData, () => {
+      fnViewPaymentDetail(id);
+      setLoading(false);
+    }, (err) => {
+      setLoading(false);
+    });
+  }
 
   const [table, setTable] = useState({
     title: IntlMessages("page.paymentPlans.table.title"),
@@ -41,7 +64,11 @@ const DetailTable = ({dataPayDetail}) => {
     options: {
       columnActions: "options"
     },
-    actions: []
+    actions: [{
+      color: 'info',
+      onClick: fnEditDocument,
+      icon: 'check-lg'
+    }]
   });
 
   useEffect(()=>{
@@ -49,12 +76,22 @@ const DetailTable = ({dataPayDetail}) => {
     setTable(dataTable);
   },[dataPayDetail]);
 
+  const propsToMsgUpdateQuote = {
+    open: openMsgQuestion,
+    setOpen: setOpenMsgQuestion,
+    fnOnOk: fnCkeckQuote,
+    title: "msg.question.quotePaid.title"
+  }
+
   return (
+    <>
     <Row>
       <Colxx xxs="12">
         <ReactTable {...table}/>
       </Colxx>
     </Row>
+    <Confirmation {...propsToMsgUpdateQuote} />
+    </>
   )
 }
 

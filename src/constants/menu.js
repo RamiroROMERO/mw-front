@@ -925,6 +925,11 @@ const data = [
             to: `${adminRoot}/humanResources/settings/deductionTypes`,
           },
           {
+            icon: 'bi bi-list-ul',
+            label: 'menu.humanResources.deductionDefaults',
+            to: `${adminRoot}/humanResources/settings/deductionDefaults`,
+          },
+          {
             icon: 'bi bi-calendar-week',
             label: 'menu.humanResources.daysTypes',
             to: `${adminRoot}/humanResources/settings/daysTypes`,
@@ -953,6 +958,11 @@ const data = [
             to: `${adminRoot}/humanResources/process/permissions`,
           },
           {
+            icon: 'bi bi-person-exclamation',
+            label: 'menu.absences',
+            to: `${adminRoot}/humanResources/process/absences`,
+          },
+          {
             icon: 'bi bi-calendar4-week',
             label: 'menu.vacations',
             to: `${adminRoot}/humanResources/process/vacations`,
@@ -973,6 +983,11 @@ const data = [
             to: `${adminRoot}/humanResources/process/admonitions`,
           },
           {
+            icon: 'bi bi-file-text',
+            label: 'menu.meetingNotices',
+            to: `${adminRoot}/humanResources/process/meetingNotices`,
+          },
+          {
             icon: 'bi bi-file-earmark-text',
             label: 'menu.proofWork',
             to: `${adminRoot}/humanResources/process/proofWork`,
@@ -981,11 +996,6 @@ const data = [
             icon: 'bi bi-clipboard-check',
             label: 'menu.projects',
             to: `${adminRoot}/humanResources/process/projects`,
-          },
-          {
-            icon: 'bi bi-currency-dollar',
-            label: 'menu.paymentBenefits',
-            to: `${adminRoot}/humanResources/process/paymentBenefits`,
           },
           // {
           //   icon: 'bi bi-file-text',
@@ -1047,6 +1057,16 @@ const data = [
             label: 'menu.neighborhoodTaxPayroll',
             to: `${adminRoot}/humanResources/process/neighborhoodTaxPayroll`,
           },
+          {
+            icon: 'bi bi-calculator',
+            label: 'menu.calculationBenefits',
+            to: `${adminRoot}/humanResources/process/calculationBenefits`,
+          },
+          {
+            icon: 'bi bi-currency-dollar',
+            label: 'menu.paymentBenefits',
+            to: `${adminRoot}/humanResources/process/paymentBenefits`,
+          },
           // {
           //   icon: 'bi bi-cash-coin',
           //   label: 'menu.biweeklyPayroll',
@@ -1096,6 +1116,11 @@ const data = [
             to: `${adminRoot}/humanResources/reports/controlPermissions`,
           },
           {
+            icon: 'bi bi-person-exclamation',
+            label: 'menu.controlAbsences',
+            to: `${adminRoot}/humanResources/reports/controlAbsences`,
+          },
+          {
             icon: 'bi bi-file-earmark-medical',
             label: 'menu.controlIncapacities',
             to: `${adminRoot}/humanResources/reports/controlIncapacities`,
@@ -1129,7 +1154,12 @@ const data = [
             icon: 'bi bi-cash-stack',
             label: 'menu.paymentsHistory',
             to: `${adminRoot}/humanResources/reports/paymentsHistory`,
-          }
+          },
+          {
+            icon: 'bi bi-currency-dollar',
+            label: 'menu.pendingBenefits',
+            to: `${adminRoot}/humanResources/reports/pendingBenefits`,
+          },
         ],
       },
     ],

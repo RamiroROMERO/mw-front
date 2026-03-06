@@ -16,6 +16,7 @@ export const usePaymentPlans = ({ setLoading, screenControl }) => {
   const [openModalPaymentPlans, setOpenModalPaymentPlans] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [openMsgDelete, setOpenMsgDelete] = useState(false);
+  const [openMsgLiquidate, setOpenMsgLiquidate] = useState(false);
   const [sendForm, setSendForm] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -257,6 +258,30 @@ export const usePaymentPlans = ({ setLoading, screenControl }) => {
     });
   }
 
+  const fnLiquidatePlan = () => {
+    if (fnUpdate === false) {
+      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      return;
+    }
+    if (id > 0) {
+      setOpenMsgLiquidate(true);
+    }
+  }
+
+  const fnConfirmLiquidatePlan = () => {
+    setOpenMsgLiquidate(false);
+    setLoading(true);
+    const editData = {
+      status: 1
+    }
+    request.PUT(`rrhh/process/paymentPlanDetails?fatherId=${id}`, editData, () => {
+      fnViewPaymentPlans(id);
+      setLoading(false);
+    }, (err) => {
+      setLoading(false);
+    });
+  }
+
   const fnDeletePaymentPlan = () => {
     if (fnDelete === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
@@ -345,7 +370,13 @@ export const usePaymentPlans = ({ setLoading, screenControl }) => {
     fnPrint: fnPrintPaymentPlan,
     fnCancel: fnCancelPaymentPlan,
     fnDelete: fnDeletePaymentPlan,
-    buttonsHome: [],
+    buttonsHome: [
+      {
+        title: "button.liquidatePlan",
+        icon: "bi bi-check2-circle",
+        onClick: fnLiquidatePlan
+      }
+    ],
     buttonsOptions: [],
     buttonsAdmin: []
   }
@@ -393,6 +424,13 @@ export const usePaymentPlans = ({ setLoading, screenControl }) => {
     title: "alert.question.title"
   }
 
+  const propsToMsgLiquidatePlan = {
+    open: openMsgLiquidate,
+    setOpen: setOpenMsgLiquidate,
+    fnOnOk: fnConfirmLiquidatePlan,
+    title: "alert.question.liquidatePlan.title"
+  }
+
   return (
     {
       projectId,
@@ -409,7 +447,8 @@ export const usePaymentPlans = ({ setLoading, screenControl }) => {
       propsToDetailPayment,
       propsToDetailTable,
       propsToMsgCancel,
-      propsToMsgDelete
+      propsToMsgDelete,
+      propsToMsgLiquidatePlan
     }
   )
 }

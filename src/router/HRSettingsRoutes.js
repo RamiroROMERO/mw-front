@@ -14,6 +14,7 @@ const FaultTypes = React.lazy(() => import('@/views/app/humanResources/settings/
 const Biweeklys = React.lazy(() => import('@/views/app/humanResources/settings/biweeklys'));
 const DeductionTypes = React.lazy(() => import('@/views/app/humanResources/settings/deductionTypes'));
 const DaysTypes = React.lazy(() => import('@/views/app/humanResources/settings/daysTypes'));
+const DeductionDefaults = React.lazy(() => import('@/views/app/humanResources/settings/deductionDefaults'));
 
 const HRSettingsRoutes = (props) => {
   const { setLoading } = props;
@@ -62,6 +63,10 @@ const HRSettingsRoutes = (props) => {
       index
       path="/deductionTypes"
       element={<DeductionTypes setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/deductionDefaults"
+      element={<DeductionDefaults setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
       path="/daysTypes"

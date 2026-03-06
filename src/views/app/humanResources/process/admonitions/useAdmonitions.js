@@ -3,6 +3,7 @@ import { useForm } from '@Hooks'
 import { request } from '@Helpers/core'
 import { validInt } from '@Helpers/Utils'
 import notification from '@Containers/ui/Notifications'
+import ViewPdf from '@/components/ViewPDF/ViewPdf'
 
 export const useAdmonitions = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
@@ -10,6 +11,8 @@ export const useAdmonitions = ({ setLoading, screenControl }) => {
   const [listManagers, setListManagers] = useState([]);
   const [listOffenses, setListOffenses] = useState([]);
   const [filterFaults, setFilterFaults] = useState([]);
+  const [listTypeAdmonitions, setListTypeAdmonitios] = useState([]);
+  const [listTypeDocuments, setListTypeDocuments] = useState([]);
   const [dataAdmonitions, setDataAdmonitions] = useState([]);
   const [openModalAdmonition, setOpenModalAdmonition] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -22,6 +25,10 @@ export const useAdmonitions = ({ setLoading, screenControl }) => {
   const [showReportM, setShowReportM] = useState("none");
   const [sendForm, setSendForm] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
+
+   // imprimir pdf
+  const [openViewFile, setOpenViewFile] = useState(false);
+  const [documentPath, setDocumentPath] = useState("");
 
   const admonitionsValid = {
     employeeId: [(val) => validInt(val) > 0, "msg.required.select.employeeId"],
@@ -238,10 +245,17 @@ export const useAdmonitions = ({ setLoading, screenControl }) => {
         userName: userData.name
       }
       if (validInt(documentTypeId) === 1) {
-        request.GETPdf('rrhh/process/admonitions/exportPDFAdmonition', dataPrint, 'Amonestación.pdf', (err) => {
-
+        request.GETPdfUrl(`rrhh/process/admonitions/exportPDFAdmonition`, dataPrint, (resp) => {
+          setDocumentPath(resp);
+          setOpenViewFile(true);
+        }, (err) => {
           setLoading(false);
         });
+        // request.GETPdf('rrhh/process/admonitions/exportPDFAdmonition', dataPrint, 'Amonestación.pdf', (err) => {
+        //   setDocumentPath(resp);
+        //   setOpenViewFile(true);
+        //   setLoading(false);
+        // });
       } else if (validInt(documentTypeId) === 2) {
         request.GETPdf('rrhh/process/admonitions/exportPDFCitation', dataPrint, 'Citación.pdf', (err) => {
 
@@ -319,7 +333,34 @@ export const useAdmonitions = ({ setLoading, screenControl }) => {
       setListOffenses(faulTypes);
       setLoading(false);
     }, (err) => {
+      setLoading(false);
+    });
 
+    setLoading(true);
+    request.GET('rrhh/settings/admonitionTypes', (resp) => {
+      const admonitionTypes = resp.data.map((item) => {
+        return {
+          value: item.id,
+          label: item.name
+        }
+      });
+      setListTypeAdmonitios(admonitionTypes);
+      setLoading(false);
+    }, (err) => {
+      setLoading(false);
+    });
+
+    setLoading(true);
+    request.GET('rrhh/settings/adminitionDocumentTypes', (resp) => {
+      const documentsTypes = resp.data.map((item) => {
+        return {
+          value: item.id,
+          label: item.name
+        }
+      });
+      setListTypeDocuments(documentsTypes);
+      setLoading(false);
+    }, (err) => {
       setLoading(false);
     });
   }, []);
@@ -357,7 +398,9 @@ export const useAdmonitions = ({ setLoading, screenControl }) => {
     showReportM,
     setShowReportM,
     formValidation,
-    sendForm
+    sendForm,
+    listTypeAdmonitions,
+    listTypeDocuments
   }
 
   const propsToMsgCancel = {
@@ -372,6 +415,18 @@ export const useAdmonitions = ({ setLoading, screenControl }) => {
     setOpen: setOpenMsgDismissal,
     fnOnOk: fnGenerateDismiss,
     title: "alert.question.probationaryDismissal"
+  }
+
+  const propsToViewPDF = {
+    ModalContent: ViewPdf,
+    title: "modal.viewDocument.admonition",
+    // valueTitle: quoteId,
+    open: openViewFile,
+    setOpen: setOpenViewFile,
+    maxWidth: 'xl',
+    data: {
+      documentPath
+    }
   }
 
   return (
@@ -391,7 +446,8 @@ export const useAdmonitions = ({ setLoading, screenControl }) => {
       propsToControlPanel,
       propsToDetailAdmonition,
       propsToMsgCancel,
-      propsToMsgDismissal
+      propsToMsgDismissal,
+      propsToViewPDF
     }
   )
 }

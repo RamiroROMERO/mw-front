@@ -3,5 +3,13 @@ export const API_URLS = {
   "FAC_PROC_QUOTES_DETAIL": "billing/process/quoteDetails/",
   "HOTEL_PROC_QUOTES": 'hotel/process/quotes',
   "HOTEL_PROC_QUOTE_DETAIL": 'hotel/process/quoteDetails',
-  "HOTEL_PROC_QUOTES_FULL": 'hotel/process/quotes/full'
+  "HOTEL_PROC_QUOTES_FULL": 'hotel/process/quotes/full',
+  "RRHH_SET_DEDUCTIONS_DEFAULT": 'rrhh/settings/deducionDefaults',
+  "RRHH_PROC_MEETING_NOTICES": 'rrhh/process/meetingNotices',
+  "RRHH_PROC_ABSENCES": 'rrhh/process/absences',
+  "RRHH_PROC_CALCULATION_BENEFITS": 'rrhh/reports/calculationBenefits',
+  "RRHH_REP_ABSENCES_CONTROL": 'rrhh/reports/getAbsencesByMonth',
+  "RRHH_REP_ABSENCES_CONTROL_XLSX": 'rrhh/reports/exportAbsencesByMonthXLSX',
+  "RRHH_REP_PENDING_BENEFITS": 'rrhh/reports/getPendingPayBenefits',
+  "RRHH_REP_PENDING_BENEFITS_XLSX": 'rrhh/reports/exportPendingPayBenefits',
 };

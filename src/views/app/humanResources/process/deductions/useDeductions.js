@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useForm } from '@Hooks'
 import { request } from '@Helpers/core';
 import { validFloat, validInt } from '@Helpers/Utils';
+import { API_URLS } from '@/helpers/APIUrl';
 
 export const useDeductions = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
@@ -11,7 +12,9 @@ export const useDeductions = ({ setLoading, screenControl }) => {
   const [listTypeDeductions, setListTypeDeductions] = useState([]);
   const [dataDeductions, setDataDeductions] = useState([]);
   const [listProjects, setListProjects] = useState([]);
+  const [dataDefaultDeduction, setDataDefaultDeduction] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
+  const [incWeekly, setIncWeekly] = useState(0);
 
   const deductionsValid = {
     date: [(val) => val !== "", "msg.required.input.date"],
@@ -38,6 +41,33 @@ export const useDeductions = ({ setLoading, screenControl }) => {
     setProjectId(project);
   }
 
+  const onTypeIdChange = e => {
+    const type = e.target.value;
+
+    const filter = dataDefaultDeduction.find(item => item.deductionTypeId === validInt(type));
+
+    // calcular ihss
+    const IHSS = filter?.isIhss || 0;
+    let valueIHSS = 0;
+    if(IHSS === 1){
+      valueIHSS = (validFloat(filter.priceCeiling, 2) * (validFloat(filter.percent)/100))/2;
+    }else{
+      valueIHSS = 0;
+    }
+
+    // calcular rap
+    const RAP = filter?.isRap || 0;
+    let valueRap = 0;
+    if(RAP === 1){
+      valueRap = (validFloat(incWeekly) - validFloat(filter.priceCeiling)) * (validFloat(filter.percent)/100)/2;
+    }
+
+    setBulkForm({
+      typeId: type,
+      value: valueIHSS > 0 ? valueIHSS : valueRap
+    });
+  }
+
   const fnGetData = () => {
     setLoading(true);
     request.GET('rrhh/process/deductions', (resp) => {
@@ -52,6 +82,17 @@ export const useDeductions = ({ setLoading, screenControl }) => {
       setLoading(false);
     }, (err) => {
 
+      setLoading(false);
+    });
+  }
+
+  const fnGetDefaultDeductions = () => {
+    setLoading(true);
+    request.GET(`${API_URLS.RRHH_SET_DEDUCTIONS_DEFAULT}`, (resp) => {
+      const data = resp.data;
+      setDataDefaultDeduction(data);
+      setLoading(false);
+    }, err => {
       setLoading(false);
     });
   }
@@ -72,13 +113,16 @@ export const useDeductions = ({ setLoading, screenControl }) => {
   useEffect(() => {
     fnGetData();
 
+    fnGetDefaultDeductions();
+
     setLoading(true);
     request.GET('rrhh/process/projectDetail?status=1', (resp) => {
       const employees = resp.data.map((item) => {
         return {
           value: item.employeeId,
           label: `${item.rrhhEmployee.firstName} ${item.rrhhEmployee.secondName} ${item.rrhhEmployee.lastName} ${item.rrhhEmployee.secondLastName}`,
-          projectId: item.projectId
+          projectId: item.projectId,
+          defaultSalary: validFloat(item?.rrhhEmployee?.defaultSalary) || 0
         }
       });
       setListEmployees(employees);
@@ -136,6 +180,8 @@ export const useDeductions = ({ setLoading, screenControl }) => {
     listProjects,
     onResetForm,
     onInputChange,
+    onTypeIdChange,
+    setIncWeekly,
     fnGetData,
     setLoading,
     formValidation,

@@ -311,7 +311,10 @@ export const usePaymentBenefits = ({ setLoading, screenControl }) => {
   }
 
   const propsToDetailTable = {
-    dataPayDetail
+    id,
+    dataPayDetail,
+    setLoading,
+    fnViewPaymentDetail
   }
 
   const propsToMsgCancel = {
@@ -344,7 +347,7 @@ export const usePaymentBenefits = ({ setLoading, screenControl }) => {
       propsToDetailPayment,
       propsToDetailTable,
       propsToMsgCancel,
-      propsToMsgDelete
+      propsToMsgDelete,
     }
   )
 }

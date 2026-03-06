@@ -3,6 +3,7 @@ import { useForm } from '@Hooks'
 import { validInt } from '@Helpers/Utils'
 import { request } from '@Helpers/core'
 import notification from '@Containers/ui/Notifications';
+import ViewPdf from '@/components/ViewPDF/ViewPdf';
 
 export const useIncapacities = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
@@ -11,6 +12,10 @@ export const useIncapacities = ({ setLoading, screenControl }) => {
   const [sendForm, setSendForm] = useState(false);
   const [openModalIncapacity, setOpenModalIncapacity] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
+
+  // imprimir pdf
+  const [openViewFile, setOpenViewFile] = useState(false);
+  const [documentPath, setDocumentPath] = useState("");
 
   const incapacitiesValid = {
     date: [(val) => val !== "", "msg.required.input.date"],
@@ -102,8 +107,6 @@ export const useIncapacities = ({ setLoading, screenControl }) => {
     }
   }
 
-  const fnPrintIncapacity = () => []
-
   const fnDeleteIncapacity = () => {
     if (fnDelete === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
@@ -123,6 +126,21 @@ export const useIncapacities = ({ setLoading, screenControl }) => {
     }, (err) => {
       setLoading(false);
     });
+  }
+
+  const fnPrintIncapacity = () => {
+    if (id > 0) {
+      const dataPrint = {
+        id
+      }
+
+      request.GETPdfUrl('rrhh/process/incapacities/exportPDFIncapacities' , dataPrint, (resp) => {
+        setDocumentPath(resp);
+        setOpenViewFile(true);
+      }, (err) => {
+        setLoading(false);
+      });
+    }
   }
 
   useEffect(() => {
@@ -176,6 +194,18 @@ export const useIncapacities = ({ setLoading, screenControl }) => {
     title: "alert.question.title"
   }
 
+  const propsToViewPDF = {
+    ModalContent: ViewPdf,
+    title: "modal.viewDocument.incapacity",
+    // valueTitle: quoteId,
+    open: openViewFile,
+    setOpen: setOpenViewFile,
+    maxWidth: 'xl',
+    data: {
+      documentPath
+    }
+  }
+
   return (
     {
       dataIncapacities,
@@ -184,7 +214,8 @@ export const useIncapacities = ({ setLoading, screenControl }) => {
       setOpenModalIncapacity,
       propsToControlPanel,
       propsToDetailIncapacity,
-      propsToMsgDelete
+      propsToMsgDelete,
+      propsToViewPDF
     }
   )
 }

@@ -49,6 +49,7 @@
     "redux": "^5.0.0",
     "redux-saga": "^1.2.3",
     "redux-thunk": "^3.1.0",
+    "uuid": "^13.0.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

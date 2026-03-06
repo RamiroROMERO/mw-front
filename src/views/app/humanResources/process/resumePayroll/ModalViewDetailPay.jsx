@@ -166,11 +166,11 @@ const ModalViewDetailPay = ({setOpen, data}) => {
                   <Colxx xxs="12" sm="5" md="5">
                     <Table size='sm'>
                       <tbody>
-                        <tr style={{display: typePayroll===1?"block":"none"}}>
+                        <tr style={{display: typePayroll===1?"table-row":"none"}}>
                           <td width="25%">{IntlMessages('page.biweeklyPayroll.label.income')}</td>
                           <td align='right' width="15%">{formatNumber(totalIncomes)}</td>
                         </tr>
-                        <tr style={{display: typePayroll===1?"block":"none"}}>
+                        <tr style={{display: typePayroll===1?"table-row":"none"}}>
                           <td width="25%">{IntlMessages('page.biweeklyPayroll.input.totalDeductions')}</td>
                           <td align='right' width="15%">{formatNumber(totalDeductions)}</td>
                         </tr>

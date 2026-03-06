@@ -17,7 +17,12 @@ export const usePaymentsHistory = ({ setLoading, adminControl }) => {
       {
         text: IntlMessages("table.column.employee"),
         dataField: "employee",
-        headerStyle: { width: "25%" }
+        headerStyle: { width: "20%" }
+      },
+      {
+        text: IntlMessages("table.column.dni"),
+        dataField: "employeeDni",
+        headerStyle: { width: "14%" }
       },
       {
         text: IntlMessages("table.column.dateIn"),
@@ -32,7 +37,7 @@ export const usePaymentsHistory = ({ setLoading, adminControl }) => {
       {
         text: IntlMessages("page.resumePayroll.table.totalIncome"),
         dataField: "totalIncomes",
-        headerStyle: { width: "15%" },
+        headerStyle: { width: "12%" },
         style: { textAlign: 'right' },
         cell: ({ row }) => {
           return (formatNumber(row.original.totalIncomes, '', 2));
@@ -41,7 +46,7 @@ export const usePaymentsHistory = ({ setLoading, adminControl }) => {
       {
         text: IntlMessages("page.resumePayroll.table.totalDeductions"),
         dataField: "totalDeductions",
-        headerStyle: { width: "15%" },
+        headerStyle: { width: "12%" },
         style: { textAlign: 'right' },
         cell: ({ row }) => {
           return (formatNumber(row.original.totalDeductions, '', 2));
@@ -50,7 +55,7 @@ export const usePaymentsHistory = ({ setLoading, adminControl }) => {
       {
         text: IntlMessages("table.column.totalPay"),
         dataField: "totalPayment",
-        headerStyle: { width: "15%" },
+        headerStyle: { width: "12%" },
         style: { textAlign: 'right' },
         cell: ({ row }) => {
           return (formatNumber(row.original.totalPayment, '', 2));
@@ -67,7 +72,7 @@ export const usePaymentsHistory = ({ setLoading, adminControl }) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('rrhh/process/employees/findSL?status=1', (resp) => {
+    request.GET('rrhh/process/employees/findSL', (resp) => {
       const employees = resp.data.map((item) => {
         return {
           value: item.id,

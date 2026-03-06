@@ -4,6 +4,7 @@ import { request } from '@Helpers/core'
 import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications'
 import ViewPdf from '@/components/ViewPDF/ViewPdf';
+import ModalPrePayroll from './ModalPrePayroll';
 
 export const useResumePayroll = ({ setLoading, typePayroll, screenControl, adminControl }) => {
   const currentYear = new Date().getFullYear();
@@ -35,6 +36,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
   const [openModalIncomes, setOpenModalIncomes] = useState(false);
   const [openModalSelectEmployees, setOpenModalSelectEmployees] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
+  const [openModalPrePayroll, setOpenModalPrePayroll] = useState(false);
 
   //print invoice
   const [openViewFile, setOpenViewFile] = useState(false);
@@ -302,6 +304,17 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     }
   }
 
+  const fnGetPrePayroll = () => {
+    if (typePayroll === 1) {
+      if (fnCreate === false) {
+        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+        setSendForm(false);
+        return;
+      }
+      setOpenModalPrePayroll(true);
+    }
+  }
+
   const fnGeneratePayroll = () => {
     setSendForm(true);
     if (!isFormValid) {
@@ -322,23 +335,23 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     }
 
     if (typePayroll === 1) {
-      if (fnCreate === false) {
-        notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-        setSendForm(false);
-        return;
-      }
-      setLoading(true);
-      request.POST('rrhh/process/weeklyPayrolls/generatePayroll', newData, (resp) => {
-        if (validInt(resp.data.id) > 0) {
-          onInputChange({ target: { name: 'id', value: resp.data.id } });
-        }
-        fnViewDetailPayroll(resp.data.id);
-        setSendForm(false);
-        setLoading(false);
-      }, (err) => {
+      // if (fnCreate === false) {
+      //   notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
+      //   setSendForm(false);
+      //   return;
+      // }
+      // setLoading(true);
+      // request.POST('rrhh/process/weeklyPayrolls/generatePayroll', newData, (resp) => {
+      //   if (validInt(resp.data.id) > 0) {
+      //     onInputChange({ target: { name: 'id', value: resp.data.id } });
+      //   }
+      //   fnViewDetailPayroll(resp.data.id);
+      //   setSendForm(false);
+      //   setLoading(false);
+      // }, (err) => {
 
-        setLoading(false);
-      });
+      //   setLoading(false);
+      // });
     } else if (typePayroll === 2 || typePayroll === 3) {
       if (fnCreate === false) {
         notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
@@ -584,11 +597,18 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     fnPrint: fnPrintPayrollPdf,
     fnCancel: fnCancelPayroll,
     buttonsHome: [
+      typePayroll === 1 ?
+      {
+        title: "button.getPrePayroll",
+        icon: "bi bi-cash-coin",
+        onClick: fnGetPrePayroll
+      } : "",
+      typePayroll !== 1 ?
       {
         title: "button.generatePayroll",
         icon: "bi bi-cash-coin",
         onClick: fnGeneratePayroll
-      },
+      } : "",
       {
         title: "button.export",
         icon: "bi bi-file-earmark-excel",
@@ -715,6 +735,31 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     fnViewDetailPayroll
   }
 
+  const propsToModalPrePayroll = {
+    ModalContent: ModalPrePayroll,
+    title: "page.biweeklyPayroll.label.prePayroll",
+    open: openModalPrePayroll,
+    setOpen: setOpenModalPrePayroll,
+    maxWidth: 'xl',
+    data: {
+      listCustomers,
+      listProjects,
+      listTypeDeductions,
+      listEmployees,
+      listJobPositions,
+      listPaymentMethod,
+      listSchedules,
+      listTypeIncomes,
+      listProjectsFilter,
+      setListProjectsFilter,
+      enableConfidentialPayroll,
+      setLoading,
+      userData,
+      onBulkForm,
+      fnViewDetailPayroll
+    }
+  }
+
   const propsToMsgDelete = {
     title: "alert.question.title",
     open: openMsgQuestion,
@@ -743,11 +788,13 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       openModalDeductions,
       openModalIncomes,
       openModalSelectEmployees,
+      openModalPrePayroll,
       setOpenModalPayrolls,
       setOpenModalPrint,
       setOpenModalDeductions,
       setOpenModalIncomes,
       setOpenModalSelectEmployees,
+      setOpenModalPrePayroll,
       propsToControlPanel,
       propsToDetailTable,
       propsToHeaderPayroll,
@@ -757,7 +804,8 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
       propsToModalIncomes,
       propsToModalEmployees,
       propsToMsgDelete,
-      propsToViewPDF
+      propsToViewPDF,
+      propsToModalPrePayroll
     }
   )
 }
