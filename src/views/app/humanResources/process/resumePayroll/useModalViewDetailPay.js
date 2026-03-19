@@ -956,10 +956,11 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
     }else{
       const incomes = currentItemDeta?.incomesDeta || [];
       const otherIncomes = currentItemDeta?.othersIncomes || [];
-      const deductions = currentItemDeta?.othersDeductions || [];
+      const deductions = currentItemDeta?.deductionsDeta || [];
+      const othersDeductions = currentItemDeta?.othersDeductions || [];
       const loans = currentItemDeta?.loansDeta || [];
       setIncomesDetail([...incomes, ...otherIncomes]);
-      setExtDeducDetail([...deductions, ...loans]);
+      setExtDeducDetail([...deductions, ...loans, ...othersDeductions]);
       fnGetAttendance();
     }
   }, []);

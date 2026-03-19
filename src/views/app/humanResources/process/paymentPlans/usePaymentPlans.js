@@ -270,16 +270,28 @@ export const usePaymentPlans = ({ setLoading, screenControl }) => {
 
   const fnConfirmLiquidatePlan = () => {
     setOpenMsgLiquidate(false);
-    setLoading(true);
-    const editData = {
-      status: 1
+    const editDataPlan = {
+      status: 0,
+      isLiquidate: 1
     }
-    request.PUT(`rrhh/process/paymentPlanDetails?fatherId=${id}`, editData, () => {
-      fnViewPaymentPlans(id);
+    request.PUT(`rrhh/process/paymentPlans/${id}`, editDataPlan, () => {
+      setLoading(true);
+      const editData = {
+        status: 1
+      }
+      request.PUT(`rrhh/process/paymentPlanDetails?fatherId=${id}`, editData, () => {
+        fnViewPaymentPlans(id);
+        setLoading(false);
+      }, (err) => {
+        setLoading(false);
+      });
+
       setLoading(false);
     }, (err) => {
+
       setLoading(false);
     });
+
   }
 
   const fnDeletePaymentPlan = () => {
