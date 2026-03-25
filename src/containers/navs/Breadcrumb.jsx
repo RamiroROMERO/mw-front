@@ -36,9 +36,9 @@ const BreadcrumbContainer = ({ heading, match }) => {
       <Row className='row justify-content-between'>
         <Colxx xs={12} sm={8} md={9}>
           {screenTitle && (
-            <h1>
+            <h2 style={{ display: 'inline-block' }}>
               <IntlMessages id={screenTitle} />
-            </h1>
+            </h2>
           )}
           <BreadcrumbItems path={path} />
         </Colxx>

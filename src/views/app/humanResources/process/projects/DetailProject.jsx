@@ -5,13 +5,28 @@ import { Checkbox } from '@Components/checkbox'
 import { IntlMessages } from '@Helpers/Utils'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import DateCalendar from '@Components/dateCalendar'
+import { useEffect, useState } from 'react'
+import CardAnimated from '@/components/cards/CardAnimated'
 
-const DetailProject = ({customerId, code, name, description, initDate, markAssistance, status, listCustomers, onInputChange, sendForm, fnSave, fnClearInputs, formValidation}) => {
+const DetailProject = ({ id, customerId, code, name, description, initDate, markAssistance, status, listCustomers, onInputChange, sendForm, fnSave, fnClearInputs, formValidation }) => {
 
-  const {customerIdValid, codeValid, nameValid, initDateValid} = formValidation;
+  const { customerIdValid, codeValid, nameValid, initDateValid } = formValidation;
+
+  const [animate, setAnimate] = useState(false);
+
+  // useEffect(() => {
+  //   // Activar animación
+  //   console.log(id);
+  //   setAnimate(true);
+
+  //   // Remover la clase después de que termine la animación
+  //   setTimeout(() => {
+  //     setAnimate(false);
+  //   }, 300); // Duración de la animación
+  // }, [id])
 
   return (
-    <Card className='mb-3'>
+    <CardAnimated fieldChange={id}>
       <CardBody>
         <Row>
           <Colxx xxs="12" md="6" xl="12">
@@ -54,7 +69,7 @@ const DetailProject = ({customerId, code, name, description, initDate, markAssis
               value={description}
               onChange={onInputChange}
               type='textarea'
-              style={{resize:'none'}}
+              style={{ resize: 'none' }}
             />
           </Colxx>
           <Colxx xxs="12" md="6" xl="12">
@@ -87,15 +102,15 @@ const DetailProject = ({customerId, code, name, description, initDate, markAssis
         <Row>
           <Colxx xxs="12" className="div-action-button-container">
             <Button color="secondary" onClick={fnClearInputs}>
-              <i className="bi bi-stars"/> {IntlMessages("button.clear")}
+              <i className="bi bi-stars" /> {IntlMessages("button.clear")}
             </Button>
             <Button color="primary" onClick={fnSave}>
-              <i className="iconsminds-save"/> {IntlMessages("button.save")}
+              <i className="iconsminds-save" /> {IntlMessages("button.save")}
             </Button>
           </Colxx>
         </Row>
       </CardBody>
-    </Card>
+    </CardAnimated>
   )
 }
 

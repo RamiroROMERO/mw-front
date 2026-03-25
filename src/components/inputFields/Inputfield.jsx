@@ -12,8 +12,9 @@ export const InputField = ({ name, label = "", value, onChange, type = "text", f
         name={name}
         onChange={onChange}
         type={type}
-        style={{ resize: "none" }}
-        className={bold ? 'font-weight-bold' : ''}
+        style={{ resize: "none", boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)" }}
+        // style={{ resize: "none", boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)" }}
+        className={bold ? "font-weight-bold" : ""}
         {...rest}
       />
     </InputLabel>

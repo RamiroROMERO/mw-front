@@ -12,6 +12,7 @@ export const SimpleSelect = ({ name, label, value, onChange, options, feedbackTe
         value={value}
         onChange={onChange}
         type="select"
+        style={{ resize: "none", boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)" }}
         {...rest}
       >
         <option value='0'>{IntlMessages("msg.select")}</option>

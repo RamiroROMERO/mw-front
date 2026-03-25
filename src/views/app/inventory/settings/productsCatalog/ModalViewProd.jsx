@@ -10,7 +10,7 @@ const ModalViewProd = (props) => {
   const { dataProducts, fnSelectItem } = data;
 
   const [table, setTable] = useState({
-    title: IntlMessages("page.productsCatalog.table.title"),
+    // title: IntlMessages("page.productsCatalog.table.title"),
     columns: [
       { text: IntlMessages("page.productsCatalog.table.code"), dataField: "code", headerStyle: { 'width': '20%' } },
       { text: IntlMessages("page.productsCatalog.table.name"), dataField: "name", headerStyle: { 'width': '30%' } },

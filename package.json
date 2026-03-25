@@ -6,13 +6,15 @@
   "scripts": {
     "dev": "vite",
     "dev:debug": "vite --debug hmr",
-    "build": "vite build",
-    "build:provasa": "vite build --mode provasa",
-    "build:hiper": "vite build --mode hiper",
-    "build:muna": "vite build --mode muna",
-    "build:arkitek": "vite build --mode arkitek",
+    "build": "vite build && node post-build.js demo",
+    "build:provasa": "vite build --mode provasa && node post-build.js provasa",
+    "build:hiper": "vite build --mode hiper && node post-build.js hiper",
+    "build:muna": "vite build --mode muna && node post-build.js muna",
+    "build:arkitek": "vite build --mode arkitek && node post-build.js arkitek",
+    "build:cum": "vite build --mode cum && node post-build.js cum",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postbuild": "node post-build.js"
   },
   "dependencies": {
     "@fortawesome/react-fontawesome": "^3.0.2",
@@ -23,6 +25,7 @@
     "bootstrap-icons": "^1.11.3",
     "buffer": "^6.0.3",
     "chart.js": "^4.5.0",
+    "dayjs": "^1.11.19",
     "dotenv": "^16.4.5",
     "env-var": "^7.4.1",
     "events": "^3.3.0",
@@ -56,11 +59,16 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.2.0",
+    "archiver": "^7.0.1",
+    "basic-ftp": "^5.0.5",
     "eslint": "^9.29.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "fs-extra": "^11.3.2",
     "sass": "1.69.5",
+    "ssh2": "^1.17.0",
+    "ssh2-sftp-client": "^12.0.1",
     "vite": "^6.3.5",
     "vite-tsconfig-paths": "^5.1.4"
   }

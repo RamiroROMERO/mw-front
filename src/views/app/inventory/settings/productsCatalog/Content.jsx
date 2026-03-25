@@ -161,6 +161,15 @@ const ProductsCatalog = (props) => {
                         </Colxx>
                         <Colxx xxs="12" sm="6" md="12" lg="6">
                           <SearchSelect
+                            name="tradeId"
+                            inputValue={tradeId}
+                            onChange={onInputChange}
+                            options={listMarks}
+                            label="page.productsCatalog.modal.newProduct.select.tradeMark"
+                          />
+                        </Colxx>
+                        <Colxx xxs="12" sm="6" md="12" lg="6">
+                          <SearchSelect
                             label="page.productsCatalog.modal.newProduct.select.packaging"
                             name="packId"
                             onChange={onInputChange}
@@ -170,8 +179,6 @@ const ProductsCatalog = (props) => {
                             feedbackText={sendForm && (packValid || null)}
                           />
                         </Colxx>
-                      </Row>
-                      <Row>
                         <Colxx xxs="12" sm="6" md="12" lg="6">
                           <InputField
                             value={submConversion}
@@ -181,6 +188,8 @@ const ProductsCatalog = (props) => {
                             label="page.productsCatalog.modal.newProduct.input.conversion"
                           />
                         </Colxx>
+                      </Row>
+                      <Row>
                         <Colxx xxs="12" sm="6" md="12" lg="6">
                           <SearchSelect
                             label="page.productsCatalog.modal.newProduct.select.inputUnit"
@@ -192,8 +201,6 @@ const ProductsCatalog = (props) => {
                             feedbackText={sendForm && (undinIdValid || null)}
                           />
                         </Colxx>
-                      </Row>
-                      <Row>
                         <Colxx xxs="12" sm="6" md="12" lg="6">
                           <SearchSelect
                             name="undoutId"
@@ -203,15 +210,6 @@ const ProductsCatalog = (props) => {
                             label="page.productsCatalog.modal.newProduct.select.outputUnit"
                             invalid={sendForm && !!undoutIdValid}
                             feedbackText={sendForm && (undoutIdValid || null)}
-                          />
-                        </Colxx>
-                        <Colxx xxs="12" sm="6" md="12" lg="6">
-                          <SearchSelect
-                            name="tradeId"
-                            inputValue={tradeId}
-                            onChange={onInputChange}
-                            options={listMarks}
-                            label="page.productsCatalog.modal.newProduct.select.tradeMark"
                           />
                         </Colxx>
                       </Row>

@@ -69,7 +69,7 @@
       }
 
       i {
-        font-size: 32px;
+        font-size: 25px;
         line-height: 42px;
       }
 
@@ -211,11 +211,14 @@
 
       ul.third-level-menu {
         display: block !important;
+
         li {
+
           a,
           i {
             color: $primary-color;
           }
+
           a:hover,
           &.active i,
           &.active a {
@@ -287,6 +290,7 @@
 
 .main-hidden .menu-button,
 .menu-hidden .menu-button {
+
   .main,
   .sub {
     fill: $secondary-color;
@@ -416,6 +420,7 @@
 }
 
 @include respond-below(xl) {
+
   .sub-hidden main,
   .menu-sub-hidden main,
   .menu-hidden main {
@@ -429,6 +434,7 @@
 }
 
 @include respond-below(lg) {
+
   .sub-hidden main,
   .menu-sub-hidden main,
   .menu-hidden main {
@@ -513,6 +519,7 @@
       }
     }
   }
+
   .sidebar .sub-menu .scroll .ps__thumb-y,
   .sidebar .main-menu .scroll .ps__thumb-y {
     right: 0;
@@ -653,6 +660,7 @@
     main {
       margin-right: $main-margin + $sub-menu-width;
     }
+
     &.menu-hidden {
       main {
         margin-right: $main-margin;
@@ -661,6 +669,7 @@
   }
 
   @include respond-below(xl) {
+
     .sub-hidden main,
     .menu-sub-hidden main,
     .menu-hidden main {
@@ -676,6 +685,7 @@
       main {
         margin-right: $main-margin-lg + $sub-menu-width-lg;
       }
+
       &.menu-hidden {
         main {
           margin-right: $main-margin-lg;
@@ -685,6 +695,7 @@
   }
 
   @include respond-below(lg) {
+
     .sub-hidden main,
     .menu-sub-hidden main,
     .menu-hidden main {
@@ -700,6 +711,7 @@
       main {
         margin-right: $main-margin-md + $sub-menu-width-md;
       }
+
       &.menu-hidden {
         main {
           margin-right: $main-margin-md;
@@ -745,6 +757,7 @@
 }
 
 #app-container {
+
   &.sub-hidden .footer-content,
   &.menu-sub-hidden .footer-content,
   &.menu-hidden .footer-content {
@@ -760,6 +773,7 @@
     .footer-content {
       margin-left: $main-margin + $sub-menu-width;
     }
+
     &.menu-hidden {
       .footer-content {
         margin-left: $main-margin;
@@ -768,6 +782,7 @@
   }
 
   @include respond-below(xl) {
+
     &.sub-hidden .footer-content,
     &.menu-sub-hidden .footer-content,
     &.menu-hidden .footer-content {
@@ -783,6 +798,7 @@
       .footer-content {
         margin-left: $main-margin-lg + $sub-menu-width-lg;
       }
+
       &.menu-hidden {
         .footer-content {
           margin-left: $main-margin-lg;
@@ -792,6 +808,7 @@
   }
 
   @include respond-below(lg) {
+
     &.sub-hidden .footer-content,
     &.menu-sub-hidden .footer-content,
     &.menu-hidden .footer-content {
@@ -807,6 +824,7 @@
       .footer-content {
         margin-left: $main-margin-md + $sub-menu-width-md;
       }
+
       &.menu-hidden {
         .footer-content {
           margin-left: $main-margin-md;

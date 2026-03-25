@@ -689,11 +689,6 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
         onClick: fnViewHistory
       },
       {
-        title: "button.documents",
-        icon: "bi bi-file-earmark-person",
-        onClick: fnViewDocuments
-      },
-      {
         title: "button.dependents",
         icon: "bi bi-people",
         onClick: fnViewDependents
@@ -722,17 +717,8 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
         title: "button.changeStatus",
         icon: "bi bi-toggles",
         onClick: fnChangeStatus
-      },
-      {
-        title: "button.inclusionSheet",
-        icon: "bi bi-file-earmark-text",
-        onClick: fnInclusionSheet
-      },
-      {
-        title: "button.exclusionSheet",
-        icon: "bi bi-file-earmark-text",
-        onClick: fnExclusionSheet
       }
+
     ],
     buttonsOptions: [
       {
@@ -756,6 +742,19 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
         onClick: fnIncapacities
       },
       {
+        title: "button.documents",
+        icon: "bi bi-file-earmark-person",
+        onClick: fnViewDocuments
+      }, {
+        title: "button.inclusionSheet",
+        icon: "bi bi-file-earmark-text",
+        onClick: fnInclusionSheet
+      },
+      {
+        title: "button.exclusionSheet",
+        icon: "bi bi-file-earmark-text",
+        onClick: fnExclusionSheet
+      }, {
         title: "button.changeSalary",
         icon: "bi bi-arrow-down-up",
         onClick: fnChangeSalary

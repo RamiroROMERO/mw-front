@@ -262,56 +262,25 @@ export const validFloat = (float = 0.00, decimals = 2) => {
 };
 
 export const getMonthLetter = (date) => {
-  let mm = 0;
-	if(date){
-		mm = moment(date).month() + 1;
-	}else{
-		mm = moment().month() + 1;
-	}
+  const months = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
 
-  let month = "";
-
-  switch (mm) {
-    case 1: month = "Enero"
-      break;
-    case 2: month = "Febrero"
-      break;
-    case 3: month = "Marzo"
-      break;
-    case 4: month = "Abril"
-      break;
-    case 5: month = "Mayo"
-      break;
-    case 6: month = "Junio"
-      break;
-    case 7: month = "Julio"
-      break;
-    case 8: month = "Agosto"
-      break;
-    case 9: month = "Septiembre"
-      break;
-    case 10: month = "Octubre"
-      break;
-    case 11: month = "Noviembre"
-      break;
-    case 12: month = "Diciembre"
-      break;
-    default: month = ""
-      break;
-  }
-  return month;
-}
+  const monthIndex = date ? moment(date).month() : moment().month();
+  return months[monthIndex] || '';
+};
 
 export const fnCalcDaysVacations = (startDate, endDate) => {
-  const fechaInicio=new Date(startDate);
-  const fechaFin=new Date(endDate);
+  const fechaInicio = new Date(startDate);
+  const fechaFin = new Date(endDate);
   const year = fechaFin.getFullYear();
 
   const datesHollyDays = [
-    { fechaValidar: new Date(`${year}-01-01`)},
-    { fechaValidar: new Date(`${year}-05-01`)},
-    { fechaValidar: new Date(`${year}-09-15`)},
-    { fechaValidar: new Date(`${year}-12-25`)}
+    { fechaValidar: new Date(`${year}-01-01`) },
+    { fechaValidar: new Date(`${year}-05-01`) },
+    { fechaValidar: new Date(`${year}-09-15`) },
+    { fechaValidar: new Date(`${year}-12-25`) }
   ]
 
   const fechaInicioMs = fechaInicio.getTime();
@@ -322,15 +291,15 @@ export const fnCalcDaysVacations = (startDate, endDate) => {
   datesHollyDays.forEach(element => {
     const fechaValidarMs = element.fechaValidar.getTime();
 
-    if(fechaValidarMs >= fechaInicioMs && fechaValidarMs <= fechaFinMs){
-      hollyday ++;
+    if (fechaValidarMs >= fechaInicioMs && fechaValidarMs <= fechaFinMs) {
+      hollyday++;
     }
   });
 
   return hollyday;
 }
 
-export const getDaysDiffExcMonday = (dateFrom, dateTo, incMonday=0) => {
+export const getDaysDiffExcMonday = (dateFrom, dateTo, incMonday = 0) => {
   const date1 = moment(dateFrom);
   const date2 = moment(dateTo);
 
@@ -339,14 +308,14 @@ export const getDaysDiffExcMonday = (dateFrom, dateTo, incMonday=0) => {
   let days = 0;
 
   while (!from.isAfter(to)) {
-    if(incMonday === 1){
-			days++;
-		}else{
-			// Si no es domingo
-			if (from.isoWeekday() !== 7) {
-				days++;
-			}
-		}
+    if (incMonday === 1) {
+      days++;
+    } else {
+      // Si no es domingo
+      if (from.isoWeekday() !== 7) {
+        days++;
+      }
+    }
     from.add(1, 'days');
   }
 

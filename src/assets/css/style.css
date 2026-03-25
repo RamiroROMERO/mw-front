@@ -55,14 +55,14 @@
   min-width: 87px !important;
   margin-right: 2px !important;
   margin-left: 2px !important;
-  border-radius: 0px !important;
+  border-radius: 5px !important;
   padding: 0.5rem !important;
   margin-bottom: 3px !important;
 }
 
 .btn-control-panel>i {
-  line-height: 40px !important;
-  font-size: 30px;
+  line-height: 20px !important;
+  font-size: 20px;
   color: #145388 !important;
 }
 
@@ -71,7 +71,7 @@
 }
 
 .div-label-border {
-  border-radius: 0.1rem;
+  border-radius: 0.5rem;
   padding: 10px;
   padding-top: 15px !important;
   margin-bottom: 1rem;
@@ -102,8 +102,8 @@
 }
 
 .container-with-label {
-  border: 1px solid #d7d7d7;
-  border-radius: 0.1rem;
+  border: 1.5px solid #d7d7d7;
+  border-radius: 0.4rem;
   padding: 10px;
   padding-top: 25px !important;
   margin-bottom: 1rem;
@@ -197,7 +197,7 @@
 
   .modal-fullscreen-lg-down .modal-header,
   .modal-fullscreen-lg-down .modal-footer {
-    border-radius: 0;
+    border-radius: 10px;
   }
 
   .modal-fullscreen-lg-down .modal-body {
@@ -454,4 +454,34 @@ input[type=number] {
 .clearfix {
   box-sizing: border-box;
   display: flex;
+}
+
+.zoom-effect {
+  animation: zoomPulse 0.3s ease-in-out;
+}
+
+.card {
+  border-radius: 15px !important;
+}
+
+@keyframes zoomPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.react-select__control,
+.react-datepicker-wrapper {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1) !important;
 }

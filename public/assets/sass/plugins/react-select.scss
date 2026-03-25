@@ -34,13 +34,9 @@
 }
 
 .react-select .react-select__dropdown-indicator,
-.react-select
-  .react-select__control--is-focused
-  .react-select__dropdown-indicator,
+.react-select .react-select__control--is-focused .react-select__dropdown-indicator,
 .react-select .react-select__clear-indicator,
-.react-select
-  .react-select__control--is-focused
-  .react-select__clear-indicator {
+.react-select .react-select__control--is-focused .react-select__clear-indicator {
   outline: initial;
   box-shadow: initial;
 
@@ -56,7 +52,7 @@
   border: 1px solid $separator-color !important;
   background: $input-background !important;
   outline: initial !important;
-  box-shadow: none !important;
+  box-shadow: none;
 }
 
 .react-select__indicator-separator {

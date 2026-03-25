@@ -87,6 +87,7 @@ const Login = ({ loading, error, loginUserAction }) => {
                     <Field
                       className="form-control"
                       name="email"
+                      style={{ resize: "none", boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)" }}
                       validate={validateEmail}
                     />
                     {errors.email && (
@@ -101,6 +102,7 @@ const Login = ({ loading, error, loginUserAction }) => {
                     </Label>
                     <Field
                       className="form-control"
+                      style={{ resize: "none", boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)" }}
                       type="password"
                       name="password"
                       validate={validatePassword}

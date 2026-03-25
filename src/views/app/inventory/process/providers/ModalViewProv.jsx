@@ -9,7 +9,7 @@ const ModalViewProv = (props) => {
   const { dataProviders, fnSelectItem } = data;
 
   const [table, setTable] = useState({
-    title: IntlMessages("page.providers.modal.viewProv.table.title"),
+    title: ' ',
     columns: [
       { text: IntlMessages("page.providers.modal.viewProv.table.dni"), dataField: "dni", headerStyle: { 'width': '30%' } },
       { text: IntlMessages("page.providers.modal.viewProv.table.name"), dataField: "name", headerStyle: { 'width': '50%' } },

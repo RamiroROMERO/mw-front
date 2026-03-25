@@ -11,7 +11,7 @@ export const RadioGroup = ({ label, name, value, onChange, options = [], feedbac
   const maxlength = lengths[lengths.length - 1] * 15;
   return (
     <>
-      <div className={feedbackText ? 'div-label-border mb-1' : 'div-label-border'}>
+      <div className={`shadow-sm ${feedbackText ? 'div-label-border mb-1' : 'div-label-border'}`}>
         {label && (<span>
           {IntlMessages(label)}
         </span>)}

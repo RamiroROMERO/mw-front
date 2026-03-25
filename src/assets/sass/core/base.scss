@@ -6,7 +6,8 @@ html {
 }
 
 body::-webkit-scrollbar-track {
-  background: orange;        /* color of the tracking area */
+  background: orange;
+  /* color of the tracking area */
 }
 
 :root {
@@ -55,8 +56,7 @@ body {
 }
 
 .fixed-background {
-  background: url('/assets/img/login/back-auth.jpg') no-repeat center center
-    fixed;
+  background: url('/assets/img/login/back-auth.jpg') no-repeat center center fixed;
   background-size: cover;
   width: 100%;
   height: 100%;
@@ -168,8 +168,8 @@ hr {
   right: 0;
 }
 
-.ps__rail-y:hover > .ps__thumb-y,
-.ps__rail-y:focus > .ps__thumb-y,
+.ps__rail-y:hover>.ps__thumb-y,
+.ps__rail-y:focus>.ps__thumb-y,
 .ps__rail-y.ps--clicking .ps__thumb-y {
   width: 5px;
   left: 0;
@@ -392,7 +392,7 @@ p {
 
   .btn-outline-dark:not(:disabled):not(.disabled):active,
   .btn-outline-dark:not(:disabled):not(.disabled).active,
-  .show > .btn-outline-dark.dropdown-toggle {
+  .show>.btn-outline-dark.dropdown-toggle {
     background-color: $theme-color-1;
     border-color: $theme-color-1;
     color: $button-text-color;
@@ -444,7 +444,7 @@ p {
 .separatorV {
   border-right: 1px solid $separator-color;
   position: absolute;
-  height: 80px;
+  height: 65px;
 }
 
 .alert-dismissible .close {
@@ -460,9 +460,11 @@ p {
   padding: 0;
   border: initial;
 }
+
 .img-fluid {
   width: 100%;
 }
+
 .white {
   color: $button-text-color !important;
 }
@@ -478,9 +480,11 @@ p {
 .opacity-75 {
   opacity: 0.75;
 }
+
 .jumbotron {
   background: initial;
 }
+
 .c-pointer {
   cursor: pointer !important;
 }
@@ -488,6 +492,7 @@ p {
 .right-menu {
   footer.page-footer {
     padding-right: $app-menu-width;
+
     @include respond-below(lg) {
       padding-right: 0;
     }
@@ -500,6 +505,7 @@ p {
 
 .rtl {
   direction: rtl;
+
   .text-center p,
   .text-center div,
   .text-center span,
@@ -531,6 +537,7 @@ p {
     right: 0 !important;
     left: initial !important;
   }
+
   .float-right {
     float: left !important;
   }
@@ -543,6 +550,7 @@ p {
     .float-xxl-left {
       float: right !important;
     }
+
     .float-xxl-right {
       float: left !important;
     }
@@ -552,6 +560,7 @@ p {
     .float-xl-left {
       float: right !important;
     }
+
     .float-xl-right {
       float: left !important;
     }
@@ -561,6 +570,7 @@ p {
     .float-lg-left {
       float: right !important;
     }
+
     .float-lg-right {
       float: left !important;
     }
@@ -570,6 +580,7 @@ p {
     .float-md-left {
       float: right !important;
     }
+
     .float-md-right {
       float: left !important;
     }
@@ -579,6 +590,7 @@ p {
     .float-sm-left {
       float: right !important;
     }
+
     .float-sm-right {
       float: left !important;
     }
@@ -588,14 +600,17 @@ p {
     .float-xs-left {
       float: right !important;
     }
+
     .float-xs-right {
       float: left !important;
     }
   }
+
   .r-0 {
     left: 0;
     right: initial;
   }
+
   .heading-number {
     margin-right: 0;
     margin-left: 10px;
@@ -639,6 +654,7 @@ p {
     margin-right: 0;
     padding-right: 0;
   }
+
   .icon-button {
     text-align: center;
   }
@@ -679,6 +695,7 @@ p {
 .nav-vertical {
   padding-right: 0;
   cursor: pointer;
+
   ul li {
     position: relative;
 
@@ -709,7 +726,7 @@ p {
     }
 
     i {
-      font-size: 32px;
+      font-size: 25px;
       line-height: 42px;
     }
 
@@ -737,7 +754,7 @@ p {
   }
 }
 
-.div-label-border > span::after{
+.div-label-border>span::after {
   background: $foreground-color !important;
 }
 
@@ -747,19 +764,19 @@ p {
 }
 
 .container-with-label {
-  border: 2px solid $separator-color;
+  border: 1.5px solid $separator-color;
 }
 
-.container-with-label>span{
+.container-with-label>span {
   color: $primary-color;
 }
 
-.container-with-label > span::after{
+.container-with-label>span::after {
   background: $foreground-color !important;
 }
 
 .btn-control-panel {
-  background-color:  $foreground-color !important;
+  background-color: $foreground-color !important;
   border: 1px solid $separator-color !important;
 }
 
@@ -767,7 +784,7 @@ p {
   border: 1px solid $separator-color !important;
 }
 
-.third-level-menu .nav-item:hover{
+.third-level-menu .nav-item:hover {
   background-color: $background-color;
 }
 
@@ -783,6 +800,9 @@ p {
   justify-content: center;
 }
 
-.ps__rail-x:hover, .ps .ps__rail-y:hover, .ps .ps__rail-x:focus, .ps .ps__rail-y:focus{
+.ps__rail-x:hover,
+.ps .ps__rail-y:hover,
+.ps .ps__rail-x:focus,
+.ps .ps__rail-y:focus {
   background-color: transparent !important;
 }
