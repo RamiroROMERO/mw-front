@@ -37,6 +37,7 @@ export const useHeader = ({ setLoading, table, setTable, enableGenerateReport })
         { title: 'No.', field: 'num', type: 'decimal', length: 20 },
         { title: 'Empleado', field: 'employeeName', type: 'String', length: 140 },
         { title: 'Identidad', field: 'employeeDni', type: 'String', length: 50 },
+        { title: 'Fecha de Nacimiento', field: 'birthday', type: 'String', length: 50 },
         { title: 'Fecha Ingreso', field: 'dateIn', type: 'String', length: 50 },
         { title: 'Puesto de Trabajo', field: 'jobPosition', type: 'String', length: 70 },
         { title: 'Proyecto', field: 'projectName', type: 'String', length: 150 },
