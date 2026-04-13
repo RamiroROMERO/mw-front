@@ -418,3 +418,49 @@ export const getPrivilegeAdmin = () => {
   let detaPrivilege = dataPrivileges.filter(elem => validInt(elem.type) === 2);
   return detaPrivilege;
 }
+
+export const fnGetRandomColor = (num) => {
+	switch (num) {
+		case 1: return '#FF637E';
+		case 2: return '#FF2056';
+		case 3: return '#FB64B6';
+		case 4: return '#F6339A';
+		case 5: return '#ED6AFF';
+		case 6: return '#E12AFB';
+		case 7: return '#C27AFF';
+		case 8: return '#AD46FF';
+		case 9: return '#A684FF';
+    case 10: return '#8E51FF';
+    case 11: return '#7C86FF';
+    case 12: return '#615FFF';
+    case 13: return '#51A2FF';
+    case 14: return '#21BCFF';
+    case 15: return '#34A6F4';
+    case 16: return '#42D3F2';
+    case 17: return '#3BB8DB';
+    case 18: return '#38D5BE';
+    case 19: return '#36BBA7';
+    case 20: return '#31D492';
+    case 21: return '#37BC7D';
+    case 22: return '#05DF72';
+    case 23: return '#31C950';
+    case 24: return '#9AE630';
+    case 25: return '#5EA529';
+    case 26: return '#FDC745';
+    case 27: return '#F0B13B';
+    case 28: return '#FFB93B';
+    case 29: return '#FE9A37';
+    case 30: return '#FF8904';
+    case 31: return '#FF692A';
+    case 32: return '#FF6467';
+    case 33: return '#FB2C36';
+    case 34: return '#34A6F4';
+    case 35: return '#2984D1';
+    case 36: return '#2B7FFF';
+    case 37: return '#155DFC';
+    case 38: return '#4F39F6';
+    case 39: return '#432DD7';
+	}
+
+	return '#ed7117';
+}

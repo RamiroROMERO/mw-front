@@ -1244,6 +1244,7 @@ const esLang = {
   "menu.controlAbsences": "Control de Ausencias",
   "menu.calculationBenefits": "Calculo de Prestaciones",
   "menu.pendingBenefits": "Prestaciones Pendientes",
+  "menu.birthdaysMonth": "Cumpleañeros del mes",
   /* 04.Error  */
   'pages.error-title': 'Vaya, parece que ha ocurrido un error!',
   'pages.error-code': 'Código de error',

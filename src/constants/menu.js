@@ -1160,6 +1160,11 @@ const data = [
             label: 'menu.pendingBenefits',
             to: `${adminRoot}/humanResources/reports/pendingBenefits`,
           },
+          {
+            icon: 'bi bi-cake',
+            label: 'menu.birthdaysMonth',
+            to: `${adminRoot}/humanResources/reports/birthdaysMonth`,
+          },
         ],
       },
     ],

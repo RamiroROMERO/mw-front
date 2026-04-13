@@ -1236,6 +1236,7 @@ const enLang = {
   "menu.controlAbsences": "Absences Control",
   "menu.calculationBenefits": "Calculation Benefits",
   "menu.pendingBenefits": "Pending Benefits",
+  "menu.birthdaysMonth": "Birthdays of the month",
   /* 04.Error Page */
   "pages.error-title": "Ooops... looks like an error occurred!",
   "pages.error-code": "Error code",
