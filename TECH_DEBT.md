@@ -18,11 +18,13 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 - [ ] Evaluar migrar el estado restante a Redux Toolkit (`createSlice`/`createAsyncThunk`) y eliminar `redux-saga` (hoy se usa para un solo saga de auth).
 
 **Cliente HTTP (`src/helpers/core.js`)**
-- [ ] Revisar `response.ok`/status HTTP en cada método (GET/POST/PUT/DELETE).
-- [ ] Agregar timeout/cancelación (`AbortController`).
-- [ ] Invocar `fnFinally` realmente (hoy se recibe pero nunca se llama; cada hook duplica el apagado de `loading`).
-- [ ] Centralizar construcción de query strings con `URLSearchParams`/`encodeURIComponent` (hoy concatenación manual en ~156 archivos).
-- [x] Decidir sobre `src/helpers/coreOld.js` (versión mejor pero sin uso) — terminar la migración o borrarlo. *(Resuelto: borrado, confirmado 0 imports por grep. Las mejoras reales que tenía — `response.ok`, timeout, `fnFinally` — quedan pendientes como refactor de `core.js` en sí, ver el ítem de "Cliente HTTP" más abajo.)*
+- [x] Revisar `response.ok`/status HTTP en cada método (GET/POST/PUT/DELETE/getJSON/uploadFiles). *(Resuelto vía helper `parseResponse`: si el HTTP status no es 2xx, se arma un objeto de error con forma consistente `{status, statusCode, messages}` en vez de dejar que `response.json()` explote sin control sobre bodies no-JSON.)*
+- [x] Agregar timeout/cancelación (`AbortController`). *(Resuelto vía helper `fetchWithTimeout`: 30s por defecto, 120s para `uploadFiles`. Antes un backend que nunca respondía dejaba el loading prendido para siempre.)*
+- [x] Invocar `fnFinally` realmente (hoy se recibe pero nunca se llama; cada hook duplica el apagado de `loading`). *(Resuelto: se agregó `.finally()` a GET/POST/PUT/DELETE. Ningún caller pasa `fnFinally` todavía, así que el efecto práctico se ve recién cuando se refactoricen los hooks para usarlo — queda como base.)*
+- [ ] Centralizar construcción de query strings con `URLSearchParams`/`encodeURIComponent` (hoy concatenación manual en ~156 archivos). *(Pendiente — implica tocar los 156 call sites, no solo `core.js`; se dejó fuera de este pase por alcance/riesgo.)*
+- [x] Decidir sobre `src/helpers/coreOld.js` (versión mejor pero sin uso) — terminar la migración o borrarlo. *(Ya resuelto arriba, en la sección de limpieza de código muerto.)*
+- [ ] `GETPdf`, `GETPdfUrl`, `getFile` y `fnExportToXLSX` (descargas por blob/XHR) no recibieron timeout ni el manejo de `response.ok` — quedan con el comportamiento original, pendiente si se necesita.
+- [ ] Falta cobertura de tests para `core.js` en sí (requiere mockear `fetch`/Redux store/`localStorage`) — quedó fuera de este pase.
 
 **Duplicación de patrones de UI**
 - [ ] Extraer `useTableConf` repetido en `settings/*` a un hook compartido `buildTableConfig(...)`.

@@ -55,6 +55,39 @@ const moveScrollTop = () => {
   });
 }
 
+const DEFAULT_TIMEOUT_MS = 30000;
+
+// fetch no soporta timeout nativo: sin esto, un backend que nunca responde
+// deja el "loading" de la pantalla prendido para siempre.
+const fetchWithTimeout = (url, options = {}, timeoutMs = DEFAULT_TIMEOUT_MS) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...options, signal: controller.signal })
+    .finally(() => clearTimeout(timeoutId));
+};
+
+// Antes de esto, una respuesta no-2xx con un body no-JSON (ej. una página
+// HTML de error 500) hacía explotar response.json() con una excepción de
+// parseo genérica. Ahora se revisa response.ok primero y, si el body no es
+// JSON válido, se arma un objeto de error con la misma forma que ya esperan
+// los callbacks fnError existentes (message legible + statusCode).
+const parseResponse = async (response) => {
+  let body;
+  try {
+    body = await response.json();
+  } catch {
+    body = undefined;
+  }
+  if (!response.ok) {
+    throw body ?? {
+      status: 'error',
+      statusCode: response.status,
+      messages: [{ description: response.statusText || 'Error de red' }],
+    };
+  }
+  return body;
+};
+
 const request = {
   moveScrollTop: () => {
     window.scrollTo({
@@ -65,16 +98,14 @@ const request = {
   GET: (url, fnSuccess, fnError, fnFinaly = undefined) => {
     const baseUrl = url.split('?')[0];
     const token = urlPublic.includes(baseUrl) ? '' : fnGetToken();
-    fetch(`${urlAPI}${url}`, {
+    fetchWithTimeout(`${urlAPI}${url}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
     })
-      .then((response) => {
-        return response.json();
-      })
+      .then(parseResponse)
       .then((response) => {
         if (response.status === 'success' || response.status === 200) {
           if (typeof fnSuccess === 'function') fnSuccess(response);
@@ -88,6 +119,9 @@ const request = {
         if (err && typeof fnError === 'function') fnError(err);
         console.error(err);
         return err;
+      })
+      .finally(() => {
+        if (typeof fnFinaly === 'function') fnFinaly();
       });
   },
   POST: (url, data, success, error, showMessage = true, fnFinaly = undefined) => {
@@ -100,7 +134,7 @@ const request = {
         }
       })
     }
-    fetch(`${urlAPI}${url}`, {
+    fetchWithTimeout(`${urlAPI}${url}`, {
       async: true,
       crossDomain: true,
       method: 'POST',
@@ -111,9 +145,7 @@ const request = {
       contentType: 'JSON',
       body: JSON.stringify(data),
     })
-      .then((response) => {
-        return response.json();
-      })
+      .then(parseResponse)
       .then((response) => {
         if (response.status === 'success' || response.status === 200) {
           if (typeof success === 'function') success(response);
@@ -130,6 +162,9 @@ const request = {
         if (showMessage) notification('error', 'msg.save.record.error', 'alert.error.title');
         console.error(err);
         return err;
+      })
+      .finally(() => {
+        if (typeof fnFinaly === 'function') fnFinaly();
       });
   },
   PUT: (url, data, fnSuccess, fnError, showMessage = true, fnFinaly = undefined) => {
@@ -142,7 +177,7 @@ const request = {
         }
       })
     }
-    fetch(`${urlAPI}${url}`, {
+    fetchWithTimeout(`${urlAPI}${url}`, {
       async: true,
       crossDomain: true,
       method: 'PUT',
@@ -152,9 +187,7 @@ const request = {
       },
       contentType: 'JSON',
       body: JSON.stringify(data)
-    }).then((response) => {
-      return response.json();
-    })
+    }).then(parseResponse)
       .then((response) => {
         if (response.status === "success" || response.status === 200) {
           if (typeof fnSuccess === 'function') fnSuccess(response);
@@ -171,20 +204,21 @@ const request = {
         if (showMessage) notification('error', 'msg.update.record.error', 'alert.error.title');
         console.error(err);
         return err;
+      })
+      .finally(() => {
+        if (typeof fnFinaly === 'function') fnFinaly();
       });
   },
   DELETE: (url, fnSuccess, fnError, showMessage = true, fnFinaly = undefined) => {
     const token = fnGetToken();
-    fetch(`${urlAPI}${url}`, {
+    fetchWithTimeout(`${urlAPI}${url}`, {
       method: 'DELETE',
       headers: {
         "Content-Type": "application/json",
         'Authorization': `Bearer ${token}`
       }
     })
-      .then((response) => {
-        return response.json();
-      })
+      .then(parseResponse)
       .then((response) => {
         if (response.status === "success" || response.status === 200) {
           if (typeof fnSuccess === 'function') fnSuccess(response);
@@ -201,6 +235,9 @@ const request = {
         if (showMessage) notification('error', 'msg.delete.record.error', 'alert.error.title');
         console.error(err);
         return err;
+      })
+      .finally(() => {
+        if (typeof fnFinaly === 'function') fnFinaly();
       });
   },
   getJSON: async (url, params, onSuccess) => {
@@ -212,16 +249,14 @@ const request = {
     }, "");
     url = `${urlAPI}${url}` + (strParams.length > 0 ? `?${strParams}` : '');
     const token = fnGetToken();
-    let data = await fetch(url, {
+    let data = await fetchWithTimeout(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
     })
-      .then((response) => {
-        return response.json();
-      })
+      .then(parseResponse)
       .then((response) => {
         if (response.status === 'success' || response.status === 200) {
           if (typeof onSuccess === 'function') onSuccess(response);
@@ -362,15 +397,15 @@ const request = {
       formData.append('files', item.file);
     });
     const token = fnGetToken();
-    fetch(`${urlAPI}${url}`, {
+    // Los uploads pueden tardar más que un request JSON típico en redes lentas.
+    fetchWithTimeout(`${urlAPI}${url}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
       },
       body: formData
-    }).then((response) => {
-      return response.json();
-    })
+    }, 120000)
+      .then(parseResponse)
       .then((response) => {
         if (response.status === "success" || response.status === 200) {
           if (typeof fnSuccess === 'function') fnSuccess(response);
