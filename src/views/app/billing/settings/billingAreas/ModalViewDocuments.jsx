@@ -1,5 +1,5 @@
 import React from 'react'
-import useTableConf from './useTableConf';
+import { useTableConfig } from '@Hooks';
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from "@/helpers/Utils";
@@ -9,7 +9,23 @@ const ModalViewDocuments = (props) => {
   const { data, setOpen } = props;
   const { tableData, fnViewDocument } = data;
 
-  const { tableInfo } = useTableConf(tableData, fnViewDocument);
+  const { tableInfo } = useTableConfig({
+    title: IntlMessages("page.billingAreas.table.title"),
+    columns: [
+      { text: IntlMessages("page.billingAreas.table.name"), dataField: "name", headerStyle: { 'width': '55%' } },
+      { text: IntlMessages("page.billingAreas.table.active"), dataField: "status", type: 'boolean', headerStyle: { 'width': '20%' } },
+    ],
+    data: tableData,
+    actions: [{
+      color: 'primary',
+      icon: 'eye',
+      toolTip: IntlMessages('button.view'),
+      onClick: fnViewDocument
+    }],
+    options: {
+      enabledRowSelection: false
+    }
+  });
 
   return (
     <>

@@ -27,7 +27,7 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 - [ ] Falta cobertura de tests para `core.js` en sí (requiere mockear `fetch`/Redux store/`localStorage`) — quedó fuera de este pase.
 
 **Duplicación de patrones de UI**
-- [ ] Extraer `useTableConf` repetido en `settings/*` a un hook compartido `buildTableConfig(...)`.
+- [x] Extraer `useTableConf` repetido en `settings/*` a un hook compartido `buildTableConfig(...)`. *(Resuelto: nuevo `src/hooks/useTableConfig.js` (named export, re-exportado desde `@Hooks`), consumido por `billingAreas/ModalViewDocuments.jsx`, `cashBoxes/Content.js` y `discounts/Content.js`. Borrados los 3 `useTableConf.js` duplicados. Verificado en navegador: las 3 pantallas renderizan sus tablas con columnas/acciones/traducciones correctas.)*
 - [ ] Extraer `fnExportToXLSX` (17 implementaciones) a un hook `useExportExcel`.
 - [ ] Unificar contrato de "select" (`{value,label}` vs `{id,name}`) entre `SearchSelect` y `SimpleSelect`.
 - [ ] Evaluar consolidar duplicidades de librería: tablas (`XReactTable` / `ReactTableEdit` / `SimpleTable`), calendarios (`react-big-calendar` + FullCalendar), datepickers (`react-datepicker` + `react-datetime`), dropzone (`react-dropzone` + `react-dropzone-component`).
