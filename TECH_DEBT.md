@@ -49,7 +49,8 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 
 ## 🟡 Bajo
 
-- [ ] Borrar código muerto: `src/App.jsx` (scaffold de create-vite), `src/AppRouter.js`, `firebaseConfig` sin uso en `defaultValues.js`, dependencia `motion` (0 imports), paquete npm `bootstrap-icons` (se usa copia vendored de 7.5 MB en su lugar).
+- [ ] Borrar código muerto: `src/App.jsx` (scaffold de create-vite), `src/AppRouter.js`, `firebaseConfig` sin uso en `defaultValues.js`. *(`motion` y `bootstrap-icons` ya se desinstalaron — ver auditoría de `package.json` más abajo.)*
+- [x] Auditoría de `package.json`: desinstalados `bootstrap-icons`, `motion`, `redux-thunk` (redundante desde la migración a Redux Toolkit — `configureStore` ya incluye thunk) y `vite-tsconfig-paths` (devDependency, comentada y nunca activa en `vite.config.js`; se limpió también la línea de import comentada). `dotenv`, `env-var`, `archiver`, `basic-ftp`, `ssh2`, `ssh2-sftp-client`, `fs-extra` tienen 0 uso en el repo pero se dejaron a propósito — muy probablemente las usa `post-build.js` (el script de deploy gitignoreado, ausente del working tree) y no hay forma de confirmarlo sin ese archivo. Verificado con build + npm test + navegador.
 - [ ] Migrar los 27 archivos que usan `moment` directo a `DateHelper` (que ya envuelve `dayjs`) y sacar `moment` del bundle.
 - [ ] Migrar los 2 componentes de clase restantes (`Sidebar.jsx`, `NotificationContainer.js`) a hooks. *(`dropzone/index.js`, el tercero, se borró por completo al consolidar librerías — ver bloque Medio.)*
 - [ ] Reactivar `React.StrictMode` en `src/main.js` (está comentado).
