@@ -153,7 +153,7 @@ export const HotelCheckOutToday = ({ setLoading }) => {
                       <td>{item.currentDays}</td>
                       <td><Button color='info' onClick={() => fnGotoViewBooking(item.bookingId)} ><i className='bi bi-receipt'></i></Button></td>
                     </tr>)
-                  }) : <tr><td className='text-center' colSpan={4}>No Hay Datos Disponibles</td></tr>}
+                  }) : <tr><td className='text-center' colSpan={4}>{IntlMessages("table.noDataAvailable")}</td></tr>}
                 </tbody>
               </Table>
             </CardBody>

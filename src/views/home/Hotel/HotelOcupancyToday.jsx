@@ -87,7 +87,7 @@ export const HotelOccupancyToday = ({ setLoading, setCurrentReservation, setOpen
                       <td>{item.currentDays}</td>
                       <td><Button color='primary' onClick={() => fnGotoViewBooking(item.bookingId)} ><i className='bi bi-eye'></i></Button></td>
                     </tr>)
-                  }) : <tr><td className='text-center' colSpan={4}> No hay datos Disponibles</td></tr>}
+                  }) : <tr><td className='text-center' colSpan={4}>{IntlMessages("table.noDataAvailable")}</td></tr>}
                 </tbody>
               </Table>
             </CardBody>

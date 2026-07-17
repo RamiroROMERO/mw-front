@@ -3022,7 +3022,15 @@ const esLang = {
   "page.calculationBenefits.label.timeWorked": "Tiempo Laborado",
   "page.calculationBenefits.label.salaries": "Salarios",
   "page.calculationBenefits.label.otherPayments": "Otros Pagos",
-  "page.calculationBenefits.modal.generatePayments.title": "Generar Plan de Pago"
+  "page.calculationBenefits.modal.generatePayments.title": "Generar Plan de Pago",
+
+  /* Claves agregadas al migrar strings hardcodeados (Hotel/uploads) — ver TECH_DEBT.md */
+  "uploadImages.dropzone.placeholder": "Arrastra y suelta imágenes aquí, o haz clic para seleccionar",
+  "button.clearFiles": "Limpiar",
+  "button.viewFile": "Ver Archivo",
+  "input.mealType": "Plan de Alimentación",
+  "button.reserve": "Reservar",
+  "table.noDataAvailable": "No Hay Datos Disponibles"
 };
 
 export default esLang;

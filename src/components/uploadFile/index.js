@@ -62,11 +62,11 @@ const UploadFile = ({ filePath, setFilePath }) => {
   useEffect(() => {
     if (filePath === "") {
       setIcon('large-icon bi bi-cloud-upload');
-      setNameFile("Subir Archivos");
+      setNameFile(IntlMessages("button.upload"));
       setShowButtonView('none');
     } else {
       setIcon('large-icon bi bi-folder-check');
-      setNameFile("Ver Archivo");
+      setNameFile(IntlMessages("button.viewFile"));
       setShowButtonView('block');
     }
   }, [filePath]);

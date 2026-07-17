@@ -3025,7 +3025,15 @@ const enLang = {
   "page.common.validation.seller": "Please select the salesperson!",
   "page.quotes.terms": "Terms",
   "page.quotes.terms.deliveryTimes": "Delivery Time",
-  "page.quotes.terms.paymentMethod": "Payment Method"
+  "page.quotes.terms.paymentMethod": "Payment Method",
+
+  /* Keys added to migrate hardcoded strings (Hotel/uploads) — see TECH_DEBT.md */
+  "uploadImages.dropzone.placeholder": "Drag and drop images here, or click to select",
+  "button.clearFiles": "Clear",
+  "button.viewFile": "View File",
+  "input.mealType": "Meal Plan",
+  "button.reserve": "Book",
+  "table.noDataAvailable": "No Data Available"
 };
 
 export default enLang;

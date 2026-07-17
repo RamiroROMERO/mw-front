@@ -10,6 +10,7 @@ import { useDropzone } from "react-dropzone";
 import { request } from '@/helpers/core';
 import { PATH_FILES } from '/src/helpers/pathFiles';
 import { Colxx } from '../common/CustomBootstrap';
+import IntlMessages from '@/helpers/IntlMessages';
 
 const UploadImages = ({title="", setDataImages, imagesSaved=[], fnDeleteImages=()=>{}}) => {
   const [images, setImages] = useState([]);
@@ -122,7 +123,7 @@ const UploadImages = ({title="", setDataImages, imagesSaved=[], fnDeleteImages=(
           <input {...getInputProps()} />
           {images.length === 0 ? (
             <p className="text-muted m-0">
-              Arrastra y suelta imágenes aquí, o haz clic para seleccionar
+              <IntlMessages id="uploadImages.dropzone.placeholder" />
             </p>
           ) : (
             images.map((file, index) => (
@@ -178,7 +179,7 @@ const UploadImages = ({title="", setDataImages, imagesSaved=[], fnDeleteImages=(
             onClick={clearFiles}
             style={{ borderRadius: "8px" }}
           >
-            Limpiar
+            <IntlMessages id="button.clearFiles" />
           </Button>
         )}
       </CardBody>

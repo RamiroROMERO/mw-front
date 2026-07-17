@@ -39,7 +39,7 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 
 **i18n**
 - [x] Sincronizar claves entre `en_US.js` y `es_ES.js`. *(Resuelto: se agregaron las 28 claves que faltaban en inglés, 1 que faltaba en español (`button.send`), y se corrigió un typo (`commin.price` → `common.price`) que hacía que ambos locales tuvieran esa clave con nombres distintos. Ambos locales quedan con 2901 claves idénticas. Se agregó `src/lang/locales/locales.test.js` (vía Vitest, ya que no hay CI) para que no vuelva a desincronizarse sin que falle `npm test`.)*
-- [ ] Migrar strings hardcodeados a `IntlMessages`/`FormattedMessage` en módulo Hotel y componentes de upload genéricos.
+- [x] Migrar strings hardcodeados a `IntlMessages`/`FormattedMessage` en módulo Hotel y componentes de upload genéricos. *(Resuelto: `UploadImages.jsx`, `uploadFile/index.js`, `CardBooking.jsx` (incluyendo más strings de los originalmente detectados: "Capacidad", "Reservar", "Ver Detalle"), `HotelCheckOutToday.jsx` y `HotelOcupancyToday.jsx` (mismo caso "No Hay Datos Disponibles" repetido, no detectado antes). Claves nuevas agregadas a ambos locales, test de sincronización sigue en verde.)*
 
 ## 🟡 Bajo
 
