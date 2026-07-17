@@ -18,7 +18,7 @@ Multiwork 2.0 is a multi-tenant/white-label ERP frontend (React 19 + Vite) cover
 
 - Source is **plain JavaScript with JSX inside `.js` files**, not `.jsx` — this is intentional (Vite is configured with a custom esbuild loader for it). `src/App.js` is the real app root; `src/App.jsx` is dead scaffold code from `create-vite` and is not imported anywhere — don't edit it thinking it's live.
 - Entry point is `src/main.js` (loaded directly by `index.html`), not `main.jsx`.
-- State management is classic Redux (not Redux Toolkit) with `redux-thunk` and `redux-saga`. Sagas live in `src/redux/sagas.js`.
+- State management uses Redux Toolkit (`configureStore`/`createSlice` in `src/redux/stores.js` and the 4 reducer files) plus `redux-saga` (kept only for the auth login/logout flow, `src/redux/sagas.js`). The slices' `extraReducers` intentionally key off the same string action-type constants (`src/redux/contants.js`) the saga and existing action creators already use — don't switch a slice to its own auto-generated actions without checking whether the saga or another reducer still listens for the old type string.
 - Routing is `react-router-dom` v7 via `HashRouter`, with route trees split by business domain under `src/router/` (e.g. `BillingRoutes.js`, `HRRoutes.js`).
 - Path aliases (`@/*`, `@Components/*`, `@Constants/*`, `@Containers/*`, `@Helpers/*`, `@Hooks/*`, `@Layouts/*`, `@Redux/*`, `@Router/*`, `@Views/*`) are defined in **both** `jsconfig.json` and `vite.config.js`'s `resolve.alias` — if you add or change an alias, update both files or the IDE and build will diverge.
 - Both `dayjs` and `moment` are in use — check which one a given file already imports before adding date logic, don't mix them in the same module.

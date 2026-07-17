@@ -1,3 +1,4 @@
+import { createSlice } from '@reduxjs/toolkit';
 import {
   defaultMenuType,
   subHiddenBreakpoint,
@@ -11,7 +12,7 @@ import {
   MENU_CHANGE_HAS_SUB_ITEM_STATUS,
 } from '../contants';
 
-const INIT_STATE = {
+const initialState = {
   containerClassnames: defaultMenuType,
   subHiddenBreakpoint,
   menuHiddenBreakpoint,
@@ -19,32 +20,32 @@ const INIT_STATE = {
   selectedMenuHasSubItems: defaultMenuType === 'menu-default', // if you use menu-sub-hidden as default menu type, set value of this variable to false
 };
 
-export default (state = INIT_STATE, action) => {
-  switch (action.type) {
-    case MENU_CHANGE_HAS_SUB_ITEM_STATUS:
-      return { ...state, selectedMenuHasSubItems: action.payload };
+// Mismos action types que src/redux/menu/actions.js ya despacha — solo se
+// reemplaza el switch por createSlice (Immer), sin cambiar ningún type.
+const menuSlice = createSlice({
+  name: 'menu',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(MENU_CHANGE_HAS_SUB_ITEM_STATUS, (state, action) => {
+        state.selectedMenuHasSubItems = action.payload;
+      })
+      .addCase(MENU_SET_CLASSNAMES, (state, action) => {
+        state.containerClassnames = action.payload.containerClassnames;
+        state.menuClickCount = action.payload.menuClickCount;
+      })
+      .addCase(MENU_CLICK_MOBILE_MENU, (state, action) => {
+        state.containerClassnames = action.payload.containerClassnames;
+        state.menuClickCount = action.payload.menuClickCount;
+      })
+      .addCase(MENU_CONTAINER_ADD_CLASSNAME, (state, action) => {
+        state.containerClassnames = action.payload;
+      })
+      .addCase(MENU_CHANGE_DEFAULT_CLASSES, (state, action) => {
+        state.containerClassnames = action.payload;
+      });
+  },
+});
 
-    case MENU_SET_CLASSNAMES:
-      return {
-        ...state,
-        containerClassnames: action.payload.containerClassnames,
-        menuClickCount: action.payload.menuClickCount,
-      };
-
-    case MENU_CLICK_MOBILE_MENU:
-      return {
-        ...state,
-        containerClassnames: action.payload.containerClassnames,
-        menuClickCount: action.payload.menuClickCount,
-      };
-
-    case MENU_CONTAINER_ADD_CLASSNAME:
-      return { ...state, containerClassnames: action.payload };
-
-    case MENU_CHANGE_DEFAULT_CLASSES:
-      return { ...state, containerClassnames: action.payload };
-
-    default:
-      return { ...state };
-  }
-};
+export default menuSlice.reducer;

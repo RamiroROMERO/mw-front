@@ -1,16 +1,21 @@
+import { createSlice } from '@reduxjs/toolkit';
 import { getCurrentLanguage } from '@/helpers/Utils';
 import { CHANGE_LOCALE } from '../contants';
 
-const INIT_STATE = {
+const initialState = {
   locale: getCurrentLanguage(),
 };
 
-export default (state = INIT_STATE, action) => {
-  switch (action.type) {
-    case CHANGE_LOCALE:
-      return { ...state, locale: action.payload };
+// Mismo action type que src/redux/settings/actions.js ya despacha.
+const settingsSlice = createSlice({
+  name: 'settings',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(CHANGE_LOCALE, (state, action) => {
+      state.locale = action.payload;
+    });
+  },
+});
 
-    default:
-      return { ...state };
-  }
-};
+export default settingsSlice.reducer;
