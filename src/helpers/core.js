@@ -88,6 +88,28 @@ const parseResponse = async (response) => {
   return body;
 };
 
+// Igual que parseResponse pero para endpoints que devuelven un blob (PDFs,
+// imágenes, etc.) en vez de JSON. En error, intenta leer el body como texto
+// (muchos backends devuelven JSON de error incluso en un endpoint de blob)
+// antes de caer a un mensaje genérico basado en el status HTTP.
+const parseBlobResponse = async (response) => {
+  if (!response.ok) {
+    let errorBody;
+    try {
+      const text = await response.text();
+      errorBody = JSON.parse(text);
+    } catch {
+      errorBody = {
+        status: 'error',
+        statusCode: response.status,
+        messages: [{ description: response.statusText || 'Error de red' }],
+      };
+    }
+    throw errorBody;
+  }
+  return response.blob();
+};
+
 const request = {
   moveScrollTop: () => {
     window.scrollTo({
@@ -273,7 +295,7 @@ const request = {
   },
   GETPdf: (url, data, fileName, fnError) => {
     const token = fnGetToken();
-    fetch(`${urlAPI}${url}`, {
+    fetchWithTimeout(`${urlAPI}${url}`, {
       async: true,
       crossDomain: true,
       method: 'POST',
@@ -284,15 +306,13 @@ const request = {
       contentType: 'JSON',
       body: JSON.stringify(data),
     })
-      .then((response) => {
-        return response.blob();
-      })
-      .then((response) => {
+      .then(parseBlobResponse)
+      .then((blob) => {
         const a = document.createElement("a");
-        a.href = window.URL.createObjectURL(response);
+        a.href = window.URL.createObjectURL(blob);
         a.download = fileName;
         a.click();
-        return response.blob();
+        return blob;
       })
       .catch((err) => {
         if (typeof fnError === 'function') {
@@ -305,7 +325,7 @@ const request = {
   },
   GETPdfUrl: (url, data, fnSuccess, fnError) => {
     const token = fnGetToken();
-    fetch(`${urlAPI}${url}`, {
+    fetchWithTimeout(`${urlAPI}${url}`, {
       async: true,
       crossDomain: true,
       method: 'POST',
@@ -316,9 +336,7 @@ const request = {
       contentType: 'JSON',
       body: JSON.stringify(data),
     })
-      .then((response) => {
-        return response.blob();
-      })
+      .then(parseBlobResponse)
       .then((response) => {
         const url = URL.createObjectURL(response);
         if (typeof fnSuccess === 'function') {
@@ -376,14 +394,14 @@ const request = {
   getFile: async (url) => {
     const baseUrl = url.split('?')[0];
     const token = urlPublic.includes(baseUrl) ? '' : fnGetToken();
-    const dataFile = await fetch(`${urlAPI}${url}`, {
+    const dataFile = await fetchWithTimeout(`${urlAPI}${url}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
     });
-    const fileBlob = await dataFile.blob();
+    const fileBlob = await parseBlobResponse(dataFile);
     const fileObjectURL = URL.createObjectURL(fileBlob);
     return fileObjectURL;
   },
