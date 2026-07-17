@@ -1,6 +1,7 @@
 import { Buffer } from 'buffer';
 import notification from '@Containers/ui/Notifications';
 import { logoutUser } from '@Redux/actions';
+import { getStore } from '@Redux/stores';
 
 import envs from './envs';
 const urlAPI = envs.URL_API;
@@ -16,16 +17,32 @@ function isTokenExpired(token) {
   return expired
 }
 
+// La saga de auth (src/redux/auth/saga.js) espera un "history" invocable como
+// react-router's navigate(path, options). Fuera del árbol de React no hay acceso
+// a useNavigate(), así que se normaliza a window.location.hash (la app usa HashRouter).
+const forceNavigateToLogin = (path = '/login') => {
+  const clean = path.replace(/^\/?#?/, '');
+  window.location.hash = clean.startsWith('/') ? clean : `/${clean}`;
+};
+
+const dispatchLogout = () => {
+  const store = getStore();
+  if (store) {
+    store.dispatch(logoutUser(forceNavigateToLogin));
+  } else {
+    forceNavigateToLogin();
+  }
+};
+
 const fnGetToken = () => {
   const dataUser = JSON.parse(localStorage.getItem('mw_current_user'));
   if (!dataUser) {
-    logoutUser();
+    dispatchLogout();
     return;
   }
   if (isTokenExpired(dataUser.token)) {
-    logoutUser();
     localStorage.removeItem('mw_current_user');
-    // window.location.href = "#/login";
+    dispatchLogout();
     return;
   }
   return dataUser.token;

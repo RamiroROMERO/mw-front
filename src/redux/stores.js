@@ -9,7 +9,8 @@ const module = window;
 
 const middlewares = [sagaMiddleware];
 
-// eslint-disable-next-line import/prefer-default-export
+let storeInstance;
+
 export function configureStore(initialState) {
   const store = createStore(
     reducers,
@@ -26,5 +27,12 @@ export function configureStore(initialState) {
     });
   }
 
+  storeInstance = store;
   return store;
+}
+
+// Permite despachar acciones desde fuera del árbol de React (ej. src/helpers/core.js
+// al detectar un token expirado), donde no hay acceso a useDispatch/useSelector.
+export function getStore() {
+  return storeInstance;
 }

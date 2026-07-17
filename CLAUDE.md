@@ -11,7 +11,8 @@ Multiwork 2.0 is a multi-tenant/white-label ERP frontend (React 19 + Vite) cover
 - `npm run dev` — start the Vite dev server (port 3000, polling enabled for file watching). Use the base `.env` (demo mode) unless told otherwise.
 - `npm run lint` — runs via `eslint.config.js` (flat config, migrated from the old `.eslintrc.cjs`). It currently reports ~7000 pre-existing findings (mostly unused `import React` statements left over from the old JSX transform, now unnecessary since `react/jsx-runtime` is enabled) — this is a known backlog, not something introduced by your changes. Don't try to fix it in bulk unless asked; focus lint attention on files you actually touch.
 - `npm run build[:brand]` — **do not run locally**. Every build script pipes into `node post-build.js <brand>`, and both `post-build.js` and `vps.config.json` are gitignored and absent from the working tree (deploy tooling supplied out-of-band). Stick to `npm run dev` / `vite preview` for local verification.
-- There is no test suite, no CI (no `.github/workflows`), and no formatter (no Prettier/Biome) configured.
+- `npm test` — runs Vitest once (`npm run test:watch` for watch mode). Config lives inline in `vite.config.js`'s `test` key (environment: `jsdom`, since some helpers read `window` at module scope). Test coverage is minimal so far (`DateHelper`, `Utils` pure functions) — see `TECH_DEBT.md`.
+- No CI (no `.github/workflows`) and no formatter (no Prettier/Biome) configured.
 
 ## Code conventions
 

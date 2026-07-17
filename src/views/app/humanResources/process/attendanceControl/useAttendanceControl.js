@@ -36,7 +36,7 @@ export const useAttendanceControl = ({ setLoading }) => {
     setNameFile(file.name);
     if (file) {
       const reader = new FileReader();
-      reader.onload = e => {
+      reader.onload = async e => {
         const data = e.target?.result;
 
         // get excel data
@@ -44,7 +44,7 @@ export const useAttendanceControl = ({ setLoading }) => {
         const priceCalculateColumns = [];
         const startColumn = "A"; const startRow = 2;
         const endColumn = "R"; const endRow = 1000;
-        const excelData = getExcelData(
+        const excelData = await getExcelData(
           data, requiredColumns,
           priceCalculateColumns,
           startColumn, startRow,

@@ -65,5 +65,9 @@ export default defineConfig({
     loader: "jsx",
     include: ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", sourceJSPattern],
     exclude: [],
-  }
+  },
+  test: {
+    environment: 'jsdom',
+    include: ['src/**/*.test.{js,jsx}'],
+  },
 })
