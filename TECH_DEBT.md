@@ -30,7 +30,13 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 - [x] Extraer `useTableConf` repetido en `settings/*` a un hook compartido `buildTableConfig(...)`. *(Resuelto: nuevo `src/hooks/useTableConfig.js` (named export, re-exportado desde `@Hooks`), consumido por `billingAreas/ModalViewDocuments.jsx`, `cashBoxes/Content.js` y `discounts/Content.js`. Borrados los 3 `useTableConf.js` duplicados. Verificado en navegador: las 3 pantallas renderizan sus tablas con columnas/acciones/traducciones correctas.)*
 - [x] Extraer `fnExportToXLSX` (17 implementaciones) a un hook `useExportExcel`. *(Resuelto: nuevo `src/hooks/useExportExcel.js`, consumido en los 17 call sites. De paso corrige un bug real que tenían los 17: como no había try/catch, si la exportación fallaba la promesa quedaba rechazada sin manejar y `setLoading(false)` nunca se ejecutaba (loader trabado para siempre); ahora el hook usa try/catch/finally y muestra un toast de error. Verificado con build + tests + navegador en 4 pantallas, sin errores nuevos.)*
 - [ ] Unificar contrato de "select" (`{value,label}` vs `{id,name}`) entre `SearchSelect` y `SimpleSelect`.
-- [ ] Evaluar consolidar duplicidades de librería: tablas (`XReactTable` / `ReactTableEdit` / `SimpleTable`), calendarios (`react-big-calendar` + FullCalendar), datepickers (`react-datepicker` + `react-datetime`), dropzone (`react-dropzone` + `react-dropzone-component`).
+- [x] Evaluar consolidar duplicidades de librería: tablas (`XReactTable` / `ReactTableEdit` / `SimpleTable`), calendarios (`react-big-calendar` + FullCalendar), datepickers (`react-datepicker` + `react-datetime`), dropzone (`react-dropzone` + `react-dropzone-component`). *(Resuelto para datepicker/dropzone/calendario/iconos — tablas queda pendiente, ver abajo:*
+  - ***Datepickers**: los 4 usos reales de `DateTimeCalendar` (react-datetime + moment) migrados a react-datepicker con `showTimeSelect` (mismo output `"YYYY-MM-DD HH:mm:ss"`, cero cambios en los call sites). `react-datepicker` ya era la librería dominante (69 usos vía `dateCalendar`). Se descubrió y arregló de paso un bug real: `uploadFile/index.js` llamaba al hook `IntlMessages` dentro de un `useEffect` (viola Rules of Hooks), causando un crash real en las 4 pantallas recién verificadas — no relacionado a esta tarea, pero se coló en el commit de i18n de antes en la sesión.*
+  - ***Dropzone**: `react-dropzone-component` (`src/components/dropzone/`) resultó ser código muerto — su único consumidor (`views/app/production/...`) pertenece a un módulo entero comentado/sin ruta en `App.js`. Borrado junto con el paquete; `react-dropzone` (hooks, usado por `UploadImages.jsx`) queda como única librería de dropzone real.*
+  - ***Calendario**: `react-big-calendar` (`views/app/start/start.jsx`) también resultó ser código muerto (sin ruta, sin importadores vivos) — no era una duplicación real en la app corriendo. Se sacó el paquete; FullCalendar queda como la única librería de calendario en uso. `start.jsx`/`ModalViewProject.jsx` quedan con un import colgante, mismo tratamiento que el módulo `production`.*
+  - ***Iconos**: `@fortawesome/react-fontawesome` tenía un solo import, y ni siquiera se usaba dentro del archivo (`CardHotel.jsx` usa clases `bi bi-*` de bootstrap-icons). Import muerto eliminado, paquete desinstalado.*
+  - ***Datepicker duplicado sin uso**: `src/components/datePicker/` (otro wrapper de react-datepicker, distinto de `dateCalendar`) tenía 0 consumidores — borrado.*
+  - *Verificado con build + npm test + navegador en las 4 pantallas de datepicker (calendario + selector de hora abren correctamente, valor final con fecha y hora).)*
 - [ ] Refactorizar hooks monolíticos de pantalla (`useEmployees.js` 962 líneas, `usePurchases.js` 420 líneas) separando formulario/validación/llamadas API.
 
 **Infra / build**
@@ -45,7 +51,7 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 
 - [ ] Borrar código muerto: `src/App.jsx` (scaffold de create-vite), `src/AppRouter.js`, `firebaseConfig` sin uso en `defaultValues.js`, dependencia `motion` (0 imports), paquete npm `bootstrap-icons` (se usa copia vendored de 7.5 MB en su lugar).
 - [ ] Migrar los 27 archivos que usan `moment` directo a `DateHelper` (que ya envuelve `dayjs`) y sacar `moment` del bundle.
-- [ ] Migrar los 3 componentes de clase restantes (`Sidebar.jsx`, `NotificationContainer.js`, `dropzone/index.js`) a hooks.
+- [ ] Migrar los 2 componentes de clase restantes (`Sidebar.jsx`, `NotificationContainer.js`) a hooks. *(`dropzone/index.js`, el tercero, se borró por completo al consolidar librerías — ver bloque Medio.)*
 - [ ] Reactivar `React.StrictMode` en `src/main.js` (está comentado).
 - [ ] Limpiar imports `import React` innecesarios (428 archivos) — correr `eslint --fix` (57 auto-fixables) y continuar gradualmente.
 - [ ] Mejorar accesibilidad: ampliar `aria-*` en modales/tablas (casi inexistente hoy); agregar `role="button"`/`tabIndex`/manejo de teclado en `src/components/uploadFile/Content.jsx` (`<div onClick>` no accesible).
@@ -54,6 +60,8 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 - [ ] Fijar y documentar una convención de alias de import (`@Helpers` vs `@/helpers`, hoy mezclados) y de extensión de archivo (`.js` vs `.jsx` para componentes con JSX).
 - [ ] Corregir typos en nombres de archivo: `useChashBoxes.js` → `useCashBoxes.js`, `redux/contants.js` → `redux/constants.js`.
 - [ ] Plan de actualización incremental de dependencias desactualizadas (Vite 6→8, react-intl 7→10, sass, etc.), con testing manual dado que no hay tests automatizados todavía.
+- [ ] Módulos enteros huérfanos sin ruta ni importadores vivos, hallados al consolidar librerías: `src/views/app/production/**` + `src/views/app/index.js` (router alternativo muerto que los referencia), y `src/views/app/start/**` (`start.jsx`, `ModalViewProject.jsx`). Ambos quedaron con imports colgantes tras borrar `dropzone/index.js` y desinstalar `react-big-calendar` respectivamente — inofensivo porque nada los importa desde el grafo de módulos real, pero conviene decidir si se recuperan (parece funcionalidad de "production"/proyectos a medio terminar) o se borran del todo.
+- [ ] Warning de React en `DetailMeeting.jsx` (meetingNotices): "Can't perform a React state update on a component that hasn't mounted yet" — parece preexistente (no relacionado a los cambios de esta sesión), sugiere un `setState` disparado de forma asíncrona antes del montaje. No investigado a fondo.
 
 ---
 

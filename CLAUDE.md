@@ -23,6 +23,7 @@ Multiwork 2.0 is a multi-tenant/white-label ERP frontend (React 19 + Vite) cover
 - Path aliases (`@/*`, `@Components/*`, `@Constants/*`, `@Containers/*`, `@Helpers/*`, `@Hooks/*`, `@Layouts/*`, `@Redux/*`, `@Router/*`, `@Views/*`) are defined in **both** `jsconfig.json` and `vite.config.js`'s `resolve.alias` — if you add or change an alias, update both files or the IDE and build will diverge.
 - Both `dayjs` and `moment` are in use — check which one a given file already imports before adding date logic, don't mix them in the same module.
 - `src/redux/contants.js` is a real, existing filename (typo for "constants") — distinct from the top-level `src/constants/` folder and the `@Constants` alias. Don't "fix" the typo without checking all imports.
+- Duplicate-library cleanup: `react-datepicker` (via `@Components/dateCalendar` and `@Components/dateTimeCalendar`) is the only date-picker library — `react-datetime` was removed. `react-dropzone` (via `UploadImages.jsx`) is the only dropzone library — `react-dropzone-component` was removed. FullCalendar is the only calendar library — `react-big-calendar` was removed. `@fortawesome/react-fontawesome` was removed (dead import). `src/views/app/production/**` and `src/views/app/start/**` are orphaned modules (no route, no live importers) left with dangling imports to the removed libraries — harmless since nothing imports them, but don't "fix" those imports without first checking whether the module is meant to be revived or deleted (see `TECH_DEBT.md`).
 
 ## Git workflow
 

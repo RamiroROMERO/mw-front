@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useIntl } from 'react-intl';
 import { IntlMessages } from '@/helpers/Utils';
 import Content from './Content'
 import { request } from '@Helpers/core';
@@ -7,6 +8,7 @@ import ViewPdf from '@Components/ViewPDF/ViewPdf';
 import Modal from '@/components/modal';
 
 const UploadFile = ({ filePath, setFilePath }) => {
+  const intl = useIntl();
   const [icon, setIcon] = useState('large-icon bi bi-cloud-upload');
   const [nameFile, setNameFile] = useState(IntlMessages("button.upload"));
   const [openViewFile, setOpenViewFile] = useState(false);
@@ -62,14 +64,14 @@ const UploadFile = ({ filePath, setFilePath }) => {
   useEffect(() => {
     if (filePath === "") {
       setIcon('large-icon bi bi-cloud-upload');
-      setNameFile(IntlMessages("button.upload"));
+      setNameFile(intl.formatMessage({ id: "button.upload" }));
       setShowButtonView('none');
     } else {
       setIcon('large-icon bi bi-folder-check');
-      setNameFile(IntlMessages("button.viewFile"));
+      setNameFile(intl.formatMessage({ id: "button.viewFile" }));
       setShowButtonView('block');
     }
-  }, [filePath]);
+  }, [filePath, intl]);
 
   return (
     <>
