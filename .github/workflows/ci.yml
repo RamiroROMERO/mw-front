@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build (vite build only)
+        # `npm run build` shells out to post-build.js/vps.config.json, which
+        # are gitignored deploy tooling not present in the repo — see
+        # CLAUDE.md. CI only needs to prove the app compiles.
+        run: npx vite build
+
+      - name: Test
+        run: npm test
+
+      - name: Lint (informational)
+        # ~7000 pre-existing findings (see TECH_DEBT.md) make this fail on
+        # every run today. Non-blocking until that backlog is cleaned up —
+        # remove continue-on-error once `npm run lint` is green.
+        run: npm run lint
+        continue-on-error: true

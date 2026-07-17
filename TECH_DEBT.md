@@ -34,7 +34,7 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 - [ ] Refactorizar hooks monolíticos de pantalla (`useEmployees.js` 962 líneas, `usePurchases.js` 420 líneas) separando formulario/validación/llamadas API.
 
 **Infra / build**
-- [ ] Migrar el pipeline de build multi-marca (hoy depende de `post-build.js`/`vps.config.json` fuera del repo) a CI/CD versionado (ej. GitHub Actions, matrix build por marca).
+- [x] Migrar el pipeline de build multi-marca (hoy depende de `post-build.js`/`vps.config.json` fuera del repo) a CI/CD versionado (ej. GitHub Actions, matrix build por marca). *(Parcial: se agregó `.github/workflows/ci.yml` (`npx vite build` + `npm test` en cada push/PR a main, `npm run lint` como paso informativo/no bloqueante dado el backlog de ~7000 hallazgos). No incluye deploy real — las credenciales FTP/SSH y el propio `post-build.js` no están en el repo, así que no hay forma de reconstruir el pipeline de deploy completo desde acá. Migrar el deploy real a CI/CD (matrix build por marca con secrets) queda pendiente y requiere que el equipo aporte esas credenciales.)*
 - [ ] Resolver inconsistencia de Bootstrap: `reactstrap@9` (Bootstrap 5) pero se carga CSS de Bootstrap 4.6.2 en runtime; eliminar 4 hojas de Bootstrap vendored sin usar (784 KB).
 
 **i18n**
