@@ -322,6 +322,7 @@ const esLang = {
   "start.modal.modalEdit.title": "Detalle del Documento",
   /* Buttons */
   "button.upload": "Subir Archivos",
+  "button.send": "Enviar",
   "button.generate": "Generar",
   "button.generateDetail": "Generar Detalle",
   "button.generateInvoice": " Generar Factura",

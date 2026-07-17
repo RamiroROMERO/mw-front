@@ -14,7 +14,7 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 ## 🟠 Medio
 
 **Redux / estado**
-- [ ] Borrar código Redux muerto: `src/redux/actions/`, `src/redux/reducers/` (duplicados sin uso), `src/redux/auth/mwReducer.js`, y `src/AppProvider.js`/`src/AppContext.js`/`src/AppRenderer.js` (implementación de auth paralela, rota, sin uso).
+- [x] Borrar código Redux muerto: `src/redux/actions/`, `src/redux/reducers/` (duplicados sin uso), `src/redux/auth/mwReducer.js`, y `src/AppProvider.js`/`src/AppContext.js`/`src/AppRenderer.js` (implementación de auth paralela, rota, sin uso). *(Resuelto: verificado con grep que nada los importaba por ruta explícita, borrados, y confirmado con `vite build` + `npm test` + chequeo en navegador que la app sigue funcionando igual.)*
 - [ ] Evaluar migrar el estado restante a Redux Toolkit (`createSlice`/`createAsyncThunk`) y eliminar `redux-saga` (hoy se usa para un solo saga de auth).
 
 **Cliente HTTP (`src/helpers/core.js`)**
@@ -22,7 +22,7 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 - [ ] Agregar timeout/cancelación (`AbortController`).
 - [ ] Invocar `fnFinally` realmente (hoy se recibe pero nunca se llama; cada hook duplica el apagado de `loading`).
 - [ ] Centralizar construcción de query strings con `URLSearchParams`/`encodeURIComponent` (hoy concatenación manual en ~156 archivos).
-- [ ] Decidir sobre `src/helpers/coreOld.js` (versión mejor pero sin uso) — terminar la migración o borrarlo.
+- [x] Decidir sobre `src/helpers/coreOld.js` (versión mejor pero sin uso) — terminar la migración o borrarlo. *(Resuelto: borrado, confirmado 0 imports por grep. Las mejoras reales que tenía — `response.ok`, timeout, `fnFinally` — quedan pendientes como refactor de `core.js` en sí, ver el ítem de "Cliente HTTP" más abajo.)*
 
 **Duplicación de patrones de UI**
 - [ ] Extraer `useTableConf` repetido en `settings/*` a un hook compartido `buildTableConfig(...)`.
@@ -36,7 +36,7 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 - [ ] Resolver inconsistencia de Bootstrap: `reactstrap@9` (Bootstrap 5) pero se carga CSS de Bootstrap 4.6.2 en runtime; eliminar 4 hojas de Bootstrap vendored sin usar (784 KB).
 
 **i18n**
-- [ ] Sincronizar claves entre `en_US.js` (2780) y `es_ES.js` (2738) — 42 de diferencia. Agregar check en CI.
+- [x] Sincronizar claves entre `en_US.js` y `es_ES.js`. *(Resuelto: se agregaron las 28 claves que faltaban en inglés, 1 que faltaba en español (`button.send`), y se corrigió un typo (`commin.price` → `common.price`) que hacía que ambos locales tuvieran esa clave con nombres distintos. Ambos locales quedan con 2901 claves idénticas. Se agregó `src/lang/locales/locales.test.js` (vía Vitest, ya que no hay CI) para que no vuelva a desincronizarse sin que falle `npm test`.)*
 - [ ] Migrar strings hardcodeados a `IntlMessages`/`FormattedMessage` en módulo Hotel y componentes de upload genéricos.
 
 ## 🟡 Bajo
