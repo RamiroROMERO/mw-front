@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useForm } from '@Hooks'
+import { useForm, useExportExcel } from '@Hooks'
 import { request } from '@Helpers/core'
 import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications'
@@ -7,6 +7,7 @@ import ViewPdf from '@/components/ViewPDF/ViewPdf';
 import ModalPrePayroll from './ModalPrePayroll';
 
 export const useResumePayroll = ({ setLoading, typePayroll, screenControl, adminControl }) => {
+  const { fnExport } = useExportExcel(setLoading);
   const currentYear = new Date().getFullYear();
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
   const enableDeletePayroll = adminControl.find(ctrl => ctrl.code === "07.02.016")?.active || false;
@@ -279,8 +280,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
         reportTitle: "Planilla Quincenal",
         nameXLSXFile: "Planilla.xlsx",
       };
-      await request.fnExportToXLSX("rrhh/process/weeklyPayrolls/exportPayrollXLXS", data, "Planilla.xlsx");
-      setLoading(false);
+      await fnExport("rrhh/process/weeklyPayrolls/exportPayrollXLXS", data, "Planilla.xlsx");
     }
   }
 

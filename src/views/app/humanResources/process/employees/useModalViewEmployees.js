@@ -1,6 +1,7 @@
-import { request } from '@Helpers/core';
+import { useExportExcel } from '@Hooks';
 
 export const useModalViewEmployees = ({setLoading}) => {
+  const { fnExport } = useExportExcel(setLoading);
 
   const fnExportXlsx = async()=>{
     setLoading(true);
@@ -63,8 +64,7 @@ export const useModalViewEmployees = ({setLoading}) => {
       reportTitle: "Reporte de Empleados",
       nameXLSXFile,
     };
-    await request.fnExportToXLSX("rrhh/process/employees/exportReportXlsx", data, nameXLSXFile);
-    setLoading(false);
+    await fnExport("rrhh/process/employees/exportReportXlsx", data, nameXLSXFile);
   }
 
   return (

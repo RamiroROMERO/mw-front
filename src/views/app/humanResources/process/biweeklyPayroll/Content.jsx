@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useForm } from '@Hooks'
+import { useForm, useExportExcel } from '@Hooks'
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { Card, CardBody, Row } from 'reactstrap';
 import { request } from '@Helpers/core';
@@ -14,6 +14,7 @@ import createNotification from '@Containers/ui/Notifications';
 import Confirmation from '@Containers/ui/confirmationMsg';
 
 const BiweeklyPayroll = ({ setLoading }) => {
+  const { fnExport } = useExportExcel(setLoading);
   const [listBiweeklies, setListBiweeklies] = useState([]);
   const [listEmployees, setListEmployees] = useState([]);
   const [listJobPositions, setListJobPositions] = useState([]);
@@ -165,8 +166,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
       reportTitle: "Planilla Quincenal",
       nameXLSXFile: "BiweeklyPayroll.xlsx",
     };
-    await request.fnExportToXLSX("rrhh/process/payrollBiweeklies/exportPayrollXLXS", data, "BiweeklyPayroll.xlsx");
-    setLoading(false);
+    await fnExport("rrhh/process/payrollBiweeklies/exportPayrollXLXS", data, "BiweeklyPayroll.xlsx");
   }
 
   const fnCancelPayroll = () => {

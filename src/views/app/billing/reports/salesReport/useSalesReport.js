@@ -1,10 +1,11 @@
 import { formatDate } from '@/helpers/Utils';
 import { request } from '@Helpers/core';
-import { useForm } from '@/hooks'
+import { useForm, useExportExcel } from '@/hooks'
 import { formatNumber, IntlMessages } from '@Helpers/Utils';
 import { useEffect, useState } from 'react'
 
 export const useSalesReport = ({ setLoading }) => {
+  const { fnExport } = useExportExcel(setLoading);
   const [listCustomers, setListCustomers] = useState([]);
   const [listSellers, setlistSellers] = useState([]);
   const [listStores, setListStores] = useState([]);
@@ -265,8 +266,7 @@ export const useSalesReport = ({ setLoading }) => {
       reportTitle: "Reporte General de Ventas",
       nameXLSXFile: "ReportedeVentasGeneral.xlsx",
     };
-    await request.fnExportToXLSX("billing/reports/generalSales/generalSalesXlsx", data, "ReportedeVentasGeneral.xlsx");
-    setLoading(false);
+    await fnExport("billing/reports/generalSales/generalSalesXlsx", data, "ReportedeVentasGeneral.xlsx");
   };
 
   const fnPrintReport = () => { };

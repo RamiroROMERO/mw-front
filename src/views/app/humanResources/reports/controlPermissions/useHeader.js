@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
-import { useForm } from '@/hooks';
+import { useForm, useExportExcel } from '@/hooks';
 
 export const useHeader = ({ setLoading, table, setTable, enableGenerateReport }) => {
+  const { fnExport } = useExportExcel(setLoading);
 
   const [employeeId, setEmployeeId] = useState(0);
 
@@ -50,8 +51,7 @@ export const useHeader = ({ setLoading, table, setTable, enableGenerateReport })
       reportTitle: "Control de Permisos",
       nameXLSXFile: "ControlDePermisos.xlsx",
     };
-    await request.fnExportToXLSX("rrhh/reports/exportPermissionstXLXS", data, "ControlDePermisos.xlsx");
-    setLoading(false);
+    await fnExport("rrhh/reports/exportPermissionstXLXS", data, "ControlDePermisos.xlsx");
   }
 
   const fnGetData = () => {

@@ -3030,7 +3030,8 @@ const esLang = {
   "button.viewFile": "Ver Archivo",
   "input.mealType": "Plan de Alimentación",
   "button.reserve": "Reservar",
-  "table.noDataAvailable": "No Hay Datos Disponibles"
+  "table.noDataAvailable": "No Hay Datos Disponibles",
+  "msg.export.record.error": "Ocurrió un error al exportar el archivo."
 };
 
 export default esLang;

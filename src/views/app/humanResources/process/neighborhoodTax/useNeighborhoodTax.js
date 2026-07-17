@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
+import { useExportExcel } from '@Hooks';
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 
 export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) => {
+  const { fnExport } = useExportExcel(setLoading);
   const currentYear = new Date().getFullYear();
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
@@ -177,8 +179,7 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
         reportTitle: "Planilla de Impuesto Vecinal",
         nameXLSXFile: "Planilla de Impuesto Vecinal.xlsx",
       };
-      await request.fnExportToXLSX("rrhh/process/weeklyPayrolls/exportPayrollXLXS", data, "Planilla de Impuesto Vecinal.xlsx");
-      setLoading(false);
+      await fnExport("rrhh/process/weeklyPayrolls/exportPayrollXLXS", data, "Planilla de Impuesto Vecinal.xlsx");
     }
   }
 

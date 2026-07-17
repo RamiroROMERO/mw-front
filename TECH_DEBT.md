@@ -28,7 +28,7 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 
 **Duplicación de patrones de UI**
 - [x] Extraer `useTableConf` repetido en `settings/*` a un hook compartido `buildTableConfig(...)`. *(Resuelto: nuevo `src/hooks/useTableConfig.js` (named export, re-exportado desde `@Hooks`), consumido por `billingAreas/ModalViewDocuments.jsx`, `cashBoxes/Content.js` y `discounts/Content.js`. Borrados los 3 `useTableConf.js` duplicados. Verificado en navegador: las 3 pantallas renderizan sus tablas con columnas/acciones/traducciones correctas.)*
-- [ ] Extraer `fnExportToXLSX` (17 implementaciones) a un hook `useExportExcel`.
+- [x] Extraer `fnExportToXLSX` (17 implementaciones) a un hook `useExportExcel`. *(Resuelto: nuevo `src/hooks/useExportExcel.js`, consumido en los 17 call sites. De paso corrige un bug real que tenían los 17: como no había try/catch, si la exportación fallaba la promesa quedaba rechazada sin manejar y `setLoading(false)` nunca se ejecutaba (loader trabado para siempre); ahora el hook usa try/catch/finally y muestra un toast de error. Verificado con build + tests + navegador en 4 pantallas, sin errores nuevos.)*
 - [ ] Unificar contrato de "select" (`{value,label}` vs `{id,name}`) entre `SearchSelect` y `SimpleSelect`.
 - [ ] Evaluar consolidar duplicidades de librería: tablas (`XReactTable` / `ReactTableEdit` / `SimpleTable`), calendarios (`react-big-calendar` + FullCalendar), datepickers (`react-datepicker` + `react-datetime`), dropzone (`react-dropzone` + `react-dropzone-component`).
 - [ ] Refactorizar hooks monolíticos de pantalla (`useEmployees.js` 962 líneas, `usePurchases.js` 420 líneas) separando formulario/validación/llamadas API.

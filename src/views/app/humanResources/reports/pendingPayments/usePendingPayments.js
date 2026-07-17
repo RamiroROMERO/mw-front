@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
+import { useExportExcel } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
 
 export const usePendingPayments = ({ setLoading, adminControl }) => {
+  const { fnExport } = useExportExcel(setLoading);
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.007")?.active || false;
 
   const [projectId, setProjectId] = useState(0);
@@ -94,8 +96,7 @@ export const usePendingPayments = ({ setLoading, adminControl }) => {
       reportTitle: "Control de Pagos",
       nameXLSXFile: "ControlDePagos.xlsx",
     };
-    await request.fnExportToXLSX("rrhh/process/paymentPlans/exportReportXLXS", data, "ControlDePagos.xlsx");
-    setLoading(false);
+    await fnExport("rrhh/process/paymentPlans/exportReportXLXS", data, "ControlDePagos.xlsx");
   }
 
   const fnGetData = () => {

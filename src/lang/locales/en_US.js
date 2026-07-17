@@ -3033,7 +3033,8 @@ const enLang = {
   "button.viewFile": "View File",
   "input.mealType": "Meal Plan",
   "button.reserve": "Book",
-  "table.noDataAvailable": "No Data Available"
+  "table.noDataAvailable": "No Data Available",
+  "msg.export.record.error": "An error occurred while exporting the file."
 };
 
 export default enLang;

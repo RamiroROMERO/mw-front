@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
+import { useExportExcel } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
 import { API_URLS } from '@/helpers/APIUrl';
 
 export const usePendingBenefits = ({ setLoading, adminControl }) => {
+  const { fnExport } = useExportExcel(setLoading);
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.007")?.active || false;
   const [listEmployees, setListEmployees] = useState([]);
   const [employeeId, setEmployeeId] = useState(0);
@@ -91,8 +93,7 @@ export const usePendingBenefits = ({ setLoading, adminControl }) => {
       reportTitle: "Control de Pagos de Prestaciones",
       nameXLSXFile: "ControlDePagosPrestaciones.xlsx",
     };
-    await request.fnExportToXLSX(`${API_URLS.RRHH_REP_PENDING_BENEFITS_XLSX}`, data, "ControlDePagosPrestaciones.xlsx");
-    setLoading(false);
+    await fnExport(`${API_URLS.RRHH_REP_PENDING_BENEFITS_XLSX}`, data, "ControlDePagosPrestaciones.xlsx");
   }
 
   const fnGetData = () => {
