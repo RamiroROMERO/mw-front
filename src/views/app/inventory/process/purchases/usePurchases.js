@@ -1,21 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import notification from '@/containers/ui/Notifications';
 import { useForm } from '@/hooks';
 import { request, buildUrl } from '@/helpers/core';
 import { formatDate, formatNumber, validFloat, validInt } from '@/helpers/Utils';
-import createNotification from '@/containers/ui/Notifications';
+import { usePurchaseFormLists } from './usePurchaseFormLists';
+import { usePurchaseOrders } from './usePurchaseOrders';
 
 export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setPurchaseDetail }) => {
 
-  const [listDocuments, setListDocuments] = useState([]);
-  const [listStores, setListStores] = useState([]);
-  const [listProviders, setListProviders] = useState([]);
-  const [listPaymentTypes, setListPaymentTypes] = useState([]);
+  const { listDocuments, listStores, listProviders, listPaymentTypes } = usePurchaseFormLists({ setLoading });
   const [dataPurchases, setdataPurchases] = useState([]);
-  const [dataOrders, setDataOrders] = useState([]);
   const [openModalPurchases, setOpenModalPurchases] = useState(false);
   const [openMsgCancelPurchase, setOpenMsgCancelPurchase] = useState(false);
-  const [openModalViewOrders, setOpenModalViewOrders] = useState(false);
   const [sendFormDeta, setSendFormDeta] = useState(false);
   const [sendForm, setSendForm] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
@@ -60,6 +56,13 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
   }, purchasesValid);
 
   const { id, documentCode, documentId, storeId, providerId, paymentTypeId, cai, numCai, date, dateOut, nameRequire, orderId, typeDocto, valueSubtotal, valueDiscount, exent, exonera, gravado, valueTax, freight, otherCharges, valueTotal, providerType, description, noCtaExpense } = formState;
+
+  const { dataOrders, openModalViewOrders, setOpenModalViewOrders, fnViewPurchaseOrders, fnViewOrder } = usePurchaseOrders({
+    setLoading,
+    providerId,
+    setPurchaseDetail,
+    setBulkForm
+  });
 
   const fnNewPurchase = () => {
     onResetForm();
@@ -241,46 +244,6 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
 
   const fnImportation = () => { }
 
-  const fnViewPurchaseOrders = () => {
-    if (providerId === 0) {
-      createNotification('warning', 'msg.required.select.provider', 'alert.warning.title');
-      return;
-    }
-    setLoading(true);
-    request.GET(buildUrl('inventory/process/purchaseOrders', { providerId }), (resp) => {
-      const orders = resp.data.map((item) => {
-        item.provider = item.invProvider.name
-        item.address = item.invProvider.address
-        item.total = formatNumber(item.valueTotal, '', 2)
-        return item;
-      });
-      setDataOrders(orders);
-      setOpenModalViewOrders(true);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-  }
-
-  const fnViewOrder = (item) => {
-    item.orderId = item.id
-    setLoading(true);
-    request.GET(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: item.id }), (resp) => {
-      const ordersDeta = resp.data.map((item) => {
-        item.nameProduct = item.invProduct.name
-        return item;
-      });
-      setPurchaseDetail(ordersDeta);
-      setBulkForm(item);
-      setOpenModalViewOrders(false);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-  }
-
   const fnReportPurchases = () => { }
 
   const propsToControlPanel = {
@@ -329,69 +292,6 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     buttonsOptions: [],
     buttonsAdmin: []
   }
-
-  useEffect(() => {
-    setLoading(true);
-    request.GET('admin/documents?status=1&useInv=1', (resp) => {
-      const documents = resp.data.map((item) => {
-        return {
-          value: item.code,
-          code: item.code,
-          label: `${item.code} | ${item.name}`
-        }
-      });
-      setListDocuments(documents);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-    setLoading(true);
-    request.GET('inventory/settings/stores?type=1', (resp) => {
-      const stores = resp.data;
-      setListStores(stores);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-    setLoading(true);
-    request.GET(`inventory/process/providers`, (resp) => {
-      const providers = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id,
-          address: item.address,
-          creditDays: item.creditDays,
-          cai: item.cai,
-          providerType: item.providerType
-        }
-      });
-      setListProviders(providers);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-    setLoading(true);
-    request.GET(`admin/paymentTypes`, (resp) => {
-      const paymentMethods = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id,
-          usageType: item.usageType
-        }
-      })
-      const filterPayments = paymentMethods.filter((item) => {
-        return item.usageType === 2 || item.usageType === 3
-      });
-      setListPaymentTypes(filterPayments);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-  }, []);
 
   return {
     listDocuments,
