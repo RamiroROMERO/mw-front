@@ -406,18 +406,26 @@ const request = {
     });
   },
   getFile: async (url) => {
+    // Ninguno de los ~7 callers de getFile() envuelve el await en try/catch
+    // (no recibe fnError, se usa fire-and-forget) — antes de agregar
+    // parseBlobResponse esto nunca podía rechazar. Se atrapa acá para no
+    // dejar un unhandled promise rejection ante un 401/404/500.
     const baseUrl = url.split('?')[0];
     const token = urlPublic.includes(baseUrl) ? '' : fnGetToken();
-    const dataFile = await fetchWithTimeout(`${urlAPI}${url}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-    });
-    const fileBlob = await parseBlobResponse(dataFile);
-    const fileObjectURL = URL.createObjectURL(fileBlob);
-    return fileObjectURL;
+    try {
+      const dataFile = await fetchWithTimeout(`${urlAPI}${url}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      });
+      const fileBlob = await parseBlobResponse(dataFile);
+      return URL.createObjectURL(fileBlob);
+    } catch (err) {
+      console.error(err);
+      return undefined;
+    }
   },
   uploadFiles: (url, files = [], fnSuccess, fnError) => {
     if (files.length <= 0) {

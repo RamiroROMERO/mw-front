@@ -9,21 +9,26 @@ import ViewPdf from '@/components/ViewPDF/ViewPdf';
 import ModalPermissions from './ModalPermissions';
 import ModalVacations from './ModalVacations';
 import ModalIncapacities from './ModalIncapacities';
+import { useEmployeeReferenceData } from './useEmployeeReferenceData';
 
 export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;
   const enableChangeSalary = adminControl.find(ctrl => ctrl.code === "07.02.002")?.active || false;
+  const {
+    listDepartments,
+    listMunicipality,
+    listAreas,
+    listJobPositions,
+    listImmediateBoss,
+    listSchedules,
+    listCustomers,
+    listProjects,
+    fnGetProjects,
+    fnGetAreaManager
+  } = useEmployeeReferenceData({ setLoading });
   const [codeEmployee, setCodeEmployee] = useState(0);
   const [imgEmployee, setImgEmployee] = useState('');
-  const [listDepartments, setListDepartments] = useState([]);
-  const [listMunicipality, setListMunicipality] = useState([]);
-  const [listAreas, setListAreas] = useState([]);
-  const [listJobPositions, setListJobPositions] = useState([]);
-  const [listImmediateBoss, setListImmediateBoss] = useState([]);
-  const [listSchedules, setListSchedules] = useState([]);
   const [listFilterMunic, setListFilterMunic] = useState([]);
-  const [listCustomers, setListCustomers] = useState([]);
-  const [listProjects, setListProjects] = useState([]);
   const [dataEmployees, setDataEmployees] = useState([]);
   const [openModalHistory, setOpenModalHistory] = useState(false);
   const [openModalDocuments, setOpenModalDocuments] = useState(false);
@@ -340,75 +345,26 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     });
   }
 
-  const fnViewHistory = () => {
+  // Antes había ~10 funciones fnViewX casi idénticas (chequear fnCreate,
+  // avisar si no está autorizado, y si id>0 abrir el modal correspondiente).
+  // Se colapsan en este único helper, parametrizado por el setter a abrir.
+  const fnGuardedOpenModal = (setOpen) => {
     if (fnCreate === false) {
       notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
       return;
     }
     if (id > 0) {
-      setOpenModalHistory(true);
+      setOpen(true);
     }
   }
 
-  const fnViewDocuments = () => {
-    if (fnCreate === false) {
-      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      return;
-    }
-    if (id > 0) {
-      setOpenModalDocuments(true);
-    }
-  }
-
-  const fnViewDependents = () => {
-    if (fnCreate === false) {
-      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      return;
-    }
-    if (id > 0) {
-      setOpenModalDependents(true);
-    }
-  }
-
-  const fnViewDeducBonif = () => {
-    if (fnCreate === false) {
-      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      return;
-    }
-    if (id > 0) {
-      setOpenModalDeduccBonif(true);
-    }
-  }
-
-  const fnViewBenefits = () => {
-    if (fnCreate === false) {
-      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      return;
-    }
-    if (id > 0) {
-      setOpenModalBenefits(true);
-    }
-  }
-
-  const fnViewBeneficiaries = () => {
-    if (fnCreate === false) {
-      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      return;
-    }
-    if (id > 0) {
-      setOpenModalBeneficiaries(true);
-    }
-  }
-
-  const fnViewProjects = () => {
-    if (fnCreate === false) {
-      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      return;
-    }
-    if (id > 0) {
-      setOpenModalProjects(true);
-    }
-  }
+  const fnViewHistory = () => fnGuardedOpenModal(setOpenModalHistory);
+  const fnViewDocuments = () => fnGuardedOpenModal(setOpenModalDocuments);
+  const fnViewDependents = () => fnGuardedOpenModal(setOpenModalDependents);
+  const fnViewDeducBonif = () => fnGuardedOpenModal(setOpenModalDeduccBonif);
+  const fnViewBenefits = () => fnGuardedOpenModal(setOpenModalBenefits);
+  const fnViewBeneficiaries = () => fnGuardedOpenModal(setOpenModalBeneficiaries);
+  const fnViewProjects = () => fnGuardedOpenModal(setOpenModalProjects);
 
   const fnPrintCarnet = () => {
     if (fnCreate === false) {
@@ -424,44 +380,6 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
         setLoading(false);
       });
     }
-  }
-
-  const fnGetAreaManager = () => {
-    setLoading(true);
-    request.GET('rrhh/process/employees/findSL?areaManager=1', (resp) => {
-      const immediateBoss = resp.data.map((item) => {
-        return {
-          value: item.id,
-          label: `${item.firstName} ${item.secondName} ${item.lastName} ${item.secondLastName}`,
-        }
-      });
-      setListImmediateBoss(immediateBoss);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-  }
-
-  const fnGetProjects = () => {
-    setLoading(true);
-    request.GET('rrhh/process/projects', (resp) => {
-      const projectsList = resp.data.map((item) => {
-        return {
-          id: item.id,
-          label: `${item.code}| ${item.name}`,
-          value: item.id,
-          customerId: item.customerId,
-          code: item.code,
-          corre: item.corre
-        }
-      });
-      setListProjects(projectsList);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
   }
 
   const fnGetProjectEmployee = (idEmpl) => {
@@ -536,38 +454,9 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     });
   }
 
-  const fnPermissions = () => {
-    if (fnCreate === false) {
-      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      return;
-    }
-
-    if (id > 0) {
-      setOpenModalPermissions(true);
-    }
-  }
-
-  const fnVacations = () => {
-    if (fnCreate === false) {
-      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      return;
-    }
-
-    if (id > 0) {
-      setOpenModalVacations(true);
-    }
-  }
-
-  const fnIncapacities = () => {
-    if (fnCreate === false) {
-      notification('warning', 'msg.alert.unauthorizedUser', 'alert.warning.title');
-      return;
-    }
-
-    if (id > 0) {
-      setOpenModalIncapacities(true);
-    }
-  }
+  const fnPermissions = () => fnGuardedOpenModal(setOpenModalPermissions);
+  const fnVacations = () => fnGuardedOpenModal(setOpenModalVacations);
+  const fnIncapacities = () => fnGuardedOpenModal(setOpenModalIncapacities);
 
   const fnGetImgEmployee = async (nameImg) => {
     const name = nameImg !== "" ? nameImg : 'usuario.png'
@@ -577,102 +466,11 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
     setImgEmployee(imageObjectURL);
   }
 
+  // Las listas de referencia (departamentos, municipios, áreas, puestos,
+  // horarios, clientes, proyectos, jefes inmediatos) se cargan en
+  // useEmployeeReferenceData — acá solo queda la imagen de perfil, que es
+  // estado propio de este formulario, no un dato de referencia compartido.
   useEffect(() => {
-    setLoading(true);
-    request.GET('admin/locateDeptos/getSL', (resp) => {
-      const deptos = resp.data.map((item) => {
-        return {
-          value: item.code,
-          label: item.name
-        }
-      });
-      setListDepartments(deptos);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-    setLoading(true);
-    request.GET('admin/locateMunic/getSL', (resp) => {
-      const munic = resp.data.map((item) => {
-        return {
-          value: item.id,
-          code: item.code,
-          label: item.name,
-          codeDepto: item.codeDepto
-        }
-      });
-      setListMunicipality(munic);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-    setLoading(true);
-    request.GET('admin/areas/getSl?useRrhh=1', (resp) => {
-      const areas = resp.data.map((item) => {
-        return {
-          value: item.id,
-          label: item.name
-        }
-      });
-      setListAreas(areas);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-    setLoading(true);
-    request.GET('rrhh/settings/jobPositions', (resp) => {
-      const positions = resp.data.map((item) => {
-        return {
-          value: item.id,
-          label: item.name
-        }
-      });
-      setListJobPositions(positions);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-    setLoading(true);
-    request.GET('rrhhSchedules', (resp) => {
-      const schedules = resp.data.map((item) => {
-        return {
-          value: item.id,
-          label: item.name
-        }
-      });
-      setListSchedules(schedules);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-
-    setLoading(true);
-    request.GET('billing/settings/customers?status=1', (resp) => {
-      const customers = resp.data.map((item) => {
-        return {
-          id: item.id,
-          label: `${item.id} | ${item.rtn} | ${item.nomcli}`,
-          value: item.id,
-          rtn: item.rtn,
-          name: item.nomcli
-        }
-      });
-      setListCustomers(customers);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-
-    fnGetProjects();
-
-    fnGetAreaManager();
-
     fnGetImgEmployee(pathImage);
   }, []);
 

@@ -208,3 +208,35 @@ describe('core.js — buildUrl', () => {
     expect(url).toBe('reports?c=');
   });
 });
+
+describe('core.js — getFile', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    global.fetch = vi.fn();
+    global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+  });
+
+  it('devuelve la object URL del blob cuando la respuesta es 2xx', async () => {
+    setStoredUser(makeToken(futureExp()));
+    global.fetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      blob: async () => new Blob(['file-content']),
+    });
+
+    const url = await request.getFile('rrhh/process/employees/getProfileImage/1');
+
+    expect(url).toBe('blob:mock-url');
+  });
+
+  it('no rechaza (ni tira una excepción no manejada) ante un 401 — devuelve undefined', async () => {
+    setStoredUser(makeToken(futureExp()));
+    global.fetch.mockResolvedValue(
+      jsonResponse(undefined, { ok: false, status: 401, statusText: 'Unauthorized' })
+    );
+
+    const url = await request.getFile('rrhh/process/employees/getProfileImage/1');
+
+    expect(url).toBeUndefined();
+  });
+});
