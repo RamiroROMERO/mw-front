@@ -6,11 +6,14 @@ import Notifications from './Notifications';
 class NotificationContainer extends React.Component {
   constructor(props) {
     super(props);
-    NotificationManager.addChangeListener(this.handleStoreChange);
     this.state = {
       notifications: [],
     };
   }
+
+  componentDidMount = () => {
+    NotificationManager.addChangeListener(this.handleStoreChange);
+  };
 
   componentWillUnmount = () => {
     NotificationManager.removeChangeListener(this.handleStoreChange);

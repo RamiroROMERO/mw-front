@@ -73,7 +73,7 @@ export const useMeetingNotices = ({ setLoading, screenControl }) => {
       request.POST(`${API_URLS.RRHH_PROC_MEETING_NOTICES}`, formState, (resp) => {
         setLoading(false);
         fnGetData();
-        fnPrintPdf({id});
+        fnPrintPdf({ id: resp.data.id });
         fnClear();
       }, (err) => {
         setLoading(false);
@@ -87,7 +87,7 @@ export const useMeetingNotices = ({ setLoading, screenControl }) => {
       request.PUT(`${API_URLS.RRHH_PROC_MEETING_NOTICES}/${id}`, formState, () => {
         setLoading(false);
         fnGetData();
-        fnPrintPdf({id});
+        fnPrintPdf({ id });
         fnClear();
       }, (err) => {
         setLoading(false);
