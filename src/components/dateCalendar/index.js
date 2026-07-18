@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDatePicker from 'react-datepicker';
 import { InputLabel } from "@Components/inputLabel";
 import 'react-datepicker/dist/react-datepicker.css';

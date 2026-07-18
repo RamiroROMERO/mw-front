@@ -1,4 +1,3 @@
-import React from 'react'
 import { Input } from 'reactstrap'
 import { IntlMessages } from '@/helpers/Utils'
 import { InputLabel } from '@/components/inputLabel/InputLabel'

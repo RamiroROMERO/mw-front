@@ -1,4 +1,3 @@
-import React from 'react'
 import { useMeetingNotices } from './useMeetingNotices';
 import { Row } from 'reactstrap';
 import { Colxx } from '@/components/common/CustomBootstrap';

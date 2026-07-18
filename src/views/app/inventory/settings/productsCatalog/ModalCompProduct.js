@@ -1,7 +1,6 @@
 import { Colxx } from '@/components/common/CustomBootstrap'
 import { SimpleSelect } from '@/components/simpleSelect';
 import { IntlMessages } from '@/helpers/Utils';
-import React from 'react'
 import { Button, Card, CardBody, CardFooter, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { useModalCompProduct } from './useModalCompProduct';
 import SearchSelect from '@/components/SearchSelect/SearchSelect';

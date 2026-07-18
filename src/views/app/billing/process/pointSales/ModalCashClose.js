@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Colxx } from "@/components/common/CustomBootstrap";
 import { Button, ModalBody, ModalFooter, Nav, NavItem, NavLink, Row, TabContent, Table, TabPane } from "reactstrap";
 import { formatNumber, IntlMessages, validFloat, validInt } from "@/helpers/Utils";

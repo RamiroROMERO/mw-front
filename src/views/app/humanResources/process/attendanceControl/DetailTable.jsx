@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import ReactTable from '@Components/reactTable';
 import { IntlMessages } from '@Helpers/Utils'
 

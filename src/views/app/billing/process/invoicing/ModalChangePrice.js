@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, ModalBody, ModalFooter, Row, Label, Input } from "reactstrap";
 import { Colxx } from '@/components/common/CustomBootstrap';
 import { IntlMessages, validFloat, validInt } from "@/helpers/Utils";

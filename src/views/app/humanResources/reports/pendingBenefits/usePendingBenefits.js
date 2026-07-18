@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 import { useExportExcel } from '@Hooks';

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Colxx } from '@/components/common/CustomBootstrap'
 import { RadioGroup } from '@/components/radioGroup'
 import { IntlMessages, validFloat } from '@/helpers/Utils'

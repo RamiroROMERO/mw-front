@@ -1,4 +1,3 @@
-import React from 'react';
 import { Row } from 'reactstrap';
 import SearchSelect from '@/components/SearchSelect/SearchSelect';
 import { Colxx } from '@/components/common/CustomBootstrap';

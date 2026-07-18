@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button, Form, Input, Label, Row } from 'reactstrap';
 import IntlMessages from '@Helpers/IntlMessages';
 import DropdownSelect from '@Components/DropdownSelect/DropdownSelect';

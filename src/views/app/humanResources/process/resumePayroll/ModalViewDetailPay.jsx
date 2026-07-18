@@ -1,4 +1,3 @@
-import React from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { Button, ModalBody, ModalFooter, Nav, NavItem, NavLink, Row, TabContent, TabPane, Table } from 'reactstrap';
 import { IntlMessages, formatDate, formatNumber, validFloat } from '@Helpers/Utils'

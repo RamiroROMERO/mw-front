@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactTable from '@Components/reactTable'
 import { useProjectTransfers } from './useProjectTransfers'
 import Header from './Header';

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { InputField } from '@Components/inputFields'
 import { IntlMessages } from '@Helpers/Utils'

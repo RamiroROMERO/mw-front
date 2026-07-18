@@ -2,7 +2,7 @@ import ViewPdf from '@/components/ViewPDF/ViewPdf';
 import { API_URLS } from '@/helpers/APIUrl';
 import { request, buildUrl } from '@/helpers/core';
 import { formatDate, formatNumber, IntlMessages } from '@/helpers/Utils';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export const useQuotes = ({ setLoading, screenControl }) => {
   const { fnCreate, fnUpdate, fnDelete } = screenControl;

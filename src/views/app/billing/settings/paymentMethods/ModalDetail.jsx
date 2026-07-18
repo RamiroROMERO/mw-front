@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
 import { useModalDetail } from './useModalDetail';
 import Confirmation from '@Containers/ui/confirmationMsg';

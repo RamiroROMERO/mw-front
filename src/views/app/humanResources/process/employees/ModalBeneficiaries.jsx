@@ -1,4 +1,3 @@
-import React from 'react'
 import { useModalBeneficiaries } from './useModalBeneficiaries';
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
 import { IntlMessages } from '@Helpers/Utils';

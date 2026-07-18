@@ -1,4 +1,3 @@
-import React from 'react'
 import { IntlMessages, IntlMessagesFn } from '@Helpers/Utils'
 import { RadioButton } from './RadioButton'
 

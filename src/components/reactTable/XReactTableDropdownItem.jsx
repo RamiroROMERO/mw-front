@@ -1,4 +1,3 @@
-import React from 'react'
 import { DropdownItem } from 'reactstrap';
 
 export const XReactTableDropdownItem = ({ buttonItem, row }) => {

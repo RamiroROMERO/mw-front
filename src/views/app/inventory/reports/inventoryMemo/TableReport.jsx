@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import ReactTable from '@/components/reactTable'
 import { IntlMessages } from '@/helpers/Utils';
 import { Row } from 'reactstrap';

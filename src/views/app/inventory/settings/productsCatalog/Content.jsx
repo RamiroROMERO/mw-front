@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardBody, TabContent, TabPane, Nav, NavItem, NavLink, Row, Table, Button } from 'reactstrap';
 import { IntlMessages, validInt } from "@/helpers/Utils";
 import { Colxx, Separator } from '@/components/common/CustomBootstrap';

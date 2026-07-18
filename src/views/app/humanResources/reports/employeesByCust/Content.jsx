@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactTable from '@Components/reactTable'
 import Header from './Header';
 import { useEmployeesByCust } from './useEmployeesByCust'

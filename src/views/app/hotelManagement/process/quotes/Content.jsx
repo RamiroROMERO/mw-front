@@ -1,4 +1,3 @@
-import React from 'react'
 import Modal from '@Components/modal';
 import ReactTable from "@Components/reactTable";
 import { useQuotes } from './useQuotes'

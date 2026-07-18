@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactTable from '@Components/reactTable'
 import { useStaffDepartures } from './useStaffDepartures'
 import Header from './Header';

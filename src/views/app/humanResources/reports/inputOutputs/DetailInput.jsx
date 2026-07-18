@@ -1,4 +1,3 @@
-import React from 'react';
 import {Button, Card, Row, CardBody} from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import DateCalendar from '@Components/dateCalendar';

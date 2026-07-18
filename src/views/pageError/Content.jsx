@@ -1,4 +1,3 @@
-import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { Row, Card, CardTitle, } from 'reactstrap'
 import { Colxx } from '@/components/common/CustomBootstrap'

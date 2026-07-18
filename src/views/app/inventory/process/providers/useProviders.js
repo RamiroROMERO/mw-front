@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import notification from '@Containers/ui/Notifications';
 import { useForm } from '@Hooks/useForms';
 import { request, buildUrl } from '@Helpers/core';

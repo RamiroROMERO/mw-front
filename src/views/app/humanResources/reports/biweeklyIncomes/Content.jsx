@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactTable from '@Components/reactTable';
 import { useBiweeklyIncomes } from './useBiweeklyIncomes'
 import Header from './Header';

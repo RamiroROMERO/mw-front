@@ -1,4 +1,3 @@
-import React from "react";
 import { IntlMessagesFn } from "@/helpers/Utils";
 import { ModalHeader } from "reactstrap";
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Colxx } from '@/components/common/CustomBootstrap'
 import { InputField } from '@/components/inputFields'
 import { RadioGroup } from '@/components/radioGroup'

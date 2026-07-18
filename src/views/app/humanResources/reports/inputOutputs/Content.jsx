@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import DetailInput from './DetailInput';

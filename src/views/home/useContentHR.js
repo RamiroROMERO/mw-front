@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { request } from '@Helpers/core';
 import { useReactToPrint } from 'react-to-print';
 

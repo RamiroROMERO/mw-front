@@ -1,4 +1,3 @@
-import React from "react";
 import { Colxx } from "@/components/common/CustomBootstrap";
 import { Form, Row } from "reactstrap";
 import { InputField } from "@/components/inputFields";

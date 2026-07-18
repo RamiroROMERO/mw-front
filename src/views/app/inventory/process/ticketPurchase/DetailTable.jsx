@@ -1,4 +1,3 @@
-import React from 'react'
 import Confirmation from '@/containers/ui/confirmationMsg';
 import { Colxx } from '@/components/common/CustomBootstrap'
 import { Button, Row, Table } from 'reactstrap'

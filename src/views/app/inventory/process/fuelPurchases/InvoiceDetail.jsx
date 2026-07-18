@@ -1,4 +1,3 @@
-import React from 'react'
 import { Row } from 'reactstrap'
 import { Colxx } from '@/components/common/CustomBootstrap'
 import { ContainerWithLabel } from '@/components/containerWithLabel'

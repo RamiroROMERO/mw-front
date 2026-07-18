@@ -1,4 +1,3 @@
-import React from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { Button, Card, CardBody, Row } from 'reactstrap'
 import { InputField } from '@Components/inputFields'

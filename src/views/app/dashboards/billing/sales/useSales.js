@@ -1,7 +1,7 @@
 import { request } from '@/helpers/core';
 import { formatNumber, validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export const useSales = ({ setLoading }) => {
   const [dataAllSales, setDataAllSales] = useState([]);

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button, Card, CardBody, Row } from 'reactstrap'
 import SearchSelect from '@/components/SearchSelect/SearchSelect'
 import { Checkbox } from '@/components/checkbox'

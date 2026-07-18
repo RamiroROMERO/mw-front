@@ -1,4 +1,3 @@
-import React from 'react'
 import { Input } from 'reactstrap';
 
 export const RowItem = ({value, isEditable=false, inputId, inputName, handleChange, style}) => {

@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactTable from '@Components/reactTable';
 import { useGeneralVacations } from './useGeneralVacations'
 import Header from './Header'

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Table } from 'reactstrap'
 import { IntlMessages } from '@/helpers/Utils'
 import { SimpleTableTD } from './SimpleTableTD'

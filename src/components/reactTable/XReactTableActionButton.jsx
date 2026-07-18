@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button } from 'reactstrap';
 
 export const XReactTableActionButton = ({ buttonItem, row }) => {

@@ -1,4 +1,3 @@
-import React from 'react'
 
 const ColumnCheckItem = ({label, name, value, onChange, ...rest}) => {
 

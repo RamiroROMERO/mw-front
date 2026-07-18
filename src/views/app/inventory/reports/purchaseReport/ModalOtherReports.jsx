@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { IntlMessages } from '@/helpers/Utils'
 import { useModalOtherReports } from './useModalOtherReports'

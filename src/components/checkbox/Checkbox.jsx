@@ -1,4 +1,3 @@
-import React from 'react'
 import { IntlMessages } from '@Helpers/Utils'
 
 export const Checkbox = ({label, name, value, onChange, ...rest}) => {

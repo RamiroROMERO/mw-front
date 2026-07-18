@@ -1,7 +1,7 @@
 import { request } from '@/helpers/core';
 import { formatDate, IntlMessages } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export const useContentHotel = ({ setLoading }) => {
 

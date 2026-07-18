@@ -1,4 +1,3 @@
-import React from 'react'
 import { InputField } from '@Components/inputFields'
 import { IntlMessages } from '@Helpers/Utils';
 import {Button, Card, Row, CardBody, CardTitle} from 'reactstrap';

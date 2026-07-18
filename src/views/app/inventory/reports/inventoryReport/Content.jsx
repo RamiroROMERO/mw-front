@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@/components/common/CustomBootstrap';
 import Modal from "@/components/modal";

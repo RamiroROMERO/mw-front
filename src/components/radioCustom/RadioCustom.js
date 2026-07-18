@@ -1,7 +1,7 @@
 
 import { Colxx } from '@/components/common/CustomBootstrap';
 import { IntlMessages } from '@/helpers/Utils';
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { RadioItem } from './RadioItem';
 
 export const CustomRadio = (props) => {

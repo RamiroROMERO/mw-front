@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactTable from '@/components/reactTable'
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@/components/common/CustomBootstrap';

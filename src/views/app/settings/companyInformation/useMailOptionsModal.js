@@ -1,7 +1,7 @@
 import { validInt } from '@/helpers/Utils';
 import { request } from '@/helpers/core';
 import { useForm } from '@/hooks'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
 export const useMailOptionsModal = ({ data, setOpen }) => {
   const { companyId, setLoading } = data;

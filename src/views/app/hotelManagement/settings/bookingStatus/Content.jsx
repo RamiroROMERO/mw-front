@@ -1,4 +1,3 @@
-import React from 'react'
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ReactTable from "@Components/reactTable";
 import { useBookingStatus } from './useBookingStatus';

@@ -1,7 +1,7 @@
 import { IntlMessages, validInt } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const formValidations = {
   description: [(val) => val.length !== 0, "msg.required.input.description"],

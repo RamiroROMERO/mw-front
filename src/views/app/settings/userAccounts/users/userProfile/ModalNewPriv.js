@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button, ModalBody, ModalFooter, Row, Card, CardBody, CardTitle, } from "reactstrap";
 import { IntlMessages } from "@Helpers/Utils";
 import { request } from '@Helpers/core';

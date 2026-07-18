@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import { useState } from 'react'
 import { Input, Table } from 'reactstrap'
 import { formatNumber, IntlMessages, validFloat, validInt } from '@/helpers/Utils'
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import { IntlMessages } from '@/helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { useModalAddPayments } from './useModalAddPayments';

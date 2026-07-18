@@ -1,4 +1,3 @@
-import React from 'react';
 import createNotification from '@/containers/ui/Notifications';
 import { formatNumber, validInt } from '@/helpers/Utils';
 import { request } from '@/helpers/core';

@@ -1,6 +1,6 @@
 import { validFloat } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export const useFooter = ({totalPayments, setOtherPayments, setTotalBenefits}) => {
 

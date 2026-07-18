@@ -1,4 +1,3 @@
-import React from 'react';
 import {Button, Card, Row, CardBody, CardTitle} from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from '@Helpers/Utils'

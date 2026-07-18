@@ -1,4 +1,3 @@
-import React from 'react'
 import { useFooter } from './useFooter'
 import { Row } from 'reactstrap';
 import { Colxx } from '@/components/common/CustomBootstrap';

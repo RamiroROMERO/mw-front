@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { TabPane, Nav, NavItem, NavLink, TabContent, Button, ButtonGroup } from "reactstrap";
 import { IntlMessages } from "@/helpers/Utils";
 import classnames from 'classnames';

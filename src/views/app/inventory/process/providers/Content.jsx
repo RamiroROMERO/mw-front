@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardBody, Row, Form, Table, Button } from 'reactstrap';
 import { IntlMessages } from "@/helpers/Utils";
 import { Colxx, Separator } from '@/components/common/CustomBootstrap';

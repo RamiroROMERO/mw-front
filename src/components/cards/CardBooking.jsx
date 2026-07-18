@@ -1,5 +1,4 @@
 import { formatNumber } from '@/helpers/Utils';
-import React from 'react'
 import IntlMessages from '@/helpers/IntlMessages';
 import {
   Card,

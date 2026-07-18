@@ -1,4 +1,3 @@
-import React from 'react'
 import { useAbsences } from './useAbsences';
 import { useDetailTable } from './useDetailTable';
 import { Row } from 'reactstrap';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx, Separator } from '@/components/common/CustomBootstrap';
 import ControlPanel from '@/components/controlPanel';

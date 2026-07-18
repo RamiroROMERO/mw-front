@@ -1,4 +1,3 @@
-import React from 'react'
 import './styleCalendar.css';
 import HeaderHR from './HeaderHR'
 import { useHeaderHR } from './useHeaderHR';

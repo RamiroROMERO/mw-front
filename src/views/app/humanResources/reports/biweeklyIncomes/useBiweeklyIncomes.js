@@ -1,6 +1,6 @@
 import { request } from '@/helpers/core';
 import { formatNumber, IntlMessages } from '@/helpers/Utils';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export const useBiweeklyIncomes = ({ setLoading, adminControl }) => {
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.010")?.active || false;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Row } from 'reactstrap'
 import { Colxx } from '@/components/common/CustomBootstrap'
 import { InputField } from '@/components/inputFields'

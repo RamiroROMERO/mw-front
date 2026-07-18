@@ -1,4 +1,3 @@
-import React from 'react'
 
 export const ItemCheck = ({ name = 'itemCheck', label, checked, onChange }) => {
   const genericId = `${name}-${Math.round(Math.random() * 100000, 0)}`

@@ -1,4 +1,3 @@
-import React from 'react'
 import { useAttendanceControl } from './useAttendanceControl'
 import { Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';

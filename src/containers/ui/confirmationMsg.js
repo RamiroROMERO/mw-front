@@ -1,4 +1,3 @@
-import React from 'react';
 import { Alert, Row, Button } from 'reactstrap';
 import { Colxx } from '@/components/common/CustomBootstrap';
 import { IntlMessages } from "@/helpers/Utils";

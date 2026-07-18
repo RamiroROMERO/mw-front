@@ -1,4 +1,3 @@
-import React from 'react'
 import { ModalBody, ModalFooter, Row, Table } from 'reactstrap'
 import { formatNumber, IntlMessages, validFloat } from '@/helpers/Utils';
 import { Colxx } from '@/components/common/CustomBootstrap';

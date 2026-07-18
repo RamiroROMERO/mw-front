@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Card, CardBody, CardFooter, Row } from 'reactstrap';
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { useDefaultValues } from './useDefaultValues';

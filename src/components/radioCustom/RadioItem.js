@@ -1,4 +1,3 @@
-import React from 'react'
 
 export const RadioItem = ({ key, id, caption, image = 'assets/logos/company-icon', selectedIndex, handleClick }) => {
   return (

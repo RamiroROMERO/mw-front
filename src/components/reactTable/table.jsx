@@ -1,4 +1,4 @@
-import React, { useImperativeHandle } from 'react'
+import { useImperativeHandle } from 'react'
 import { useTable, usePagination, useSortBy, useGlobalFilter } from "react-table";
 import classnames from "classnames";
 import PerfectScrollbar from 'react-perfect-scrollbar';

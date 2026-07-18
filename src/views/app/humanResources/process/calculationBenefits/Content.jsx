@@ -1,4 +1,3 @@
-import React from 'react'
 import { useCalculationBenefits } from './useCalculationBenefits'
 import Header from './Header';
 import Detail from './Detail';

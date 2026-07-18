@@ -1,6 +1,6 @@
 import { Colxx } from "@/components/common/CustomBootstrap";
 import { IntlMessages } from "@/helpers/Utils";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
 import ReactTable from "@/components/reactTable";
 

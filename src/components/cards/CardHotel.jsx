@@ -1,4 +1,3 @@
-import React from 'react'
 import { Card, CardBody, Progress } from 'reactstrap'
 
 export const CardHotel = ({ title = 'Hotel Card', icon = 'bi bi-info', color = 'primary', value = 0, valueProgress = 50 }) => {

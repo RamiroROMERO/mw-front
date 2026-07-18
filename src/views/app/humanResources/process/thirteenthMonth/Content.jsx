@@ -1,4 +1,3 @@
-import React from 'react'
 import { useResumePayroll } from '../resumePayroll/useResumePayroll';
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';

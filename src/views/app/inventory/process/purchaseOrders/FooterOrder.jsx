@@ -2,7 +2,6 @@ import { Colxx } from '@/components/common/CustomBootstrap'
 import { InputField } from '@/components/inputFields'
 import SearchSelect from '@/components/SearchSelect/SearchSelect'
 import { formatNumber, validFloat } from '@/helpers/Utils'
-import React from 'react'
 import { Row } from 'reactstrap'
 
 const FooterOrder = ({applicantName, workOrderId, notes, valueExcent, valueTaxed, valueDiscount, valueTax,

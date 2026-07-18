@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardBody, Row, Button } from 'reactstrap';
 import { IntlMessages, formatDate } from "@/helpers/Utils";
 import { Colxx } from '@/components/common/CustomBootstrap';

@@ -27,14 +27,13 @@ const store = configureStore({});
 
 import(`./assets/sass/themes/gogo.${currentColor}.scss`).then(() => {
   root.render(
-    // <React.StrictMode>
-    <ErrorBoundary>
-      <Provider store={store}>
-        {/* <h1>Testing</h1> */}
-        <App />
-      </Provider>
-    </ErrorBoundary>
-    // </React.StrictMode>
+    <React.StrictMode>
+      <ErrorBoundary>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </ErrorBoundary>
+    </React.StrictMode>
   );
 });
 

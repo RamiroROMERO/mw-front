@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from "react-router-dom"
 import { Card, CardBody, CardHeader, CardTitle, Row } from 'reactstrap';
 import IntlMessages from '@/helpers/IntlMessages';

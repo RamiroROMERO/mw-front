@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { Row } from 'reactstrap';
 import { IntlMessages, formatDate } from '@Helpers/Utils';

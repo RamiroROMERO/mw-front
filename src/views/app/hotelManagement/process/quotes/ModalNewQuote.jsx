@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button, ModalBody, ModalFooter, Row, Table } from 'reactstrap'
 import { useModalNewQuote } from './useModalNewQuote'
 import { formatNumber, IntlMessages } from '@/helpers/Utils';

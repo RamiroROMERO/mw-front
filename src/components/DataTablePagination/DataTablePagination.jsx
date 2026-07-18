@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/no-array-index-key */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Pagination,
   PaginationItem,

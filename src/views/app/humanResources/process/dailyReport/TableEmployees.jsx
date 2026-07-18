@@ -1,4 +1,3 @@
-import React from 'react'
 import { ContainerWithLabel } from '@Components/containerWithLabel'
 import { Button, Row, Table } from 'reactstrap'
 import { Colxx } from '@Components/common/CustomBootstrap'

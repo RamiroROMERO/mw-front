@@ -1,4 +1,3 @@
-import React from 'react'
 import { useDeductionDefaults } from './useDeductionDefaults';
 import { useDetailTable } from './useDetailTable';
 import { Row } from 'reactstrap';

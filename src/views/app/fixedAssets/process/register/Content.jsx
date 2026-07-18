@@ -1,4 +1,3 @@
-import React from 'react';
 import { Row, Card, CardBody, CardHeader, Table } from 'reactstrap';
 import { Colxx } from '@/components/common/CustomBootstrap';
 import ControlPanel from '@/components/controlPanel';

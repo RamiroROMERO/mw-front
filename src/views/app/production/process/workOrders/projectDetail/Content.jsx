@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardBody, CardHeader, CardTitle, Row, Nav, NavItem, NavLink, TabContent, TabPane, Button, Badge, Table } from 'reactstrap';
 import { InputField } from '@/components/inputFields';
 import { useLocation, useNavigate } from "react-router-dom";

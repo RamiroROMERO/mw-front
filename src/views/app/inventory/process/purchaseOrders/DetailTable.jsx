@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Colxx } from '@/components/common/CustomBootstrap'
 import { Button, Row, Table } from 'reactstrap'
 import { formatNumber, IntlMessages, validFloat } from '@/helpers/Utils'

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Badge } from 'reactstrap';
 import { useForm } from '@/hooks';
 import { IntlMessages, IntlMessagesFn, validInt } from '@/helpers/Utils';

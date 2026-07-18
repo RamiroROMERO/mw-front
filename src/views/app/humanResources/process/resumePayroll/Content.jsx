@@ -1,4 +1,3 @@
-import React from 'react'
 import { Colxx, Separator } from '@Components/common/CustomBootstrap'
 import { Card, CardBody, Row } from 'reactstrap'
 import ControlPanel from '@Components/controlPanel'

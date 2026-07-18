@@ -1,4 +1,3 @@
-import React from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { Row } from 'reactstrap'
 import { SimpleSelect } from '@Components/simpleSelect'

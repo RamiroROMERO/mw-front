@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactTable from '@Components/reactTable';
 import { useControlAbsences } from './useControlAbsences'
 import Header from './Header'

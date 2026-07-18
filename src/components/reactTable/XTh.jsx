@@ -1,4 +1,3 @@
-import React from 'react'
 
 export const XTh = ({ columnData, flexRender }) => {
   return (

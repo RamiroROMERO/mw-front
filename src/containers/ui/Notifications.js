@@ -1,5 +1,4 @@
 /* eslint-disable no-alert */
-import React from 'react';
 import IntlMessages from '@/helpers/IntlMessages';
 import { NotificationManager } from '@/components/common/react-notifications';
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Spinner } from 'reactstrap'
 import { getCurrentColor } from '@/helpers/Utils';
 

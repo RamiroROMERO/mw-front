@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable no-use-before-define */
 import IntlMessages from '@Helpers/IntlMessages';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { injectIntl } from 'react-intl';
 import { setCurrentUser } from '@Helpers/Utils';
 import { useNavigate } from 'react-router-dom';

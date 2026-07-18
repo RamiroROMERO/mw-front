@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch } from 'react-redux';
 import { onBreadcrumbEdit, onTitleEdit } from '@/redux/actions';
 import { adminRoot } from '@/constants/defaultValues';

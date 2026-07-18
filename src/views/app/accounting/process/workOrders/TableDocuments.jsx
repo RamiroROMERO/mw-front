@@ -1,6 +1,6 @@
 import { Colxx } from "@/components/common/CustomBootstrap";
 import { formatNumber, IntlMessages, validFloat } from "@/helpers/Utils";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Row, Table } from "reactstrap";
 
 const TableDocuments = (props) =>{

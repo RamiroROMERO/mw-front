@@ -1,4 +1,3 @@
-import React from 'react'
 import XReactTableCheck from './XReactTableCheck';
 import { XReactTableActionButtons } from './XReactTableActionButtons';
 import { formatDate, formatNumber } from '@Helpers/Utils';

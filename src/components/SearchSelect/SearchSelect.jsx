@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import Select from 'react-select';
 import { IntlMessages } from '@Helpers/Utils';
 import CustomSelectInput from '@Components/common/CustomSelectInput';

@@ -1,4 +1,3 @@
-import React from 'react'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { IntlMessages } from '@Helpers/Utils'

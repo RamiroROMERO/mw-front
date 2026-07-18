@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactTable from '@Components/reactTable'
 import { usePendingBenefits } from './usePendingBenefits';
 import Header from './Header';

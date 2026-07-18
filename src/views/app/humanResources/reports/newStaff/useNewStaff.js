@@ -1,5 +1,5 @@
 import { formatDate, IntlMessages } from '@/helpers/Utils';
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 export const useNewStaff = ({setLoading, adminControl}) => {
   const enableGenerateReport = adminControl.find(ctrl => ctrl.code === "07.03.011")?.active || false;

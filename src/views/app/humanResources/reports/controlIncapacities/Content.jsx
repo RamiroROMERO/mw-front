@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactTable from '@Components/reactTable';
 import { useControlIncapacities } from './useControlIncapacities'
 import Header from './Header';

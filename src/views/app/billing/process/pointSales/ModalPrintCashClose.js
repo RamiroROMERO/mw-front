@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Colxx } from "@/components/common/CustomBootstrap";
 import { IntlMessages, validInt } from "@/helpers/Utils";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";

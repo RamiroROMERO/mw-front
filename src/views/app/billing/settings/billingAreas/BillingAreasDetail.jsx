@@ -1,4 +1,3 @@
-import React from 'react'
 import { Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { RadioGroup } from '@Components/radioGroup';

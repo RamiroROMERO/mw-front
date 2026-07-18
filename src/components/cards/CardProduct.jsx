@@ -1,4 +1,3 @@
-import React from 'react'
 import { Badge, Button, Card, CardBody, CardLink, CardSubtitle, CardText, CardTitle, Row } from 'reactstrap'
 import { Colxx } from '../common/CustomBootstrap'
 import envs from '../../helpers/envs';

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row, Card, CardBody } from "reactstrap";
 
 import { ContainerWithLabel } from '@/components/containerWithLabel';

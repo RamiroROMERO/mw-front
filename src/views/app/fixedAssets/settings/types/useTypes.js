@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from '@/hooks';
 import { IntlMessagesFn, validInt } from '@/helpers/Utils';
 import { request } from '@/helpers/core';

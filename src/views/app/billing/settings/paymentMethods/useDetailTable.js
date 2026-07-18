@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IntlMessages } from '@Helpers/Utils';
 
 export const useDetailTable = ({ onBulkForm, setOpenMsgQuestion, tableData }) => {

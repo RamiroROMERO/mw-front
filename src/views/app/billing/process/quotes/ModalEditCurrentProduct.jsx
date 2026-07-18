@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, ModalBody, ModalFooter, Row, Table } from 'reactstrap'
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { ContainerWithLabel } from '@Components/containerWithLabel';

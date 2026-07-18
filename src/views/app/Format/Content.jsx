@@ -1,4 +1,3 @@
-import React from 'react';
 import { Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import DropdownSelect from '@Components/DropdownSelect/DropdownSelect';

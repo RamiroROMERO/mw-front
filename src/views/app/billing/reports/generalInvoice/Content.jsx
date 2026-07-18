@@ -1,4 +1,3 @@
-import React from 'react'
 import { useGeneralInvoice } from './useGeneralInvoice'
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@/components/common/CustomBootstrap';

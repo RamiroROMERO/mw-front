@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { validInt } from '@/helpers/Utils';
 
 export const useReactTableEdit = ({ columns, data, onChangeData, options }) => {

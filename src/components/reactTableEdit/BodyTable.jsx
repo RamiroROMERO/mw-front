@@ -1,4 +1,3 @@
-import React from 'react'
 import { RowTable } from './RowTable'
 
 export const BodyTable = ({ data = [], nameColumns = [], editableColumns = [], styleColumns = [], handleChange }) => {

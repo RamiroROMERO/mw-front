@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { request, buildUrl } from '@Helpers/core';
 import { IntlMessages } from '@Helpers/Utils';
 import { PATH_FILES } from '/src/helpers/pathFiles';

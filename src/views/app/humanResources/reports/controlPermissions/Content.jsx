@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactTable from '@Components/reactTable';
 import { useControlPermissions } from './useControlPermissions';
 import Header from './Header';

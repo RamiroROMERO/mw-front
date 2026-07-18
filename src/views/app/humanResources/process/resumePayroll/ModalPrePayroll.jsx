@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
 import { usePrePayroll } from './usePrePayroll';
 import { Colxx } from '@/components/common/CustomBootstrap';

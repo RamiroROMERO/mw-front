@@ -1,5 +1,4 @@
 import { IntlMessages } from '@/helpers/Utils'
-import React from 'react'
 
 export const ContainerWithLabel = ({ label, feedbackText = undefined, children }) => {
   return (
