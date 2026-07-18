@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { request, buildUrl } from '@/helpers/core';
 import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 
 export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, checkInDate, checkOutDate, setLoading, setOpen }) => {
   const [dataServices, setDataServices] = useState([]);
@@ -25,7 +25,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
-    invoiceDate: moment(new Date()).format("YYYY-MM-DD"),
+    invoiceDate: DateHelper.format(new Date()),
     documentCode: "",
     billingToCompany: 0,
     cashId: 0,
@@ -308,9 +308,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
   }, [bookingId]);
 
   useEffect(() => {
-    const date1 = moment(checkInDate);
-    const date2 = moment(checkOutDate);
-    const daysDiff = date2.diff(date1, 'days');
+    const daysDiff = DateHelper.diff(checkOutDate, checkInDate, 'day');
 
     const newPrice = {
       price: baseRate,

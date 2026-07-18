@@ -12,6 +12,14 @@ describe('DateHelper', () => {
     });
   });
 
+  describe('parse', () => {
+    it('parsea una fecha en formato no-ISO (DD/MM/YYYY)', () => {
+      const result = DateHelper.parse('18/07/2026', 'DD/MM/YYYY');
+      expect(DateHelper.isValid(result)).toBe(true);
+      expect(DateHelper.format(result)).toBe('2026-07-18');
+    });
+  });
+
   describe('add / subtract', () => {
     it('suma días a una fecha', () => {
       const result = DateHelper.add('2026-01-31', 1, 'day');

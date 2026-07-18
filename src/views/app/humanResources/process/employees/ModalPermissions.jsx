@@ -4,7 +4,7 @@ import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { formatDate, IntlMessages } from '@Helpers/Utils'
 import { request, buildUrl } from '@Helpers/core'
 import ReactTable from '@Components/reactTable'
-import moment from 'moment';
+import DateHelper from '@Helpers/DateHelper';
 
 const ModalPermissions = ({ setOpen, data }) => {
   const { setLoading, employeeId } = data;
@@ -51,10 +51,8 @@ const ModalPermissions = ({ setOpen, data }) => {
         ${item.rrhhAuthorizer.secondLastName}` : ""
         item.dateStart = item.dateStart.substring(0, 19);
         item.dateEnd = item.dateEnd.substring(0, 19);
-        const date1 = moment(item.dateStart);
-        const date2 = moment(item.dateEnd);
-        const daysDiff = date2.diff(date1, 'days') + 1;
-        const hoursDiff = date2.diff(date1, 'hours', true);
+        const daysDiff = DateHelper.diff(item.dateEnd, item.dateStart, 'day') + 1;
+        const hoursDiff = DateHelper.diff(item.dateEnd, item.dateStart, 'hour', true);
         if (item.typeId === 1) {
           item.time = `${daysDiff} Dias`
         } else {

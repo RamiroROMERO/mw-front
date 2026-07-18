@@ -6,6 +6,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import weekday from 'dayjs/plugin/weekday';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import 'dayjs/locale/es';
 
 // Configurar plugins
@@ -16,6 +17,9 @@ dayjs.extend(isBetween);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(weekday);
+// Necesario para que parse(date, format) entienda formatos no-ISO (ej. 'DD/MM/YYYY');
+// sin este plugin dayjs ignora el format string y devuelve Invalid Date.
+dayjs.extend(customParseFormat);
 
 class DateHelper {
   // Detecta automáticamente la zona horaria del sistema

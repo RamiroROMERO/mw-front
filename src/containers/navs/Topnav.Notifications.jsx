@@ -10,7 +10,6 @@ import {
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { adminRoot } from '@/constants/defaultValues';
 import { request } from '@/helpers/core';
-import moment from 'moment'
 
 const NotificationItem = ({ img, title, date, data, setOpen }) => {
   const history = useNavigate();

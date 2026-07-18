@@ -4,7 +4,7 @@ import { validFloat, validInt } from '@/helpers/Utils';
 import { RandomCodeGenerator } from '@/helpers/UuIdGenerator';
 import { useForm } from '@/hooks';
 import { useEffect, useState } from 'react'
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 import createNotification from "@/containers/ui/Notifications";
 
 export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCustomers, listRooms, setOpen, fnPrintPdf }) => {
@@ -140,9 +140,7 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
   const onCheckInDate = e => {
     const dateValue = e.target.value;
 
-    const date1 = moment(dateValue);
-    const date2 = moment(checkOutDate);
-    const daysDiff = date2.diff(date1, 'days');
+    const daysDiff = DateHelper.diff(checkOutDate, dateValue, 'day');
 
     const newInDate = {
       checkInDate: dateValue
@@ -156,9 +154,7 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
   const onCheckOutDate = e => {
     const dateValue = e.target.value;
 
-    const date1 = moment(checkInDate);
-    const date2 = moment(dateValue);
-    const daysDiff = date2.diff(date1, 'days');
+    const daysDiff = DateHelper.diff(dateValue, checkInDate, 'day');
 
     const newOutDate = {
       checkOutDate: dateValue
@@ -325,9 +321,7 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
     const valueUsd = validFloat(usdChange)>0 ? rate / validFloat(usdChange) : priceUsd;
     const subtotalUSD = valueUsd * qtyNight * qtyRooms;
 
-    const date1 = moment(checkInDate);
-    const date2 = moment(checkOutDate);
-    const daysDiff = date2.diff(date1, 'days');
+    const daysDiff = DateHelper.diff(checkOutDate, checkInDate, 'day');
 
     const newRoom = {
       qtyNight: validInt(daysDiff),

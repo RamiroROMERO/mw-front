@@ -7,7 +7,7 @@ import {
   themeColorStorageKey,
   themeRadiusStorageKey,
 } from '@/constants/defaultValues';
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 // xlsx solo se usa para leer archivos importados por el usuario (ver getExcelData
 // más abajo); se carga on-demand para no inflar el chunk inicial del bundle.
 
@@ -268,7 +268,7 @@ export const getMonthLetter = (date) => {
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
 
-  const monthIndex = date ? moment(date).month() : moment().month();
+  const monthIndex = DateHelper.getMonth(date);
   return months[monthIndex] || '';
 };
 
@@ -301,23 +301,20 @@ export const fnCalcDaysVacations = (startDate, endDate) => {
 }
 
 export const getDaysDiffExcMonday = (dateFrom, dateTo, incMonday = 0) => {
-  const date1 = moment(dateFrom);
-  const date2 = moment(dateTo);
-
-  const from = moment(date1, 'DD/MM/YYY');
-  const to = moment(date2, 'DD/MM/YYY');
+  let from = DateHelper.parse(dateFrom);
+  const to = DateHelper.parse(dateTo);
   let days = 0;
 
-  while (!from.isAfter(to)) {
+  while (!DateHelper.isAfter(from, to)) {
     if (incMonday === 1) {
       days++;
     } else {
-      // Si no es domingo
-      if (from.isoWeekday() !== 7) {
+      // Si no es domingo (dayjs .day(): domingo = 0, vs. moment .isoWeekday(): domingo = 7)
+      if (DateHelper.getWeekday(from) !== 0) {
         days++;
       }
     }
-    from.add(1, 'days');
+    from = DateHelper.add(from, 1, 'day');
   }
 
   // buscar dias libres

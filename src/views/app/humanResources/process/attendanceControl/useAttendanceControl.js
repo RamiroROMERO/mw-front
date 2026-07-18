@@ -3,7 +3,7 @@ import { useForm } from '@Hooks/useForms';
 import { cleanedObjectKeys, ExcelErrors, formatDate, getExcelData } from '@Helpers/Utils';
 import { IntlMessages } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
-import moment from 'moment';
+import DateHelper from '@Helpers/DateHelper';
 import { request } from '@Helpers/core';
 
 export const useAttendanceControl = ({ setLoading }) => {
@@ -109,8 +109,8 @@ export const useAttendanceControl = ({ setLoading }) => {
     }
 
     const dataToSave = filterData.map(item => {
-      const fecha = moment(item.date, 'DD/MM/YYYY');
-      item.date = fecha.format("YYYY-MM-DD")
+      const fecha = DateHelper.parse(item.date, 'DD/MM/YYYY');
+      item.date = DateHelper.format(fecha, "YYYY-MM-DD")
       item.input = item?.input || "00:00"
       item.output = item?.output || "00:00"
       return item;

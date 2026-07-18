@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from '@Hooks';
 import { request } from '@Helpers/core';
 import { getCurrentDate, validInt } from '@Helpers/Utils';
-import moment from 'moment';
+import DateHelper from '@Helpers/DateHelper';
 import notification from '@Containers/ui/Notifications';
 
 export const usePermissions = ({ setLoading, screenControl }) => {
@@ -62,10 +62,8 @@ export const usePermissions = ({ setLoading, screenControl }) => {
         ${item.rrhhAuthorizer.secondLastName}` : ""
         item.dateStart = item.dateStart.substring(0, 19);
         item.dateEnd = item.dateEnd.substring(0, 19);
-        const date1 = moment(item.dateStart);
-        const date2 = moment(item.dateEnd);
-        const daysDiff = date2.diff(date1, 'days') + 1;
-        const hoursDiff = date2.diff(date1, 'hours', true);
+        const daysDiff = DateHelper.diff(item.dateEnd, item.dateStart, 'day') + 1;
+        const hoursDiff = DateHelper.diff(item.dateEnd, item.dateStart, 'hour', true);
         if (item.typeId === 1) {
           item.time = `${daysDiff} Dias`
         } else {

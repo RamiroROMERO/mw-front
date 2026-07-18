@@ -12,7 +12,7 @@ import classnames from 'classnames';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import createNotification from '@Containers/ui/Notifications';
-import moment from 'moment';
+import DateHelper from '@Helpers/DateHelper';
 
 const ModalDetailPay = ({ setOpen, data }) => {
   const { idPayroll, date, biweekId, listEmployees, listBiweeklies, listJobPositions, listPaymentMethod, setLoading, fnViewDetailPayroll, currentItem } = data;
@@ -354,10 +354,8 @@ const ModalDetailPay = ({ setOpen, data }) => {
         setLoading(true);
         request.GET(buildUrl('rrhh/process/permissions/findByDate', { dateStart, dateEnd, employeeId: employee }), (resp) => {
           const permissions = resp.data.map(item => {
-            const date1 = moment(item.dateStart);
-            const date2 = moment(item.dateEnd);
-            const daysDiff = date2.diff(date1, 'days');
-            const hoursDiff = date2.diff(date1, 'hours', true);
+            const daysDiff = DateHelper.diff(item.dateEnd, item.dateStart, 'day');
+            const hoursDiff = DateHelper.diff(item.dateEnd, item.dateStart, 'hour', true);
             return {
               daysDiff,
               hoursDiff

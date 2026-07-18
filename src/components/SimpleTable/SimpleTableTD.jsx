@@ -1,4 +1,4 @@
-import moment from 'moment'
+import DateHelper from '@/helpers/DateHelper'
 import { formatNumber } from '@/helpers/Utils'
 
 const fieldTypes = ['date', 'number', 'currency']
@@ -11,7 +11,7 @@ export const SimpleTableTD = ({ value, formatTd }) => {
   if (!fieldTypes.includes(type)) {
     formatedValue = value;
   } else if (type == 'date' && format != '') {
-    formatedValue = moment(value).format(format).toString();
+    formatedValue = DateHelper.format(value, format);
   } else if (type == 'number') {
     textAlign = 'right';
     formatedValue = formatNumber(value, '', 2);

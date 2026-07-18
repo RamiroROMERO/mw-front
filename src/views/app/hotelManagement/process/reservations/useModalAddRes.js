@@ -1,7 +1,7 @@
 import { request, buildUrl } from '@/helpers/core';
 import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 import { useEffect, useState } from 'react'
 import createNotification from "@/containers/ui/Notifications";
 
@@ -73,9 +73,7 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
   const onCheckInDate = e => {
     const dateValue = e.target.value;
 
-    const date1 = moment(dateValue);
-    const date2 = moment(checkOutDate);
-    const daysDiff = date2.diff(date1, 'days');
+    const daysDiff = DateHelper.diff(checkOutDate, dateValue, 'day');
 
     const totalCost = (validInt(daysDiff) * validFloat(baseRate)) + validFloat(totalValServices);
 
@@ -90,9 +88,7 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
   const onCheckOutDate = e => {
     const dateValue = e.target.value;
 
-    const date1 = moment(checkInDate);
-    const date2 = moment(dateValue);
-    const daysDiff = date2.diff(date1, 'days');
+    const daysDiff = DateHelper.diff(dateValue, checkInDate, 'day');
 
     const totalCost = (validInt(daysDiff) * validFloat(baseRate)) + validFloat(totalValServices);
 
@@ -107,9 +103,7 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
   const onBaseRateChange = e => {
     const valueRate = e.target.value;
 
-    const date1 = moment(checkInDate);
-    const date2 = moment(checkOutDate);
-    const daysDiff = date2.diff(date1, 'days');
+    const daysDiff = DateHelper.diff(checkOutDate, checkInDate, 'day');
 
     const totalCost = (validInt(daysDiff) * validFloat(valueRate)) + validFloat(totalValServices);
 
@@ -367,9 +361,7 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
         filter.roomServices = data;
       }
 
-      const date1 = moment(checkInDate);
-      const date2 = moment(checkOutDate);
-      const daysDiff = date2.diff(date1, 'days');
+      const daysDiff = DateHelper.diff(checkOutDate, checkInDate, 'day');
 
       const totalCost = (validInt(daysDiff) * validFloat(filter?.rate || 0)) + validFloat(totalValServices);
 

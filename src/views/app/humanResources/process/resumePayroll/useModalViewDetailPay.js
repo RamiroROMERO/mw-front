@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { fnCalcDaysVacations, getDaysDiffExcMonday, validFloat, validInt } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks';
-import moment from 'moment';
+import DateHelper from '@Helpers/DateHelper';
 
 export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateEnd, notes, currentItemDeta, setLoading, listEmployees, listTypeDeductions, listTypeIncomes, fnViewDetailPayroll, setOpen }) => {
   const [activeTab, setActiveTab] = useState('1');
@@ -862,19 +862,18 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
       daysSumMondays = daysVacations;
     }
 
-    const dateInit = moment(dateStart);
-    const date1 = moment(dateStart);
-    let date2 = date1.add(daysSumMondays, 'days');
+    const dateInit = DateHelper.parse(dateStart);
+    let date2 = DateHelper.add(dateInit, daysSumMondays, 'day');
 
     // buscar si las fechas caen en dias feriados y agregarlos
     const hollyDays = fnCalcDaysVacations(dateInit, date2);
-    date2 = date2.add(hollyDays, 'days');
+    date2 = DateHelper.add(date2, hollyDays, 'day');
 
     //confirmar que se agregaron la cantidad correcta de dias a la fecha
     const confirmDays = getDaysDiffExcMonday(dateInit, date2);
     if (confirmDays > daysVacations) {
       const days = confirmDays - daysVacations;
-      date2 = date2.subtract(days, 'days');
+      date2 = DateHelper.subtract(date2, days, 'day');
     }
 
     const newData = {
@@ -915,19 +914,18 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
       daysSumMondays = daysVacations;
     }
 
-    const dateInit = moment(dateStart);
-    const date1 = moment(dateStart);
-    let date2 = date1.add(daysSumMondays, 'days');
+    const dateInit = DateHelper.parse(dateStart);
+    let date2 = DateHelper.add(dateInit, daysSumMondays, 'day');
 
     // buscar si las fechas caen en dias feriados y agregarlos
     const hollyDays = fnCalcDaysVacations(dateInit, date2);
-    date2 = date2.add(hollyDays, 'days');
+    date2 = DateHelper.add(date2, hollyDays, 'day');
 
     //confirmar que se agregaron la cantidad correcta de dias a la fecha
     const confirmDays = getDaysDiffExcMonday(dateInit, date2);
     if (confirmDays > daysVacations) {
       const days = confirmDays - daysVacations;
-      date2 = date2.subtract(days, 'days');
+      date2 = DateHelper.subtract(date2, days, 'day');
     }
 
     const newData = {
