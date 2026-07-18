@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardBody, Row, Button } from 'reactstrap';
 import { IntlMessages, formatDate } from "@/helpers/Utils";
 import { Colxx } from '@/components/common/CustomBootstrap';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import ReactTable from "@/components/reactTable";
 import TableButton from "@/components/tableButtons";
 import Modal from "@/components/modal";
@@ -75,7 +75,7 @@ const RawMaterial = (props) => {
   const fnViewDetail = (deta) => {
     setCurrentItem(deta);
     setLoading(true);
-    request.GET(`prodRMStocks?productId=${deta.id}`, (resp) => {
+    request.GET(buildUrl('prodRMStocks', { productId: deta.id }), (resp) => {
       const productsDetail = resp.data.map((item) => {
         item.dateIn = formatDate(item.date);
         return item;

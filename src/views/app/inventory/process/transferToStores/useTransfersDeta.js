@@ -1,6 +1,6 @@
 import TableButtons from '@/components/tableButtons';
 import { validFloat } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { useForm } from '@/hooks'
 import { useState } from 'react';
 
@@ -34,7 +34,7 @@ export const useTransfersDeta = ({ setLoading }) => {
 
   const fnViewProducts = (idStore) => {
     setLoading(true);
-    request.GET(`inventory/process/stocks/getStocks?storeId=${idStore}`, (resp) => {
+    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId: idStore }), (resp) => {
       const data = resp.data.map((item) => {
         item.qty = 1
         item.code = item.productCode

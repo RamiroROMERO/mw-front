@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useForm } from '@/hooks';
 import { IntlMessages, validFloat, validInt } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 
 export const useModalAddProduct = ({ setLoading, currentItem, fnGetDataDetail, setOpen }) => {
   const [sendForm, setSendForm] = useState(false);
@@ -46,7 +46,7 @@ export const useModalAddProduct = ({ setLoading, currentItem, fnGetDataDetail, s
     }
 
     setLoading(true);
-    request.GET(`inventory/process/stocks/getStocks?storeId=${storeId}&type=1`, (resp) => {
+    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId, type: 1 }), (resp) => {
       const data = resp.data.map((item) => {
         item.productName = item.name
         item.price = validFloat(item.priceLocalMid)

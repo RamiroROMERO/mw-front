@@ -9,7 +9,7 @@ import { adminRoot } from '@Constants/defaultValues';
 import { InputField } from '@Components/inputFields';
 import { Checkbox } from '@Components/checkbox';
 import { useForm } from '@Hooks';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import DataTable from "@Components/reactTable";
 import notification from '@/containers/ui/Notifications';
 import Confirmation from '@/containers/ui/confirmationMsg';
@@ -246,7 +246,7 @@ const UserProfile = (props) => {
 
   const fnFilterByModule = (id, modulesUser) => {
     setLoading(true);
-    request.GET(`admin/moduleDetail?moduleId=${id}`, (resp) => {
+    request.GET(buildUrl('admin/moduleDetail', { moduleId: id }), (resp) => {
       const modulesDetail = resp.data.map((item) => {
         item.checked = true
         return item;
@@ -292,7 +292,7 @@ const UserProfile = (props) => {
     request.GET('admin/modules', (resp) => {
       const modules = resp.data;
       setListModules(modules);
-      request.GET(`admin/userModules?userId=${userData.id}`, (resp2) => {
+      request.GET(buildUrl('admin/userModules', { userId: userData.id }), (resp2) => {
         const userModules = resp2.data.filter(elem => validInt(elem.moduleId) !== 0);
         setListUserModules(userModules);
 

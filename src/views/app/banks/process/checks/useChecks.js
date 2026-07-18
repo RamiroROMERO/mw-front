@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useForm } from '@/hooks'
 import { validInt } from '@/helpers/Utils';
 import { number } from 'prop-types';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 
 export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) => {
   const [listDocto, setListDocto] = useState([]);
@@ -182,7 +182,7 @@ export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) 
       setLoading(false);
     });
     setLoading(true);
-    request.GET(`inventory/process/providers?status=1`, (resp) => {
+    request.GET(buildUrl('inventory/process/providers', { status: 1 }), (resp) => {
       const providerValue = resp.data.map((item) => {
         return {
           value: item.id,

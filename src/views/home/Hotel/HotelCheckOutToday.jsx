@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Badge, Button, Card, CardBody, CardTitle, Col, Row, Table } from 'reactstrap'
 import DateCalendar from '@Components/dateCalendar';
 import { IntlMessages, validInt } from '@Helpers/Utils';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import Modal from '@Components/modal';
 import ModalInvoice from './ModalInvoice';
 import ViewPdf from '@/components/ViewPDF/ViewPdf';
@@ -25,7 +25,7 @@ export const HotelCheckOutToday = ({ setLoading }) => {
 
   const fnRefreshTable = () => {
     setLoading(true);
-    request.GET(`hotel/dashboard/getCheckOutToday?currentDate=${currentDate}`, resp => {
+    request.GET(buildUrl('hotel/dashboard/getCheckOutToday', { currentDate }), resp => {
       setLoading(false);
       const { data } = resp;
       setDataCurrentCheckOut(data);

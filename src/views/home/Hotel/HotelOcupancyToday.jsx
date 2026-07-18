@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Badge, Button, Card, CardBody, CardTitle, Col, Row, Table } from 'reactstrap'
 import DateCalendar from '@Components/dateCalendar';
 import { IntlMessages } from '@Helpers/Utils';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import DateHelper from '@/helpers/DateHelper';
 
 export const HotelOccupancyToday = ({ setLoading, setCurrentReservation, setOpenModalAdd }) => {
@@ -13,7 +13,7 @@ export const HotelOccupancyToday = ({ setLoading, setCurrentReservation, setOpen
 
   const fnRefreshTable = () => {
     setLoading(true);
-    request.GET(`hotel/dashboard/getOccupancyToday?currentDate=${currentDate}`, resp => {
+    request.GET(buildUrl('hotel/dashboard/getOccupancyToday', { currentDate }), resp => {
       setLoading(false);
       const { data } = resp;
       setDataOccupancy(data);

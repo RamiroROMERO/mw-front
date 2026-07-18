@@ -6,7 +6,7 @@ import { InputField } from '@Components/inputFields';
 import { useForm } from '@Hooks';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { RadioGroup } from '@Components/radioGroup';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { SimpleSelect } from '@Components/simpleSelect';
 import classnames from 'classnames';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
@@ -282,7 +282,7 @@ const ModalDetailPay = ({ setOpen, data }) => {
   const getDeductions = (loans = dataLoans) => {
     setExtDeducDetail([]);
     setLoading(true);
-    request.GET(`rrhh/process/biweeklyDeductions?biweekId=${biweekId}&employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/biweeklyDeductions', { biweekId, employeeId }), (resp) => {
       const deductions = resp.data;
       fnCalDeductions(deductions, loans)
       setExtDeducDetail(deductions);
@@ -301,7 +301,7 @@ const ModalDetailPay = ({ setOpen, data }) => {
     const dateStart = findBiweek.dateIn;
     const dateEnd = findBiweek.dateOut;
     setLoading(true);
-    request.GET(`rrhh/process/paymentPlans/getQuoteByDate?dateStart=${dateStart}&dateEnd=${dateEnd}&employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/paymentPlans/getQuoteByDate', { dateStart, dateEnd, employeeId }), (resp) => {
       const loans = resp.data;
       getDeductions(loans);
       setDataLoans(loans)
@@ -342,17 +342,17 @@ const ModalDetailPay = ({ setOpen, data }) => {
 
     // buscar deducciones externas para el empleado seleccionado
     setLoading(true);
-    request.GET(`rrhh/process/biweeklyDeductions?biweekId=${biweekId}&employeeId=${employee}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/biweeklyDeductions', { biweekId, employeeId: employee }), (resp) => {
       const deductions = resp.data;
 
       // buscar prestamos
       setLoading(true);
-      request.GET(`rrhh/process/paymentPlans/getQuoteByDate?dateStart=${dateStart}&dateEnd=${dateEnd}&employeeId=${employee}`, (resp) => {
+      request.GET(buildUrl('rrhh/process/paymentPlans/getQuoteByDate', { dateStart, dateEnd, employeeId: employee }), (resp) => {
         const loans = resp.data;
 
         // buscar permisos
         setLoading(true);
-        request.GET(`rrhh/process/permissions/findByDate?dateStart=${dateStart}&dateEnd=${dateEnd}&employeeId=${employee}`, (resp) => {
+        request.GET(buildUrl('rrhh/process/permissions/findByDate', { dateStart, dateEnd, employeeId: employee }), (resp) => {
           const permissions = resp.data.map(item => {
             const date1 = moment(item.dateStart);
             const date2 = moment(item.dateEnd);

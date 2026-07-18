@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useForm } from '@Hooks';
 import { IntlMessages, formatDate, validFloat, validInt } from '@Helpers/Utils';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 
 export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenControl }) => {
@@ -124,7 +124,7 @@ export const useModalDetail = ({ currentItem, setLoading, fnGetProjects, screenC
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/projectDetail?projectId=${currentItem.id}&status=1`, (resp) => {
+    request.GET(buildUrl('rrhh/process/projectDetail', { projectId: currentItem.id, status: 1 }), (resp) => {
       const projectDeta = resp.data.map((item) => {
         item.workShifts = item.rrhhSchedule?.name || ''
         item.employee = `${item.rrhhEmployee?.firstName || ''} ${item.rrhhEmployee?.secondName || ''} ${item.rrhhEmployee?.lastName || ''} ${item.rrhhEmployee?.secondLastName || ''}`

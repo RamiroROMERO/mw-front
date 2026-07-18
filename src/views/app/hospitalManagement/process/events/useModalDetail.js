@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { IntlMessages } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 
 export const useModalDetail = ({ setLoading, currentItem }) => {
   const [openModalAddProduct, setOpenModalAddProduct] = useState(false);
@@ -22,7 +22,7 @@ export const useModalDetail = ({ setLoading, currentItem }) => {
 
   const fnGetDataDetail = () => {
     setLoading(true);
-    request.GET(`hospital/process/eventDetails?fatherId=${currentItem.id}`, (resp) => {
+    request.GET(buildUrl('hospital/process/eventDetails', { fatherId: currentItem.id }), (resp) => {
       const data = resp.data.map((item) => {
         item.description = item.invProduct?.name || '';
         item.typeName = item.invProduct?.type === 1 ? 'Producto' : (item.invProduct?.type === 2 ? 'Servicio' : 'Materia Prima')

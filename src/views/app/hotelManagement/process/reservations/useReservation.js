@@ -1,4 +1,4 @@
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { useEffect, useState } from 'react'
 import notification from '@Containers/ui/Notifications';
 import { formatDate, IntlMessages } from '@/helpers/Utils';
@@ -41,7 +41,7 @@ export const useReservation = ({ setLoading, screenControl }) => {
 
   const fnGetData = (page = currentPage, searchText = search) => {
     setLoading(true);
-    request.GET(`hotel/process/bookings/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
+    request.GET(buildUrl('hotel/process/bookings/paginate', { page, limit: pageSize, q: searchText }), (resp) => {
       const data = resp.data.map(item => {
         item.statusName = item?.statusData?.name || ""
         item.channel = item?.channelData?.name || ""

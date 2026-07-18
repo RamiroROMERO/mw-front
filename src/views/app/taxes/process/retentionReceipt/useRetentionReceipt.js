@@ -1,7 +1,7 @@
 import TableButtons from '@/components/tableButtons';
 import createNotification from '@/containers/ui/Notifications';
 import { formatNumber, validInt } from '@/helpers/Utils'
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { useForm } from '@/hooks'
 import { useEffect, useState } from 'react';
 
@@ -117,7 +117,7 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
       request.PUT(`tax/process/withholdingReceipts/${code}`, newData, () => {
         setLoading(false);
         // Eliminar recibo
-        request.DELETE(`tax/process/withholdingReceiptDetail?fatherId=${code}`, () => {
+        request.DELETE(buildUrl('tax/process/withholdingReceiptDetail', { fatherId: code }), () => {
           // guardar recibo
           retentionDetail.forEach(item => {
             const productDeta = {
@@ -202,7 +202,7 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
     request.DELETE(`tax/process/withholdingReceipts/${code}`, (resp) => {
       // eliminar detalle de la orden de compra
       setLoading(true);
-      request.DELETE(`tax/process/withholdingReceiptDetail?fatherId=${code}`, (resp2) => {
+      request.DELETE(buildUrl('tax/process/withholdingReceiptDetail', { fatherId: code }), (resp2) => {
         setOpenMsgDelete(false);
         fnNewRetention();
         setLoading(false);
@@ -231,7 +231,7 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
   const fnViewCxp = () => {
     setLoading(true);
     setListCxp([]);
-    request.GET(`accounting/process/cxp?providerId=${providerId}`, (resp) => {
+    request.GET(buildUrl('accounting/process/cxp', { providerId }), (resp) => {
       const acounts = resp.data.map((item) => {
         item.code = item.documentCode
         item.descrip = item.description
@@ -250,7 +250,7 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
 
   useEffect(() => {
     setLoading(true);
-    request.GET(`inventory/process/providers?status=1`, (resp) => {
+    request.GET(buildUrl('inventory/process/providers', { status: 1 }), (resp) => {
       const providerValue = resp.data.map((item) => {
         return {
           value: item.id,
@@ -263,7 +263,7 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
       setLoading(false);
     });
     setLoading(true);
-    request.GET(`tax/settings/withholdingTypes?status=1`, (resp) => {
+    request.GET(buildUrl('tax/settings/withholdingTypes', { status: 1 }), (resp) => {
       const retention = resp.data.map((item) => {
         return {
           value: item.name,

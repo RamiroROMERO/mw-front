@@ -3,7 +3,7 @@ import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
 import { Colxx } from "@/components/common/CustomBootstrap";
 import { ContainerWithLabel } from "@/components/containerWithLabel";
 import { SimpleSelect } from "@/components/simpleSelect";
-import { request } from "@/helpers/core";
+import { request, buildUrl } from "@/helpers/core";
 import { IntlMessages, formatNumber, validInt } from "@/helpers/Utils";
 import { useForm } from "@/hooks";
 import { InputField } from "@/components/inputFields";
@@ -80,7 +80,7 @@ const ModalCashOut = (props) => {
 
   const fnGetCashOut = () => {
     setLoading(true);
-    request.GET(`billing/process/invoiceExpenses?date=${date}&cashierId=${cashierId}&cashId=${cashId}&status=1&closedId=0`, (resp) => {
+    request.GET(buildUrl('billing/process/invoiceExpenses', { date, cashierId, cashId, status: 1, closedId: 0 }), (resp) => {
       const cashOut = resp.data.map((item, idx) => {
         item.no = idx + 1
         item.options = <><TableButton color='primary' icon='eye' fnOnClick={() => fnViewCashout(item)} />

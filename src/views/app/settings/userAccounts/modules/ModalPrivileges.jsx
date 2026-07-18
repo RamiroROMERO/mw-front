@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, ModalBody, ModalFooter, Card, CardBody, Row, Form, } from "reactstrap";
 import { IntlMessages, validInt } from "@Helpers/Utils";
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { useForm } from "@Hooks";
 import Confirmation from '@Containers/ui/confirmationMsg';
 import { Colxx } from '@Components/common/CustomBootstrap';
@@ -82,7 +82,7 @@ const ModalPrivileges = (props) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`admin/moduleDetail?moduleId=${currentItem.id}`, (resp) => {
+    request.GET(buildUrl('admin/moduleDetail', { moduleId: currentItem.id }), (resp) => {
       const dataDetail = resp.data.map((item) => {
         item.typePrivilege = item.typeId === 1 ? "General" : "Administrativo"
         item.statusIcon = item.active === 1 ? <i className="medium-icon bi bi-check2-square" /> :

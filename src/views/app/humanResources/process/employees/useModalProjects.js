@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { IntlMessages, formatDate, validFloat, validInt } from '@Helpers/Utils'
 import { useForm } from '@Hooks'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 
 export const useModalProjects = ({ employeeId, turnId, listProjects, setLoading, fnGetProjects, fnGetProjectEmployee }) => {
   const [nextCode, setNextCode] = useState(0);
@@ -130,7 +130,7 @@ export const useModalProjects = ({ employeeId, turnId, listProjects, setLoading,
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/projectDetail?employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/projectDetail', { employeeId }), (resp) => {
       const dataProjects = resp.data.map((item) => {
         item.customer = item?.facCliente?.name || ""
         item.nameProject = item?.rrhhProject?.name || ""

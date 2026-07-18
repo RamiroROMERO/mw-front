@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
 import { validFloat, formatNumber, validInt } from "@/helpers/Utils";
 import { Colxx, Separator } from '@/components/common/CustomBootstrap';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { useForm } from '@/hooks';
 import moment from 'moment';
 import ControlPanel from '@/components/controlPanel';
@@ -268,7 +268,7 @@ const PointSales = (props) => {
     onResetFormIndex();
     setRecordSelected(item);
 
-    request.GET(`billing/process/invoiceDetail?idFather=${item.id}`, (resp) => {
+    request.GET(buildUrl('billing/process/invoiceDetail', { idFather: item.id }), (resp) => {
       const invoiceProducts = resp.data.map((item2) => {
         return {
           id: item2.id,
@@ -518,7 +518,7 @@ const PointSales = (props) => {
     }
     setLoading(true);
     setListProducts([]);
-    request.GET(`inventory/process/stocks/getStocks?storeId=${storeId}`, (resp) => {
+    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId }), (resp) => {
       const products = resp.data.map((item) => {
         item.taxPercent = item.percentTax
         item.unitProd = item.outputUnit

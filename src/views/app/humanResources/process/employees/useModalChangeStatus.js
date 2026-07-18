@@ -1,4 +1,4 @@
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { getCurrentDate } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import { useState } from 'react'
@@ -62,7 +62,7 @@ export const useModalChangeStatus = ({ setLoading, employeeId, statusEmployee, s
           status: false
         }
         setLoading(true);
-        request.PUT(`rrhh/process/projectDetail?employeeId=${employeeId}`, projectUpdate, () => {
+        request.PUT(buildUrl('rrhh/process/projectDetail', { employeeId }), projectUpdate, () => {
           setLoading(false);
         }, (err) => {
 

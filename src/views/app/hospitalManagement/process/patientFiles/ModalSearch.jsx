@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { IntlMessages } from '@/helpers/Utils'
 import { Colxx } from '@/components/common/CustomBootstrap'
-import { request } from '@/helpers/core'
+import { request, buildUrl } from '@/helpers/core'
 import ReactTable from '@/components/reactTable'
 import { formatDate } from '@Helpers/Utils'
 
@@ -11,7 +11,7 @@ const ModalSearch = ({ data, setOpen }) => {
 
   const fnViewFile = (row) => {
     setLoading(true);
-    request.GET(`admin/locateMunic?codeDepto=${row.estateCode}`, (resp) => {
+    request.GET(buildUrl('admin/locateMunic', { codeDepto: row.estateCode }), (resp) => {
       const munic = resp.data.map((item) => {
         return {
           value: item.code,

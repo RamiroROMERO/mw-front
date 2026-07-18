@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { IntlMessages, formatDate } from '@Helpers/Utils'
 import { Colxx } from '@Components/common/CustomBootstrap'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import DateCalendar from '@Components/dateCalendar'
 import ReactTable from '@Components/reactTable'
 
@@ -15,7 +15,7 @@ const ModalViewReport = ({ data, setOpen }) => {
     });
     setFilterProjects(filter);
     setLoading(true);
-    request.GET(`rrhh/process/dailyReportDetail?fatherId=${itemRep.id}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/dailyReportDetail', { fatherId: itemRep.id }), (resp) => {
       const reportDetail = resp.data.map((item) => {
         return {
           id: item.id,

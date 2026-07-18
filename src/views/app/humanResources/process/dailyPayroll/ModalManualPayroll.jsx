@@ -3,7 +3,7 @@ import { Button, ModalBody, ModalFooter, Row, Table } from 'reactstrap'
 import { IntlMessages, formatNumber, validInt } from '@Helpers/Utils'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { useForm } from '@Hooks'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import DateCalendar from '@Components/dateCalendar'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import createNotification from '@Containers/ui/Notifications'
@@ -118,7 +118,7 @@ const ModalManualPayroll = ({ data, setOpen }) => {
       request.PUT(`rrhh/process/dailyPayrolls/${idPayroll}`, newData, () => {
         setOpen(false);
         // Eliminar empleados
-        request.DELETE(`rrhh/process/dailyPayrollDetails?fatherId=${idPayroll}`, () => {
+        request.DELETE(buildUrl('rrhh/process/dailyPayrollDetails', { fatherId: idPayroll }), () => {
           // guardar empleados
           payrollDetail.forEach(item => {
             const employeesDeta = {

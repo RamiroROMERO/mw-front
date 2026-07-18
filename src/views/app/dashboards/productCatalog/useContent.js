@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ModalDetails } from './ModalDetails';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { validFloat } from '@/helpers/Utils';
 
 export const useContent = ({ setLoading }) => {
@@ -16,7 +16,7 @@ export const useContent = ({ setLoading }) => {
 
   const fnGetProducts = () => {
     setLoading(true);
-    request.GET(`inventory/settings/products/dashboard?page=${currentPage}&limit=${pageSize}&q=${searchText}`, resp => {
+    request.GET(buildUrl('inventory/settings/products/dashboard', { page: currentPage, limit: pageSize, q: searchText }), resp => {
       let { data, pagination } = resp;
       data = data.map(item => {
         let totalStock = 0;

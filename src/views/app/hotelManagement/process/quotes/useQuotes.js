@@ -1,6 +1,6 @@
 import ViewPdf from '@/components/ViewPDF/ViewPdf';
 import { API_URLS } from '@/helpers/APIUrl';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { formatDate, formatNumber, IntlMessages } from '@/helpers/Utils';
 import React, { useEffect, useState } from 'react'
 
@@ -56,7 +56,7 @@ export const useQuotes = ({ setLoading, screenControl }) => {
 
   const fnGetData = (page = currentPage, searchText = search) => {
     setLoading(true);
-    request.GET(`${API_URLS.HOTEL_PROC_QUOTES}/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
+    request.GET(buildUrl(`${API_URLS.HOTEL_PROC_QUOTES}/paginate`, { page, limit: pageSize, q: searchText }), (resp) => {
       const data = resp.data.map(item => {
         item.customer = `${item?.dni || ""} | ${item?.name || ""}`
         return item

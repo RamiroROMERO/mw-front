@@ -4,7 +4,7 @@ import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { InputField } from '@Components/inputFields'
 import { useForm } from '@Hooks'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import { Checkbox } from '@Components/checkbox'
 import UploadFile from '@Components/uploadFile'
 import ReactTable from '@Components/reactTable'
@@ -84,7 +84,7 @@ const ModalDocuments = ({ data, setOpen }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/employeeDocuments?employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/employeeDocuments', { employeeId }), (resp) => {
       const documents = resp.data.map((item) => {
         item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />

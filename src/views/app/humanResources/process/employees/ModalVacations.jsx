@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { formatDate, IntlMessages } from '@Helpers/Utils'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import ReactTable from '@Components/reactTable'
 
 const ModalVacations = ({ setOpen, data }) => {
@@ -50,7 +50,7 @@ const ModalVacations = ({ setOpen, data }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/vacations?employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/vacations', { employeeId }), (resp) => {
       const vacations = resp.data.map((item) => {
         item.authorizedBy = item.rrhhAuthorized ? `${item.rrhhAuthorized.firstName}  ${item.rrhhAuthorized.secondName}  ${item.rrhhAuthorized.lastName}
         ${item.rrhhAuthorized.secondLastName}` : ""

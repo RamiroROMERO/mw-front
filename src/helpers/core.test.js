@@ -13,7 +13,7 @@ vi.mock('@Redux/stores', () => ({
   getStore: () => ({ dispatch: dispatchMock }),
 }));
 
-const { request } = await import('./core');
+const { request, buildUrl } = await import('./core');
 
 const makeToken = (exp) => {
   const payload = Buffer.from(JSON.stringify({ exp })).toString('base64');
@@ -178,5 +178,33 @@ describe('core.js — request', () => {
 
       expect(fnFinally).toHaveBeenCalledTimes(1);
     });
+  });
+});
+
+describe('core.js — buildUrl', () => {
+  it('arma la query string con múltiples params', () => {
+    expect(buildUrl('billing/process/invoiceDetail', { idFather: 42 })).toBe(
+      'billing/process/invoiceDetail?idFather=42'
+    );
+  });
+
+  it('devuelve el path sin "?" cuando no hay params', () => {
+    expect(buildUrl('inventory/process/providers')).toBe('inventory/process/providers');
+    expect(buildUrl('inventory/process/providers', {})).toBe('inventory/process/providers');
+  });
+
+  it('codifica caracteres especiales en valores de texto libre (el bug real que motivó esto)', () => {
+    const url = buildUrl('hotel/settings/rooms/paginate', { page: 1, limit: 10, q: 'a&b=c' });
+    expect(url).toBe('hotel/settings/rooms/paginate?page=1&limit=10&q=a%26b%3Dc');
+  });
+
+  it('codifica espacios y acentos', () => {
+    const url = buildUrl('search', { q: 'habitación doble' });
+    expect(url).toBe('search?q=habitaci%C3%B3n+doble');
+  });
+
+  it('omite params undefined/null pero conserva string vacío', () => {
+    const url = buildUrl('reports', { a: undefined, b: null, c: '' });
+    expect(url).toBe('reports?c=');
   });
 });

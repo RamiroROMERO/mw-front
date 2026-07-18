@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useForm, useExportExcel } from '@Hooks'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications'
 import ViewPdf from '@/components/ViewPDF/ViewPdf';
@@ -98,7 +98,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     setProjectName(filterProjects ? filterProjects.label : '');
 
     setLoading(true);
-    request.GET(`rrhh/process/weeklyPayrolls?customerId=${customerId}&projectId=${projectId}&typeId=${typePayroll}&status=1`, (resp) => {
+    request.GET(buildUrl('rrhh/process/weeklyPayrolls', { customerId, projectId, typeId: typePayroll, status: 1 }), (resp) => {
       const payrollWeekly = resp.data.map((item) => {
         item.dateVal = formatDate(item.date)
         item.startDate = formatDate(item.dateStart)
@@ -139,7 +139,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     setProjectName(filterProjects ? filterProjects.label : '');
 
     setLoading(true);
-    request.GET(`rrhh/process/weeklyPayrolls?customerId=${customerId}&projectId=${projectId}&typeId=${typePayroll}&status=1&isConfidential=${filterConfidential}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/weeklyPayrolls', { customerId, projectId, typeId: typePayroll, status: 1, isConfidential: filterConfidential }), (resp) => {
       const payrollWeekly = resp.data.map((item) => {
         item.dateVal = formatDate(item.date)
         item.startDate = formatDate(item.dateStart)
@@ -159,7 +159,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
 
   const fnViewDetailPayroll = (idPayroll) => {
     setLoading(true);
-    request.GET(`rrhh/process/weeklyPayrollDetails/payrollDetail?fatherId=${idPayroll}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/weeklyPayrollDetails/payrollDetail', { fatherId: idPayroll }), (resp) => {
       const payrollDeta = resp.data.map((item, idx) => {
         item.num = idx + 1
         item.employee = `${item.rrhhEmployee?.firstName} ${item.rrhhEmployee?.secondName} ${item.rrhhEmployee?.lastName} ${item.rrhhEmployee?.secondLastName}` || ''
@@ -373,7 +373,7 @@ export const useResumePayroll = ({ setLoading, typePayroll, screenControl, admin
     } else {
 
       // mostrar modal para seleccionar los empleados a los que se les generara la planilla
-      request.GET(`rrhh/process/vacations/getVacationByProject?status=1&projectId=${projectId}`, (resp) => {
+      request.GET(buildUrl('rrhh/process/vacations/getVacationByProject', { status: 1, projectId }), (resp) => {
         const employees = resp.data.map((item) => {
           item.id = item.employeeId
           item.daysToPay = 0

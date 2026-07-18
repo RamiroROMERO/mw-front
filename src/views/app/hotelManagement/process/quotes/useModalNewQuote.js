@@ -1,5 +1,5 @@
 import { API_URLS } from '@/helpers/APIUrl';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { validFloat, validInt } from '@/helpers/Utils';
 import { RandomCodeGenerator } from '@/helpers/UuIdGenerator';
 import { useForm } from '@/hooks';
@@ -239,7 +239,7 @@ export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCusto
 
   const fnViewDetail = () => {
     setLoading(true);
-    request.GET(`${API_URLS.HOTEL_PROC_QUOTE_DETAIL}?idFather=${id}`, (resp) => {
+    request.GET(buildUrl(`${API_URLS.HOTEL_PROC_QUOTE_DETAIL}`, { idFather: id }), (resp) => {
       const data = resp.data.map(item => {
         item.idTemp = item.id
         item.roomName = item?.roomData?.typeData?.name || ""

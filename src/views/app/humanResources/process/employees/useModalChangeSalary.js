@@ -1,4 +1,4 @@
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks'
 import { useState } from 'react'
@@ -25,7 +25,7 @@ export const useModalChangeSalary = ({ setLoading }) => {
     }
 
     setLoading(true);
-    request.PUT(`rrhh/process/employees?jobPositionId=${jobPositionId}`, { defaultSalary: salary }, () => {
+    request.PUT(buildUrl('rrhh/process/employees', { jobPositionId }), { defaultSalary: salary }, () => {
       onResetForm();
       setSendForm(false);
       setLoading(false);

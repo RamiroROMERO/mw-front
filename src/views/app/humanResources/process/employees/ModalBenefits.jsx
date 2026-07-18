@@ -5,7 +5,7 @@ import { IntlMessages, validFloat } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { useForm } from '@Hooks'
 import { Checkbox } from '@Components/checkbox'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import ReactTable from '@Components/reactTable'
 import Confirmation from '@Containers/ui/confirmationMsg';
 
@@ -91,7 +91,7 @@ const ModalBenefits = ({ data, setOpen }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/employeeBenefits?employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/employeeBenefits', { employeeId }), (resp) => {
       const benefits = resp.data.map((item) => {
         item.statusIcon = (item.status === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />

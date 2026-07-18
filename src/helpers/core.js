@@ -55,6 +55,20 @@ const moveScrollTop = () => {
   });
 }
 
+// Arma una query string codificada correctamente a partir de un objeto de
+// params, reemplazando la concatenación manual (`path?a=${a}&b=${b}`) que
+// no escapaba caracteres especiales — un texto de búsqueda con "&" o "="
+// rompía o contaminaba la query string real en vez de viajar como valor.
+const buildUrl = (path, params = {}) => {
+  const searchParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+    searchParams.append(key, value);
+  });
+  const query = searchParams.toString();
+  return query ? `${path}?${query}` : path;
+};
+
 const DEFAULT_TIMEOUT_MS = 30000;
 
 // fetch no soporta timeout nativo: sin esto, un backend que nunca responde
@@ -445,4 +459,4 @@ const request = {
 
 };
 
-export { request, moveScrollTop };
+export { request, moveScrollTop, buildUrl };

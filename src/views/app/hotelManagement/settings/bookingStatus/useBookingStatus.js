@@ -32,7 +32,7 @@ export const useBookingStatus = ({ setLoading, screenControl }) => {
 
   const fnGetData = (page = currentPage, searchText = search) => {
     // setLoading(true);
-    // request.GET(`hotel/settings/bookingStatuses/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
+    // request.GET(buildUrl('hotel/settings/bookingStatuses/paginate', { page, limit: pageSize, q: searchText }), (resp) => {
     //   const data = resp.data.map((item) => {
     //     item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
     //     return item;

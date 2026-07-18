@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
 import { validFloat, formatNumber, validInt } from "@/helpers/Utils";
 import { Colxx, Separator } from '@/components/common/CustomBootstrap';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { useForm } from '@/hooks'
 import ControlPanel from '@/components/controlPanel';
 import TableButton from "@/components/tableButtons";
@@ -240,7 +240,7 @@ const Invoicing = (props) => {
     onResetFormIndex();
     setRecordSelected(item);
 
-    request.GET(`billing/process/invoiceDetail?idFather=${item.id}`, (resp) => {
+    request.GET(buildUrl('billing/process/invoiceDetail', { idFather: item.id }), (resp) => {
       const invoiceProducts = resp.data.map((item2) => {
         return {
           id: item2.id,
@@ -335,7 +335,7 @@ const Invoicing = (props) => {
       request.PUT(`billing/process/invoices/${id}`, newData, (resp) => {
         setLoading(false);
         // Eliminar productos
-        request.DELETE(`billing/process/invoiceDetail?idFather=${id}`, (resp2) => {
+        request.DELETE(buildUrl('billing/process/invoiceDetail', { idFather: id }), (resp2) => {
           // guardar productos
           const dataProducts = invoiceDetail.map((item) => {
             item.idFather = id;
@@ -478,7 +478,7 @@ const Invoicing = (props) => {
   const fnViewProducts = () => {
     setLoading(true);
     setListProducts([]);
-    request.GET(`inventory/process/stocks/getStocks?storeId=${storeId}&enableForSale=1`, (resp) => {
+    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId, enableForSale: 1 }), (resp) => {
       const products = resp.data.map((item) => {
         item.taxPercent = item.percentTax
         item.name = item.productName

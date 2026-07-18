@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { useForm } from '@/hooks'
 import { validInt } from '@/helpers/Utils';
 import createNotification from '@/containers/ui/Notifications';
@@ -60,7 +60,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
 
   const fnSearchDocument = () => {
     setLoading(true);
-    request.GET(`inventory/process/inventoryTransactions?typeName=Reint`, (resp) => {
+    request.GET(buildUrl('inventory/process/inventoryTransactions', { typeName: 'Reint' }), (resp) => {
       const refunds = resp.data.map((item) => {
         item.store = item.invStore ? item.invStore.name : ''
         item.destination = item.invAssign ? item.invAssign.name : (item.invProvider ? item.invProvider.name : '')
@@ -78,7 +78,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
 
   const fnGetDataDetail = (idReq, type = 2) => {
     setLoading(true);
-    request.GET(`inventory/process/inventoryTransactionDetail?idFather=${idReq}`, (resp) => {
+    request.GET(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: idReq }), (resp) => {
       const refundDeta = resp.data.map((item) => {
         item.nameProduct = item.invProduct ? item.invProduct.name : ''
         return item;
@@ -178,7 +178,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
         setLoading(false);
         setSendForm(false);
         // Eliminar detalle del reintegro
-        request.DELETE(`inventory/process/inventoryTransactionDetail?idFather=${id}`, () => {
+        request.DELETE(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: id }), () => {
           // guardar detalle del reintegro
           refundDetail.forEach(item => {
             const detailReq = {
@@ -235,7 +235,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       setRefundDetail([]);
 
       // eliminar detalle
-      request.DELETE(`inventory/process/inventoryTransactionDetail?idFather=${id}`, () => {
+      request.DELETE(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: id }), () => {
         setLoading(false);
       }, (err) => {
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { IntlMessages, validFloat, validInt } from "@/helpers/Utils";
 import { useForm } from '@/hooks';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import TableButton from '@/components/tableButtons';
 
 const UseModalDistProducts = (props) => {
@@ -54,7 +54,7 @@ const UseModalDistProducts = (props) => {
 
   const fnGetDistData = () => {
     setLoading(true);
-    request.GET(`inventory/settings/productsDistributions?idFather=${productCode}`, res => {
+    request.GET(buildUrl('inventory/settings/productsDistributions', { idFather: productCode }), res => {
       const { data } = res;
       const detaDistRefresh = data.map(elem => {
         elem.options = <><TableButton color='warning' icon='pencil' fnOnClick={() => fnEditDetaItem(elem)} />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { fnCalcDaysVacations, getDaysDiffExcMonday, validFloat, validInt } from '@Helpers/Utils';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import moment from 'moment';
 
@@ -121,7 +121,7 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
 
     // buscar ingresos y deducciones externas para el empleado seleccionado
     setLoading(true);
-    request.GET(`rrhh/process/weeklyPayrolls/getIncomesDeductions?dateStart=${dateStart}&dateEnd=${dateEnd}&employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/weeklyPayrolls/getIncomesDeductions', { dateStart, dateEnd, employeeId }), (resp) => {
       const detail = resp.data[0];
 
       onBulkForm({
@@ -377,7 +377,7 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
 
   const fnGetDeductions = () => {
     setLoading(true);
-    request.GET(`rrhh/process/weeklyPayrollDeductions?fatherId=${id}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/weeklyPayrollDeductions', { fatherId: id }), (resp) => {
       const deductions = resp.data;
       setExtDeducDetail(deductions);
       setLoading(false);
@@ -389,7 +389,7 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
 
   const fnGetIncomes = () => {
     setLoading(true);
-    request.GET(`rrhh/process/weeklyPayrollIncomes?fatherId=${id}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/weeklyPayrollIncomes', { fatherId: id }), (resp) => {
       const incomes = resp.data;
       setIncomesDetail(incomes);
       setLoading(false);
@@ -401,7 +401,7 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
 
   const fnGetAttendance = () => {
     setLoading(true);
-    request.GET(`rrhh/proccess/attendanceControl/findDetail?employeeId=${employeeId}&dateStart=${dateStart}&dateEnd=${dateEnd}&turnId=${turnId}`, (resp) => {
+    request.GET(buildUrl('rrhh/proccess/attendanceControl/findDetail', { employeeId, dateStart, dateEnd, turnId }), (resp) => {
       setDataAttendance(resp.data);
       setLoading(false);
     }, (err) => {
@@ -722,7 +722,7 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
         // eliminar vacaciones ingresadas
         if (typePayroll === 4) {
           setLoading(true);
-          request.DELETE(`rrhh/process/vacations?payrollId=${idInc}`, () => {
+          request.DELETE(buildUrl('rrhh/process/vacations', { payrollId: idInc }), () => {
             setLoading(false);
           }, (err) => {
 
@@ -940,7 +940,7 @@ export const useModalViewDetailPay = ({ idPayroll, typePayroll, dateStart, dateE
     }
 
     setLoading(true);
-    request.PUT(`rrhh/process/vacations?payrollId=${idPayrollIncome}`, newData, (resp) => {
+    request.PUT(buildUrl('rrhh/process/vacations', { payrollId: idPayrollIncome }), newData, (resp) => {
       setLoading(false);
     }, (err) => {
 

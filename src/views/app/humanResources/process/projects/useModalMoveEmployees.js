@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { validInt, IntlMessages, formatDate, validFloat } from '@Helpers/Utils';
 import { useForm } from '@Hooks';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 
 const useModalMoveEmployees = ({ setLoading, listProjects, fnGetProjects }) => {
@@ -63,7 +63,7 @@ const useModalMoveEmployees = ({ setLoading, listProjects, fnGetProjects }) => {
 
   const fnGetData = (idProject) => {
     setLoading(true);
-    request.GET(`rrhh/process/projectDetail?projectId=${idProject}&status=1`, (resp) => {
+    request.GET(buildUrl('rrhh/process/projectDetail', { projectId: idProject, status: 1 }), (resp) => {
       const projectDeta = resp.data.map((item) => {
         item.employee = `${item.rrhhEmployee?.firstName || ''} ${item.rrhhEmployee?.secondName || ''} ${item.rrhhEmployee?.lastName || ''} ${item.rrhhEmployee?.secondLastName || ''}`
         item.workShifts = item.rrhhSchedule?.name || ''

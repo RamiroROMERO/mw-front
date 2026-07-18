@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import { useExportExcel } from '@Hooks';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 
 export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) => {
@@ -79,7 +79,7 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
     setProjectName(filterProjects ? filterProjects.label : '');
 
     setLoading(true);
-    request.GET(`rrhh/process/weeklyPayrolls?customerId=${customerId}&projectId=${projectId}&typeId=${typePayroll}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/weeklyPayrolls', { customerId, projectId, typeId: typePayroll }), (resp) => {
       const payrollWeekly = resp.data.map((item) => {
         item.dateVal = formatDate(item.date)
         item.startDate = formatDate(item.dateStart)
@@ -99,7 +99,7 @@ export const useNeighborhoodTax = ({ setLoading, typePayroll, screenControl }) =
 
   const fnViewDetailPayroll = (idPayroll) => {
     setLoading(true);
-    request.GET(`rrhh/process/weeklyPayrollDetails/payrollDetail?fatherId=${idPayroll}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/weeklyPayrollDetails/payrollDetail', { fatherId: idPayroll }), (resp) => {
       const payrollDeta = resp.data.map(item => {
         item.employee = `${item.rrhhEmployee?.firstName} ${item.rrhhEmployee?.secondName} ${item.rrhhEmployee?.lastName} ${item.rrhhEmployee?.secondLastName}` || ''
         item.jobPosition = item.rrhhJobPosition?.name || ''

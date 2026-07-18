@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
 
@@ -19,7 +19,7 @@ export const useInputOutputs = ({ setLoading, adminControl }) => {
       return;
     }
     setLoading(true);
-    request.GET(`rrhh/proccess/attendanceControl?date=${date}`, (resp) => {
+    request.GET(buildUrl('rrhh/proccess/attendanceControl', { date }), (resp) => {
       const data = resp.data.map(item => {
         item.employeeName = item.rrhhEmployee ? `${item.rrhhEmployee.firstName}  ${item.rrhhEmployee.secondName}  ${item.rrhhEmployee.lastName} ${item.rrhhEmployee.secondLastName}` : ""
         return item

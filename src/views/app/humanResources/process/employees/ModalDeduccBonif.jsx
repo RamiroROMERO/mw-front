@@ -6,7 +6,7 @@ import { IntlMessages, validFloat, validInt } from '@Helpers/Utils'
 import { useForm } from '@Hooks'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { Checkbox } from '@Components/checkbox'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import ReactTable from '@Components/reactTable'
 import Confirmation from '@Containers/ui/confirmationMsg';
 import { RadioGroup } from '@Components/radioGroup'
@@ -98,7 +98,7 @@ const ModalDeduccBonif = ({ data, setOpen }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/employeeDeducAllows?employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/employeeDeducAllows', { employeeId }), (resp) => {
       const deduction = resp.data.map((item) => {
         item.type = item.typeId === 1 ? 'Deducción' : 'Bonificación'
         item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :

@@ -3,7 +3,7 @@ import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
 import { Colxx } from '@/components/common/CustomBootstrap';
 import ReactTable from '@/components/reactTable';
 import { IntlMessages } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 
 const ModalViewOrders = ({ data, setOpen }) => {
   const { setListDocuments, dataWorkOrders, setBulkForm, setLoading } = data;
@@ -11,7 +11,7 @@ const ModalViewOrders = ({ data, setOpen }) => {
   const fnViewOrder = (itemOrder) => {
     setBulkForm(itemOrder);
     setLoading(true);
-    request.GET(`accounting/process/workOrderDetail?fatherId=${itemOrder.id}`, (resp) => {
+    request.GET(buildUrl('accounting/process/workOrderDetail', { fatherId: itemOrder.id }), (resp) => {
       const ordersDeta = resp.data;
       setListDocuments(ordersDeta);
       setLoading(false);

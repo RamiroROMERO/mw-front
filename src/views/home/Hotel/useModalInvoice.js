@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import moment from 'moment';
@@ -158,7 +158,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
 
   const fnGetDataServices = () => {
     setLoading(true);
-    request.GET(`hotel/process/bookingCharges?bookingId=${bookingId}`, (resp) => {
+    request.GET(buildUrl('hotel/process/bookingCharges', { bookingId }), (resp) => {
       const bookingCharges = resp.data.map((item) => {
         item.service = item?.serviceData?.name || ""
         item.priceTotal = validFloat(item.price) + validFloat(item.price * (item.taxPercent / 100))
@@ -175,7 +175,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
 
   const fnGetDataPayments = () => {
     setLoading(true);
-    request.GET(`hotel/process/bookingPayments?bookingId=${bookingId}`, (resp) => {
+    request.GET(buildUrl('hotel/process/bookingPayments', { bookingId }), (resp) => {
       const bookingPayments = resp.data.map((item) => {
         item.type = item?.paymentTypeData?.name || ""
         return item;

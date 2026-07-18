@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { IntlMessages, formatDate } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 
 export const useEvents = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
@@ -98,7 +98,7 @@ export const useEvents = ({ setLoading }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`hospital/process/events/getTable?typeId=1`, (resp) => {
+    request.GET(buildUrl('hospital/process/events/getTable', { typeId: 1 }), (resp) => {
       const data = resp.data.map((item) => {
         item.patient = item.hospExpedient?.name || '';
         item.hall = item.hospArea?.name || '';

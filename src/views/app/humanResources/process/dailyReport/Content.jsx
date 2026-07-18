@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Card, CardBody, Row } from 'reactstrap'
 import { Colxx, Separator } from '@Components/common/CustomBootstrap'
 import { useForm } from '@Hooks'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import { validInt } from '@Helpers/Utils'
 import ControlPanel from '@Components/controlPanel'
 import createNotification from '@Containers/ui/Notifications'
@@ -68,7 +68,7 @@ const DailyReport = ({ setLoading }) => {
       return
     }
     setLoading(true);
-    request.GET(`rrhh/process/dailyReports?date=${date}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/dailyReports', { date }), (resp) => {
       const dailyReports = resp.data.map((item) => {
         item.customer = item.facCliente ? item.facCliente.name : ""
         item.project = item.rrhhProject ? item.rrhhProject.name : ""
@@ -140,7 +140,7 @@ const DailyReport = ({ setLoading }) => {
       setLoading(true);
       request.PUT(`rrhh/process/dailyReports/${id}`, newData, () => {
         // Eliminar empleados
-        request.DELETE(`rrhh/process/dailyReportDetail?fatherId=${id}`, () => {
+        request.DELETE(buildUrl('rrhh/process/dailyReportDetail', { fatherId: id }), () => {
           // guardar empleados
           employeesDetail.forEach(item => {
             const employeesDeta = {

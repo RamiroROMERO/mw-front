@@ -1,4 +1,4 @@
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import moment from 'moment';
@@ -189,7 +189,7 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
 
   const fnGetDataServices = () => {
     setLoading(true);
-    request.GET(`hotel/process/bookingCharges?bookingId=${id}`, (resp) => {
+    request.GET(buildUrl('hotel/process/bookingCharges', { bookingId: id }), (resp) => {
       const bookingCharges = resp.data.map((item) => {
         item.service = item?.serviceData?.name || ""
         item.priceTotal = validFloat(item.price) + validFloat(item.price * (item.taxPercent / 100))
@@ -206,7 +206,7 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
 
   const fnGetDataPayments = () => {
     setLoading(true);
-    request.GET(`hotel/process/bookingPayments?bookingId=${id}`, (resp) => {
+    request.GET(buildUrl('hotel/process/bookingPayments', { bookingId: id }), (resp) => {
       const bookingPayments = resp.data.map((item) => {
         item.type = item?.paymentTypeData?.name || ""
         return item;
@@ -361,7 +361,7 @@ export const useModalAddRes = ({ currentReservation, setLoading, currentPage = n
   useEffect(() => {
     const filter = listRooms.find(item => item.id === roomId);
     setLoading(true);
-    request.GET(`hotel/settings/roomServices?roomId=${roomId}`, (resp) => {
+    request.GET(buildUrl('hotel/settings/roomServices', { roomId }), (resp) => {
       const data = resp.data;
       if (filter) {
         filter.roomServices = data;

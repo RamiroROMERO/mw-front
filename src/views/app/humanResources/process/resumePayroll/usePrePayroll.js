@@ -1,4 +1,4 @@
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { formatDate, formatNumber, IntlMessages, validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import { useState } from 'react'
@@ -116,7 +116,7 @@ export const usePrePayroll = ({listProjects, listTypeDeductions, listEmployees, 
     }
     setLoading(true);
     //obtener los valores antes de guardar la planilla
-    request.GET(`rrhh/process/weeklyPayrolls/getPrePayroll?customerId=${customerId}&projectId=${projectId}&dateStart=${dateStart}&dateEnd=${dateEnd}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/weeklyPayrolls/getPrePayroll', { customerId, projectId, dateStart, dateEnd }), (resp) => {
       const {detailPayroll, totals} = resp.data;
       const payrollDeta = detailPayroll.map((item, idx) => {
         item.num = idx + 1

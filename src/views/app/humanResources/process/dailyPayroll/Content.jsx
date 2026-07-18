@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Card, CardBody, Row } from 'reactstrap'
 import { Colxx, Separator } from '@Components/common/CustomBootstrap'
 import { useForm } from '@Hooks'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import { formatNumber, validFloat, validInt } from '@Helpers/Utils'
 import ControlPanel from '@Components/controlPanel'
 import createNotification from '@Containers/ui/Notifications'
@@ -63,7 +63,7 @@ const DailyPayroll = ({ setLoading }) => {
 
   const fnGetPayrollDetail = (fatherId) => {
     setLoading(true);
-    request.GET(`rrhh/process/dailyPayrollDetails?fatherId=${fatherId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/dailyPayrollDetails', { fatherId }), (resp) => {
       const reportDetail = resp.data.map((item) => {
         item.name = item.rrhhEmployee ? `${item.rrhhEmployee.firstName} ${item.rrhhEmployee.secondName} ${item.rrhhEmployee.lastName}
         ${item.rrhhEmployee.secondLastName}` : ""

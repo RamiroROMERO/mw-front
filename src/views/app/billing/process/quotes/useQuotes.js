@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from '@/hooks';
 import { Button } from 'reactstrap';
 import { IntlMessagesFn, validFloat, validInt } from '@Helpers/Utils';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { RandomCodeGenerator } from '@Helpers/UuIdGenerator';
 import { API_URLS } from '@Helpers/APIUrl';
 import TableButtons from '@Components/tableButtons';
@@ -115,7 +115,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     onBulkForm(row);
     setLoading(true);
     const { id } = row;
-    request.GET(`${API_URLS.FAC_PROC_QUOTES_DETAIL}?idFather=${id}`, ({ data }) => {
+    request.GET(buildUrl(`${API_URLS.FAC_PROC_QUOTES_DETAIL}`, { idFather: id }), ({ data }) => {
       const currentData = data.map(elem => {
         elem.productName = elem.productData?.name || "";
         elem.unitProd = elem.undOutData?.name || "";
@@ -178,7 +178,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
         return elem;
       });
       request.PUT(`${API_URLS.FAC_PROC_QUOTES}${id}`, formState, () => {
-        request.DELETE(`${API_URLS.FAC_PROC_QUOTES_DETAIL}?idFather=${id}`, () => {
+        request.DELETE(buildUrl(`${API_URLS.FAC_PROC_QUOTES_DETAIL}`, { idFather: id }), () => {
           for (let i = 0; i < saveDataDetails.length; i++) {
             const elem = saveDataDetails[i];
             request.POST(API_URLS.FAC_PROC_QUOTES_DETAIL, elem, (data) => { }, err => { }, false);
@@ -213,7 +213,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
       return;
     }
     setLoading(true);
-    request.DELETE(`${API_URLS.FAC_PROC_QUOTES_DETAIL}?idFather=${id}`, () => { setLoading(false) }, () => { setLoading(false) }, false);
+    request.DELETE(buildUrl(`${API_URLS.FAC_PROC_QUOTES_DETAIL}`, { idFather: id }), () => { setLoading(false) }, () => { setLoading(false) }, false);
     request.DELETE(`${API_URLS.FAC_PROC_QUOTES}${id}`, () => { }, () => { setLoading(false) }, true);
     fnNewDocument();
   }
