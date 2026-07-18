@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from '@/hooks'
 import { request, buildUrl } from '@/helpers/core';
 import { validInt } from '@/helpers/Utils';
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 import createNotification from '@/containers/ui/Notifications';
 
 export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormDeta, setLoading }) => {
@@ -26,7 +26,7 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
     id: 0,
     documentCode: '',
     documentId: 0,
-    date: moment(new Date()).format("YYYY-MM-DD"),
+    date: DateHelper.format(new Date()),
     sourceStoreId: 0,
     applyId: 0,
     userId: userData ? userData.id : 0

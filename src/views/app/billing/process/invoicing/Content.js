@@ -7,7 +7,7 @@ import { useForm } from '@/hooks'
 import ControlPanel from '@/components/controlPanel';
 import TableButton from "@/components/tableButtons";
 import notification from '@/containers/ui/Notifications';
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 import Confirmation from '@/containers/ui/confirmationMsg';
 import Modal from "@/components/modal";
 import ModalProducts from './ModalProducts';
@@ -75,8 +75,8 @@ const Invoicing = (props) => {
     documentCode: '',
     documentType: 1,
     currency: 1,
-    date: moment(new Date()).format("YYYY-MM-DD"),
-    dateInProcess: moment(new Date()).format("YYYY-MM-DD"),
+    date: DateHelper.format(new Date()),
+    dateInProcess: DateHelper.format(new Date()),
     cashierId: 0,
     documentExo: false,
     documentId: 0,
@@ -307,7 +307,7 @@ const Invoicing = (props) => {
     const newData = {
       documentCode,
       notes,
-      date: date === '' ? moment(new Date()).format("YYYY-MM-DD") : date,
+      date: date === '' ? DateHelper.format(new Date()) : date,
       customerId,
       subTotalValue,
       discountValue: discount,

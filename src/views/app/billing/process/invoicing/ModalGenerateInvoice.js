@@ -7,7 +7,7 @@ import { useForm } from '@/hooks';
 import { RadioGroup } from "@/components/radioGroup";
 import { ContainerWithLabel } from "@/components/containerWithLabel";
 import { InputField } from "@/components/inputFields";
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 import DateCalendar from '@/components/dateCalendar';
 import ViewPdf from "@/components/ViewPDF/ViewPdf";
 import Modal from "@/components/modal";
@@ -58,7 +58,7 @@ const ModalGenerateInvoice = (props) => {
 
     const newData = {
       documentId,
-      date: date === '' ? moment(new Date()).format("YYYY-MM-DD") : date,
+      date: date === '' ? DateHelper.format(new Date()) : date,
       cai,
       numcai,
       range,
