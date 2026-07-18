@@ -1,4 +1,4 @@
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 import { request, buildUrl } from '@/helpers/core';
 import { useForm } from '@/hooks'
 import { useEffect, useState } from 'react';
@@ -26,7 +26,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
     id: 0,
     documentId: 0,
     documentCode: '',
-    date: moment(new Date()).format("YYYY-MM-DD"),
+    date: DateHelper.format(new Date()),
     code: 0,
     sourceStoreId: 0,
     assignStoreId: 0,

@@ -4,7 +4,7 @@ import { Colxx, Separator } from '@/components/common/CustomBootstrap';
 import { useForm } from '@/hooks';
 import { request, buildUrl } from '@/helpers/core';
 import { formatDate, formatNumber, validFloat, validInt } from '@/helpers/Utils';
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 import notification from '@/containers/ui/Notifications';
 import ControlPanel from '@/components/controlPanel';
 import TableButtons from '@/components/tableButtons';
@@ -56,7 +56,7 @@ const PurchaseOrders = (props) => {
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
-    date: moment(new Date()).format("YYYY-MM-DD"),
+    date: DateHelper.format(new Date()),
     providerId: 0,
     paymentTypeId: 0,
     address: '',

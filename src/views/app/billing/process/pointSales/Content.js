@@ -4,7 +4,7 @@ import { validFloat, formatNumber, validInt } from "@/helpers/Utils";
 import { Colxx, Separator } from '@/components/common/CustomBootstrap';
 import { request, buildUrl } from '@/helpers/core';
 import { useForm } from '@/hooks';
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 import ControlPanel from '@/components/controlPanel';
 import TableButton from "@/components/tableButtons";
 import notification from '@/containers/ui/Notifications';
@@ -83,7 +83,7 @@ const PointSales = (props) => {
     currency: 1,
     printType: dataCashBox ? dataCashBox.printType : 1,
     date: '',
-    dateInProcess: moment(new Date()).format("YYYY-MM-DD"),
+    dateInProcess: DateHelper.format(new Date()),
     cashierId: 0,
     documentExo: false,
     documentId: 0,
@@ -322,7 +322,7 @@ const PointSales = (props) => {
       cashId: dataCashBox.cashId,
       cashierId: dataCashBox.cashierId,
       notes,
-      date: dateInProcess === '' ? moment(new Date()).format("YYYY-MM-DD") : dateInProcess,
+      date: dateInProcess === '' ? DateHelper.format(new Date()) : dateInProcess,
       customerId,
       subTotalValue,
       discountValue: discount,

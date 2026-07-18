@@ -2,7 +2,7 @@ import { useForm } from '@/hooks'
 import { useState, useEffect } from 'react';
 import { request, buildUrl } from '@/helpers/core';
 import { validInt } from '@/helpers/Utils';
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 import createNotification from '@/containers/ui/Notifications';
 
 export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisitionDetail, setLoading }) => {
@@ -31,7 +31,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
     id: 0,
     documentCode: '',
     documentId: 0,
-    date: moment(new Date()).format("YYYY-MM-DD"),
+    date: DateHelper.format(new Date()),
     code: 0,
     sourceStoreId: 0,
     assignStoreId: 0,

@@ -9,7 +9,7 @@ import { RadioGroup } from "@/components/radioGroup";
 import { InputField } from "@/components/inputFields";
 import DateCalendar from "@/components/dateCalendar";
 import notification from "@/containers/ui/Notifications";
-import moment from "moment";
+import DateHelper from '@/helpers/DateHelper';
 
 const ModalCashOpening = (props) => {
   const { data, setOpen } = props;
@@ -22,7 +22,7 @@ const ModalCashOpening = (props) => {
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkform } = useForm({
     cashBox: 1,
-    dateCashOpen: moment(new Date()).format("YYYY-MM-DD"),
+    dateCashOpen: DateHelper.format(new Date()),
     cashierPass: '',
     typePrint: 1
   }, cashOpeningValid);

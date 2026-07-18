@@ -1,4 +1,4 @@
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 import { useEffect, useState } from 'react';
 import { request, buildUrl } from '@/helpers/core';
 import { useForm } from '@/hooks'
@@ -30,7 +30,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
     id: 0,
     documentCode: '',
     documentId: 0,
-    date: moment(new Date()).format("YYYY-MM-DD"),
+    date: DateHelper.format(new Date()),
     code: 0,
     sourceStoreId: 0,
     assignStoreId: 0,

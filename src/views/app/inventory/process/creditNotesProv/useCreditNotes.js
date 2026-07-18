@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { request } from '@/helpers/core';
 import { useForm } from '@/hooks'
-import moment from 'moment';
+import DateHelper from '@/helpers/DateHelper';
 import { validInt } from '@/helpers/Utils';
 
 export const useCreditNotes = ({ setLoading, setCreditNotesDetail, setCreditNotesDetail2 }) => {
@@ -33,7 +33,7 @@ export const useCreditNotes = ({ setLoading, setCreditNotesDetail, setCreditNote
     concept: 1,
     specifyOther: '',
     notes: '',
-    date: moment(new Date()).format("YYYY-MM-DD"),
+    date: DateHelper.format(new Date()),
     valueLps: 0,
     valueUsd: 0,
     exchangeRate: 0,
