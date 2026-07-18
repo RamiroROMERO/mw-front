@@ -65,13 +65,14 @@ Checklist accionable generado a partir de una auditoría completa del proyecto (
 - [ ] Reactivar `React.StrictMode` en `src/main.js` (está comentado).
 - [ ] Limpiar imports `import React` innecesarios (428 archivos) — correr `eslint --fix` (57 auto-fixables) y continuar gradualmente.
 - [ ] Mejorar accesibilidad: ampliar `aria-*` en modales/tablas (casi inexistente hoy); agregar `role="button"`/`tabIndex`/manejo de teclado en `src/components/uploadFile/Content.jsx` (`<div onClick>` no accesible).
-- [ ] Agregar `sandbox` al `<iframe>` de `src/components/ViewPDF/ViewPdf.jsx`.
+- [x] Agregar `sandbox` al `<iframe>` de `src/components/ViewPDF/ViewPdf.jsx`. *(Resuelto: `sandbox="allow-same-origin"`. De paso se encontró y arregló un bug visual real en el mismo archivo: un comentario `// embed-responsive-16by9` puesto directo como hijo de JSX (no envuelto en `{/* */}`) se renderizaba como texto literal en pantalla — visible en la captura de verificación. Verificado con login real contra el backend local: se buscó un empleado real, se abrió su "Entry Sheet" (mismo componente `ViewPdf`), confirmado el atributo `sandbox` presente en el iframe real y el texto suelto ya no aparece.)*
 - [ ] Optimizar imagen de fondo del login (`src/assets/img/login/back-auth.jpg`, 1.4 MB) — comprimir/convertir a WebP.
 - [ ] Fijar y documentar una convención de alias de import (`@Helpers` vs `@/helpers`, hoy mezclados) y de extensión de archivo (`.js` vs `.jsx` para componentes con JSX).
 - [ ] Corregir typos en nombres de archivo: `useChashBoxes.js` → `useCashBoxes.js`, `redux/contants.js` → `redux/constants.js`.
 - [ ] Plan de actualización incremental de dependencias desactualizadas (Vite 6→8, react-intl 7→10, sass, etc.), con testing manual dado que no hay tests automatizados todavía.
 - [ ] Módulos enteros huérfanos sin ruta ni importadores vivos, hallados al consolidar librerías: `src/views/app/production/**` + `src/views/app/index.js` (router alternativo muerto que los referencia), y `src/views/app/start/**` (`start.jsx`, `ModalViewProject.jsx`). Ambos quedaron con imports colgantes tras borrar `dropzone/index.js` y desinstalar `react-big-calendar` respectivamente — inofensivo porque nada los importa desde el grafo de módulos real, pero conviene decidir si se recuperan (parece funcionalidad de "production"/proyectos a medio terminar) o se borran del todo.
 - [ ] Warning de React en `DetailMeeting.jsx` (meetingNotices): "Can't perform a React state update on a component that hasn't mounted yet" — parece preexistente (no relacionado a los cambios de esta sesión), sugiere un `setState` disparado de forma asíncrona antes del montaje. No investigado a fondo.
+- [ ] Warning nuevo encontrado con datos reales (login real contra el backend local, pantalla de empleados): `` `value` prop on `%s` should not be null `` + "A component is changing a controlled input to be uncontrolled" — sugiere que algún campo del formulario de empleado recibe `null` desde el backend en vez de `''`/`undefined` para algún registro real. No investigado a fondo, no bloquea nada visualmente.
 
 ---
 

@@ -10,12 +10,13 @@ const ViewPdf = ({ setOpen, data }) => {
       <ModalBody>
         {/* <Row> */}
         <div className="embed-responsive embed-responsive-21by9">
-          // embed-responsive-16by9
+          {/* embed-responsive-16by9 */}
           <iframe className='embed-responsive-item' title='Cargando pdf...'
             type="application/pdf"
             src={documentPath}
             // style={{width:"100%",minHeight:"500px", height:"100%"}}
             frameBorder="0"
+            sandbox="allow-same-origin"
           />
         </div>
         {/* </Row> */}
