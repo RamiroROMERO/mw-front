@@ -1,30 +1,32 @@
-import { createStore, applyMiddleware, compose } from 'redux';
+import { configureStore as createReduxStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
-import { thunk } from 'redux-thunk';
 import reducers from './reducers';
 import sagas from './sagas';
 
 const sagaMiddleware = createSagaMiddleware();
-const module = window;
 
-const middlewares = [sagaMiddleware];
+let storeInstance;
 
-// eslint-disable-next-line import/prefer-default-export
 export function configureStore(initialState) {
-  const store = createStore(
-    reducers,
-    initialState,
-    compose(applyMiddleware(...middlewares, thunk))
-  );
+  const store = createReduxStore({
+    reducer: reducers,
+    preloadedState: initialState,
+    // RTK's getDefaultMiddleware() already includes redux-thunk (used by
+    // src/redux/generalData/actions.js) — only redux-saga needs adding.
+    // serializableCheck/immutableCheck disabled: several action payloads
+    // carry a history() navigate function (see auth actions), which RTK's
+    // default checks would otherwise warn about on every dispatch.
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({ serializableCheck: false, immutableCheck: false }).concat(sagaMiddleware),
+  });
 
   sagaMiddleware.run(sagas);
-  if (module && module.hot) {
-    module.hot.accept('./reducers', () => {
-      // eslint-disable-next-line global-require
-      const nextRootReducer = require('./reducers');
-      store.replaceReducer(nextRootReducer);
-    });
-  }
-
+  storeInstance = store;
   return store;
+}
+
+// Permite despachar acciones desde fuera del árbol de React (ej. src/helpers/core.js
+// al detectar un token expirado), donde no hay acceso a useDispatch/useSelector.
+export function getStore() {
+  return storeInstance;
 }

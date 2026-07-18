@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import notification from '@Containers/ui/Notifications';
@@ -31,7 +31,7 @@ export const useServices = ({ setLoading, screenControl }) => {
 
   const fnGetData = (page = currentPage, searchText = search) => {
     setLoading(true);
-    request.GET(`hotel/settings/services/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
+    request.GET(buildUrl('hotel/settings/services/paginate', { page, limit: pageSize, q: searchText }), (resp) => {
       const data = resp.data.map(item => {
         item.typeName = item?.typeData?.name || ""
         item.levelName = item?.levelData?.name || ""

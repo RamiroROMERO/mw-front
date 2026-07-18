@@ -1,5 +1,5 @@
 import createNotification from "@/containers/ui/Notifications";
-import { request } from "@/helpers/core";
+import { request, buildUrl } from "@/helpers/core";
 import { validInt } from "@/helpers/Utils";
 import { useForm } from "@/hooks"
 import { useEffect, useState } from "react";
@@ -70,7 +70,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
       return;
     }
     setLoading(true);
-    request.GET(`inventory/process/purchaseOrders?providerId=${providerId}`, (resp) => {
+    request.GET(buildUrl('inventory/process/purchaseOrders', { providerId }), (resp) => {
       const orders = resp.data.map((item) => {
         item.provider = item.invProvider.name
         item.address = item.invProvider.address
@@ -88,7 +88,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
   const fnViewOrder = (item) => {
     item.purchaseOrder = item.id
     setLoading(true);
-    request.GET(`inventory/process/purchaseOrderDetail?purchaseOrderId=${item.id}`, (resp) => {
+    request.GET(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: item.id }), (resp) => {
       const ordersDeta = resp.data.map((item) => {
         item.nameProduct = item.invProduct.name
         return item;

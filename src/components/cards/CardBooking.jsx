@@ -1,5 +1,6 @@
 import { formatNumber } from '@/helpers/Utils';
 import React from 'react'
+import IntlMessages from '@/helpers/IntlMessages';
 import {
   Card,
   CardBody,
@@ -40,15 +41,15 @@ const CardBooking = ({id, image, status, name, type, description, capacity, bedN
         </Row>
         <Row className="align-items-center">
           <Col xs="12" className="d-flex justify-content-between">
-            <span><b>Capacidad</b></span>
+            <span><b><IntlMessages id="input.capacity" /></b></span>
             <span>{capacity}</span>
           </Col>
           <Col xs="12" className="d-flex justify-content-between">
-            <span><b>Numero de Camas</b></span>
+            <span><b><IntlMessages id="input.bedNumber" /></b></span>
             <span>{bedNumber}</span>
           </Col>
           <Col xs="12" className="d-flex justify-content-between">
-            <span><b>Plan de Alimentacion</b></span>
+            <span><b><IntlMessages id="input.mealType" /></b></span>
             <span>{mealType}</span>
           </Col>
         </Row>
@@ -58,12 +59,12 @@ const CardBooking = ({id, image, status, name, type, description, capacity, bedN
               statusId==1?
               <Button color="success" onClick={() => fnReserve(id)}>
                 <i className="bi bi-check2-circle"/>
-                Reservar
+                <IntlMessages id="button.reserve" />
               </Button>
               :
               <Button color="warning" onClick={() => fnViewDetail(id)}>
                 <i className="bi bi-list"/>
-                Ver Detalle
+                <IntlMessages id="button.viewDetail" />
               </Button>
             }
           </Col>

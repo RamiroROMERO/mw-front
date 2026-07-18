@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { useForm } from '@/hooks'
 import { useEffect, useState } from 'react';
 import { validInt } from '@/helpers/Utils';
@@ -52,7 +52,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
 
   const fnSearchDocument = () => {
     setLoading(true);
-    request.GET(`inventory/process/inventoryTransactions?typeName=Trasl`, (resp) => {
+    request.GET(buildUrl('inventory/process/inventoryTransactions', { typeName: 'Trasl' }), (resp) => {
       const transactions = resp.data.map((item) => {
         item.store = item.invStore ? item.invStore.name : ''
         item.destination = item.invAssign ? item.invAssign.name : ''
@@ -70,7 +70,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
 
   const fnGetDataDetail = (idReq) => {
     setLoading(true);
-    request.GET(`inventory/process/inventoryTransactionDetail?idFather=${idReq}`, (resp) => {
+    request.GET(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: idReq }), (resp) => {
       const requisitionDeta = resp.data.map((item) => {
         item.nameProduct = item.invProduct ? item.invProduct.name : ''
         return item;
@@ -160,7 +160,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
         setLoading(false);
         setSendForm(false);
         // Eliminar detalle de la transferencia
-        request.DELETE(`inventory/process/inventoryTransactionDetail?idFather=${id}`, () => {
+        request.DELETE(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: id }), () => {
           // guardar detalle de la transferencia
           transferDetail.forEach(item => {
             const detailReq = {
@@ -217,7 +217,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       setTransferDetail([]);
 
       // eliminar detalle
-      request.DELETE(`inventory/process/inventoryTransactionDetail?idFather=${id}`, () => {
+      request.DELETE(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: id }), () => {
         setLoading(false);
       }, (err) => {
 

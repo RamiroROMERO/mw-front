@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { useForm } from '@Hooks'
+import { useForm, useExportExcel } from '@Hooks'
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { Card, CardBody, Row } from 'reactstrap';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import ControlPanel from '@Components/controlPanel';
 import Modal from '@Components/modal';
@@ -14,6 +14,7 @@ import createNotification from '@Containers/ui/Notifications';
 import Confirmation from '@Containers/ui/confirmationMsg';
 
 const BiweeklyPayroll = ({ setLoading }) => {
+  const { fnExport } = useExportExcel(setLoading);
   const [listBiweeklies, setListBiweeklies] = useState([]);
   const [listEmployees, setListEmployees] = useState([]);
   const [listJobPositions, setListJobPositions] = useState([]);
@@ -69,7 +70,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
 
     if (id === 0) {
       if (previousPayroll === 0) {
-        request.GET(`rrhh/process/payrollBiweeklies?biweekId=${biweekId}`, (resp) => {
+        request.GET(buildUrl('rrhh/process/payrollBiweeklies', { biweekId }), (resp) => {
           const payrollBiweekly = resp.data;
           if (payrollBiweekly.length === 0) {
             setLoading(true);
@@ -121,7 +122,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
 
   const fnViewDetailPayroll = (idPayroll) => {
     setLoading(true);
-    request.GET(`rrhh/process/payrollBiweeklyDetail?fatherId=${idPayroll}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/payrollBiweeklyDetail', { fatherId: idPayroll }), (resp) => {
       const payrollDeta = resp.data.map(item => {
         item.employee = `${item.rrhhEmployee?.firstName} ${item.rrhhEmployee?.secondName} ${item.rrhhEmployee?.lastName} ${item.rrhhEmployee?.secondLastName}` || ''
         item.jobPosition = item.rrhhJobPosition?.name || ''
@@ -165,8 +166,7 @@ const BiweeklyPayroll = ({ setLoading }) => {
       reportTitle: "Planilla Quincenal",
       nameXLSXFile: "BiweeklyPayroll.xlsx",
     };
-    await request.fnExportToXLSX("rrhh/process/payrollBiweeklies/exportPayrollXLXS", data, "BiweeklyPayroll.xlsx");
-    setLoading(false);
+    await fnExport("rrhh/process/payrollBiweeklies/exportPayrollXLXS", data, "BiweeklyPayroll.xlsx");
   }
 
   const fnCancelPayroll = () => {

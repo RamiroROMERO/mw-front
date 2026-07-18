@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { IntlMessages } from '@Helpers/Utils';
 import { PATH_FILES } from '/src/helpers/pathFiles';
 import { Badge } from 'reactstrap';
@@ -48,7 +48,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
     setDataRoomImages([]);
 
     setLoading(true);
-    request.GET(`hotel/settings/roomPictures?roomId=${id}`, (resp) => {
+    request.GET(buildUrl('hotel/settings/roomPictures', { roomId: id }), (resp) => {
       const { data } = resp;
 
       if (data.length > 0) {
@@ -70,7 +70,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
 
   const fnGetRoomServices = (id) => {
     setLoading(true);
-    request.GET(`hotel/settings/roomServices?roomId=${id}`, (resp) => {
+    request.GET(buildUrl('hotel/settings/roomServices', { roomId: id }), (resp) => {
       const data = resp.data;
       setDataRoomServices(data);
       setOpenModalNew(true);
@@ -148,7 +148,7 @@ export const useRooms = ({ setLoading, screenControl }) => {
 
   const fnGetData = (page = currentPage, searchText = search) => {
     setLoading(true);
-    request.GET(`hotel/settings/rooms/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
+    request.GET(buildUrl('hotel/settings/rooms/paginate', { page, limit: pageSize, q: searchText }), (resp) => {
       const data = resp.data.map(item => {
         item.typeName = item?.typeData?.name || ""
         item.levelName = item?.levelData?.name || ""

@@ -46,4 +46,13 @@ export default defineConfig([
       ],
     },
   },
+  {
+    // Vitest test files run under Node (via Vitest, not a browser), even
+    // though test.environment is jsdom — they need Buffer/global on top of
+    // the browser globals already set by the block above.
+    files: ['**/*.test.{js,jsx}'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
 ])

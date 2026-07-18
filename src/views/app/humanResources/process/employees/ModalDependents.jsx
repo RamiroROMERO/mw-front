@@ -6,7 +6,7 @@ import { IntlMessages, validFloat, validInt } from '@Helpers/Utils'
 import { useForm } from '@Hooks'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { Checkbox } from '@Components/checkbox'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import ReactTable from '@Components/reactTable'
 import UploadFile from '@Components/uploadFile'
 import Confirmation from '@Containers/ui/confirmationMsg';
@@ -105,7 +105,7 @@ const ModalDependents = ({ data, setOpen }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/employeeDependents?employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/employeeDependents', { employeeId }), (resp) => {
       const dependents = resp.data.map((item) => {
         item.parentName = item.rrhhParent ? item.rrhhParent.name : ''
         item.gender = item.rrhhGender ? item.rrhhGender.name : ''

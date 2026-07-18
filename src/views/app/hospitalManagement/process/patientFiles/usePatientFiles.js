@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { IntlMessages, validInt } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { useForm } from '@/hooks';
 import { formatDate } from '@Helpers/Utils';
 
@@ -81,7 +81,7 @@ export const usePatientFiles = ({ setLoading }) => {
     const state = e.target.value;
 
     setLoading(true);
-    request.GET(`admin/locateMunic?codeDepto=${state}`, (resp) => {
+    request.GET(buildUrl('admin/locateMunic', { codeDepto: state }), (resp) => {
       const munic = resp.data.map((item) => {
         return {
           value: item.code,
@@ -165,7 +165,7 @@ export const usePatientFiles = ({ setLoading }) => {
 
   const fnGetEvents = (idFather) => {
     setLoading(true);
-    request.GET(`hospital/process/events?fatherId=${idFather}`, (resp) => {
+    request.GET(buildUrl('hospital/process/events', { fatherId: idFather }), (resp) => {
       const data = resp.data.map((item) => {
         item.principalDoctor = item.specialist1?.name || ''
         item.typeName = item.typeId === 1 ? 'Evento' : 'Hospitalización'

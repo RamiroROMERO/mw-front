@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useForm } from '@Hooks'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import { validFloat, validInt, IntlMessages } from '@Helpers/Utils'
 import notification from '@Containers/ui/Notifications';
 
@@ -133,7 +133,7 @@ export const usePaymentPlans = ({ setLoading, screenControl }) => {
 
   const fnViewPaymentPlans = (idPlan) => {
     setLoading(true);
-    request.GET(`rrhh/process/paymentPlanDetails?fatherId=${idPlan}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/paymentPlanDetails', { fatherId: idPlan }), (resp) => {
       const paymentPlanDeta = resp.data.map((item, idx) => {
         item.quota = idx + 1
         item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
@@ -279,7 +279,7 @@ export const usePaymentPlans = ({ setLoading, screenControl }) => {
       const editData = {
         status: 1
       }
-      request.PUT(`rrhh/process/paymentPlanDetails?fatherId=${id}`, editData, () => {
+      request.PUT(buildUrl('rrhh/process/paymentPlanDetails', { fatherId: id }), editData, () => {
         fnViewPaymentPlans(id);
         setLoading(false);
       }, (err) => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useForm } from '@Hooks'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import { validFloat, IntlMessages } from '@Helpers/Utils'
 import notification from '@Containers/ui/Notifications';
 
@@ -98,7 +98,7 @@ export const usePaymentBenefits = ({ setLoading, screenControl }) => {
 
   const fnViewPaymentDetail = (idPay) => {
     setLoading(true);
-    request.GET(`rrhh/process/benefitsPaymentPlanDetails?idFather=${idPay}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/benefitsPaymentPlanDetails', { idFather: idPay }), (resp) => {
       const paymentsDeta = resp.data.map((item) => {
         item.statusIcon = item.status === true ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />

@@ -7,6 +7,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import './assets/css/style.css';
 
 import App from './App';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import { getCurrentColor } from './helpers/Utils';
 
 if (!String.prototype.toProperCase) {
@@ -27,10 +28,12 @@ const store = configureStore({});
 import(`./assets/sass/themes/gogo.${currentColor}.scss`).then(() => {
   root.render(
     // <React.StrictMode>
-    <Provider store={store}>
-      {/* <h1>Testing</h1> */}
-      <App />
-    </Provider>
+    <ErrorBoundary>
+      <Provider store={store}>
+        {/* <h1>Testing</h1> */}
+        <App />
+      </Provider>
+    </ErrorBoundary>
     // </React.StrictMode>
   );
 });

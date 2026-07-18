@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { formatDate, IntlMessages } from '@Helpers/Utils'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import ReactTable from '@Components/reactTable'
 import DateCalendar from '@Components/dateCalendar'
 import { InputField } from '@Components/inputFields'
@@ -47,7 +47,7 @@ const ModalViewHistory = ({ setOpen, data }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/employeeHistory?employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/employeeHistory', { employeeId }), (resp) => {
       const history = resp.data.map((item) => {
         item.hireable = item.isHireable === true ? 'Si' : 'No'
         item.statusName = item.status === true ? 'Activo' : 'Inactivo'

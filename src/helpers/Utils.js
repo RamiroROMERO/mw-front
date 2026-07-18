@@ -8,7 +8,8 @@ import {
   themeRadiusStorageKey,
 } from '@/constants/defaultValues';
 import moment from 'moment';
-import * as XLSX from "xlsx";
+// xlsx solo se usa para leer archivos importados por el usuario (ver getExcelData
+// más abajo); se carga on-demand para no inflar el chunk inicial del bundle.
 
 export const mapOrder = (array, order, key) => {
   // eslint-disable-next-line func-names
@@ -358,9 +359,10 @@ export const cleanedObjectKeys = (item) => {
   }, {});
 }
 
-export const getExcelData = (data, requiredColumns, priceCalculateColumns, startColumn, startRow, endColumn, endRow, removeEndRow) => {
+export const getExcelData = async (data, requiredColumns, priceCalculateColumns, startColumn, startRow, endColumn, endRow, removeEndRow) => {
   let formattedData = [];
   if (typeof data === "string") {
+    const XLSX = await import("xlsx");
     const workbook = XLSX.read(data, { type: "binary" });
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];

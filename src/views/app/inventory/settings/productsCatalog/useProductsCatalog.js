@@ -1,5 +1,5 @@
 import { validInt } from "@/helpers/Utils";
-import { request } from "@/helpers/core";
+import { request, buildUrl } from "@/helpers/core";
 import { useEffect, useState } from "react";
 import ModalViewProd from "./ModalViewProd";
 import ModalDistProducts from "./ModalDistProducts";
@@ -332,7 +332,7 @@ const useProductsCatalog = ({ setLoading }) => {
     setDataImages([]);
 
     setLoading(true);
-    request.GET(`inventory/settings/productPictures?productCode=${id}`, (resp) => {
+    request.GET(buildUrl('inventory/settings/productPictures', { productCode: id }), (resp) => {
       const { data } = resp;
 
       if (data.length > 0) {

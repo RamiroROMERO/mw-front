@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import notification from '@Containers/ui/Notifications';
 import { useForm } from '@Hooks/useForms';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import ModalBillingData from './ModalBillingData';
 import ModalViewProv from './ModalViewProv';
@@ -120,7 +120,7 @@ export const useProviders = ({ setLoading }) => {
   }
 
   const fnGetBankAccounts = (idProv) => {
-    request.GET(`inventory/process/providerBanks?providerId=${idProv}`, (resp) => {
+    request.GET(buildUrl('inventory/process/providerBanks', { providerId: idProv }), (resp) => {
       setDataBankAccounts(resp.data);
       setLoading(false);
     }, (err) => {
@@ -153,7 +153,7 @@ export const useProviders = ({ setLoading }) => {
       fnNewProvider();
       setLoading(false);
       // eliminar cuentas bancarias asignadas a ese proveedor
-      request.DELETE(`inventory/process/providerBanks?providerId=${id}`, (resp2) => {
+      request.DELETE(buildUrl('inventory/process/providerBanks', { providerId: id }), (resp2) => {
       }, (err) => {
       });
     }, (err) => {

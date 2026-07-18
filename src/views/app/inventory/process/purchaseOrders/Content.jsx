@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx, Separator } from '@/components/common/CustomBootstrap';
 import { useForm } from '@/hooks';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { formatDate, formatNumber, validFloat, validInt } from '@/helpers/Utils';
 import moment from 'moment';
 import notification from '@/containers/ui/Notifications';
@@ -95,7 +95,7 @@ const PurchaseOrders = (props) => {
 
   const fnViewOrderDetail = (orderId) => {
     setLoading(true);
-    request.GET(`inventory/process/purchaseOrderDetail?purchaseOrderId=${orderId}`, (resp) => {
+    request.GET(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: orderId }), (resp) => {
       const ordersDeta = resp.data.map((item) => {
         item.nameProduct = item.invProduct.name
         item.qtyRec = 0
@@ -176,7 +176,7 @@ const PurchaseOrders = (props) => {
       request.PUT(`inventory/process/purchaseOrders/${id}`, newData, (resp) => {
         setLoading(false);
         // Eliminar productos
-        request.DELETE(`inventory/process/purchaseOrderDetail?purchaseOrderId=${id}`, (resp2) => {
+        request.DELETE(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: id }), (resp2) => {
           // guardar productos
           orderDetail.forEach(item => {
             const productDeta = {
@@ -267,7 +267,7 @@ const PurchaseOrders = (props) => {
     request.DELETE(`inventory/process/purchaseOrders/${id}`, (resp) => {
       // eliminar detalle de la orden de compra
       setLoading(true);
-      request.DELETE(`inventory/process/purchaseOrderDetail?purchaseOrderId=${id}`, (resp2) => {
+      request.DELETE(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: id }), (resp2) => {
         setOpenMsgDelete(false);
         fnNewPurchaseOrder();
         setLoading(false);
@@ -318,7 +318,7 @@ const PurchaseOrders = (props) => {
   }
 
   const fnGetDocuments = (orderId) => {
-    request.GET(`inventory/process/purchases?orderId=${orderId}`, (resp) => {
+    request.GET(buildUrl('inventory/process/purchases', { orderId }), (resp) => {
       const purchase = resp.data.map((item) => {
         return {
           id: item.id,

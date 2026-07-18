@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { formatDate, IntlMessages } from '@Helpers/Utils'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import ReactTable from '@Components/reactTable'
 import moment from 'moment';
 
@@ -46,7 +46,7 @@ const ModalPermissions = ({ setOpen, data }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/permissions?employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/permissions', { employeeId }), (resp) => {
       const permissions = resp.data.map((item) => {
         item.authorizedBy = item.rrhhAuthorizer ? `${item.rrhhAuthorizer.firstName}  ${item.rrhhAuthorizer.secondName}  ${item.rrhhAuthorizer.lastName}
         ${item.rrhhAuthorizer.secondLastName}` : ""

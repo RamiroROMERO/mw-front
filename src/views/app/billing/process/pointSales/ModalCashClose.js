@@ -3,7 +3,7 @@ import { Colxx } from "@/components/common/CustomBootstrap";
 import { Button, ModalBody, ModalFooter, Nav, NavItem, NavLink, Row, TabContent, Table, TabPane } from "reactstrap";
 import { formatNumber, IntlMessages, validFloat, validInt } from "@/helpers/Utils";
 import { useForm } from "@/hooks";
-import { request } from "@/helpers/core";
+import { request, buildUrl } from "@/helpers/core";
 import { SimpleSelect } from "@/components/simpleSelect";
 import { InputField } from "@/components/inputFields";
 import { ContainerWithLabel } from "@/components/containerWithLabel";
@@ -117,7 +117,7 @@ const ModalCashclose = (props) => {
     }
 
     setLoading(true);
-    request.GET(`billing/process/cashClose/getDetail?closedId=${closedId}&date=${dateClose}&cashierId=${idCashierClose}&cashId=${idCashClose}`, (resp) => {
+    request.GET(buildUrl('billing/process/cashClose/getDetail', { closedId, date: dateClose, cashierId: idCashierClose, cashId: idCashClose }), (resp) => {
       const detailCashClose = resp.data;
       if (detailCashClose.resumeInvoices.length === 0 && item2 === null) {
         notification('warning', 'msg.alert.cashCloseAplly', 'alert.warning.title');

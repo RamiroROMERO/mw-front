@@ -7,8 +7,8 @@ import { Checkbox } from '@/components/checkbox';
 import ReactTable from '@/components/reactTable';
 import Confirmation from '@/containers/ui/confirmationMsg';
 import SearchSelect from '@/components/SearchSelect/SearchSelect';
+import { useTableConfig } from '@Hooks';
 import useDiscounts from './useDiscounts';
-import useTableConf from './useTableConf';
 
 const Discounts = (props) => {
   const { setLoading } = props;
@@ -17,7 +17,25 @@ const Discounts = (props) => {
 
   const { id, name, percentValue, idCtaAccount, status } = formState;
   const { nameValid, percentValueValid, idCtaAccountValid } = formValidation;
-  const { tableInfo } = useTableConf(tableData, fnEditItem, fnDeleteItem);
+  const { tableInfo } = useTableConfig({
+    title: IntlMessages("page.discounts.table.title"),
+    columns: [
+      { text: IntlMessages("page.discounts.table.description"), dataField: "description", headerStyle: { 'width': '45%' } },
+      { text: IntlMessages("page.discounts.table.amount"), dataField: "amount", headerStyle: { 'width': '30%' } },
+    ],
+    data: tableData,
+    actions: [{
+      color: 'warning',
+      icon: 'pencil',
+      toolTip: IntlMessages('button.edit'),
+      onClick: fnEditItem
+    }, {
+      color: 'danger',
+      icon: 'trash',
+      toolTip: IntlMessages('button.delete'),
+      onClick: fnDeleteItem
+    }]
+  });
 
   return (
     <>

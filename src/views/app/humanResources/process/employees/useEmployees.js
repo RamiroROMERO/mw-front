@@ -2,7 +2,7 @@ import React from 'react'
 import { useEffect, useState } from 'react'
 import { useForm } from '@Hooks';
 import { getCurrentDate, validFloat, validInt } from '@Helpers/Utils';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 import { PATH_FILES } from '/src/helpers/pathFiles';
 import ViewPdf from '@/components/ViewPDF/ViewPdf';
@@ -252,7 +252,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
         return;
       }
       setLoading(true);
-      request.GET(`rrhh/process/employees?dni=${dni}`, (resp) => {
+      request.GET(buildUrl('rrhh/process/employees', { dni }), (resp) => {
         const employees = resp.data;
         setLoading(false);
 
@@ -466,7 +466,7 @@ export const useEmployees = ({ setLoading, screenControl, adminControl }) => {
 
   const fnGetProjectEmployee = (idEmpl) => {
     setLoading(true);
-    request.GET(`rrhh/process/projectDetail?employeeId=${idEmpl}&status=1`, (resp) => {
+    request.GET(buildUrl('rrhh/process/projectDetail', { employeeId: idEmpl, status: 1 }), (resp) => {
       const dataProjects = resp.data;
       setCodeEmployee(dataProjects[0]?.codeEmployee || 0);
       setLoading(false);

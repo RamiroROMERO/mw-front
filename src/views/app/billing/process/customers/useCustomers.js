@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { useForm } from '@/hooks';
 import notification from '@/containers/ui/Notifications';
 import { validInt } from "@/helpers/Utils";
@@ -291,7 +291,7 @@ export const useCustomers = ({ setLoading }) => {
   }
 
   const onMunicRefresh = (deptoCode) => {
-    request.GET(`admin/locateMunic/getSL?codeDepto=${deptoCode}`, resp => {
+    request.GET(buildUrl('admin/locateMunic/getSL', { codeDepto: deptoCode }), resp => {
       const listMunic = resp.data.map(item => {
         return {
           id: item.code,

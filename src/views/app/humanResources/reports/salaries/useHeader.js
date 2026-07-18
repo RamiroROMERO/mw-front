@@ -1,8 +1,10 @@
 import { request } from '@Helpers/core';
 import { useState } from 'react'
 import notification from '@Containers/ui/Notifications';
+import { useExportExcel } from '@Hooks';
 
 export const useHeader = ({ setLoading, table, setTable, enableGenerateReport }) => {
+  const { fnExport } = useExportExcel(setLoading);
   const [employeeId, setEmployeeId] = useState(0);
   const [salaryParam, setSalaryParam] = useState(true);
   const [bankAccountParam, setBankAccountParam] = useState(false);
@@ -51,8 +53,7 @@ export const useHeader = ({ setLoading, table, setTable, enableGenerateReport })
       reportTitle: "Reporte de Salarios y Cuentas Bancarias",
       nameXLSXFile,
     };
-    await request.fnExportToXLSX("rrhh/process/employees/exportReportXlsx", data, nameXLSXFile);
-    setLoading(false);
+    await fnExport("rrhh/process/employees/exportReportXlsx", data, nameXLSXFile);
   }
 
   const fnGetData = () => {

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { validFloat, validInt } from '@/helpers/Utils';
 import { useForm } from '@/hooks';
 import TableButtons from '@/components/tableButtons';
@@ -39,7 +39,7 @@ export const usePurchaseDeta = ({ setLoading, setPurchaseDetail }) => {
 
   const fnGetDataDetail = (purchaseId) => {
     setLoading(true);
-    request.GET(`inventory/process/purchaseDetail?purchaseId=${purchaseId}`, (resp) => {
+    request.GET(buildUrl('inventory/process/purchaseDetail', { purchaseId }), (resp) => {
       const purchaseDeta = resp.data.map((item) => {
         item.nameProduct = item.invProduct.name
         return item;
@@ -59,7 +59,7 @@ export const usePurchaseDeta = ({ setLoading, setPurchaseDetail }) => {
 
   const fnViewProducts = (idStore) => {
     setLoading(true);
-    request.GET(`inventory/process/stocks/getStocks?storeId=${idStore}`, (resp) => {
+    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId: idStore }), (resp) => {
       const data = resp.data.map((item) => {
         item.code = item.productCode
         item.nameProduct = item.name

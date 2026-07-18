@@ -1,5 +1,5 @@
 import { IntlMessages, validInt } from '@Helpers/Utils';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms'
 import React, { useEffect, useState } from 'react'
 
@@ -117,7 +117,7 @@ export const useModalDetail = ({ setLoading, selectedItem }) => {
   }
 
   const fnGetTableData = () => {
-    request.GET(`billing/settings/paymentMethodsDetail?idFather=${selectedItem}`, res => {
+    request.GET(buildUrl('billing/settings/paymentMethodsDetail', { idFather: selectedItem }), res => {
       const { data } = res;
       setDetailData(data);
 

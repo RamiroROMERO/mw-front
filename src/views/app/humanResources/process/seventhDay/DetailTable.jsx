@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { IntlMessages, formatNumber } from '@Helpers/Utils'
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import ReactTable from '@Components/reactTable'
 import Modal from '@Components/modal';
 import ModalDetailSeventh from './ModalDetailSeventh'
@@ -13,7 +13,7 @@ const DetailTable = ({ dataSeventhDay, listEmployees, setLoading }) => {
 
   const fnGetDetail = (fatherId) => {
     setLoading(true);
-    request.GET(`rrhh/process/payrollSevenDayDetails?fatherId=${fatherId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/payrollSevenDayDetails', { fatherId }), (resp) => {
       const payrollDetail = resp.data.map((item) => {
         item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />

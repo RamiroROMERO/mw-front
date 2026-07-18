@@ -1,4 +1,4 @@
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import { useState } from 'react'
@@ -48,7 +48,7 @@ export const useHeader = ({ setLoading, table, setTable, enableGenerateReport })
     }
 
     setLoading(true);
-    request.GET(`rrhh/process/projectDetail/findProjectTransfers?projectId=${projectId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/projectDetail/findProjectTransfers', { projectId }), (resp) => {
       const projectDeta = resp.data.map((item, idx) => {
         item.num = idx + 1
         item.workShifts = item.rrhhSchedule?.name || ''

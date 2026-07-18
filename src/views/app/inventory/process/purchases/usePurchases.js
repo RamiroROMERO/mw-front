@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import notification from '@/containers/ui/Notifications';
 import { useForm } from '@/hooks';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { formatDate, formatNumber, validFloat, validInt } from '@/helpers/Utils';
 import createNotification from '@/containers/ui/Notifications';
 
@@ -71,7 +71,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
 
   const fnSearchPurchases = () => {
     setLoading(true);
-    request.GET(`inventory/process/purchases?isExpense=0`, (resp) => {
+    request.GET(buildUrl('inventory/process/purchases', { isExpense: 0 }), (resp) => {
       const purchases = resp.data.map((item) => {
         item.provider = item.invProvider.name
         item.dateIn = formatDate(item.date)
@@ -171,7 +171,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
         setLoading(false);
         setSendForm(false);
         // Eliminar detalle de la compra
-        request.DELETE(`inventory/process/purchaseDetail?purchaseId=${id}`, () => {
+        request.DELETE(buildUrl('inventory/process/purchaseDetail', { purchaseId: id }), () => {
           // guardar detalle de la compra
           purchaseDetail.forEach(item => {
             const detailPurchase = {
@@ -247,7 +247,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
       return;
     }
     setLoading(true);
-    request.GET(`inventory/process/purchaseOrders?providerId=${providerId}`, (resp) => {
+    request.GET(buildUrl('inventory/process/purchaseOrders', { providerId }), (resp) => {
       const orders = resp.data.map((item) => {
         item.provider = item.invProvider.name
         item.address = item.invProvider.address
@@ -266,7 +266,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
   const fnViewOrder = (item) => {
     item.orderId = item.id
     setLoading(true);
-    request.GET(`inventory/process/purchaseOrderDetail?purchaseOrderId=${item.id}`, (resp) => {
+    request.GET(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: item.id }), (resp) => {
       const ordersDeta = resp.data.map((item) => {
         item.nameProduct = item.invProduct.name
         return item;

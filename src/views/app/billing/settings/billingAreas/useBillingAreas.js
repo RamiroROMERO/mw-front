@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import { validInt } from '@Helpers/Utils';
 
@@ -183,7 +183,7 @@ const useBillingAreas = ({ setLoading }) => {
       setLoading(false);
     });
     setLoading(true);
-    request.GET(`admin/documents/?useBill=1`, (resp) => {
+    request.GET(buildUrl('admin/documents/', { useBill: 1 }), (resp) => {
       const documents = resp.data.map((item) => {
         return {
           label: item.name,

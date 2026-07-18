@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Badge, Button, Card, CardBody, CardTitle, Col, Row, Table } from 'reactstrap'
 import DateCalendar from '@Components/dateCalendar';
 import { IntlMessages, validInt } from '@Helpers/Utils';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import Modal from '@Components/modal';
 import ModalInvoice from './ModalInvoice';
 import ViewPdf from '@/components/ViewPDF/ViewPdf';
@@ -25,7 +25,7 @@ export const HotelCheckOutToday = ({ setLoading }) => {
 
   const fnRefreshTable = () => {
     setLoading(true);
-    request.GET(`hotel/dashboard/getCheckOutToday?currentDate=${currentDate}`, resp => {
+    request.GET(buildUrl('hotel/dashboard/getCheckOutToday', { currentDate }), resp => {
       setLoading(false);
       const { data } = resp;
       setDataCurrentCheckOut(data);
@@ -153,7 +153,7 @@ export const HotelCheckOutToday = ({ setLoading }) => {
                       <td>{item.currentDays}</td>
                       <td><Button color='info' onClick={() => fnGotoViewBooking(item.bookingId)} ><i className='bi bi-receipt'></i></Button></td>
                     </tr>)
-                  }) : <tr><td className='text-center' colSpan={4}>No Hay Datos Disponibles</td></tr>}
+                  }) : <tr><td className='text-center' colSpan={4}>{IntlMessages("table.noDataAvailable")}</td></tr>}
                 </tbody>
               </Table>
             </CardBody>

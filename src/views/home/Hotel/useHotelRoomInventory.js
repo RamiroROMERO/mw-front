@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { formatDate } from '@Helpers/Utils';
 
 export const useHotelRoomInventory = ({ setLoading }) => {
@@ -19,7 +19,7 @@ export const useHotelRoomInventory = ({ setLoading }) => {
   useEffect(() => {
     let initDate = new Date().toJSON().substring(0, 10);
     setLoading(true);
-    request.GET(`hotel/dashboard/getRoomInventory?startDate=${initDate}&endDate=${initDate}`, ({ data }) => {
+    request.GET(buildUrl('hotel/dashboard/getRoomInventory', { startDate: initDate, endDate: initDate }), ({ data }) => {
       setLoading(false);
       const { fields } = data;
       let columns = []
@@ -35,7 +35,7 @@ export const useHotelRoomInventory = ({ setLoading }) => {
 
   const fnViewButton = () => {
     setLoading(true);
-    request.GET(`hotel/dashboard/getRoomInventory?startDate=${startDate}&endDate=${endDate}`, ({ data }) => {
+    request.GET(buildUrl('hotel/dashboard/getRoomInventory', { startDate, endDate }), ({ data }) => {
       setLoading(false);
       let { data: dataForTable, fields } = data;
       const columns = fields.map(item => {

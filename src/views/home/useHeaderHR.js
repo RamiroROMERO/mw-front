@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import notification from '@Containers/ui/Notifications'
 import { validInt } from '@Helpers/Utils';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 
 export const useHeaderHR = ({ setopenModalAddSchedule, setListWorkSchedules, setLoading, setCurrentItem }) => {
   const [projectId, setProjectId] = useState(0);
@@ -23,7 +23,7 @@ export const useHeaderHR = ({ setopenModalAddSchedule, setListWorkSchedules, set
 
   const fnGetData = (id = projectId) => {
     setLoading(true);
-    request.GET(`rrhh/process/workSchedulings?projectId=${id}&status=1`, (resp) => {
+    request.GET(buildUrl('rrhh/process/workSchedulings', { projectId: id, status: 1 }), (resp) => {
       const data = resp.data.map((item) => {
         item.idWorkSheduling = item.id
         item.title = `${item?.rrhhSchedule?.name || ''} - ${item?.rrhhWorkSchedulingType?.name || ''}`

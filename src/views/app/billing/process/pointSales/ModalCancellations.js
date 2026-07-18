@@ -8,7 +8,7 @@ import { ContainerWithLabel } from "@/components/containerWithLabel";
 import { SimpleSelect } from "@/components/simpleSelect";
 import { ReactTableEdit } from "@/components/reactTableEdit";
 import { InputField } from "@/components/inputFields";
-import { request } from "@/helpers/core";
+import { request, buildUrl } from "@/helpers/core";
 import SearchSelect from "@/components/SearchSelect/SearchSelect";
 import DateCalendar from "@/components/dateCalendar";
 import classnames from "classnames";
@@ -138,7 +138,7 @@ const ModalCancellations = (props) => {
       return elem;
     });
     setListTypePayments(clearListTypePayments);
-    request.GET(`billing/process/cancellationPyments?idFather=${viewItem.id}`, (resp) => {
+    request.GET(buildUrl('billing/process/cancellationPyments', { idFather: viewItem.id }), (resp) => {
       resp.data.map((item) => {
         clearListTypePayments = clearListTypePayments.map((item2) => {
           if (item.paymentMethodId === item2.id) {

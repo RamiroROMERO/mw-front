@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { IntlMessages, validInt } from '@Helpers/Utils'
 import { useForm } from '@Hooks'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 
 export const useModalBeneficiaries = ({ employeeId, setLoading }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -86,7 +86,7 @@ export const useModalBeneficiaries = ({ employeeId, setLoading }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/employeeBeneficiaries?employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/employeeBeneficiaries', { employeeId }), (resp) => {
       const beneficiaries = resp.data.map((item) => {
         item.parentName = item.rrhhParent ? item.rrhhParent.name : ''
         item.statusIcon = (item.status === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> :

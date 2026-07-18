@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader, CardTitle, Row, Nav, NavItem, NavLink, TabC
 import { InputField } from '@/components/inputFields';
 import { useLocation, useNavigate } from "react-router-dom";
 import { adminRoot } from '@/constants/defaultValues';
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { IntlMessages, formatNumber, validFloat, validInt } from '@/helpers/Utils';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import { Colxx } from '@/components/common/CustomBootstrap';
@@ -137,7 +137,7 @@ const ProjectDetail = (props) => {
 
   const fnGetProducts = () => {
     setLoading(true);
-    request.GET(`prodOrderProducts?orderId=${projectData.id}`, (resp) => {
+    request.GET(buildUrl('prodOrderProducts', { orderId: projectData.id }), (resp) => {
       const dataProd = resp.data.map((item) => {
         return {
           id: item.id,
@@ -155,7 +155,7 @@ const ProjectDetail = (props) => {
 
   const fnGetImages = () => {
     setLoading(true);
-    request.GET(`prodOrderImages?orderId=${projectData.id}`, (resp) => {
+    request.GET(buildUrl('prodOrderImages', { orderId: projectData.id }), (resp) => {
       const dataImg = resp.data.map((item) => {
         return {
           id: item.id,
@@ -180,7 +180,7 @@ const ProjectDetail = (props) => {
   const fnGetPayment = () => {
     setLoading(true);
     setPaymentGen("block");
-    request.GET(`prodOrderPayments/getPayments?orderId=${projectData.id}`, (resp) => {
+    request.GET(buildUrl('prodOrderPayments/getPayments', { orderId: projectData.id }), (resp) => {
       setDataInvoice(resp.data.dataInvoice);
       setDataPayments(resp.data.dataPayments);
       let value = 0;

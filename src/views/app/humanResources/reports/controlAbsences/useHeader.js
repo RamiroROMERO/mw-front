@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
-import { useForm } from '@/hooks';
+import { useForm, useExportExcel } from '@/hooks';
 import { API_URLS } from '@/helpers/APIUrl';
 
 export const useHeader = ({ setLoading, table, setTable, enableGenerateReport }) => {
+  const { fnExport } = useExportExcel(setLoading);
   const [employeeId, setEmployeeId] = useState(0);
   
   const { formState, onInputChange } = useForm({
@@ -49,8 +50,7 @@ export const useHeader = ({ setLoading, table, setTable, enableGenerateReport })
       reportTitle: "Control de Ausencias",
       nameXLSXFile: "ControlDeAusencias.xlsx",
     };
-    await request.fnExportToXLSX(`${API_URLS.RRHH_REP_ABSENCES_CONTROL_XLSX}`, data, "ControlDeAusencias.xlsx");
-    setLoading(false);
+    await fnExport(`${API_URLS.RRHH_REP_ABSENCES_CONTROL_XLSX}`, data, "ControlDeAusencias.xlsx");
   }
 
   const fnGetData = () => {

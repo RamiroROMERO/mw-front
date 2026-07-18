@@ -322,6 +322,7 @@ const esLang = {
   "start.modal.modalEdit.title": "Detalle del Documento",
   /* Buttons */
   "button.upload": "Subir Archivos",
+  "button.send": "Enviar",
   "button.generate": "Generar",
   "button.generateDetail": "Generar Detalle",
   "button.generateInvoice": " Generar Factura",
@@ -3021,7 +3022,16 @@ const esLang = {
   "page.calculationBenefits.label.timeWorked": "Tiempo Laborado",
   "page.calculationBenefits.label.salaries": "Salarios",
   "page.calculationBenefits.label.otherPayments": "Otros Pagos",
-  "page.calculationBenefits.modal.generatePayments.title": "Generar Plan de Pago"
+  "page.calculationBenefits.modal.generatePayments.title": "Generar Plan de Pago",
+
+  /* Claves agregadas al migrar strings hardcodeados (Hotel/uploads) — ver TECH_DEBT.md */
+  "uploadImages.dropzone.placeholder": "Arrastra y suelta imágenes aquí, o haz clic para seleccionar",
+  "button.clearFiles": "Limpiar",
+  "button.viewFile": "Ver Archivo",
+  "input.mealType": "Plan de Alimentación",
+  "button.reserve": "Reservar",
+  "table.noDataAvailable": "No Hay Datos Disponibles",
+  "msg.export.record.error": "Ocurrió un error al exportar el archivo."
 };
 
 export default esLang;

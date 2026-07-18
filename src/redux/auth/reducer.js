@@ -1,3 +1,4 @@
+import { createSlice } from '@reduxjs/toolkit';
 import { getCurrentUser } from '@/helpers/Utils';
 import { isAuthGuardActive, currentUser } from '@/constants/defaultValues';
 import {
@@ -16,7 +17,7 @@ import {
   RESET_PASSWORD_ERROR,
 } from '../contants';
 
-const INIT_STATE = {
+const initialState = {
   currentUser: isAuthGuardActive ? currentUser : getCurrentUser(),
   forgotUserMail: '',
   newPassword: '',
@@ -25,77 +26,79 @@ const INIT_STATE = {
   error: '',
 };
 
-export default (state = INIT_STATE, action) => {
-  switch (action.type) {
-    case LOGIN_USER:
-      return { ...state, loading: true, error: '' };
-    case LOGIN_USER_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        currentUser: action.payload,
-        error: '',
-      };
-    case LOGIN_USER_ERROR:
-      return {
-        ...state,
-        loading: false,
-        currentUser: null,
-        error: action.payload.message,
-      };
-    case FORGOT_PASSWORD:
-      return { ...state, loading: true, error: '' };
-    case FORGOT_PASSWORD_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        forgotUserMail: action.payload,
-        error: '',
-      };
-    case FORGOT_PASSWORD_ERROR:
-      return {
-        ...state,
-        loading: false,
-        forgotUserMail: '',
-        error: action.payload.message,
-      };
-    case RESET_PASSWORD:
-      return { ...state, loading: true, error: '' };
-    case RESET_PASSWORD_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        newPassword: action.payload,
-        resetPasswordCode: '',
-        error: '',
-      };
-    case RESET_PASSWORD_ERROR:
-      return {
-        ...state,
-        loading: false,
-        newPassword: '',
-        resetPasswordCode: '',
-        error: action.payload.message,
-      };
-    case REGISTER_USER:
-      return { ...state, loading: true, error: '' };
-    case REGISTER_USER_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        currentUser: action.payload,
-        error: '',
-      };
-    case REGISTER_USER_ERROR:
-      return {
-        ...state,
-        loading: false,
-        currentUser: null,
-        error: action.payload.message,
-      };
-    case LOGOUT_USER:
-      return { ...state, currentUser: null, error: '' };
-    default:
-      return { ...state };
-  }
-};
+// extraReducers usa los mismos string constants que ya consume la saga
+// (src/redux/auth/saga.js, takeEvery(LOGIN_USER, ...)) y los action creators
+// existentes (src/redux/auth/actions.js) — no cambia ningún type ni firma,
+// solo la implementación del reducer (switch -> Immer vía createSlice).
+const authSlice = createSlice({
+  name: 'authUser',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(LOGIN_USER, (state) => {
+        state.loading = true;
+        state.error = '';
+      })
+      .addCase(LOGIN_USER_SUCCESS, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+        state.error = '';
+      })
+      .addCase(LOGIN_USER_ERROR, (state, action) => {
+        state.loading = false;
+        state.currentUser = null;
+        state.error = action.payload.message;
+      })
+      .addCase(FORGOT_PASSWORD, (state) => {
+        state.loading = true;
+        state.error = '';
+      })
+      .addCase(FORGOT_PASSWORD_SUCCESS, (state, action) => {
+        state.loading = false;
+        state.forgotUserMail = action.payload;
+        state.error = '';
+      })
+      .addCase(FORGOT_PASSWORD_ERROR, (state, action) => {
+        state.loading = false;
+        state.forgotUserMail = '';
+        state.error = action.payload.message;
+      })
+      .addCase(RESET_PASSWORD, (state) => {
+        state.loading = true;
+        state.error = '';
+      })
+      .addCase(RESET_PASSWORD_SUCCESS, (state, action) => {
+        state.loading = false;
+        state.newPassword = action.payload;
+        state.resetPasswordCode = '';
+        state.error = '';
+      })
+      .addCase(RESET_PASSWORD_ERROR, (state, action) => {
+        state.loading = false;
+        state.newPassword = '';
+        state.resetPasswordCode = '';
+        state.error = action.payload.message;
+      })
+      .addCase(REGISTER_USER, (state) => {
+        state.loading = true;
+        state.error = '';
+      })
+      .addCase(REGISTER_USER_SUCCESS, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+        state.error = '';
+      })
+      .addCase(REGISTER_USER_ERROR, (state, action) => {
+        state.loading = false;
+        state.currentUser = null;
+        state.error = action.payload.message;
+      })
+      .addCase(LOGOUT_USER, (state) => {
+        state.currentUser = null;
+        state.error = '';
+      });
+  },
+});
+
+export default authSlice.reducer;

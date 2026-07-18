@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import { defineConfig, transformWithEsbuild } from 'vite'
 import path from 'path'
 import react from '@vitejs/plugin-react'
-// import tsconfigPaths from 'vite-tsconfig-paths'
 
 const sourceJSPattern = /\/src\/.*\.js$/;
 const rollupPlugin = (matchers) => ({
@@ -65,5 +64,9 @@ export default defineConfig({
     loader: "jsx",
     include: ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", sourceJSPattern],
     exclude: [],
-  }
+  },
+  test: {
+    environment: 'jsdom',
+    include: ['src/**/*.test.{js,jsx}'],
+  },
 })

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import notification from '@Containers/ui/Notifications';
@@ -32,7 +32,7 @@ export const useRoomStatus = ({ setLoading, screenControl }) => {
 
   const fnGetData = (page = currentPage, searchText = search) => {
     setLoading(true);
-    request.GET(`hotel/settings/roomStatus/paginate?page=${page}&limit=${pageSize}&q=${searchText}`, (resp) => {
+    request.GET(buildUrl('hotel/settings/roomStatus/paginate', { page, limit: pageSize, q: searchText }), (resp) => {
       const data = resp.data.map((item) => {
         item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;

@@ -1,4 +1,4 @@
-import { request } from '@/helpers/core';
+import { request, buildUrl } from '@/helpers/core';
 import { useForm } from '@/hooks'
 import { useState } from 'react'
 
@@ -22,7 +22,7 @@ export const useRetentionDetail = ({ setLoading, setRetentionDetail }) => {
   const fnViewOrderDetail = (receipId) => {
     setLoading(true);
     setSendFormDeta(false);
-    request.GET(`tax/process/withholdingReceiptDetail?fatherId=${receipId}`, (resp) => {
+    request.GET(buildUrl('tax/process/withholdingReceiptDetail', { fatherId: receipId }), (resp) => {
       const receipts = resp.data;
       setRetentionDetail(receipts);
       setLoading(false);

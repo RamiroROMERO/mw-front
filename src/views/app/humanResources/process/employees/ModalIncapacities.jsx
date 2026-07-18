@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { formatDate, IntlMessages } from '@Helpers/Utils'
-import { request } from '@Helpers/core'
+import { request, buildUrl } from '@Helpers/core'
 import ReactTable from '@Components/reactTable'
 
 const ModalIncapacities = ({ setOpen, data }) => {
@@ -56,7 +56,7 @@ const ModalIncapacities = ({ setOpen, data }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(`rrhh/process/incapacities?employeeId=${employeeId}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/incapacities', { employeeId }), (resp) => {
       const incapacities = resp.data.map((item) => {
         item.startDisability = item.startDisability === "0000-00-00" ? "1900-01-01" : item.startDisability
         item.endDisability = item.endDisability === "0000-00-00" ? "1900-01-01" : item.endDisability

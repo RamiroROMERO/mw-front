@@ -1,8 +1,9 @@
 import { request } from '@/helpers/core';
-import { useForm } from '@/hooks';
+import { useForm, useExportExcel } from '@/hooks';
 import notification from '@Containers/ui/Notifications';
 
 export const useHeader = ({ setLoading, table, setTable, enableGenerateReport, listTypeIncomes }) => {
+  const { fnExport } = useExportExcel(setLoading);
 
   const { formState, onInputChange } = useForm({
     projectId: 0,
@@ -79,8 +80,7 @@ export const useHeader = ({ setLoading, table, setTable, enableGenerateReport, l
       reportTitle: "Control de Ingresos Quincenales",
       nameXLSXFile: "ControlIngresosQuincenales.xlsx",
     };
-    await request.fnExportToXLSX("rrhh/reports/getOthersIncomesXLSX", data, "ControlIngresosQuincenales.xlsx");
-    setLoading(false);
+    await fnExport("rrhh/reports/getOthersIncomesXLSX", data, "ControlIngresosQuincenales.xlsx");
   }
 
   const fnGetData = () => {

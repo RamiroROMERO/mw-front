@@ -1,8 +1,10 @@
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms';
+import { useExportExcel } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
 
 export const useHeader = ({ setLoading, table, setTable, enableGenerateReport }) => {
+  const { fnExport } = useExportExcel(setLoading);
 
   const { formState, onInputChange } = useForm({
     dateStart: '',
@@ -37,8 +39,7 @@ export const useHeader = ({ setLoading, table, setTable, enableGenerateReport })
       reportTitle: "Reporte de Altas de Personal",
       nameXLSXFile: "altasDePersonal.xlsx",
     };
-    await request.fnExportToXLSX("rrhh/process/employeeHistory/exportActivesXlsx", data, "AltasDePersonal.xlsx");
-    setLoading(false);
+    await fnExport("rrhh/process/employeeHistory/exportActivesXlsx", data, "AltasDePersonal.xlsx");
   }
 
   const fnGetData = () => {

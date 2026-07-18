@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { validInt } from '@Helpers/Utils';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms';
+import { useExportExcel } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
 
 export const useHeader = ({ setLoading, table, setTable, listCustomers, enableGenerateReport }) => {
+  const { fnExport } = useExportExcel(setLoading);
   const [sendForm, setSendForm] = useState(false);
   const [listProjects, setListProjects] = useState([]);
 
@@ -24,7 +26,7 @@ export const useHeader = ({ setLoading, table, setTable, listCustomers, enableGe
     const customer = e.target.value;
 
     setLoading(true);
-    request.GET(`rrhh/process/projects?customerId=${customer}`, (resp) => {
+    request.GET(buildUrl('rrhh/process/projects', { customerId: customer }), (resp) => {
       const projects = resp.data.map((item) => {
         return {
           id: item.id,
@@ -64,8 +66,7 @@ export const useHeader = ({ setLoading, table, setTable, listCustomers, enableGe
       reportTitle: "Empleados por Cliente",
       nameXLSXFile: "EmpleadosPorCliente.xlsx",
     };
-    await request.fnExportToXLSX("rrhh/process/projectDetail/exportReportXLXS", data, "EmpleadosPorCliente.xlsx");
-    setLoading(false);
+    await fnExport("rrhh/process/projectDetail/exportReportXLXS", data, "EmpleadosPorCliente.xlsx");
   }
 
   const fnGetData = () => {
