@@ -774,18 +774,13 @@ const PointSales = (props) => {
       setLoading(false);
     });
     request.GET('admin/paymentTypes', (resp) => {
-      const payments = [];
-      const paymentTypes = resp.data;
-      paymentTypes.forEach(item => {
-        item.paymentTypeDetails.forEach(item2 => {
-          const detail = {
-            id: item2.id,
-            name: `${item.name} - ${item2.description}`,
-            usageType: item.usageType,
-            value: 0
-          }
-          payments.push(detail);
-        })
+      const payments = resp.data.map(item => {
+        return {
+          id: item.id,
+          name: item.name,
+          usageType: item.usageType,
+          value: 0
+        }
       });
       setListTypePayments(payments);
     }, (err) => {
