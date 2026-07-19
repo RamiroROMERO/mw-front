@@ -1,7 +1,7 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
+import { Colxx } from '@Components/common/CustomBootstrap'
 import { Button, Row, Table } from 'reactstrap'
-import { formatNumber, IntlMessages } from '@/helpers/Utils'
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { formatNumber, IntlMessages } from '@Helpers/Utils'
+import Confirmation from '@Containers/ui/confirmationMsg';
 import useDetailTable from './useDetailTable';
 
 const DetailTable = ({purchaseDetail, setPurchaseDetail, setBulkForm, setBulkFormDeta}) => {

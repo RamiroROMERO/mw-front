@@ -1,10 +1,10 @@
 import { Button, Card, CardBody, Row } from 'reactstrap'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import { Checkbox } from '@/components/checkbox'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { InputField } from '@/components/inputFields'
-import { RadioGroup } from '@/components/radioGroup'
-import { IntlMessages } from '@/helpers/Utils'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import { Checkbox } from '@Components/checkbox'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { InputField } from '@Components/inputFields'
+import { RadioGroup } from '@Components/radioGroup'
+import { IntlMessages } from '@Helpers/Utils'
 
 export const Detail = ({formState, accountList, onInputChange, formValidation, fnSave, fnClear, sendForm}) => {
 

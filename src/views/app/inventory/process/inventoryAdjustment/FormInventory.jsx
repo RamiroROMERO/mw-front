@@ -1,9 +1,9 @@
 import { Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { SimpleSelect } from '@/components/simpleSelect'
-import { InputField } from '@/components/inputFields'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import DateCalendar from '@/components/dateCalendar'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { SimpleSelect } from '@Components/simpleSelect'
+import { InputField } from '@Components/inputFields'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import DateCalendar from '@Components/dateCalendar'
 
 const FormInventory = ({documentId, documentCode, sourceStoreId, date, applyId, listDocuments, listStores, listTypeApply, onInputChange, sendForm, formValidation}) => {
 

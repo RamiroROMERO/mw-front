@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import ReactTable from "@/components/reactTable";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { IntlMessages } from "@Helpers/Utils";
+import ReactTable from "@Components/reactTable";
 
 export const ModalExpenses = (props) => {
   const { data, setOpen } = props;

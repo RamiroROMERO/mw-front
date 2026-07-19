@@ -1,9 +1,9 @@
 import { Button, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
-import { InputField } from '@/components/inputFields'
-import { IntlMessages } from '@/helpers/Utils'
-import DateCalendar from '@/components/dateCalendar'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
+import { InputField } from '@Components/inputFields'
+import { IntlMessages } from '@Helpers/Utils'
+import DateCalendar from '@Components/dateCalendar'
 
 const HeaderReport = ({formState, onInputChange, fnMarkReported, fnPrintPrevious}) => {
   const {nameFor1, nameFor2, nameFrom1, nameFrom2, date, subject} = formState;

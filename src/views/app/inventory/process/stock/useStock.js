@@ -1,5 +1,5 @@
-import { request } from '@/helpers/core';
-import { useForm } from '@/hooks'
+import { request } from '@Helpers/core';
+import { useForm } from '@Hooks'
 import { useEffect, useState } from 'react'
 
 export const useStock = ({ setLoading }) => {

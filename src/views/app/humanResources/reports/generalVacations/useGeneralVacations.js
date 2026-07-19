@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { request } from '@/helpers/core';
+import { request } from '@Helpers/core';
 import { IntlMessages } from '@Helpers/Utils';
 
 export const useGeneralVacations = ({ setLoading, adminControl }) => {

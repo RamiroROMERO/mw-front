@@ -1,9 +1,9 @@
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { IntlMessages } from '@/helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
 import { useModalAddProduct } from './useModalAddProduct';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { ReactTableEdit } from '@/components/reactTableEdit'
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { ReactTableEdit } from '@Components/reactTableEdit'
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
 
 const ModalAddProduct = ({data, setOpen}) => {
   const {listAreas, listStores, setLoading, currentItem, fnGetDataDetail} = data;

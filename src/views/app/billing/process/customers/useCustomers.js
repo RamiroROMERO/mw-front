@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { request, buildUrl } from '@/helpers/core';
-import { useForm } from '@/hooks';
-import notification from '@/containers/ui/Notifications';
-import { validInt } from "@/helpers/Utils";
+import { request, buildUrl } from '@Helpers/core';
+import { useForm } from '@Hooks';
+import notification from '@Containers/ui/Notifications';
+import { validInt } from "@Helpers/Utils";
 
 export const useCustomers = ({ setLoading }) => {
 

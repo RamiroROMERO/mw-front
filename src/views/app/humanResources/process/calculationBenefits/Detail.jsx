@@ -1,7 +1,7 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
-import { InputField } from '@/components/inputFields'
-import { formatNumber, IntlMessages } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
+import { InputField } from '@Components/inputFields'
+import { formatNumber, IntlMessages } from '@Helpers/Utils'
 import { Card, CardBody, Row, Table } from 'reactstrap'
 import Footer from './Footer'
 

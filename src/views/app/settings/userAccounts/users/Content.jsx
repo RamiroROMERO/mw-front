@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom"
-import { adminRoot } from '@/constants/defaultValues';
+import { adminRoot } from '@Constants/defaultValues';
 import { Card, CardBody, Row, Button, Form } from 'reactstrap';
-import { IntlMessages, validInt } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { request } from '@/helpers/core';
-import { InputField } from '@/components/inputFields';
-import { Checkbox } from '@/components/checkbox';
-import { useForm } from '@/hooks';
-import Confirmation from '@/containers/ui/confirmationMsg';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import DataTable from "@/components/reactTable";
+import { IntlMessages, validInt } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { request } from '@Helpers/core';
+import { InputField } from '@Components/inputFields';
+import { Checkbox } from '@Components/checkbox';
+import { useForm } from '@Hooks';
+import Confirmation from '@Containers/ui/confirmationMsg';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import DataTable from "@Components/reactTable";
 import { PATH_FILES } from '/src/helpers/pathFiles';
 import envs from '@Helpers/envs';
 

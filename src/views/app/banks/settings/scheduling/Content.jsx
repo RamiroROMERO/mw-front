@@ -1,11 +1,11 @@
 import { Card, CardBody, Row, Button } from 'reactstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { Checkbox } from '@/components/checkbox';
-import { InputField } from '@/components/inputFields';
-import DateCalendar from '@/components/dateCalendar';
-import ReactTable from "@/components/reactTable";
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { Checkbox } from '@Components/checkbox';
+import { InputField } from '@Components/inputFields';
+import DateCalendar from '@Components/dateCalendar';
+import ReactTable from "@Components/reactTable";
+import Confirmation from '@Containers/ui/confirmationMsg';
 import { useScheduling } from './useScheduling';
 
 const Scheduling = (props) => {

@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { IntlMessages } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { formatDate } from '@Helpers/Utils'
-import ReactTable from '@/components/reactTable'
+import ReactTable from '@Components/reactTable'
 
 const ModalViewOrders = ({data, setOpen}) => {
   const {dataOrders, fnViewOrder} = data;

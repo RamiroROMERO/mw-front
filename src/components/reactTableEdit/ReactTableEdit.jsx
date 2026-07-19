@@ -1,6 +1,6 @@
 
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { CardTitle, Row, Table } from 'reactstrap';
 import { BodyTable } from './BodyTable';

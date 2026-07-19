@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Input, Table } from 'reactstrap'
-import { formatNumber, IntlMessages, validFloat, validInt } from '@/helpers/Utils'
+import { formatNumber, IntlMessages, validFloat, validInt } from '@Helpers/Utils'
 
 export const EditValuesTable = ({ optionsTitle, valuesTitle, totalTitle, listOptions = [], setListValues=null,  setValueCalculate=null, showTotal=false }) => {
 

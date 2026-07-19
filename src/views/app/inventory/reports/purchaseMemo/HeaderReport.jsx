@@ -1,10 +1,10 @@
 import { Button, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
-import { InputField } from '@/components/inputFields'
-import { Checkbox } from '@/components/checkbox'
-import { IntlMessages } from '@/helpers/Utils'
-import DateCalendar from '@/components/dateCalendar'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
+import { InputField } from '@Components/inputFields'
+import { Checkbox } from '@Components/checkbox'
+import { IntlMessages } from '@Helpers/Utils'
+import DateCalendar from '@Components/dateCalendar'
 
 const HeaderReport = ({nameFor1, nameFor2, nameFrom1, nameFrom2, date, exportToXls, subject, onInputChange, fnMarkReported, fnAddToReport, fnPrintPrevious, fnDeleteReport}) => {
   return (

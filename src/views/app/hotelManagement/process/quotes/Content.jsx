@@ -2,7 +2,7 @@ import Modal from '@Components/modal';
 import ReactTable from "@Components/reactTable";
 import { useQuotes } from './useQuotes'
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 import ModalNewQuote from './ModalNewQuote';
 
 const Content = ({setLoading, screenControl}) => {

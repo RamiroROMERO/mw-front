@@ -1,8 +1,8 @@
 import { useTableConfig } from '@Hooks';
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import ReactTable from "@/components/reactTable"
+import { IntlMessages } from "@Helpers/Utils";
+import ReactTable from "@Components/reactTable"
 
 const ModalViewDocuments = (props) => {
   const { data, setOpen } = props;

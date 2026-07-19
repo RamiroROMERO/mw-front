@@ -1,9 +1,9 @@
-import { IntlMessages } from '@/helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import DateCalendar from '@/components/dateCalendar';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
+import DateCalendar from '@Components/dateCalendar';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
 import { useModalAddService } from './useModalAddService';
 
 const ModalAddService = ({data, setOpen}) => {

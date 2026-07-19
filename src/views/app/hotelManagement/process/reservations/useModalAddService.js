@@ -1,6 +1,6 @@
-import { request } from '@/helpers/core';
-import { validFloat, validInt } from '@/helpers/Utils';
-import { useForm } from '@/hooks';
+import { request } from '@Helpers/core';
+import { validFloat, validInt } from '@Helpers/Utils';
+import { useForm } from '@Hooks';
 import { useState } from 'react'
 
 export const useModalAddService = ({ bookingId, currentService, setLoading, fnGetDataServices, listServices, setOpen }) => {

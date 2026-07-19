@@ -1,10 +1,10 @@
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import { RadioGroup } from "@/components/radioGroup";
-import { RadioButton } from "@/components/radioGroup/RadioButton";
-import notification from '@/containers/ui/Notifications';
-import { useForm } from "@/hooks";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { IntlMessages } from "@Helpers/Utils";
+import { RadioGroup } from "@Components/radioGroup";
+import { RadioButton } from "@Components/radioGroup/RadioButton";
+import notification from '@Containers/ui/Notifications';
+import { useForm } from "@Hooks";
 
 export const ModalPrintCheck = ({ data, setOpen }) => {
 

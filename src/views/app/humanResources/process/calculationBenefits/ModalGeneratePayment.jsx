@@ -1,9 +1,9 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { IntlMessages } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { useModalGeneratePayment } from './useModalGeneratePayment'
-import DateCalendar from '@/components/dateCalendar'
-import { InputField } from '@/components/inputFields'
+import DateCalendar from '@Components/dateCalendar'
+import { InputField } from '@Components/inputFields'
 
 const ModalGeneratePayment = ({data, setOpen}) => {
   const {employeeId, totalBenefits, setLoading} = data;

@@ -1,9 +1,9 @@
 import { Button, Card, CardBody, Row } from 'reactstrap'
-import { Checkbox } from '@/components/checkbox'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { InputField } from '@/components/inputFields'
-import { IntlMessages } from '@/helpers/Utils'
-import { SimpleSelect } from '@/components/simpleSelect'
+import { Checkbox } from '@Components/checkbox'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { InputField } from '@Components/inputFields'
+import { IntlMessages } from '@Helpers/Utils'
+import { SimpleSelect } from '@Components/simpleSelect'
 
 export const Detail = ({formState, lists, onInputChange, formValidation, fnSave, fnClear, sendForm}) => {
 

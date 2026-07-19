@@ -1,5 +1,5 @@
-import { request } from '@/helpers/core';
-import { formatNumber, IntlMessages } from '@/helpers/Utils';
+import { request } from '@Helpers/core';
+import { formatNumber, IntlMessages } from '@Helpers/Utils';
 import { useEffect, useState } from 'react'
 
 export const useBiweeklyIncomes = ({ setLoading, adminControl }) => {

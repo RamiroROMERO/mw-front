@@ -1,10 +1,10 @@
 import { Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
-import { InputField } from '@/components/inputFields'
-import { RadioGroup } from '@/components/radioGroup'
-import DateCalendar from '@/components/dateCalendar'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
+import { InputField } from '@Components/inputFields'
+import { RadioGroup } from '@Components/radioGroup'
+import DateCalendar from '@Components/dateCalendar'
 import { useFormCredit } from './useFormCredit'
 
 const FormCreditNotes = ({documentId, providerId, providerCode, providerRtn, providerName, concept, specifyOther, notes, date, valueLps, valueUsd, exchangeRate, listDocuments, listProviders, onInputChange, onBulkForm, setShowDetail1, setShowDetail2,     setCreditNotesDetail, setCreditNotesDetail2, showspecify, setShowSpecify, sendForm, formValidation}) => {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import createNotification from '@/containers/ui/Notifications';
-import { request, buildUrl } from '@/helpers/core';
-import { formatNumber } from '@/helpers/Utils';
+import createNotification from '@Containers/ui/Notifications';
+import { request, buildUrl } from '@Helpers/core';
+import { formatNumber } from '@Helpers/Utils';
 
 // Extraído de usePurchases.js: el sub-flujo de "importar desde una orden de
 // compra existente" (buscar órdenes del proveedor, ver su detalle, volcarlo

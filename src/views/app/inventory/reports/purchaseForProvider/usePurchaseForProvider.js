@@ -1,8 +1,8 @@
-import { request } from '@/helpers/core';
-import { formatDate, formatNumber } from '@/helpers/Utils';
-import { useForm } from '@/hooks'
+import { request } from '@Helpers/core';
+import { formatDate, formatNumber } from '@Helpers/Utils';
+import { useForm } from '@Hooks'
 import { useEffect, useState } from 'react';
-import { IntlMessages } from '@/helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
 
 export const usePurchaseForProvider = ({ setLoading, urlPost }) => {
   const [listProviders, setListProviders] = useState([]);

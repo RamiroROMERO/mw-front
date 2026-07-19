@@ -1,10 +1,10 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
-import { InputField } from '@/components/inputFields'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
+import { InputField } from '@Components/inputFields'
 import { Button, Row } from 'reactstrap'
-import { formatNumber, IntlMessages } from '@/helpers/Utils'
-import { Checkbox } from '@/components/checkbox'
-import DateCalendar from '@/components/dateCalendar'
+import { formatNumber, IntlMessages } from '@Helpers/Utils'
+import { Checkbox } from '@Components/checkbox'
+import DateCalendar from '@Components/dateCalendar'
 import { useDetailProduct } from './useDetailProduct'
 
 const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, discountPercent, discount, taxPercent, tax, total,

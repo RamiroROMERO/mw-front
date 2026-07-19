@@ -1,10 +1,10 @@
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { IntlMessages } from '@/helpers/Utils'
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import { InputField } from '@/components/inputFields';
-import ReactTable from '@/components/reactTable';
-import Modal from '@/components/modal';
+import { IntlMessages } from '@Helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import { InputField } from '@Components/inputFields';
+import ReactTable from '@Components/reactTable';
+import Modal from '@Components/modal';
 import { useModalDetail } from './useModalDetail';
 import ModalAddProduct from './ModalAddProduct';
 

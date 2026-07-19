@@ -1,14 +1,14 @@
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { useOtherPurchases } from './useOtherPurchases';
-import DateCalendar from '@/components/dateCalendar';
-import { RadioGroup } from '@/components/radioGroup';
+import DateCalendar from '@Components/dateCalendar';
+import { RadioGroup } from '@Components/radioGroup';
 // import ReactInputMask from 'react-input-mask';
-import ControlPanel from '@/components/controlPanel';
-import { Separator } from '@/components/common/CustomBootstrap';
-import Modal from "@/components/modal";
+import ControlPanel from '@Components/controlPanel';
+import { Separator } from '@Components/common/CustomBootstrap';
+import Modal from "@Components/modal";
 import ModalViewPurchases from '../purchases/ModalViewPurchases';
 
 const OtherPurchases = (props) => {

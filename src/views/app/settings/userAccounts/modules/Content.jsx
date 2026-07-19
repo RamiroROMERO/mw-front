@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, Row, Button, Form, } from 'reactstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { request } from '@/helpers/core';
-import { Checkbox } from '@/components/checkbox';
-import { InputField } from '@/components/inputFields';
-import { useForm } from '@/hooks';
-import DataTable from "@/components/reactTable";
-import Confirmation from '@/containers/ui/confirmationMsg';
-import Modal from "@/components/modal";
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { request } from '@Helpers/core';
+import { Checkbox } from '@Components/checkbox';
+import { InputField } from '@Components/inputFields';
+import { useForm } from '@Hooks';
+import DataTable from "@Components/reactTable";
+import Confirmation from '@Containers/ui/confirmationMsg';
+import Modal from "@Components/modal";
 import ModalPrivileges from './ModalPrivileges';
 
 const Modules = (props) => {

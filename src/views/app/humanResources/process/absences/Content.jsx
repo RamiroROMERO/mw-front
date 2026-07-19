@@ -1,10 +1,10 @@
 import { useAbsences } from './useAbsences';
 import { useDetailTable } from './useDetailTable';
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 import ReactTable from '@Components/reactTable';
 import DetailAbsences from './DetailAbsences';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 const Content = ({ setLoading, screenControl }) => {
 

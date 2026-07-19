@@ -1,9 +1,9 @@
-import { Colxx } from '@/components/common/CustomBootstrap';
-import DateCalendar from '@/components/dateCalendar';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { IntlMessages } from '@/helpers/Utils';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import DateCalendar from '@Components/dateCalendar';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { IntlMessages } from '@Helpers/Utils';
 import { Button, Row } from 'reactstrap';
-import { RadioGroup } from '@/components/radioGroup';
+import { RadioGroup } from '@Components/radioGroup';
 
 const HeaderReport = ({formState, onInputChange, listCustomers, fnSearchReport }) => {
   const { customerId, startDate, endDate, typeDocto } = formState;

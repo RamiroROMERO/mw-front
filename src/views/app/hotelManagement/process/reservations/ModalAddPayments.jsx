@@ -1,10 +1,10 @@
-import { IntlMessages } from '@/helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { useModalAddPayments } from './useModalAddPayments';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import DateCalendar from '@/components/dateCalendar';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { InputField } from '@/components/inputFields';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import DateCalendar from '@Components/dateCalendar';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { InputField } from '@Components/inputFields';
 
 const ModalAddPayments = ({data, setOpen}) => {
   const {bookingId, currentPayment, listPaymentTypes, setLoading, fnGetDataPayments} = data;

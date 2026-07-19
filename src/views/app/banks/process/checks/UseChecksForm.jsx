@@ -1,10 +1,10 @@
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { SimpleSelect } from '@/components/simpleSelect';
-import { InputField } from '@/components/inputFields';
-import DateCalendar from '@/components/dateCalendar';
-import { Checkbox } from '@/components/checkbox';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { SimpleSelect } from '@Components/simpleSelect';
+import { InputField } from '@Components/inputFields';
+import DateCalendar from '@Components/dateCalendar';
+import { Checkbox } from '@Components/checkbox';
 import { CardTitle } from 'reactstrap';
 
 export const UseChecksForm = (props) => {

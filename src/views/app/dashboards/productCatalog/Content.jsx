@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Alert, Button, Card, CardBody, Row } from 'reactstrap';
-import { CardProduct } from '@/components/cards';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { request } from '@/helpers/core';
-import { IntlMessagesFn, validFloat } from '@/helpers/Utils';
-import Modal from "@/components/modal";
-import { InputField } from '@/components/inputFields';
-import PaginationBackend from '@/components/reactTable/PaginationBackend';
+import { CardProduct } from '@Components/cards';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { request } from '@Helpers/core';
+import { IntlMessagesFn, validFloat } from '@Helpers/Utils';
+import Modal from "@Components/modal";
+import { InputField } from '@Components/inputFields';
+import PaginationBackend from '@Components/reactTable/PaginationBackend';
 import { useContent } from './useContent';
 
 

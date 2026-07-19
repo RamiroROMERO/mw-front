@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row, Form } from "reactstrap";
-import { IntlMessages, validInt } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { request } from '@/helpers/core';
-import { InputField } from "@/components/inputFields";
-import { SimpleSelect } from "@/components/simpleSelect";
+import { IntlMessages, validInt } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { request } from '@Helpers/core';
+import { InputField } from "@Components/inputFields";
+import { SimpleSelect } from "@Components/simpleSelect";
 import { useNavigate } from "react-router-dom";
-import { adminRoot } from '@/constants/defaultValues';
-import { useForm } from "@/hooks";
-import SearchSelect from "@/components/SearchSelect/SearchSelect";
-import DateCalendar from "@/components/dateCalendar";
+import { adminRoot } from '@Constants/defaultValues';
+import { useForm } from "@Hooks";
+import SearchSelect from "@Components/SearchSelect/SearchSelect";
+import DateCalendar from "@Components/dateCalendar";
 
 const ModalNew = (props) => {
   const { data, setOpen } = props;

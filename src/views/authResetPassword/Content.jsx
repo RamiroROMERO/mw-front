@@ -3,10 +3,10 @@ import { Row, Card, CardTitle, Label, FormGroup, Button } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import { connect } from 'react-redux';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import IntlMessages from '@/helpers/IntlMessages';
-import { forgotPassword } from '@/redux/actions';
-import { NotificationManager } from '@/components/common/react-notifications';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import IntlMessages from '@Helpers/IntlMessages';
+import { forgotPassword } from '@Redux/actions';
+import { NotificationManager } from '@Components/common/react-notifications';
 
 const validateEmail = (value) => {
   let error;

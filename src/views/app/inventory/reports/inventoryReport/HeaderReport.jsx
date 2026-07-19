@@ -1,8 +1,8 @@
 import { Button, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { IntlMessages } from '@/helpers/Utils'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import DateCalendar from '@/components/dateCalendar'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { IntlMessages } from '@Helpers/Utils'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import DateCalendar from '@Components/dateCalendar'
 
 const HeaderReport = ({storeId, destinyId, productId, dateStart, dateEnd, onInputChange, listStores, listProducts, fnSearchReport, fnExportToExcel, fnPrintReport, fnOtherReport}) => {
   return (

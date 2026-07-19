@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { request } from '@/helpers/core';
-import notification from '@/containers/ui/Notifications';
-import { Checkbox } from "@/components/checkbox";
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { request } from '@Helpers/core';
+import notification from '@Containers/ui/Notifications';
+import { Checkbox } from "@Components/checkbox";
 
 const ModalEditPriv = (props) => {
   const { data, setOpen } = props;

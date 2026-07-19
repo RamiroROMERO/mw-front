@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardBody } from 'reactstrap';
-import IntlMessages from '@/helpers/IntlMessages';
+import IntlMessages from '@Helpers/IntlMessages';
 
 const IconCard = ({ className = 'mb-4', icon, title, value, fnOnclick }) => {
   return (

@@ -1,7 +1,7 @@
-import { Colxx } from '@/components/common/CustomBootstrap';
-import DateTimeCalendar from '@/components/dateTimeCalendar';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { IntlMessages } from '@/helpers/Utils';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import DateTimeCalendar from '@Components/dateTimeCalendar';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { IntlMessages } from '@Helpers/Utils';
 import { Button, Card, CardBody, Row } from 'reactstrap';
 
 const DetailMeeting = ({date, employeeId, listEmployees, onInputChange, formValidation, sendForm, fnSaveDocument, fnClear}) => {

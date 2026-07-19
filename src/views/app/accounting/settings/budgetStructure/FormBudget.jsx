@@ -1,8 +1,8 @@
 import { Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { InputField } from '@/components/inputFields'
-import { SimpleSelect } from '@/components/simpleSelect'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { InputField } from '@Components/inputFields'
+import { SimpleSelect } from '@Components/simpleSelect'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
 
 const FormBudget = ({formState, onInputChange}) => {
   const {yearNo, orderId, name, type, action, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12} = formState;

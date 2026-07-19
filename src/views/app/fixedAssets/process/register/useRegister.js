@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useForm } from '@/hooks';
-import { request } from '@/helpers/core';
+import { useForm } from '@Hooks';
+import { request } from '@Helpers/core';
 import { useEffect } from 'react';
-import { IntlMessagesFn, validFloat, validInt } from '@/helpers/Utils';
+import { IntlMessagesFn, validFloat, validInt } from '@Helpers/Utils';
 
 export const useRegister = ({ setLoading }) => {
 

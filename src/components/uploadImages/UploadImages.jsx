@@ -7,10 +7,10 @@ import {
   Row
 } from "reactstrap";
 import { useDropzone } from "react-dropzone";
-import { request } from '@/helpers/core';
+import { request } from '@Helpers/core';
 import { PATH_FILES } from '/src/helpers/pathFiles';
 import { Colxx } from '../common/CustomBootstrap';
-import IntlMessages from '@/helpers/IntlMessages';
+import IntlMessages from '@Helpers/IntlMessages';
 
 const UploadImages = ({title="", setDataImages, imagesSaved=[], fnDeleteImages=()=>{}}) => {
   const [images, setImages] = useState([]);

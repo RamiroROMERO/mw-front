@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 import { useInventory } from './useInventory';
-import { Separator } from '@/components/common/CustomBootstrap';
-import ControlPanel from '@/components/controlPanel';
-import Modal from "@/components/modal";
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { Separator } from '@Components/common/CustomBootstrap';
+import ControlPanel from '@Components/controlPanel';
+import Modal from "@Components/modal";
+import Confirmation from '@Containers/ui/confirmationMsg';
 import { useTransfersDeta } from '../transferToStores/useTransfersDeta';
 import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
 import DetailProduct from '../transferToStores/DetailProduct';

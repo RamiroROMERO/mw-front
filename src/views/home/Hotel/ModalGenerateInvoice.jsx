@@ -1,13 +1,13 @@
-import TextTitle from '@/components/textTitle/TextTitle'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { formatNumber, IntlMessages, validFloat } from '@/helpers/Utils'
+import TextTitle from '@Components/textTitle/TextTitle'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { formatNumber, IntlMessages, validFloat } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import createNotification from "@/containers/ui/Notifications";
-import { useForm } from '@/hooks'
-import { InputField } from '@/components/inputFields'
+import createNotification from "@Containers/ui/Notifications";
+import { useForm } from '@Hooks'
+import { InputField } from '@Components/inputFields'
 import { useEffect, useState } from 'react'
-import { ReactTableEdit } from '@/components/reactTableEdit'
-import { request } from '@/helpers/core';
+import { ReactTableEdit } from '@Components/reactTableEdit'
+import { request } from '@Helpers/core';
 
 const ModalGenerateInvoice = ({ data, setOpen }) => {
   const { bookingId, totalValPayments, totalValServices, listTypePayments, setListTypePayments, dataInvoice, creditDays, roomId, subtotal, billingToCompany, setLoading, setOpenModalInvoice, fnPrintInvoice } = data;

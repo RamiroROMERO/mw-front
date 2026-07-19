@@ -8,8 +8,8 @@ import {
   NavLink,
 } from 'reactstrap';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { adminRoot } from '@/constants/defaultValues';
-import { request } from '@/helpers/core';
+import { adminRoot } from '@Constants/defaultValues';
+import { request } from '@Helpers/core';
 
 const NotificationItem = ({ img, title, date, data, setOpen }) => {
   const history = useNavigate();

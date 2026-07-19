@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { Breadcrumb, BreadcrumbItem, Row } from 'reactstrap';
-import IntlMessages from '@/helpers/IntlMessages';
-import { adminRoot } from '@/constants/defaultValues';
-import { Colxx, Separator } from '@/components/common/CustomBootstrap';
+import IntlMessages from '@Helpers/IntlMessages';
+import { adminRoot } from '@Constants/defaultValues';
+import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 
 const getMenuTitle = (sub) => {
   if (`/${sub}` === adminRoot) return <IntlMessages id="menu.home" />;

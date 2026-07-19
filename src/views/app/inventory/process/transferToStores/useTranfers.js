@@ -1,9 +1,9 @@
-import DateHelper from '@/helpers/DateHelper';
-import { request, buildUrl } from '@/helpers/core';
-import { useForm } from '@/hooks'
+import DateHelper from '@Helpers/DateHelper';
+import { request, buildUrl } from '@Helpers/core';
+import { useForm } from '@Hooks'
 import { useEffect, useState } from 'react';
-import { validInt } from '@/helpers/Utils';
-import createNotification from '@/containers/ui/Notifications';
+import { validInt } from '@Helpers/Utils';
+import createNotification from '@Containers/ui/Notifications';
 
 export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onResetFormDeta }) => {
   const [listDocuments, setListDocuments] = useState([]);

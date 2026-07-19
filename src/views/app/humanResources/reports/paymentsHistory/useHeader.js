@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { request } from '@Helpers/core';
-import { useForm, useExportExcel } from '@/hooks';
+import { useForm, useExportExcel } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
 
 export const useHeader = ({ setLoading, table, setTable, enableGenerateReport }) => {

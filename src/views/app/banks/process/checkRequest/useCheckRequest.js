@@ -1,7 +1,7 @@
-import createNotification from '@/containers/ui/Notifications';
-import { formatNumber, validInt } from '@/helpers/Utils'
-import { request } from '@/helpers/core';
-import { useForm } from '@/hooks'
+import createNotification from '@Containers/ui/Notifications';
+import { formatNumber, validInt } from '@Helpers/Utils'
+import { request } from '@Helpers/core';
+import { useForm } from '@Hooks'
 import { useEffect, useState } from 'react';
 
 export const useCheckRequest = ({ setLoading, onResetFormDetail }) => {

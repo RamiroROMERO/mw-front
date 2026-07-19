@@ -1,9 +1,9 @@
 import { Row } from 'reactstrap';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import DateCalendar from '@/components/dateCalendar';
-import { InputField } from '@/components/inputFields';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import DateCalendar from '@Components/dateCalendar';
+import { InputField } from '@Components/inputFields';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { useRetentionForm } from './useRetentionForm';
 
 const RetentionForm = (props) => {

@@ -1,11 +1,11 @@
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { IntlMessages } from '@/helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
 import { useHospitalization } from './useHospitalization'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
-import { InputField } from '@/components/inputFields'
-import DateCalendar from '@/components/dateCalendar'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
+import { InputField } from '@Components/inputFields'
+import DateCalendar from '@Components/dateCalendar'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
 
 const ModalHospitalization = ({data, setOpen}) => {
   const {currentItem, setLoading, listDoctors, listReasons, listRooms, fnGetData} = data;

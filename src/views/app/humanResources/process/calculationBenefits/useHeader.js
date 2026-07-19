@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
-import { useForm } from '@/hooks';
-import { API_URLS } from '@/helpers/APIUrl';
-import { validFloat, validInt } from '@/helpers/Utils';
-import ViewPdf from '@/components/ViewPDF/ViewPdf';
+import { useForm } from '@Hooks';
+import { API_URLS } from '@Helpers/APIUrl';
+import { validFloat, validInt } from '@Helpers/Utils';
+import ViewPdf from '@Components/ViewPDF/ViewPdf';
 import ModalGeneratePayment from './ModalGeneratePayment';
 
 export const useHeader = ({ setLoading, enableGenerateReport, listEmployees, setDataBenefits, otherPayments, totalBenefits }) => {

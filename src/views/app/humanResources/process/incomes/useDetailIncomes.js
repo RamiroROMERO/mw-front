@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { request } from '@/helpers/core';
+import { request } from '@Helpers/core';
 import { formatNumber, IntlMessages } from '@Helpers/Utils'
-import notification from '@/containers/ui/Notifications';
+import notification from '@Containers/ui/Notifications';
 
 export const useDetailIncomes = ({ id, projectId, setProjectId, onResetForm, listEmployeesByProject, fnGetData, setLoading, isFormValid, date, typeId, description, value, days, hours, fnCreate, fnUpdate, setIncWeekly }) => {
 

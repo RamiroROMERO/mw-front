@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { request } from '@/helpers/core';
-import { formatNumber, IntlMessages } from '@/helpers/Utils';
-import { useForm } from '@/hooks';
+import { request } from '@Helpers/core';
+import { formatNumber, IntlMessages } from '@Helpers/Utils';
+import { useForm } from '@Hooks';
 
 export const useMonthlySalesCustomer = ({ setLoading }) => {
   const [listCustomers, setListCustomers] = useState([]);

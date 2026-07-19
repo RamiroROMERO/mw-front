@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row, Form } from "reactstrap";
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { request } from '@/helpers/core';
-import { InputField } from "@/components/inputFields";
-import { Checkbox } from "@/components/checkbox";
-import { useForm } from "@/hooks";
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { request } from '@Helpers/core';
+import { InputField } from "@Components/inputFields";
+import { Checkbox } from "@Components/checkbox";
+import { useForm } from "@Hooks";
 
 const ModalNewProduct = (props) => {
   const { setOpen, data } = props;

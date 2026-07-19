@@ -1,4 +1,4 @@
-import { request } from '@/helpers/core';
+import { request } from '@Helpers/core';
 import { useState } from 'react'
 
 export const useModalImages = ({ productCode, fnGetImages, setLoading, setOpen }) => {

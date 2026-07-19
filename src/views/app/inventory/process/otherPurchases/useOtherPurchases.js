@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useForm } from '@/hooks';
-import { request } from '@/helpers/core';
-import { formatDate, formatNumber, validInt } from '@/helpers/Utils';
+import { useForm } from '@Hooks';
+import { request } from '@Helpers/core';
+import { formatDate, formatNumber, validInt } from '@Helpers/Utils';
 
 export const useOtherPurchases = ({ setLoading }) => {
 

@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom"
 import { Row, Badge } from 'reactstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { adminRoot } from '@/constants/defaultValues';
-import { request } from '@/helpers/core';
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { adminRoot } from '@Constants/defaultValues';
+import { request } from '@Helpers/core';
 import moment from 'moment'
-import ReactTable from "@/components/reactTable";
-import Modal from "@/components/modal";
-import Confirmation from '@/containers/ui/confirmationMsg';
+import ReactTable from "@Components/reactTable";
+import Modal from "@Components/modal";
+import Confirmation from '@Containers/ui/confirmationMsg';
 import ModalNewProject from "./ModalNew";
 import ModalStatus from "./ModalStatus";
 

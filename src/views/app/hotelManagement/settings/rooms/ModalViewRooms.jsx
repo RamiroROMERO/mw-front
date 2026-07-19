@@ -1,6 +1,6 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import Gallery from '@/components/gallery/Gallery';
-import { IntlMessages } from '@/helpers/Utils';
+import { Colxx } from '@Components/common/CustomBootstrap'
+import Gallery from '@Components/gallery/Gallery';
+import { IntlMessages } from '@Helpers/Utils';
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 
 const ModalViewRooms = ({data, setOpen}) => {

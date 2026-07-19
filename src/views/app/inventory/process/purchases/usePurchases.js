@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import notification from '@/containers/ui/Notifications';
-import { useForm } from '@/hooks';
-import { request, buildUrl } from '@/helpers/core';
-import { formatDate, formatNumber, validFloat, validInt } from '@/helpers/Utils';
+import notification from '@Containers/ui/Notifications';
+import { useForm } from '@Hooks';
+import { request, buildUrl } from '@Helpers/core';
+import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import { usePurchaseFormLists } from './usePurchaseFormLists';
 import { usePurchaseOrders } from './usePurchaseOrders';
 

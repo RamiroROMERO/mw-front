@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useForm } from '@/hooks'
-import { validInt } from '@/helpers/Utils';
+import { useForm } from '@Hooks'
+import { validInt } from '@Helpers/Utils';
 import { number } from 'prop-types';
-import { request, buildUrl } from '@/helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 
 export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) => {
   const [listDocto, setListDocto] = useState([]);

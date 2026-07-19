@@ -1,9 +1,9 @@
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
-import { SimpleSelect } from '@/components/simpleSelect';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
+import { SimpleSelect } from '@Components/simpleSelect';
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { useModalNewCustomer } from './useModalNewCustomer';
-import { IntlMessagesFn } from '@/helpers/Utils';
+import { IntlMessagesFn } from '@Helpers/Utils';
 
 export const ModalNewCustomer = ({ data, setOpen }) => {
 

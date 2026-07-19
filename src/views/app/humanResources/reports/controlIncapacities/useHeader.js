@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
-import { useForm, useExportExcel } from '@/hooks';
+import { useForm, useExportExcel } from '@Hooks';
 
 export const useHeader = ({ setLoading, table, setTable, enableGenerateReport }) => {
   const { fnExport } = useExportExcel(setLoading);

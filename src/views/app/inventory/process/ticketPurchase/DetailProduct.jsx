@@ -1,10 +1,10 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
 import { Button, Row } from 'reactstrap'
-import { InputField } from '@/components/inputFields'
-import { IntlMessages } from '@/helpers/Utils'
-import { Checkbox } from '@/components/checkbox'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
+import { InputField } from '@Components/inputFields'
+import { IntlMessages } from '@Helpers/Utils'
+import { Checkbox } from '@Components/checkbox'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { useDetailProduct } from './useDetailProduct'
 
 const DetailProduct = ({idProd, productCode, nameProduct, qty, price, total, accountId, toInventory, storeId, listAccounts, onInputChangeDeta, listStores, fnViewProducts, onBulkFormDeta, onBulkForm, ticketDetail, setTicketDetail, sendFormDeta, setSendFormDeta, formValidationDeta, isFormValidDeta}) => {

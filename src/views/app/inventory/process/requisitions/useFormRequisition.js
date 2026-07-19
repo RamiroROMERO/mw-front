@@ -1,4 +1,4 @@
-import { validInt } from '@/helpers/Utils';
+import { validInt } from '@Helpers/Utils';
 import { useState } from 'react';
 
 export const useFormRequisition = ({ onBulkForm, listStores, listDestinations, requisitionDetail, noCtaAssign, idProd, onResetFormDeta }) => {

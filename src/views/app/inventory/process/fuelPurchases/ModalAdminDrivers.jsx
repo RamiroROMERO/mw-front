@@ -1,11 +1,11 @@
-import { IntlMessages } from '@/helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, Card, CardBody, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { InputField } from '@/components/inputFields'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { InputField } from '@Components/inputFields'
 import { useAdminDrivers } from './useAdminDrivers'
-import { Checkbox } from '@/components/checkbox'
-import ReactTable from '@/components/reactTable'
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { Checkbox } from '@Components/checkbox'
+import ReactTable from '@Components/reactTable'
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 const ModalAdminDrivers = ({setOpen, data}) => {
   const {setLoading, fnGetDataDrivers, dataDrivers} = data;

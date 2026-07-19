@@ -1,6 +1,6 @@
 import { Input } from 'reactstrap'
-import { IntlMessages } from '@/helpers/Utils'
-import { InputLabel } from '@/components/inputLabel/InputLabel'
+import { IntlMessages } from '@Helpers/Utils'
+import { InputLabel } from '@Components/inputLabel/InputLabel'
 
 
 // getOptionValue/getOptionLabel dejan consumir cualquier shape de opciones

@@ -1,13 +1,13 @@
 import React from 'react'
-import { CardHotel } from '@/components/cards'
-import PieChart from '@/components/charts/PieChart'
+import { CardHotel } from '@Components/cards'
+import PieChart from '@Components/charts/PieChart'
 import ReactTable from "@Components/reactTable";
-import { Colxx } from '@/components/common/CustomBootstrap'
+import { Colxx } from '@Components/common/CustomBootstrap'
 import { Card, CardBody, Row, Table } from 'reactstrap'
 import { useContentHotel } from './useContentHotel'
-import { RadioGroup } from '@/components/radioGroup';
-import DateCalendar from '@/components/dateCalendar';
-import { validInt } from '@/helpers/Utils';
+import { RadioGroup } from '@Components/radioGroup';
+import DateCalendar from '@Components/dateCalendar';
+import { validInt } from '@Helpers/Utils';
 
 const HotelAdmin = React.lazy(() => import('./HotelAdmin'));
 const HotelRecept = React.lazy(() => import('./HotelRecept'));

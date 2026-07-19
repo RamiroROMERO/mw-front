@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { adminRoot } from "@/constants/defaultValues"
+import { adminRoot } from "@Constants/defaultValues"
 
 const initialState = {
   screenTitle: "menu.app",

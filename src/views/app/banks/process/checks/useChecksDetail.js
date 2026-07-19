@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useForm } from '@/hooks';
-import { request } from '@/helpers/core';
+import { useForm } from '@Hooks';
+import { request } from '@Helpers/core';
 
 export const useChecksDetail = ({ setLoading }) => {
   const [listAccount, setListLedgerAccount] = useState([]);

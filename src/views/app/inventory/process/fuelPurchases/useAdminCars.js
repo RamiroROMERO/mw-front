@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { IntlMessages, validInt } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
-import { useForm } from '@/hooks'
+import { IntlMessages, validInt } from '@Helpers/Utils';
+import { request } from '@Helpers/core';
+import { useForm } from '@Hooks'
 
 export const useAdminCars = ({ setLoading, fnGetDataCars, dataCars }) => {
   const [sendForm, setSendForm] = useState(false);

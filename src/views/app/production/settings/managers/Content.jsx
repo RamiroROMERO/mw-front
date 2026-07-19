@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, Row, Button, Form } from 'reactstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { request } from '@/helpers/core';
-import { Checkbox } from '@/components/checkbox';
-import { InputField } from '@/components/inputFields';
-import { useForm } from '@/hooks';
-import Confirmation from '@/containers/ui/confirmationMsg';
-import ReactTable from "@/components/reactTable";
-import TableButton from "@/components/tableButtons";
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { request } from '@Helpers/core';
+import { Checkbox } from '@Components/checkbox';
+import { InputField } from '@Components/inputFields';
+import { useForm } from '@Hooks';
+import Confirmation from '@Containers/ui/confirmationMsg';
+import ReactTable from "@Components/reactTable";
+import TableButton from "@Components/tableButtons";
 
 const Managers = (props) => {
   const { setLoading } = props;
@@ -140,7 +140,7 @@ const Managers = (props) => {
 
   useEffect(() => {
     fnGetData();
-  }, []) // eslint-disable-line react-@/hooks/exhaustive-deps
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDelete, title: "alert.question.title", setCurrentItem }
 

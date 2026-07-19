@@ -1,10 +1,10 @@
 import { Card, CardBody, Row, Button, Form } from 'reactstrap';
-import { IntlMessages, validInt } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
-import { Checkbox } from '@/components/checkbox';
-import Confirmation from '@/containers/ui/confirmationMsg';
-import ReactTable from "@/components/reactTable";
+import { IntlMessages, validInt } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
+import { Checkbox } from '@Components/checkbox';
+import Confirmation from '@Containers/ui/confirmationMsg';
+import ReactTable from "@Components/reactTable";
 import { useTypeProducts } from './useTypeProducts';
 
 const TypeProducts = (props) => {

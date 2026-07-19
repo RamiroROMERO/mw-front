@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, CardHeader, CardTitle, Row, Nav, NavItem, NavLink, TabContent, TabPane, Button, Badge, Table } from 'reactstrap';
-import { InputField } from '@/components/inputFields';
+import { InputField } from '@Components/inputFields';
 import { useLocation, useNavigate } from "react-router-dom";
-import { adminRoot } from '@/constants/defaultValues';
-import { request, buildUrl } from '@/helpers/core';
-import { IntlMessages, formatNumber, validFloat, validInt } from '@/helpers/Utils';
+import { adminRoot } from '@Constants/defaultValues';
+import { request, buildUrl } from '@Helpers/core';
+import { IntlMessages, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import { CircularProgressbar } from 'react-circular-progressbar';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { useForm } from '@/hooks';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { useForm } from '@Hooks';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
 import classnames from 'classnames';
-import Dropzone from '@/components/dropzone';
-import GalleryDetail from '@/containers/pages/GalleryDetail';
-import Confirmation from '@/containers/ui/confirmationMsg';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import DateCalendar from '@/components/dateCalendar';
-import Modal from "@/components/modal";
+import Dropzone from '@Components/dropzone';
+import GalleryDetail from '@Containers/pages/GalleryDetail';
+import Confirmation from '@Containers/ui/confirmationMsg';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import DateCalendar from '@Components/dateCalendar';
+import Modal from "@Components/modal";
 import ModalGenInvoice from './ModalInvoice';
 
 const ProjectDetail = (props) => {

@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx, Separator } from '@/components/common/CustomBootstrap';
-import ControlPanel from '@/components/controlPanel';
+import { Colxx, Separator } from '@Components/common/CustomBootstrap';
+import ControlPanel from '@Components/controlPanel';
 import { useCheckRequest } from './useCheckRequest';
 import { RequestForm } from './RequestForm';
 import { useCheckRequestDetail } from './useCheckRequestDetail';
 import { RequestDetail } from './RequestDetail';
 import { FooterForm } from './FooterForm';
-import Modal from "@/components/modal";
+import Modal from "@Components/modal";
 import { ModalAccountPayable } from './ModalAccountPayable';
 import { ModalViewRequest } from './ModalViewRequest';
 import ModalChecksPayroll from './ModalChecksPayroll';

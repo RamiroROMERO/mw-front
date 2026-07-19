@@ -1,9 +1,9 @@
 import { Row, Button, Table } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { InputField } from '@/components/inputFields'
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import { IntlMessages } from "@/helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { InputField } from '@Components/inputFields'
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import { IntlMessages } from "@Helpers/Utils";
 
 export const UseDetailForm = ({ formStateDetail, onInputChangeDetail, listAccount, formValidationDetail, sendFormDetail, isFormValidDetail, setSendFormDetail }) => {
   const { idCtaCont, valueDebe, valueHaber, numberLine, referenceCode, customerId, providerId, overView } = formStateDetail;

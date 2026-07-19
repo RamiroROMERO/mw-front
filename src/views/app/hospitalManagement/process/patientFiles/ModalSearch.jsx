@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { IntlMessages } from '@/helpers/Utils'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { request, buildUrl } from '@/helpers/core'
-import ReactTable from '@/components/reactTable'
+import { IntlMessages } from '@Helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { request, buildUrl } from '@Helpers/core'
+import ReactTable from '@Components/reactTable'
 import { formatDate } from '@Helpers/Utils'
 
 const ModalSearch = ({ data, setOpen }) => {

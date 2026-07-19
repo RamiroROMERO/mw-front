@@ -1,11 +1,11 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { formatDate, formatNumber, IntlMessages, validFloat } from '@/helpers/Utils';
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { formatDate, formatNumber, IntlMessages, validFloat } from '@Helpers/Utils';
 import { Button, Label, ModalBody, ModalFooter, Row, Table, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap'
 import { useModalAddRes } from './useModalAddRes';
-import DateCalendar from '@/components/dateCalendar';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { InputField } from '@/components/inputFields';
+import DateCalendar from '@Components/dateCalendar';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { InputField } from '@Components/inputFields';
 import Confirmation from '@Containers/ui/confirmationMsg'
 import classnames from 'classnames';
 import Modal from '@Components/modal';

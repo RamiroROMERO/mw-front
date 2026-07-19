@@ -3,7 +3,7 @@ import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 import { useExportExcel } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
-import { API_URLS } from '@/helpers/APIUrl';
+import { API_URLS } from '@Helpers/APIUrl';
 
 export const usePendingBenefits = ({ setLoading, adminControl }) => {
   const { fnExport } = useExportExcel(setLoading);

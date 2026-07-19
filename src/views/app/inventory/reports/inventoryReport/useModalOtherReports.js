@@ -1,4 +1,4 @@
-import { useForm } from '@/hooks'
+import { useForm } from '@Hooks'
 
 export const useModalOtherReports = () => {
 

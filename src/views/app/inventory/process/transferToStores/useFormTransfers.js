@@ -1,4 +1,4 @@
-import { validInt } from '@/helpers/Utils';
+import { validInt } from '@Helpers/Utils';
 
 export const useFormTransfers = ({ onBulkForm, listStores }) => {
 

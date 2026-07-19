@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useForm } from '@/hooks';
-import { IntlMessages, validFloat, validInt } from '@/helpers/Utils';
-import { request, buildUrl } from '@/helpers/core';
+import { useForm } from '@Hooks';
+import { IntlMessages, validFloat, validInt } from '@Helpers/Utils';
+import { request, buildUrl } from '@Helpers/core';
 
 export const useModalAddProduct = ({ setLoading, currentItem, fnGetDataDetail, setOpen }) => {
   const [sendForm, setSendForm] = useState(false);

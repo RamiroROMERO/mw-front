@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx, Separator } from '@/components/common/CustomBootstrap';
-import ControlPanel from '@/components/controlPanel';
-import Confirmation from '@/containers/ui/confirmationMsg';
-import Modal from "@/components/modal";
+import { Colxx, Separator } from '@Components/common/CustomBootstrap';
+import ControlPanel from '@Components/controlPanel';
+import Confirmation from '@Containers/ui/confirmationMsg';
+import Modal from "@Components/modal";
 import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
 import ModalViewPurchases from './ModalViewPurchases';
 import FormPurchase from './FormPurchase';

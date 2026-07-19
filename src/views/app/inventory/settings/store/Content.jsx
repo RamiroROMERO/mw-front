@@ -1,12 +1,12 @@
 import { Card, CardBody, Row, Button, Form } from 'reactstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { Checkbox } from '@/components/checkbox';
-import { InputField } from '@/components/inputFields';
-import { SimpleSelect } from '@/components/simpleSelect';
-import ReactTable from '@/components/reactTable';
-import Confirmation from '@/containers/ui/confirmationMsg';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { Checkbox } from '@Components/checkbox';
+import { InputField } from '@Components/inputFields';
+import { SimpleSelect } from '@Components/simpleSelect';
+import ReactTable from '@Components/reactTable';
+import Confirmation from '@Containers/ui/confirmationMsg';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { useStore } from './useStore';
 

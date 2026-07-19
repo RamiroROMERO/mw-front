@@ -6,7 +6,7 @@ import { IntlMessages } from '@Helpers/Utils'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import DateCalendar from '@Components/dateCalendar'
 import { useEffect, useState } from 'react'
-import CardAnimated from '@/components/cards/CardAnimated'
+import CardAnimated from '@Components/cards/CardAnimated'
 
 const DetailProject = ({ id, customerId, code, name, description, initDate, markAssistance, status, listCustomers, onInputChange, sendForm, fnSave, fnClearInputs, formValidation }) => {
 

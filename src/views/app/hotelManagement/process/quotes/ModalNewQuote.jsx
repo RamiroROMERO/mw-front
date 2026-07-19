@@ -1,12 +1,12 @@
 import { Button, ModalBody, ModalFooter, Row, Table } from 'reactstrap'
 import { useModalNewQuote } from './useModalNewQuote'
-import { formatNumber, IntlMessages } from '@/helpers/Utils';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import DateCalendar from '@/components/dateCalendar';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { InputField } from '@/components/inputFields';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { formatNumber, IntlMessages } from '@Helpers/Utils';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import DateCalendar from '@Components/dateCalendar';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { InputField } from '@Components/inputFields';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 const ModalNewQuote = ({data, setOpen}) => {
   const {currentItem, listCustomers, listRooms, listTypesRooms, setLoading, fnGetData, fnPrintPdf} = data;

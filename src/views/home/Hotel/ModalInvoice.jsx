@@ -1,17 +1,17 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { formatDate, formatNumber, IntlMessages, validFloat } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { formatDate, formatNumber, IntlMessages, validFloat } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row, Table } from 'reactstrap'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
 import { useModalInvoice } from './useModalInvoice'
-import TextTitle from '@/components/textTitle/TextTitle'
+import TextTitle from '@Components/textTitle/TextTitle'
 import Modal from '@Components/modal';
 import ModalGenerateInvoice from './ModalGenerateInvoice'
-import { SimpleSelect } from '@/components/simpleSelect'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import { InputField } from '@/components/inputFields'
-import { RadioGroup } from '@/components/radioGroup'
-import DateCalendar from '@/components/dateCalendar'
-import { Checkbox } from '@/components/checkbox'
+import { SimpleSelect } from '@Components/simpleSelect'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import { InputField } from '@Components/inputFields'
+import { RadioGroup } from '@Components/radioGroup'
+import DateCalendar from '@Components/dateCalendar'
+import { Checkbox } from '@Components/checkbox'
 
 const ModalInvoice = ({data, setOpen}) => {
   const {dataBooking, setLoading, setOpenModalInvoice, fnPrintInvoice} = data;

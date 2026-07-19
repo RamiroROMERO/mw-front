@@ -1,4 +1,4 @@
-import { validInt } from '@/helpers/Utils';
+import { validInt } from '@Helpers/Utils';
 
 export const useFormCredit = ({ onBulkForm, setShowDetail1, setShowDetail2, setCreditNotesDetail, setCreditNotesDetail2, listProviders, setShowSpecify }) => {
 

@@ -1,4 +1,4 @@
-import { IntlMessages } from '@/helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
 
 const TextTitle = ({title="", subTitle=""}) => {
   return (

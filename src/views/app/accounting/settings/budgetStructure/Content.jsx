@@ -1,8 +1,8 @@
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 import { useBudget } from './useBudget';
-import ControlPanel from '@/components/controlPanel';
-import { Separator } from '@/components/common/CustomBootstrap';
+import ControlPanel from '@Components/controlPanel';
+import { Separator } from '@Components/common/CustomBootstrap';
 import FormBudget from './FormBudget';
 
 const BudgetStructure = (props) => {

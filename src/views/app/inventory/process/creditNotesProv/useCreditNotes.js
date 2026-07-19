@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { request } from '@/helpers/core';
-import { useForm } from '@/hooks'
-import DateHelper from '@/helpers/DateHelper';
-import { validInt } from '@/helpers/Utils';
+import { request } from '@Helpers/core';
+import { useForm } from '@Hooks'
+import DateHelper from '@Helpers/DateHelper';
+import { validInt } from '@Helpers/Utils';
 
 export const useCreditNotes = ({ setLoading, setCreditNotesDetail, setCreditNotesDetail2 }) => {
   const [listDocuments, setListDocuments] = useState([]);

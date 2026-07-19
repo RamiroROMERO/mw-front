@@ -8,7 +8,7 @@ import HeaderPayroll from '../resumePayroll/HeaderPayroll';
 import DetailTable from '../resumePayroll/DetailTable';
 import FooterPayroll from '../resumePayroll/FooterPayroll';
 import ModalTypeSheet from '@Components/modalTypeSheet';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 const FourteenthMonth = ({setLoading, screenControl, adminControl}) => {
   const typePayroll = 3;

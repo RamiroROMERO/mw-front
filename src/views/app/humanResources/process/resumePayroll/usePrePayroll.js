@@ -1,6 +1,6 @@
-import { request, buildUrl } from '@/helpers/core';
-import { formatDate, formatNumber, IntlMessages, validFloat, validInt } from '@/helpers/Utils';
-import { useForm } from '@/hooks';
+import { request, buildUrl } from '@Helpers/core';
+import { formatDate, formatNumber, IntlMessages, validFloat, validInt } from '@Helpers/Utils';
+import { useForm } from '@Hooks';
 import { useState } from 'react'
 import ModalViewDetailPay from './ModalViewDetailPay';
 

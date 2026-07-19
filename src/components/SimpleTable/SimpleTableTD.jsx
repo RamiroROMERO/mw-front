@@ -1,5 +1,5 @@
-import DateHelper from '@/helpers/DateHelper'
-import { formatNumber } from '@/helpers/Utils'
+import DateHelper from '@Helpers/DateHelper'
+import { formatNumber } from '@Helpers/Utils'
 
 const fieldTypes = ['date', 'number', 'currency']
 

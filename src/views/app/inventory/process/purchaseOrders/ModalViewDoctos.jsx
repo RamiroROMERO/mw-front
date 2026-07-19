@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { IntlMessages } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import ReactTable from '@/components/reactTable'
-import Modal from "@/components/modal";
+import ReactTable from '@Components/reactTable'
+import Modal from "@Components/modal";
 import ModalPassAdmin from './ModalPassAdmin'
 
 const ModalViewDoctos = ({data, setOpen}) => {

@@ -1,4 +1,4 @@
-import { useForm } from '@/hooks'
+import { useForm } from '@Hooks'
 import { useState } from 'react';
 
 export const usePurchaseMemo = () => {

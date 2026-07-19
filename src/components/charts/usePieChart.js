@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { colorsChart } from './config';
-import { IntlMessages } from '@/helpers/Utils';
+import { IntlMessages } from '@Helpers/Utils';
 
 export const usePieChart = ({ title, labels, dataChart }) => {
   const [data, setData] = useState({ datasets: [] });

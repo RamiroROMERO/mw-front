@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader, CardTitle, Row } from 'reactstrap';
-import IntlMessages from '@/helpers/IntlMessages';
-import { Colxx, Separator } from '@/components/common/CustomBootstrap';
-import Breadcrumb from '@/containers/navs/Breadcrumb';
+import IntlMessages from '@Helpers/IntlMessages';
+import { Colxx, Separator } from '@Components/common/CustomBootstrap';
+import Breadcrumb from '@Containers/navs/Breadcrumb';
 
 const BankReports = (props) => {
   return (

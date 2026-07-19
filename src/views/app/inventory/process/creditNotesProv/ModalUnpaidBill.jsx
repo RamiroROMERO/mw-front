@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { ReactTableEdit } from '@/components/reactTableEdit';
-import { IntlMessages } from '@/helpers/Utils';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { ReactTableEdit } from '@Components/reactTableEdit';
+import { IntlMessages } from '@Helpers/Utils';
 
 const ModalUnpaidBill = ({setOpen, data}) => {
 

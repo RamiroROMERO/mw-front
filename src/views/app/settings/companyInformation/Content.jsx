@@ -1,8 +1,8 @@
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import ReactTable from "@/components/reactTable";
-import Confirmation from '@/containers/ui/confirmationMsg';
-import Modal from "@/components/modal";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import ReactTable from "@Components/reactTable";
+import Confirmation from '@Containers/ui/confirmationMsg';
+import Modal from "@Components/modal";
 import { InternalOptionsModal } from './InternalOptionsModal';
 import { MailOptionsModal } from './MailOptionsModal';
 import { useCompanyInf } from './useCompanyInf';

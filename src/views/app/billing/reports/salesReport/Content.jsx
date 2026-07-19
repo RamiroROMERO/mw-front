@@ -1,12 +1,12 @@
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 import { useSalesReport } from './useSalesReport';
 import HeaderReport from './HeaderReport';
-import ReactTable from '@/components/reactTable'
-import TotalsReport from '@/views/app/inventory/reports/purchaseReport/TotalsReport';
+import ReactTable from '@Components/reactTable'
+import TotalsReport from '@Views/app/inventory/reports/purchaseReport/TotalsReport';
 import Modal from '@Components/modal';
-import { InputField } from '@/components/inputFields';
-import { formatNumber } from '@/helpers/Utils';
+import { InputField } from '@Components/inputFields';
+import { formatNumber } from '@Helpers/Utils';
 import ModalSummary from './ModalSummary';
 
 const SalesReport = ({ setLoading }) => {

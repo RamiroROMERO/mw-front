@@ -1,7 +1,7 @@
 import { useFooter } from './useFooter'
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
 
 const Footer = ({totalPayments, setOtherPayments, setTotalBenefits, totalBenefits}) => {
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useForm } from '@/hooks';
-import { IntlMessagesFn, validInt } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
+import { useForm } from '@Hooks';
+import { IntlMessagesFn, validInt } from '@Helpers/Utils';
+import { request } from '@Helpers/core';
 
 export const useTypes = ({ setLoading }) => {
   const [tableData, setTableData] = useState([]);

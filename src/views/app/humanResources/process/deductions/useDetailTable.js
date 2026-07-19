@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { IntlMessages, formatDate } from '@Helpers/Utils'
-import notification from '@/containers/ui/Notifications';
+import notification from '@Containers/ui/Notifications';
 
 const useDetailTable = ({dataDeductions, setBulkForm, setOpenMsgQuestion, fnDelete}) => {
 

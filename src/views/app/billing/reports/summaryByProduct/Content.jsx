@@ -1,9 +1,9 @@
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import ReactTable from '@/components/reactTable'
+import { Colxx } from '@Components/common/CustomBootstrap';
+import ReactTable from '@Components/reactTable'
 import { useSummaryByProduct } from './useSummaryByProduct'
 import HeaderReport from './HeaderReport';
-import TotalsReport from '@/views/app/inventory/reports/purchaseReport/TotalsReport';
+import TotalsReport from '@Views/app/inventory/reports/purchaseReport/TotalsReport';
 
 const Content = ({ setLoading }) => {
 

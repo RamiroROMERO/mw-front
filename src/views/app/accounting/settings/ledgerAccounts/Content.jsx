@@ -1,13 +1,13 @@
 import { Card, CardBody, Row, Button } from 'reactstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
-import { Checkbox } from '@/components/checkbox';
-import { SimpleSelect } from '@/components/simpleSelect';
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
+import { Checkbox } from '@Components/checkbox';
+import { SimpleSelect } from '@Components/simpleSelect';
 // import InputMask from 'react-input-mask';
-import Confirmation from '@/containers/ui/confirmationMsg';
-import ReactTable from "@/components/reactTable";
-import DateCalendar from '@/components/dateCalendar';
+import Confirmation from '@Containers/ui/confirmationMsg';
+import ReactTable from "@Components/reactTable";
+import DateCalendar from '@Components/dateCalendar';
 import { useContent } from './useContent';
 
 const LedgerAccounts = (props) => {

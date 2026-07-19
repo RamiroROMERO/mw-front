@@ -1,4 +1,4 @@
-import { validFloat, validInt } from '@/helpers/Utils';
+import { validFloat, validInt } from '@Helpers/Utils';
 import { useState } from 'react'
 
 export const useDetailProduct = ({ onBulkFormDeta, idProd, productCode, nameProduct, price, qty, total, accountId, toInventory, storeId, ticketDetail, setTicketDetail, onBulkForm, setSendFormDeta, isFormValidDeta }) => {

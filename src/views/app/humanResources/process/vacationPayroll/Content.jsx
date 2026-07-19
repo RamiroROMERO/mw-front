@@ -9,7 +9,7 @@ import DetailTable from '../resumePayroll/DetailTable';
 import FooterPayroll from '../resumePayroll/FooterPayroll';
 import ModalTypeSheet from '@Components/modalTypeSheet';
 import ModalSelectEmployees from './ModalSelectEmployees';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 const VacationPayroll = ({setLoading, screenControl, adminControl}) => {
   const typePayroll = 4;

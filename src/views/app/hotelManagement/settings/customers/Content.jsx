@@ -3,7 +3,7 @@ import Modal from '@Components/modal';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import { useCustomer } from './useCustomer'
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 import ModalNewCust from "./ModalNewCust";
 
 const Content = ({setLoading, screenControl}) => {

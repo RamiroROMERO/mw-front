@@ -1,15 +1,15 @@
 import { Card, CardBody, Row, Form, Table, Button } from 'reactstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx, Separator } from '@/components/common/CustomBootstrap';
-import { Checkbox } from '@/components/checkbox';
-import { SimpleSelect } from '@/components/simpleSelect';
-import { InputField } from '@/components/inputFields';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import ControlPanel from '@/components/controlPanel';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx, Separator } from '@Components/common/CustomBootstrap';
+import { Checkbox } from '@Components/checkbox';
+import { SimpleSelect } from '@Components/simpleSelect';
+import { InputField } from '@Components/inputFields';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import ControlPanel from '@Components/controlPanel';
+import Confirmation from '@Containers/ui/confirmationMsg';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
-import DateCalendar from '@/components/dateCalendar';
-import Modal from "@/components/modal";
+import DateCalendar from '@Components/dateCalendar';
+import Modal from "@Components/modal";
 import { useProviders } from './useProviders';
 
 const Providers = (props) => {

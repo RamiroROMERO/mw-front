@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { request } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
-import createNotification from '@/containers/ui/Notifications';
+import createNotification from '@Containers/ui/Notifications';
 
 export const useCompanyInf = ({ setLoading }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);

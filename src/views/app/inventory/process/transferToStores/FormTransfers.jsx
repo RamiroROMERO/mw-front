@@ -1,9 +1,9 @@
 import { Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import DateCalendar from '@/components/dateCalendar'
-import { InputField } from '@/components/inputFields'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import DateCalendar from '@Components/dateCalendar'
+import { InputField } from '@Components/inputFields'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
 import { useFormTransfers } from './useFormTransfers'
 
 const FormTransfers = ({documentId, documentCode, sourceStoreId, noCtaOrigin, assignStoreId, noCtaAssign, date, code, listDocuments, listStores, onInputChange, formValidation, sendForm, listAccounts, onBulkForm}) => {

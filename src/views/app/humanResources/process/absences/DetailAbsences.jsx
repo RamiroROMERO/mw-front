@@ -1,8 +1,8 @@
-import { Colxx } from '@/components/common/CustomBootstrap';
-import DateCalendar from '@/components/dateCalendar';
-import { InputField } from '@/components/inputFields';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { IntlMessages } from '@/helpers/Utils';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import DateCalendar from '@Components/dateCalendar';
+import { InputField } from '@Components/inputFields';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { IntlMessages } from '@Helpers/Utils';
 import { Button, Card, CardBody, Row } from 'reactstrap';
 
 const DetailAbsences = ({date, dateStart, dateEnd, employeeId, notes, listEmployees, onInputChange, formValidation, sendForm, fnSaveDocument, fnClear}) => {

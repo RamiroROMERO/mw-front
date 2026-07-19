@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row, Form } from "reactstrap";
-import { IntlMessages, validInt } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from "@/components/inputFields";
-import { request } from '@/helpers/core';
-import { useForm } from "@/hooks";
-import SearchSelect from "@/components/SearchSelect/SearchSelect";
+import { IntlMessages, validInt } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from "@Components/inputFields";
+import { request } from '@Helpers/core';
+import { useForm } from "@Hooks";
+import SearchSelect from "@Components/SearchSelect/SearchSelect";
 import moment from 'moment'
 
 const ModalAddMaterial = (props) => {

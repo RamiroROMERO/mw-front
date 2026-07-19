@@ -1,6 +1,6 @@
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { IntlMessages } from "@/helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { IntlMessages } from "@Helpers/Utils";
 
 const Modal = (props) => {
   const { data, setOpen } = props;

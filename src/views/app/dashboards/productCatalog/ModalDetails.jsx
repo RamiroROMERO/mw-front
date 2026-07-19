@@ -1,6 +1,6 @@
 import { ModalBody, ModalFooter, Row, Table } from 'reactstrap'
-import { formatNumber, IntlMessages, validFloat } from '@/helpers/Utils';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { formatNumber, IntlMessages, validFloat } from '@Helpers/Utils';
+import { Colxx } from '@Components/common/CustomBootstrap';
 
 export const ModalDetails = (props) => {
 

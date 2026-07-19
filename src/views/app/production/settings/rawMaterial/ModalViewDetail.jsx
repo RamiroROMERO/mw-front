@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import { InputField } from "@/components/inputFields";
-import ReactTable from "@/components/reactTable";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { IntlMessages } from "@Helpers/Utils";
+import { InputField } from "@Components/inputFields";
+import ReactTable from "@Components/reactTable";
 
 const ModalViewDetail = (props) => {
   const { data, setOpen } = props;

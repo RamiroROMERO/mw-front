@@ -1,4 +1,4 @@
-import { validFloat } from '@/helpers/Utils';
+import { validFloat } from '@Helpers/Utils';
 
 export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, total, lotCode, dateOut, sourceStoreId, assignStoreId, setBulkFormDeta, transferDetail, setTransferDetail, setSendFormDeta, isFormValidDeta, setSendForm, isFormValid, noCtaOrigin, noCtaAssign }) => {
 

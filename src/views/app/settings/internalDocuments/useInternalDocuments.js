@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { request } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
-import notification from '@/containers/ui/Notifications';
+import notification from '@Containers/ui/Notifications';
 
 export const useInternalDocuments = ({ setLoading }) => {
   const [listComp, setListComp] = useState([]);

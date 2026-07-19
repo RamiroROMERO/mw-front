@@ -1,4 +1,4 @@
-import { validFloat } from '@/helpers/Utils';
+import { validFloat } from '@Helpers/Utils';
 
 export const useInvoiceDetail = ({ onBulkForm, valTax, valDiscount, valSubtotal }) => {
 

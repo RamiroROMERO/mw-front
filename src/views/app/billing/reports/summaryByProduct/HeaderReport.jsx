@@ -1,6 +1,6 @@
-import { Colxx } from '@/components/common/CustomBootstrap';
-import DateCalendar from '@/components/dateCalendar';
-import { IntlMessages } from '@/helpers/Utils';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import DateCalendar from '@Components/dateCalendar';
+import { IntlMessages } from '@Helpers/Utils';
 import { Button, Row } from 'reactstrap';
 
 const HeaderReport = ({formState, onInputChange, fnSearchReport }) => {

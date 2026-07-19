@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row, Label, Input } from "reactstrap";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { IntlMessages } from "@/helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { IntlMessages } from "@Helpers/Utils";
 import { useHistory } from "react-router-dom";
-import { adminRoot } from '@/constants/defaultValues';
+import { adminRoot } from '@Constants/defaultValues';
 import moment from 'moment'
 
 const ModalEdit = (props) => {

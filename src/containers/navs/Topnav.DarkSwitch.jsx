@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Switch from 'rc-switch';
 import 'rc-switch/assets/index.css';
 import { Tooltip } from 'reactstrap';
-import { getCurrentColor, setCurrentColor } from '@/helpers/Utils';
+import { getCurrentColor, setCurrentColor } from '@Helpers/Utils';
 
 const TopnavDarkSwitch = () => {
   const [switchChecked, setSwitchChecked] = useState(false);

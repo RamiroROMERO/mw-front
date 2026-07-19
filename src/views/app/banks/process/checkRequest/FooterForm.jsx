@@ -1,9 +1,9 @@
 import { Row } from "reactstrap";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from "@/components/inputFields";
-import { formatNumber } from '@/helpers/Utils';
-import { ContainerWithLabel } from "@/components/containerWithLabel";
-import DateCalendar from '@/components/dateCalendar';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from "@Components/inputFields";
+import { formatNumber } from '@Helpers/Utils';
+import { ContainerWithLabel } from "@Components/containerWithLabel";
+import DateCalendar from '@Components/dateCalendar';
 
 export const FooterForm = ({ formStateIndex, onInputChangeIndex, formValidationIndex, sendForm }) => {
 

@@ -3,8 +3,8 @@ import { IntlMessages, formatDate, formatNumber } from '@Helpers/Utils';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { Row } from 'reactstrap';
 import ReactTable from '@Components/reactTable'
-import { request } from '@/helpers/core';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { request } from '@Helpers/core';
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 const DetailTable = ({id, dataPayDetail, setLoading, fnViewPaymentDetail}) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);

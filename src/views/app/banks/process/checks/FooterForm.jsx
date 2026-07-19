@@ -1,7 +1,7 @@
 import { Row } from "reactstrap";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from "@/components/inputFields";
-import SearchSelect from "@/components/SearchSelect/SearchSelect";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from "@Components/inputFields";
+import SearchSelect from "@Components/SearchSelect/SearchSelect";
 
 export const FooterForm = ({ formStateIndex, onInputChangeIndex, listProvider, listCustomer }) => {
   const { totalValue, total, customerId, providerId, diference } = formStateIndex;

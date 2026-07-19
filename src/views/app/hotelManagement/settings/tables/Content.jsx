@@ -1,4 +1,4 @@
-import Gallery from '@/components/uploadImages/UploadImages'
+import Gallery from '@Components/uploadImages/UploadImages'
 
 const Content = () => {
   return (

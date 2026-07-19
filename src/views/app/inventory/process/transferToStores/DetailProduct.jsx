@@ -1,9 +1,9 @@
 import { Button, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
-import { InputField } from '@/components/inputFields'
-import { IntlMessages, formatNumber } from '@/helpers/Utils'
-import DateCalendar from '@/components/dateCalendar'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
+import { InputField } from '@Components/inputFields'
+import { IntlMessages, formatNumber } from '@Helpers/Utils'
+import DateCalendar from '@Components/dateCalendar'
 import { useDetailProduct } from './useDetailProduct'
 
 const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, dateOut, sourceStoreId, assignStoreId, total, onInputChangeDeta, fnViewProducts, setBulkFormDeta, transferDetail, setTransferDetail, sendFormDeta,setSendFormDeta, isFormValidDeta, formValidationDeta, setSendForm, isFormValid, noCtaOrigin, noCtaAssign}) => {

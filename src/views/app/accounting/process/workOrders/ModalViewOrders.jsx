@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import ReactTable from '@/components/reactTable';
-import { IntlMessages } from '@/helpers/Utils';
-import { request, buildUrl } from '@/helpers/core';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import ReactTable from '@Components/reactTable';
+import { IntlMessages } from '@Helpers/Utils';
+import { request, buildUrl } from '@Helpers/core';
 
 const ModalViewOrders = ({ data, setOpen }) => {
   const { setListDocuments, dataWorkOrders, setBulkForm, setLoading } = data;

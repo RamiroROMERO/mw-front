@@ -1,12 +1,12 @@
-import { IntlMessages } from '@/helpers/Utils';
+import { IntlMessages } from '@Helpers/Utils';
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
 import { useModalNewCust } from './useModalNewCust';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { RadioGroup } from '@/components/radioGroup';
-import { Checkbox } from '@/components/checkbox';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { RadioGroup } from '@Components/radioGroup';
+import { Checkbox } from '@Components/checkbox';
 
 const ModalNewCust = ({data, setOpen}) => {
   const { listCountries, listCompanies, listGenders, listTypeTax, currentItem, setLoading, setListMunicipalities, fnGetData} = data;

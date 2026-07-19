@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useForm } from '@/hooks';
-import { request } from '@/helpers/core';
-import { IntlMessages, validInt } from '@/helpers/Utils';
+import { useForm } from '@Hooks';
+import { request } from '@Helpers/core';
+import { IntlMessages, validInt } from '@Helpers/Utils';
 
 export const useHospitalization = ({ currentItem, setLoading, fnGetData, setOpen }) => {
   const [sendForm, setSendForm] = useState(false);

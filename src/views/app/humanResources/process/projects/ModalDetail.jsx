@@ -7,7 +7,7 @@ import DateCalendar from '@Components/dateCalendar';
 import ReactTable from '@Components/reactTable';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import { InputField } from '@Components/inputFields';
-import { Checkbox } from '@/components/checkbox';
+import { Checkbox } from '@Components/checkbox';
 
 const ModalDetail = ({data, setOpen}) => {
   const {currentItem, listWorkShifts, listEmployees, setLoading, fnGetProjects, screenControl} = data;

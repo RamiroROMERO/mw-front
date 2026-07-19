@@ -1,11 +1,11 @@
 import { Button, Card, CardBody, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { IntlMessages } from '@/helpers/Utils'
-import { Colxx } from '@/components/common/CustomBootstrap'
+import { IntlMessages } from '@Helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
 import useModalOtherReports from './useModalOtherReports'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import DateCalendar from '@/components/dateCalendar'
-import ReactTable from '@/components/reactTable'
-import { InputField } from '@/components/inputFields'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import DateCalendar from '@Components/dateCalendar'
+import ReactTable from '@Components/reactTable'
+import { InputField } from '@Components/inputFields'
 
 const ModalOtherReports = ({setOpen, data}) => {
   const {listCustomers, listStores, listProducts, listSellers} = data;

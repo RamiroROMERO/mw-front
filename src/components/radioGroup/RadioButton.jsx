@@ -1,5 +1,5 @@
 import { Input, Label } from 'reactstrap'
-import { IntlMessages, validInt } from '@/helpers/Utils'
+import { IntlMessages, validInt } from '@Helpers/Utils'
 
 export const RadioButton = ({ id, name, label, value, onChange, divLength, ...rest }) => {
 

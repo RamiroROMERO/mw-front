@@ -1,6 +1,6 @@
-import { request } from '@/helpers/core';
-import { validFloat } from '@/helpers/Utils';
-import { useForm } from '@/hooks';
+import { request } from '@Helpers/core';
+import { validFloat } from '@Helpers/Utils';
+import { useForm } from '@Hooks';
 import { useEffect, useState } from 'react';
 
 export const useModalNewRooms = ({ currentItem, setLoading, listServices, dataRoomServices, fnGetData, setOpen, fnGetRoomImages }) => {

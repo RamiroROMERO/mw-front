@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, Row, Button } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { IntlMessages, validInt } from "@/helpers/Utils";
-import { request } from '@/helpers/core';
-import { SimpleSelect } from '@/components/simpleSelect';
-import { InputField } from '@/components/inputFields';
-import { Checkbox } from '@/components/checkbox';
-import { RadioGroup } from '@/components/radioGroup';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import { useForm } from '@/hooks';
-import ReactTable from "@/components/reactTable";
-import TableButton from "@/components/tableButtons";
-import notification from '@/containers/ui/Notifications';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { IntlMessages, validInt } from "@Helpers/Utils";
+import { request } from '@Helpers/core';
+import { SimpleSelect } from '@Components/simpleSelect';
+import { InputField } from '@Components/inputFields';
+import { Checkbox } from '@Components/checkbox';
+import { RadioGroup } from '@Components/radioGroup';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import { useForm } from '@Hooks';
+import ReactTable from "@Components/reactTable";
+import TableButton from "@Components/tableButtons";
+import notification from '@Containers/ui/Notifications';
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 const ItemsCodes = (props) => {
   const { setLoading } = props;

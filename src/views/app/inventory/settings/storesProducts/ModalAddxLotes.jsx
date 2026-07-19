@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { IntlMessages, validInt } from '@/helpers/Utils'
-import { request } from '@/helpers/core'
-import { SimpleSelect } from '@/components/simpleSelect'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { IntlMessages, validInt } from '@Helpers/Utils'
+import { request } from '@Helpers/core'
+import { SimpleSelect } from '@Components/simpleSelect'
 
 const ModalAddxLotes = ({ setOpen, data }) => {
   const { setLoading, listWarehouse } = data;

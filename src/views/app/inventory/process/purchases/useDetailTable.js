@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { validFloat } from '@/helpers/Utils';
+import { validFloat } from '@Helpers/Utils';
 
 const useDetailTable = ({ purchaseDetail, setPurchaseDetail, setBulkForm, setBulkFormDeta }) => {
 

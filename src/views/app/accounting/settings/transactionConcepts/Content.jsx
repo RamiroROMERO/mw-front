@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Card, CardBody, Button, Row } from 'reactstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { useForm } from '@/hooks';
-import { InputField } from '@/components/inputFields';
-import { Checkbox } from '@/components/checkbox';
-import { request } from '@/helpers/core';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import ReactTable from '@/components/reactTable';
-import TableButton from '@/components/tableButtons';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { useForm } from '@Hooks';
+import { InputField } from '@Components/inputFields';
+import { Checkbox } from '@Components/checkbox';
+import { request } from '@Helpers/core';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import ReactTable from '@Components/reactTable';
+import TableButton from '@Components/tableButtons';
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 const TransactionConcepts = (props) => {
   const { setLoading } = props;

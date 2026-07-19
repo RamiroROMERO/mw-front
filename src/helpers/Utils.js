@@ -6,8 +6,8 @@ import {
   localeOptions,
   themeColorStorageKey,
   themeRadiusStorageKey,
-} from '@/constants/defaultValues';
-import DateHelper from '@/helpers/DateHelper';
+} from '@Constants/defaultValues';
+import DateHelper from '@Helpers/DateHelper';
 // xlsx solo se usa para leer archivos importados por el usuario (ver getExcelData
 // más abajo); se carga on-demand para no inflar el chunk inicial del bundle.
 

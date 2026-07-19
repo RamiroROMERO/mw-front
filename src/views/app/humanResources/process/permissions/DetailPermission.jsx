@@ -7,7 +7,7 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import UploadFile from '@Components/uploadFile'
 import DateCalendar from '@Components/dateCalendar'
 import DateTimeCalendar from '@Components/dateTimeCalendar'
-import { validInt } from '@/helpers/Utils'
+import { validInt } from '@Helpers/Utils'
 
 const DetailPermission = ({employeeId, date, typeId, applicationTypeId, dateStart, dateEnd, phoneContact, reason, description,
   notes, authorizedById, filePath, withPayment, setFilePath, status, listImmediateBoss, listEmployees, onInputChange,

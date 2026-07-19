@@ -1,7 +1,7 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
-import { InputField } from '@/components/inputFields'
-import { formatNumber, IntlMessages, validFloat, validInt } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
+import { InputField } from '@Components/inputFields'
+import { formatNumber, IntlMessages, validFloat, validInt } from '@Helpers/Utils'
 import { Button, Row } from 'reactstrap'
 
 const DetailProduct = ({productCode, nameProduct, qty, price, subTotal, percentDiscount, discount, percentTax, tax, total,

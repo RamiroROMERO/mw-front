@@ -1,8 +1,8 @@
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { Separator } from '@/components/common/CustomBootstrap';
-import ControlPanel from '@/components/controlPanel';
-import Modal from "@/components/modal";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { Separator } from '@Components/common/CustomBootstrap';
+import ControlPanel from '@Components/controlPanel';
+import Modal from "@Components/modal";
 import FilterStock from './FilterStock';
 import DetailStock from './DetailStock';
 import { useStock } from './useStock';

@@ -1,6 +1,6 @@
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import Modal from "@/components/modal";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import Modal from "@Components/modal";
 import { useInventoryMemo } from './useInventoryMemo';
 import HeaderReport from './HeaderReport';
 import TableReport from './TableReport';

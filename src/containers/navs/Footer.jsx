@@ -1,5 +1,5 @@
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 
 const Footer = () => {
   const fullYear = new Date().getFullYear();

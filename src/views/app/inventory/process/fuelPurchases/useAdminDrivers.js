@@ -1,6 +1,6 @@
-import { IntlMessages } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
-import { useForm } from '@/hooks'
+import { IntlMessages } from '@Helpers/Utils';
+import { request } from '@Helpers/core';
+import { useForm } from '@Hooks'
 import { useEffect, useState } from 'react';
 
 export const useAdminDrivers = ({ setLoading, fnGetDataDrivers, dataDrivers }) => {

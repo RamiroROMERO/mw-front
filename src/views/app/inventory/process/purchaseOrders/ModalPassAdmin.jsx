@@ -1,7 +1,7 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { InputField } from '@/components/inputFields'
-import { IntlMessages } from '@/helpers/Utils'
-import { useForm } from '@/hooks'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { InputField } from '@Components/inputFields'
+import { IntlMessages } from '@Helpers/Utils'
+import { useForm } from '@Hooks'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 
 const ModalPassAdmin = ({setOpen}) => {

@@ -1,4 +1,4 @@
-import { IntlMessages } from '@/helpers/Utils';
+import { IntlMessages } from '@Helpers/Utils';
 import { HeaderItem } from './HeaderItem'
 
 export const HeaderTable = ({columns=[]}) => {

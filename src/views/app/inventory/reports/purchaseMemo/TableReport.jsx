@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { IntlMessages } from '@/helpers/Utils';
-import ReactTable from '@/components/reactTable'
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { IntlMessages } from '@Helpers/Utils';
+import ReactTable from '@Components/reactTable'
 
 const TableReport = ({dataPurchases}) => {
 

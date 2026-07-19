@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { request } from '@/helpers/core';
-import { formatDate, formatNumber, IntlMessages } from '@/helpers/Utils';
-import { useForm } from '@/hooks';
+import { request } from '@Helpers/core';
+import { formatDate, formatNumber, IntlMessages } from '@Helpers/Utils';
+import { useForm } from '@Hooks';
 
 export const useSummaryByProduct = ({ setLoading }) => {
   const [totals, setTotals] = useState({ qty: 0, subtotal: 0, discount: 0, tax: 0, total: 0 });

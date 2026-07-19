@@ -1,5 +1,5 @@
-import { IntlMessages } from '@/helpers/Utils';
-import { useForm } from '@/hooks'
+import { IntlMessages } from '@Helpers/Utils';
+import { useForm } from '@Hooks'
 import { useState } from 'react';
 
 const useModalOtherReports = () => {

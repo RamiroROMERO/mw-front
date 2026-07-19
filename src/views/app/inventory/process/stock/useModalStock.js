@@ -1,5 +1,5 @@
-import { validInt } from '@/helpers/Utils';
-import { useForm } from '@/hooks';
+import { validInt } from '@Helpers/Utils';
+import { useForm } from '@Hooks';
 import { useState } from 'react';
 
 export const useModalStock = ({ listProducts }) => {

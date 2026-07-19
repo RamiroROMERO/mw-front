@@ -1,4 +1,4 @@
-import { validInt } from '@/helpers/Utils';
+import { validInt } from '@Helpers/Utils';
 import { useEffect, useState } from 'react'
 
 export const useOrderDetail = ({ onBulkForm, listProducts, listCars }) => {

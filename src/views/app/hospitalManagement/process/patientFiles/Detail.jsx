@@ -1,11 +1,11 @@
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import { InputField } from '@/components/inputFields';
-import { SimpleSelect } from '@/components/simpleSelect';
-import DateCalendar from '@/components/dateCalendar';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import ReactTable from "@/components/reactTable";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import { InputField } from '@Components/inputFields';
+import { SimpleSelect } from '@Components/simpleSelect';
+import DateCalendar from '@Components/dateCalendar';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import ReactTable from "@Components/reactTable";
 
 const Detail = ({formState, onInputChange, onStateChange, formValidation, sendForm, listNationalities, listGenders, listCivilStatus, listStates, listCities, tableEvents}) => {
 

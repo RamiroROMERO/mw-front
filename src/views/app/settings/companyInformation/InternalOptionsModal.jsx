@@ -1,8 +1,8 @@
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { IntlMessages } from '@/helpers/Utils'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { Checkbox } from '@/components/checkbox'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
+import { IntlMessages } from '@Helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { Checkbox } from '@Components/checkbox'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
 import { useInternalOptions } from './useInternalOptions'
 
 export const InternalOptionsModal = ({ data, setOpen }) => {

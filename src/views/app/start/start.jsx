@@ -3,13 +3,13 @@ import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import { Card, CardBody, Row, CardTitle, Table } from "reactstrap";
 import { Calendar, momentLocalizer } from 'react-big-calendar';
-import { IntlMessages, getDirection } from "@/helpers/Utils";
-import { Colxx } from "@/components/common/CustomBootstrap";
-import Breadcrumb from "@/containers/navs/Breadcrumb";
-import { request } from "@/helpers/core";
-import CalendarToolbar from '@/components/CalendarToolbar';
+import { IntlMessages, getDirection } from "@Helpers/Utils";
+import { Colxx } from "@Components/common/CustomBootstrap";
+import Breadcrumb from "@Containers/navs/Breadcrumb";
+import { request } from "@Helpers/core";
+import CalendarToolbar from '@Components/CalendarToolbar';
 import 'moment/locale/es';
-import Modal from "@/components/modal";
+import Modal from "@Components/modal";
 import ModalViewProject from "./ModalViewProject";
 
 const Start = ({ match, loaded }) => {

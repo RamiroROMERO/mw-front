@@ -1,4 +1,4 @@
-import { IntlMessages } from '@/helpers/Utils';
+import { IntlMessages } from '@Helpers/Utils';
 import { useState } from 'react'
 import { Button, Input, Label } from 'reactstrap'
 

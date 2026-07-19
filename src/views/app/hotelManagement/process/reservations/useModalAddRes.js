@@ -1,9 +1,9 @@
-import { request, buildUrl } from '@/helpers/core';
-import { validFloat, validInt } from '@/helpers/Utils';
-import { useForm } from '@/hooks';
-import DateHelper from '@/helpers/DateHelper';
+import { request, buildUrl } from '@Helpers/core';
+import { validFloat, validInt } from '@Helpers/Utils';
+import { useForm } from '@Hooks';
+import DateHelper from '@Helpers/DateHelper';
 import { useEffect, useState } from 'react'
-import createNotification from "@/containers/ui/Notifications";
+import createNotification from "@Containers/ui/Notifications";
 
 export const useModalAddRes = ({ currentReservation, setLoading, currentPage = null, search = null, fnGetData = null, setOpen, listCustomers, listRooms, fnGetRooms }) => {
   const [activeTab, setActiveTab] = useState('1');

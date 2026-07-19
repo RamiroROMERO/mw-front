@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button, Card, CardBody, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 
 const UploadFile = ({onFileChange, fnViewFile, icon, nameFile, showButtonView}) => {
   const hiddenFileInput = React.useRef(null);

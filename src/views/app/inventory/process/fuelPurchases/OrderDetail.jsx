@@ -1,9 +1,9 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
-import { InputField } from '@/components/inputFields'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
+import { InputField } from '@Components/inputFields'
 import { Row } from 'reactstrap'
-import DateCalendar from '@/components/dateCalendar'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
+import DateCalendar from '@Components/dateCalendar'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { useOrderDetail } from './useOrderDetail'
 
 const OrderDetail = ({formState, listCars, listDrivers, listStores, listProducts, onInputChange, onBulkForm, formValidation, sendForm}) => {

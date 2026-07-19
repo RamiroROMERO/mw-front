@@ -1,11 +1,11 @@
 import { Card, CardBody, Row, Button, Form } from 'reactstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
-import { Checkbox } from '@/components/checkbox';
-import Confirmation from '@/containers/ui/confirmationMsg';
-import ReactTable from "@/components/reactTable";
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
+import { Checkbox } from '@Components/checkbox';
+import Confirmation from '@Containers/ui/confirmationMsg';
+import ReactTable from "@Components/reactTable";
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { useConversionFactors } from './useConversionFactors';
 
 const ConversionFactors = (props) => {

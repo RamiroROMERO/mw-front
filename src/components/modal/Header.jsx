@@ -1,4 +1,4 @@
-import { IntlMessagesFn } from "@/helpers/Utils";
+import { IntlMessagesFn } from "@Helpers/Utils";
 import { ModalHeader } from "reactstrap";
 
 const Header = ({ title, valueTitle, fnClose }) => {

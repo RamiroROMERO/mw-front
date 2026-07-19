@@ -1,7 +1,7 @@
 import { Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { InputField } from '@/components/inputFields'
-import { formatNumber } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { InputField } from '@Components/inputFields'
+import { formatNumber } from '@Helpers/Utils'
 
 const TotalsReport = ({ subtotal, exoneratedValue, exemptValue, taxedValue, discount, tax, fleteValue, otherChargesValue, total, costValue, saleDiff, month_1, month_2, month_3, month_4, month_5, month_6, month_7, month_8, month_9, month_10, month_11, month_12 }) => {
   return (

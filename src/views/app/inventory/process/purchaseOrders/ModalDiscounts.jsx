@@ -1,9 +1,9 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { RadioGroup } from '@/components/radioGroup'
-import { IntlMessages, validFloat } from '@/helpers/Utils'
-import { useForm } from '@/hooks'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { RadioGroup } from '@Components/radioGroup'
+import { IntlMessages, validFloat } from '@Helpers/Utils'
+import { useForm } from '@Hooks'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { InputField } from '@/components/inputFields'
+import { InputField } from '@Components/inputFields'
 
 const ModalDiscounts = ({data, setOpen}) => {
   const {orderDetail, setOrderDetail, setBulkForm} = data;

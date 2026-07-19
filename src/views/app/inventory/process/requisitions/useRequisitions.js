@@ -1,9 +1,9 @@
-import { useForm } from '@/hooks'
+import { useForm } from '@Hooks'
 import { useState, useEffect } from 'react';
-import { request, buildUrl } from '@/helpers/core';
-import { validInt } from '@/helpers/Utils';
-import DateHelper from '@/helpers/DateHelper';
-import createNotification from '@/containers/ui/Notifications';
+import { request, buildUrl } from '@Helpers/core';
+import { validInt } from '@Helpers/Utils';
+import DateHelper from '@Helpers/DateHelper';
+import createNotification from '@Containers/ui/Notifications';
 
 export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisitionDetail, setLoading }) => {
   const [listDocuments, setListDocuments] = useState([]);

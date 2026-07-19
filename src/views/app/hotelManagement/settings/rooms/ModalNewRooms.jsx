@@ -1,11 +1,11 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { IntlMessages } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { useModalNewRooms } from './useModalNewRooms';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { InputField } from '@/components/inputFields';
-import UploadImages from '@/components/uploadImages/UploadImages';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { InputField } from '@Components/inputFields';
+import UploadImages from '@Components/uploadImages/UploadImages';
 import Confirmation from '@Containers/ui/confirmationMsg';
 
 const ModalNewRooms = ({data, setOpen}) => {

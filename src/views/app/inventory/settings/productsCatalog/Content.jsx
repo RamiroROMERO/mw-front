@@ -1,16 +1,16 @@
 import { Card, CardBody, TabContent, TabPane, Nav, NavItem, NavLink, Row, Table, Button } from 'reactstrap';
-import { IntlMessages, validInt } from "@/helpers/Utils";
-import { Colxx, Separator } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
-import { Checkbox } from '@/components/checkbox';
-import { RadioGroup } from '@/components/radioGroup';
-import { SimpleSelect } from '@/components/simpleSelect';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import ControlPanel from '@/components/controlPanel';
+import { IntlMessages, validInt } from "@Helpers/Utils";
+import { Colxx, Separator } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
+import { Checkbox } from '@Components/checkbox';
+import { RadioGroup } from '@Components/radioGroup';
+import { SimpleSelect } from '@Components/simpleSelect';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import ControlPanel from '@Components/controlPanel';
 import classnames from 'classnames';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import Confirmation from '@Containers/ui/confirmationMsg';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
-import Modal from "@/components/modal";
+import Modal from "@Components/modal";
 import useProductsCatalog from './useProductsCatalog';
 
 const ProductsCatalog = (props) => {

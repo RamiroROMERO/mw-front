@@ -1,5 +1,5 @@
-import { request, buildUrl } from '@/helpers/core';
-import { useForm } from '@/hooks'
+import { request, buildUrl } from '@Helpers/core';
+import { useForm } from '@Hooks'
 import { useState } from 'react'
 
 export const useRetentionDetail = ({ setLoading, setRetentionDetail }) => {

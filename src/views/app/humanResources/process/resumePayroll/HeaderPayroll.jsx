@@ -4,7 +4,7 @@ import { InputField } from '@Components/inputFields'
 import { validInt } from '@Helpers/Utils';
 import DateCalendar from '@Components/dateCalendar'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
-import { Checkbox } from '@/components/checkbox';
+import { Checkbox } from '@Components/checkbox';
 
 const HeaderPayroll = ({typePayroll, date, customerId, projectId, dateStart, dateEnd, isConfidential, notes, listCustomers, listProjects, listProjectsFilter, setListProjectsFilter, onInputChange, onBulkForm, formValidation, sendForm, enableConfidentialPayroll}) => {
 

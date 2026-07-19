@@ -1,6 +1,6 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import { IntlMessages } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, Card, CardBody, Row } from 'reactstrap'
 
 const Header = ({employeeId, listEmployees, onEmployeeId, fnGetData}) => {

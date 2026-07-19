@@ -1,5 +1,5 @@
 import { Table } from 'reactstrap'
-import { IntlMessages } from '@/helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
 import { SimpleTableTD } from './SimpleTableTD'
 
 export const SimpleTable = ({ columns = [], data = [] }) => {

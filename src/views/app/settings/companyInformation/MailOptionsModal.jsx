@@ -1,10 +1,10 @@
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
-import { InputField } from '@/components/inputFields'
-import { IntlMessages } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
+import { InputField } from '@Components/inputFields'
+import { IntlMessages } from '@Helpers/Utils'
 import { useMailOptionsModal } from './useMailOptionsModal'
-import { Checkbox } from '@/components/checkbox'
+import { Checkbox } from '@Components/checkbox'
 
 export const MailOptionsModal = ({ data, setOpen }) => {
 

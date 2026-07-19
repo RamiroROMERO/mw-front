@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import notification from '@Containers/ui/Notifications';
-import { request } from '@/helpers/core';
-import { useForm } from '@/hooks';
-import { formatNumber, IntlMessages } from '@/helpers/Utils';
+import { request } from '@Helpers/core';
+import { useForm } from '@Hooks';
+import { formatNumber, IntlMessages } from '@Helpers/Utils';
 
 export const useModalSummary = ({ setLoading }) => {
 

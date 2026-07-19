@@ -1,8 +1,8 @@
 import { Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { InputField } from '@/components/inputFields'
-import DateCalendar from '@/components/dateCalendar'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { InputField } from '@Components/inputFields'
+import DateCalendar from '@Components/dateCalendar'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
 
 const FormTicket = ({documentId, providerId, paymentTypeId, date, purchaseOrder, listDocuments, listProviders, listPaymentTypes, onInputChange, sendForm, formValidation}) => {
 

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row, Card, CardBody } from "reactstrap";
 
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { IntlMessages, formatNumber } from "@/helpers/Utils";
-import ReactTable from "@/components/reactTable";
-import { useForm } from "@/hooks";
-import { InputField } from "@/components/inputFields";
-import DateCalendar from '@/components/dateCalendar';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { IntlMessages, formatNumber } from "@Helpers/Utils";
+import ReactTable from "@Components/reactTable";
+import { useForm } from "@Hooks";
+import { InputField } from "@Components/inputFields";
+import DateCalendar from '@Components/dateCalendar';
 
 
 const ModalChecksPayroll = (props) => {

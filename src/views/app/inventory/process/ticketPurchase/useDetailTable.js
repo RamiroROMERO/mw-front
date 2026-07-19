@@ -1,4 +1,4 @@
-import { validFloat } from '@/helpers/Utils';
+import { validFloat } from '@Helpers/Utils';
 import { useState } from 'react'
 
 export const useDetailTable = ({ ticketDetail, setTicketDetail, onBulkForm, onBulkFormDeta }) => {

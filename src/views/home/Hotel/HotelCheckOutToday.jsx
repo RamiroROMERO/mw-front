@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react'
 import { Badge, Button, Card, CardBody, CardTitle, Col, Row, Table } from 'reactstrap'
 import DateCalendar from '@Components/dateCalendar';
 import { IntlMessages, validInt } from '@Helpers/Utils';
-import { request, buildUrl } from '@/helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import Modal from '@Components/modal';
 import ModalInvoice from './ModalInvoice';
-import ViewPdf from '@/components/ViewPDF/ViewPdf';
-import DateHelper from '@/helpers/DateHelper';
+import ViewPdf from '@Components/ViewPDF/ViewPdf';
+import DateHelper from '@Helpers/DateHelper';
 
 export const HotelCheckOutToday = ({ setLoading }) => {
 

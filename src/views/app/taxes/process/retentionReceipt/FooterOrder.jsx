@@ -1,7 +1,7 @@
 import { Row } from "reactstrap";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from "@/components/inputFields";
-import { formatNumber } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from "@Components/inputFields";
+import { formatNumber } from '@Helpers/Utils'
 
 const FooterOrder = ({ total, onInputChangeIndex, setBulkFormIndex }) => {
   return (

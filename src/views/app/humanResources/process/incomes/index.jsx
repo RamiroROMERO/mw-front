@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { onTitleEdit, onBreadcrumbEdit } from '@Redux/actions';
 import { adminRoot } from '@Constants/defaultValues';
 import Breadcrumb from '@Containers/navs/Breadcrumb';
-import { getPrivilegeData } from '@/helpers/Utils';
+import { getPrivilegeData } from '@Helpers/Utils';
 
 const Content = React.lazy(() =>
   import('./Content')

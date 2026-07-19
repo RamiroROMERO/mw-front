@@ -1,7 +1,7 @@
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import Modal from "@/components/modal";
-import ReactTable from '@/components/reactTable'
+import { Colxx } from '@Components/common/CustomBootstrap';
+import Modal from "@Components/modal";
+import ReactTable from '@Components/reactTable'
 import HeaderReport from './HeaderReport';
 import TotalsReport from './TotalsReport';
 import ModalOtherReports from './ModalOtherReports';

@@ -1,6 +1,6 @@
-import { request } from "@/helpers/core";
-import { IntlMessages, validInt } from "@/helpers/Utils";
-import { useForm } from "@/hooks";
+import { request } from "@Helpers/core";
+import { IntlMessages, validInt } from "@Helpers/Utils";
+import { useForm } from "@Hooks";
 import { useEffect, useState } from "react";
 
 

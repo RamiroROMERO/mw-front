@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { request } from '@/helpers/core';
-import { InputField } from "@/components/inputFields";
-import { useForm } from "@/hooks";
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { request } from '@Helpers/core';
+import { InputField } from "@Components/inputFields";
+import { useForm } from "@Hooks";
 // import InputMask from 'react-input-mask';
-import DateCalendar from "@/components/dateCalendar";
+import DateCalendar from "@Components/dateCalendar";
 
 const ModalBillingData = (props) => {
   const { data, setOpen } = props;

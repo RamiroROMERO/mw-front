@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { IntlMessages } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import ReactTable from '@/components/reactTable'
+import ReactTable from '@Components/reactTable'
 
 const ModalViewPurchases = ({setOpen, data}) => {
   const {dataPurchases, setBulkForm, fnGetDataDetail} = data;

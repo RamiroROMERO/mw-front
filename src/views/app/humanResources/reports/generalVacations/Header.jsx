@@ -2,7 +2,7 @@ import { Button, Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from '@Helpers/Utils';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
-import DateCalendar from '@/components/dateCalendar';
+import DateCalendar from '@Components/dateCalendar';
 import { useHeader } from './useHeader';
 
 const Header = ({listEmployees, setLoading, table, setTable, enableGenerateReport}) => {

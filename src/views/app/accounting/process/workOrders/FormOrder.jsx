@@ -1,8 +1,8 @@
-import { Colxx } from "@/components/common/CustomBootstrap";
+import { Colxx } from "@Components/common/CustomBootstrap";
 import { Form, Row } from "reactstrap";
-import { InputField } from "@/components/inputFields";
-import DateCalendar from "@/components/dateCalendar";
-import SearchSelect from "@/components/SearchSelect/SearchSelect";
+import { InputField } from "@Components/inputFields";
+import DateCalendar from "@Components/dateCalendar";
+import SearchSelect from "@Components/SearchSelect/SearchSelect";
 
 const FormOrder = (props) =>{
   const {dateIn, dateOut, description, description2, idCtaCont, listLedgerAccount, onInputChange, formValidation, sendForm} = props;

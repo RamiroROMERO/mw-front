@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom"
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import IconCard from '@/components/cards/IconCard';
-import { adminRoot } from '@/constants/defaultValues';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import IconCard from '@Components/cards/IconCard';
+import { adminRoot } from '@Constants/defaultValues';
 
 const Banks = (props) => {
   const history = useNavigate();

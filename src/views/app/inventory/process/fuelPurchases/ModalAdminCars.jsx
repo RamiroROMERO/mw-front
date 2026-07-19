@@ -1,12 +1,12 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { IntlMessages } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, Card, CardBody, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { InputField } from '@/components/inputFields'
+import { InputField } from '@Components/inputFields'
 import { useAdminCars } from './useAdminCars'
-import { RadioGroup } from '@/components/radioGroup'
-import { Checkbox } from '@/components/checkbox'
-import ReactTable from '@/components/reactTable'
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { RadioGroup } from '@Components/radioGroup'
+import { Checkbox } from '@Components/checkbox'
+import ReactTable from '@Components/reactTable'
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 const ModalAdminCars = ({setOpen, data}) => {
   const {setLoading, fnGetDataCars, dataCars} = data;

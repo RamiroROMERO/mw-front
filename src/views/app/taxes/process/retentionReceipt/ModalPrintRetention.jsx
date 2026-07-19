@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { IntlMessages } from '@/helpers/Utils'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { RadioGroup } from '@/components/radioGroup'
-import { request } from '@/helpers/core'
+import { IntlMessages } from '@Helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { RadioGroup } from '@Components/radioGroup'
+import { request } from '@Helpers/core'
 
 const ModalPrintRetention = ({ setOpen, data }) => {
   const { id, setLoading } = data;

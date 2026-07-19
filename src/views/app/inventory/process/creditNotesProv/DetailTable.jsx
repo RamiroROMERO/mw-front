@@ -1,10 +1,10 @@
 import { Button, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
+import { Colxx } from '@Components/common/CustomBootstrap'
 import { useDetailTable } from './useDetailTable'
-import { IntlMessages } from '@/helpers/Utils'
-import { InputField } from '@/components/inputFields'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import { ReactTableEdit } from '@/components/reactTableEdit'
+import { IntlMessages } from '@Helpers/Utils'
+import { InputField } from '@Components/inputFields'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import { ReactTableEdit } from '@Components/reactTableEdit'
 
 const DetailTable = ({percentDiscount, accountId, invoiceNum, subtotal, discount, tax, total, creditNotesDetail, setCreditNotesDetail, creditNotesDetail2, setCreditNotesDetail2, listAccounts, onInputChange, showDetail1, showDetail2, setOpenModalUnpaidBill, sendForm, formValidation}) => {
 

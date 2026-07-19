@@ -1,8 +1,8 @@
 import { Row, Button, Table } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
-import { IntlMessages, formatNumber } from "@/helpers/Utils";
-import { ContainerWithLabel } from '@/components/containerWithLabel';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
+import { IntlMessages, formatNumber } from "@Helpers/Utils";
+import { ContainerWithLabel } from '@Components/containerWithLabel';
 
 export const RequestDetail = (props) => {
 

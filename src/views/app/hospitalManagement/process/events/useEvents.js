@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { IntlMessages, formatDate } from '@/helpers/Utils';
-import { request, buildUrl } from '@/helpers/core';
+import { IntlMessages, formatDate } from '@Helpers/Utils';
+import { request, buildUrl } from '@Helpers/core';
 
 export const useEvents = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});

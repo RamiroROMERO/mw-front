@@ -1,8 +1,8 @@
-import ReactTable from '@/components/reactTable'
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { formatNumber, IntlMessages } from '@/helpers/Utils'
+import ReactTable from '@Components/reactTable'
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { formatNumber, IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { InputField } from '@/components/inputFields';
+import { InputField } from '@Components/inputFields';
 
 const ModalSummary = ({setOpen, data}) => {
   const {tableSummary, totalsSummary} = data;

@@ -1,6 +1,6 @@
-import { request } from '@/helpers/core';
-import { validFloat } from '@/helpers/Utils';
-import { useForm } from '@/hooks';
+import { request } from '@Helpers/core';
+import { validFloat } from '@Helpers/Utils';
+import { useForm } from '@Hooks';
 import { useState } from 'react'
 
 export const useModalGeneratePayment = ({employeeId, totalBenefits, setLoading, setOpen}) => {

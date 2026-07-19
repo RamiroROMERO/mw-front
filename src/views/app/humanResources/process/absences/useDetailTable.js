@@ -1,4 +1,4 @@
-import { formatDate, IntlMessages } from '@/helpers/Utils';
+import { formatDate, IntlMessages } from '@Helpers/Utils';
 import { useEffect, useState } from 'react'
 
 export const useDetailTable = ({ dataAbsences, onBulkForm, setOpenMsgQuestion, fnDelete }) => {

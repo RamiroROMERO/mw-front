@@ -1,6 +1,6 @@
 import { Button, Label, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { IntlMessages } from '@/helpers/Utils'
-import { Colxx } from '@/components/common/CustomBootstrap'
+import { IntlMessages } from '@Helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
 
 const ModalApplyAccount = ({setOpen, data}) => {
   const {fnApplyAll, fnApplyCurrent} = data;

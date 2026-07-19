@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, Row, Button } from 'reactstrap';
-import { IntlMessages, formatDate } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { request, buildUrl } from '@/helpers/core';
-import ReactTable from "@/components/reactTable";
-import TableButton from "@/components/tableButtons";
-import Modal from "@/components/modal";
+import { IntlMessages, formatDate } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { request, buildUrl } from '@Helpers/core';
+import ReactTable from "@Components/reactTable";
+import TableButton from "@Components/tableButtons";
+import Modal from "@Components/modal";
 import ModalNewProduct from './ModalNewProduct';
 import ModalAddMaterial from './ModalAddMaterial';
 import ModalViewDetail from './ModalViewDetail';
@@ -140,7 +140,7 @@ const RawMaterial = (props) => {
   useEffect(() => {
     fnGetData();
     fnGetProducts();
-  }, []) // eslint-disable-line react-@/hooks/exhaustive-deps
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const propsToModalNew = {
     ModalContent: ModalNewProduct,

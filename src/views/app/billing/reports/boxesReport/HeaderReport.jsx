@@ -1,8 +1,8 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
+import { Colxx } from '@Components/common/CustomBootstrap'
 import { Button, Row } from 'reactstrap';
-import DateCalendar from '@/components/dateCalendar';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { IntlMessages } from '@/helpers/Utils';
+import DateCalendar from '@Components/dateCalendar';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { IntlMessages } from '@Helpers/Utils';
 
 const HeaderReport = ({formState, onInputChange, listCashiers, listPaymentMethods, listCashRegisters, fnSearchReport, fnViewSummary}) => {
 

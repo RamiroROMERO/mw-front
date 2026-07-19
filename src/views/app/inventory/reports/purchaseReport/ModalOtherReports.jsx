@@ -1,11 +1,11 @@
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { IntlMessages } from '@/helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
 import { useModalOtherReports } from './useModalOtherReports'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import DateCalendar from '@/components/dateCalendar'
-import { Checkbox } from '@/components/checkbox'
-import { RadioGroup } from '@/components/radioGroup'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import DateCalendar from '@Components/dateCalendar'
+import { Checkbox } from '@Components/checkbox'
+import { RadioGroup } from '@Components/radioGroup'
 
 const ModalOtherReports = ({setOpen, data}) => {
   const {listProviders, listStores, listProducts} = data;

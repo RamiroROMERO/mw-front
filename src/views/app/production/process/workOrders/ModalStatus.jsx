@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
-import { IntlMessages, validInt } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { request } from '@/helpers/core';
-import { SimpleSelect } from "@/components/simpleSelect";
-import { InputField } from "@/components/inputFields";
-import { useForm } from "@/hooks";
-import SearchSelect from "@/components/SearchSelect/SearchSelect";
+import { IntlMessages, validInt } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { request } from '@Helpers/core';
+import { SimpleSelect } from "@Components/simpleSelect";
+import { InputField } from "@Components/inputFields";
+import { useForm } from "@Hooks";
+import SearchSelect from "@Components/SearchSelect/SearchSelect";
 
 const ModalChangeStatus = (props) => {
   const { data, setOpen } = props;

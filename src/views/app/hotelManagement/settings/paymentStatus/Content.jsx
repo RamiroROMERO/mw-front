@@ -1,7 +1,7 @@
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ReactTable from "@Components/reactTable";
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 import { usePaymentStatus } from './usePaymentStatus';
 import { useDetailTable } from './useDetailTable';
 import Detail from './Detail';

@@ -1,13 +1,13 @@
-import CardTotals from '@/components/cardTotals/CardTotals';
-import BarChart from '@/components/charts/BarChart';
-import DoughnutChart from '@/components/charts/DoughnutChart';
-import LineChart from '@/components/charts/LineChart';
-import PieChart from '@/components/charts/PieChart';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import CardTotals from '@Components/cardTotals/CardTotals';
+import BarChart from '@Components/charts/BarChart';
+import DoughnutChart from '@Components/charts/DoughnutChart';
+import LineChart from '@Components/charts/LineChart';
+import PieChart from '@Components/charts/PieChart';
+import { Colxx } from '@Components/common/CustomBootstrap';
 import { Card, CardBody, Row, Table } from 'reactstrap';
 import { useSales } from './useSales';
 import HeaderDash from './HeaderDash';
-import { formatNumber } from '@/helpers/Utils';
+import { formatNumber } from '@Helpers/Utils';
 
 const Content = ({ setLoading }) => {
 

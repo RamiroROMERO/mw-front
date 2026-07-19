@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { IntlMessages } from '@/helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { RadioGroup } from '@/components/radioGroup'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { RadioGroup } from '@Components/radioGroup'
 
 const ModalPrintMovement = ({setOpen}) => {
   const [typePrint, setTypePrint] = useState(0);

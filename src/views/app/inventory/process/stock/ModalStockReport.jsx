@@ -1,12 +1,12 @@
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { IntlMessages } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { IntlMessages } from '@Helpers/Utils'
 import { useModalStock } from './useModalStock'
-import { InputField } from '@/components/inputFields'
-import { RadioGroup } from '@/components/radioGroup'
-import { Checkbox } from '@/components/checkbox'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import DateCalendar from '@/components/dateCalendar'
+import { InputField } from '@Components/inputFields'
+import { RadioGroup } from '@Components/radioGroup'
+import { Checkbox } from '@Components/checkbox'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import DateCalendar from '@Components/dateCalendar'
 
 const ModalStockReport = ({setOpen, data}) => {
   const {listStores, listProducts} = data;

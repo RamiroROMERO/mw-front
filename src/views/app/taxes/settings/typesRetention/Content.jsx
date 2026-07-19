@@ -1,11 +1,11 @@
-import { IntlMessages } from "@/helpers/Utils";
+import { IntlMessages } from "@Helpers/Utils";
 import { Card, CardBody, Button, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
-import { Checkbox } from '@/components/checkbox';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import ReactTable from '@/components/reactTable';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
+import { Checkbox } from '@Components/checkbox';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import ReactTable from '@Components/reactTable';
+import Confirmation from '@Containers/ui/confirmationMsg';
 import { useTypeRetentions } from './useTypeRetentions';
 
 const TypesRetention = (props) => {

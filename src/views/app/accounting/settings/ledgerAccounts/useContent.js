@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { IntlMessages } from "@/helpers/Utils";
-import { validInt } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
-import { useForm } from '@/hooks';
+import { IntlMessages } from "@Helpers/Utils";
+import { validInt } from '@Helpers/Utils';
+import { request } from '@Helpers/core';
+import { useForm } from '@Hooks';
 
 export const useContent = ({ setLoading }) => {
 

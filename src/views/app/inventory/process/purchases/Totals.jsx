@@ -1,6 +1,6 @@
 import { Row, Table } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { formatNumber, IntlMessages } from '@/helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { formatNumber, IntlMessages } from '@Helpers/Utils'
 
 const Totals = ({valueSubtotal, valueDiscount, exent, exonera, gravado, valueTax, freight, otherCharges, valueTotal, bonification}) => {
   return (

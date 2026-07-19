@@ -2,9 +2,9 @@ import { useDeductionDefaults } from './useDeductionDefaults';
 import { useDetailTable } from './useDetailTable';
 import { Row } from 'reactstrap';
 import ReactTable from "@Components/reactTable";
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 import Detail from './Detail';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 const Content = ({setLoading, screenControl}) => {
 

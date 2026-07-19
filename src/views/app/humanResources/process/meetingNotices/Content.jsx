@@ -1,8 +1,8 @@
 import { useMeetingNotices } from './useMeetingNotices';
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 import Modal from '@Components/modal';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import Confirmation from '@Containers/ui/confirmationMsg';
 import ReactTable from "@Components/reactTable";
 import DetailMeeting from './DetailMeeting';
 import { useDetailTable } from './useDetailTable';

@@ -1,5 +1,5 @@
-import { request } from '@/helpers/core';
-import { fnGetRandomColor } from '@/helpers/Utils';
+import { request } from '@Helpers/core';
+import { fnGetRandomColor } from '@Helpers/Utils';
 import { useEffect, useRef, useState } from 'react'
 
 export const useBirthdaysMonth = ({ setLoading }) => {

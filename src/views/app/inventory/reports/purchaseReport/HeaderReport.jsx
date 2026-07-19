@@ -1,9 +1,9 @@
 import { Button, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import DateCalendar from '@/components/dateCalendar'
-import { IntlMessages } from '@/helpers/Utils'
-import { Checkbox } from '@/components/checkbox'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import DateCalendar from '@Components/dateCalendar'
+import { IntlMessages } from '@Helpers/Utils'
+import { Checkbox } from '@Components/checkbox'
 
 const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, isBonus, listProviders, listStores, listProducts, onInputChange, fnSearchReport}) => {
 

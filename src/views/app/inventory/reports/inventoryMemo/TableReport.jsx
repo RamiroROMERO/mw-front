@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import ReactTable from '@/components/reactTable'
-import { IntlMessages } from '@/helpers/Utils';
+import ReactTable from '@Components/reactTable'
+import { IntlMessages } from '@Helpers/Utils';
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 
 const TableReport = ({dataMovements}) => {
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ModalDetails } from './ModalDetails';
-import { request, buildUrl } from '@/helpers/core';
-import { validFloat } from '@/helpers/Utils';
+import { request, buildUrl } from '@Helpers/core';
+import { validFloat } from '@Helpers/Utils';
 
 export const useContent = ({ setLoading }) => {
 

@@ -1,5 +1,5 @@
-import { Colxx } from "@/components/common/CustomBootstrap";
-import { formatNumber, IntlMessages, validFloat } from "@/helpers/Utils";
+import { Colxx } from "@Components/common/CustomBootstrap";
+import { formatNumber, IntlMessages, validFloat } from "@Helpers/Utils";
 import { useEffect, useState } from "react";
 import { Row, Table } from "reactstrap";
 

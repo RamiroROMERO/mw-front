@@ -7,7 +7,7 @@ import Confirmation from '@Containers/ui/confirmationMsg';
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import DateCalendar from '@Components/dateCalendar'
 import { useModalProjects } from './useModalProjects'
-import { Checkbox } from '@/components/checkbox'
+import { Checkbox } from '@Components/checkbox'
 
 const ModalProjects = ({data, setOpen}) => {
   const {employeeId, turnId, listCustomers, listProjects, setLoading, fnGetProjects, fnGetProjectEmployee} = data;

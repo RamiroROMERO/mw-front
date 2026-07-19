@@ -1,10 +1,10 @@
 import { Row, Button, Table } from 'reactstrap';
-import { IntlMessages, formatNumber } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { IntlMessages, formatNumber } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import Confirmation from '@Containers/ui/confirmationMsg';
 import { useDetailForm } from './useDetailForm';
 
 const RetentionDetail = (props) => {

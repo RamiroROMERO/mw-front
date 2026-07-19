@@ -1,6 +1,6 @@
-import ReactTable from '@/components/reactTable'
+import ReactTable from '@Components/reactTable'
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 import { usePurchaseForProvider } from '../purchaseForProvider/usePurchaseForProvider';
 import HeaderReport from '../purchaseForProvider/HeaderReport';
 import TotalsReport from '../purchaseReport/TotalsReport';

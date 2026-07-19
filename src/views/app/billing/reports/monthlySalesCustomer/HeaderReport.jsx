@@ -1,8 +1,8 @@
-import { Colxx } from '@/components/common/CustomBootstrap';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { IntlMessages } from '@/helpers/Utils';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { IntlMessages } from '@Helpers/Utils';
 import { Button, Row } from 'reactstrap';
-import { InputField } from '@/components/inputFields';
+import { InputField } from '@Components/inputFields';
 
 const HeaderReport = ({formState, onInputChange, listCustomers, fnSearchReport }) => {
   const { customerId, noYear } = formState;

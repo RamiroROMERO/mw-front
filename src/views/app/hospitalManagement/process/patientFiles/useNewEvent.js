@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useForm } from '@/hooks';
-import { validInt } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
-import notification from '@/containers/ui/Notifications';
+import { useForm } from '@Hooks';
+import { validInt } from '@Helpers/Utils';
+import { request } from '@Helpers/core';
+import notification from '@Containers/ui/Notifications';
 
 export const useNewEvent = ({ IntlMessages, idPatientFile, setLoading, fnGetEvents, setOpen, currentItem, listPatients, codeFile }) => {
   const [sendForm, setSendForm] = useState(false);

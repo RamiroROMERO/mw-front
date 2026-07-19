@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { IntlMessages } from '@/helpers/Utils';
-import { request, buildUrl } from '@/helpers/core';
+import { IntlMessages } from '@Helpers/Utils';
+import { request, buildUrl } from '@Helpers/core';
 
 export const useModalDetail = ({ setLoading, currentItem }) => {
   const [openModalAddProduct, setOpenModalAddProduct] = useState(false);

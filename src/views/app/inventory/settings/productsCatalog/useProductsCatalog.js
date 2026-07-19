@@ -1,5 +1,5 @@
-import { validInt } from "@/helpers/Utils";
-import { request, buildUrl } from "@/helpers/core";
+import { validInt } from "@Helpers/Utils";
+import { request, buildUrl } from "@Helpers/core";
 import { useEffect, useState } from "react";
 import ModalViewProd from "./ModalViewProd";
 import ModalDistProducts from "./ModalDistProducts";

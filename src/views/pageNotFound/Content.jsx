@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom'
 import { Row, Card, CardTitle, } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import IntlMessages from '@/helpers/IntlMessages';
-import { adminRoot } from '@/constants/defaultValues';
+import { Colxx } from '@Components/common/CustomBootstrap'
+import IntlMessages from '@Helpers/IntlMessages';
+import { adminRoot } from '@Constants/defaultValues';
 
 const Content = (props) => {
   return (

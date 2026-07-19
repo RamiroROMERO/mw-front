@@ -1,5 +1,5 @@
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
-import DateCalendar from '@/components/dateCalendar';
+import DateCalendar from '@Components/dateCalendar';
 import { Button, Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from '@Helpers/Utils';

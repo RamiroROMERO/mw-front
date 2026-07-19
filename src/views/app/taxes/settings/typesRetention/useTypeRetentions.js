@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { IntlMessages, validFloat } from "@/helpers/Utils";
+import { IntlMessages, validFloat } from "@Helpers/Utils";
 import { useForm } from '@Hooks/useForms';
 import { request } from '@Helpers/core';
 

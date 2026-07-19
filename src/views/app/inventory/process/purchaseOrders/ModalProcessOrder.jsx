@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { InputField } from '@/components/inputFields'
-import { RadioGroup } from '@/components/radioGroup'
-import { ReactTableEdit } from "@/components/reactTableEdit";
-import { IntlMessages, validFloat, validInt } from '@/helpers/Utils'
-import { useForm } from '@/hooks'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { InputField } from '@Components/inputFields'
+import { RadioGroup } from '@Components/radioGroup'
+import { ReactTableEdit } from "@Components/reactTableEdit";
+import { IntlMessages, validFloat, validInt } from '@Helpers/Utils'
+import { useForm } from '@Hooks'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 // import ReactInputMask from 'react-input-mask';
-import DateCalendar from '@/components/dateCalendar'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import { request } from '@/helpers/core';
+import DateCalendar from '@Components/dateCalendar'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import { request } from '@Helpers/core';
 
 const ModalProcessOrder = ({ data, setOpen }) => {
   const { orderId, providerId, paymentTypeId, nameRequire, description, listTypeDocument, listProviders, listLedgerAccounts,

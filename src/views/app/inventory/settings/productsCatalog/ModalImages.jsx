@@ -1,7 +1,7 @@
-import { Colxx } from '@/components/common/CustomBootstrap';
-import UploadImages from '@/components/uploadImages/UploadImages';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import UploadImages from '@Components/uploadImages/UploadImages';
 import Confirmation from '@Containers/ui/confirmationMsg';
-import { IntlMessages } from '@/helpers/Utils';
+import { IntlMessages } from '@Helpers/Utils';
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
 import { useModalImages } from './useModalImages';
 

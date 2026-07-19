@@ -2,7 +2,7 @@ import ReactTable from "@Components/reactTable";
 import Modal from '@Components/modal';
 import { Row } from 'reactstrap';
 import { useRooms } from './useRooms'
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 import ModalNewRooms from './ModalNewRooms';
 import ModalViewRooms from "./ModalViewRooms";
 

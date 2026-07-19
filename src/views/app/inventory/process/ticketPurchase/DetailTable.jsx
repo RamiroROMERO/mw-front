@@ -1,8 +1,8 @@
-import Confirmation from '@/containers/ui/confirmationMsg';
-import { Colxx } from '@/components/common/CustomBootstrap'
+import Confirmation from '@Containers/ui/confirmationMsg';
+import { Colxx } from '@Components/common/CustomBootstrap'
 import { Button, Row, Table } from 'reactstrap'
-import { formatNumber, IntlMessages } from '@/helpers/Utils'
-import { InputField } from '@/components/inputFields'
+import { formatNumber, IntlMessages } from '@Helpers/Utils'
+import { InputField } from '@Components/inputFields'
 import { useDetailTable } from './useDetailTable'
 
 const DetailTable = ({valueTotal, notes, onInputChange, ticketDetail, setTicketDetail, onBulkForm, onBulkFormDeta, sendForm, formValidation}) => {

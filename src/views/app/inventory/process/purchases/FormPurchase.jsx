@@ -1,12 +1,12 @@
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { InputField } from '@/components/inputFields'
-import { SimpleSelect } from '@/components/simpleSelect'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { InputField } from '@Components/inputFields'
+import { SimpleSelect } from '@Components/simpleSelect'
 import { Form, Row } from 'reactstrap'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
 // import ReactInputMask from 'react-input-mask';
-import DateCalendar from '@/components/dateCalendar'
-import { RadioGroup } from '@/components/radioGroup'
-import { validInt } from '@/helpers/Utils'
+import DateCalendar from '@Components/dateCalendar'
+import { RadioGroup } from '@Components/radioGroup'
+import { validInt } from '@Helpers/Utils'
 
 const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, numCai, date, dateOut, nameRequire, orderId,
   typeDocto, listDocuments, listStores, listProviders, listPaymentTypes, onInputChange, setBulkForm, formValidation, sendForm }) => {

@@ -1,12 +1,12 @@
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { SimpleSelect } from '@/components/simpleSelect';
-import DateCalendar from '@/components/dateCalendar';
-import { InputField } from '@/components/inputFields';
-import { IntlMessages, formatNumber, validFloat } from "@/helpers/Utils";
-import { RadioGroup } from '@/components/radioGroup';
-import { ContainerWithLabel } from '@/components/containerWithLabel';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { SimpleSelect } from '@Components/simpleSelect';
+import DateCalendar from '@Components/dateCalendar';
+import { InputField } from '@Components/inputFields';
+import { IntlMessages, formatNumber, validFloat } from "@Helpers/Utils";
+import { RadioGroup } from '@Components/radioGroup';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
 
 export const RequestForm = (props) => {
 

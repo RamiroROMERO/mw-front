@@ -1,8 +1,8 @@
-import { Colxx } from '@/components/common/CustomBootstrap';
-import DateCalendar from '@/components/dateCalendar';
-import { IntlMessages } from '@/helpers/Utils';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import DateCalendar from '@Components/dateCalendar';
+import { IntlMessages } from '@Helpers/Utils';
 import { Button, Row } from 'reactstrap';
-import { SimpleSelect } from '@/components/simpleSelect';
+import { SimpleSelect } from '@Components/simpleSelect';
 
 const HeaderDash = ({ reportId, setReportId, noYear, setNoYear, fnSearchDash }) => {
 

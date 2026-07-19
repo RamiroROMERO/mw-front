@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import ReactTable from '@/components/reactTable'
+import ReactTable from '@Components/reactTable'
 import { IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { Colxx } from '@Components/common/CustomBootstrap';
-import { Checkbox } from '@/components/checkbox';
+import { Checkbox } from '@Components/checkbox';
 import { useModalSummary } from './useModalSummary';
 
 const ModalSummary = ({data,setOpen}) => {

@@ -1,13 +1,13 @@
 import { Button, Row } from 'reactstrap'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
-import { IntlMessages } from '@/helpers/Utils'
-import { InputField } from '@/components/inputFields'
-import { SimpleSelect } from '@/components/simpleSelect'
-import { RadioGroup } from '@/components/radioGroup'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
-import DateCalendar from '@/components/dateCalendar'
-import Modal from "@/components/modal";
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
+import { IntlMessages } from '@Helpers/Utils'
+import { InputField } from '@Components/inputFields'
+import { SimpleSelect } from '@Components/simpleSelect'
+import { RadioGroup } from '@Components/radioGroup'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
+import DateCalendar from '@Components/dateCalendar'
+import Modal from "@Components/modal";
 import { useFormRefund } from './useFormRefund'
 import ModalApplyAccount from '../requisitions/ModalApplyAccount'
 

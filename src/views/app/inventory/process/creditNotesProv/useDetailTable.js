@@ -1,4 +1,4 @@
-import { IntlMessages } from '@/helpers/Utils';
+import { IntlMessages } from '@Helpers/Utils';
 import { useState } from 'react'
 
 export const useDetailTable = ({ creditNotesDetail, setCreditNotesDetail, creditNotesDetail2, setCreditNotesDetail2, setOpenModalUnpaidBill }) => {

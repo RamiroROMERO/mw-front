@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { request } from '@/helpers/core';
+import { request } from '@Helpers/core';
 import ModalAddRes from '../app/hotelManagement/process/reservations/ModalAddRes';
 import ModalNewCust from '../app/hotelManagement/settings/customers/ModalNewCust';
 

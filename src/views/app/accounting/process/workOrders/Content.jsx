@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx, Separator } from '@/components/common/CustomBootstrap';
-import { useForm } from '@/hooks';
-import { request } from '@/helpers/core';
-import ControlPanel from '@/components/controlPanel';
-import Modal from "@/components/modal";
+import { Colxx, Separator } from '@Components/common/CustomBootstrap';
+import { useForm } from '@Hooks';
+import { request } from '@Helpers/core';
+import ControlPanel from '@Components/controlPanel';
+import Modal from "@Components/modal";
 import ModalViewOrders from './ModalViewOrders';
 import FormOrder from './FormOrder';
 import TableDocuments from './TableDocuments';

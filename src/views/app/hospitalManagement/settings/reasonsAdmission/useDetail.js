@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { IntlMessages, validInt } from '@/helpers/Utils';
-import { request } from '@/helpers/core';
-import { useForm } from '@/hooks';
+import { IntlMessages, validInt } from '@Helpers/Utils';
+import { request } from '@Helpers/core';
+import { useForm } from '@Hooks';
 
 export const useDetail = ({ currentItem, fnGetData, setLoading, setCurrentItem }) => {
   const [sendForm, setSendForm] = useState(false);

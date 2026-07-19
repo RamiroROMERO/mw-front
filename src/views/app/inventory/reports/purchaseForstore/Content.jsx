@@ -1,7 +1,7 @@
 import { usePurchaseForStore } from './usePurchaseForStore'
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import ReactTable from '@/components/reactTable'
+import { Colxx } from '@Components/common/CustomBootstrap';
+import ReactTable from '@Components/reactTable'
 import HeaderReport from './HeaderReport';
 import TotalsReport from '../purchaseReport/TotalsReport';
 

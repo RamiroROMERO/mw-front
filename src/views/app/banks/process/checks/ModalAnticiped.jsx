@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import notification from '@/containers/ui/Notifications';
-import { useForm } from "@/hooks";
-import { InputField } from "@/components/inputFields";
-import SearchSelect from "@/components/SearchSelect/SearchSelect";
-import DateCalendar from '@/components/dateCalendar';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { IntlMessages } from "@Helpers/Utils";
+import notification from '@Containers/ui/Notifications';
+import { useForm } from "@Hooks";
+import { InputField } from "@Components/inputFields";
+import SearchSelect from "@Components/SearchSelect/SearchSelect";
+import DateCalendar from '@Components/dateCalendar';
 
 export const ModalAnticiped = (props) => {
   const { data, setOpen, } = props;

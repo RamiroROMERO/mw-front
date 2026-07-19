@@ -1,4 +1,4 @@
-import { IntlMessages } from '@/helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
 import { Card, CardBody, Row } from 'reactstrap'
 import { Colxx } from '../common/CustomBootstrap'
 import { ThemeColors } from '@Helpers/ThemeColors';

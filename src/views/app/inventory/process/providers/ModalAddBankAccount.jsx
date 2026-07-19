@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
-import { IntlMessages, validInt } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import SearchSelect from "@/components/SearchSelect/SearchSelect";
-import { SimpleSelect } from "@/components/simpleSelect";
-import { InputField } from "@/components/inputFields";
-import { Checkbox } from "@/components/checkbox";
-import { request } from '@/helpers/core';
-import { useForm } from "@/hooks";
+import { IntlMessages, validInt } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import SearchSelect from "@Components/SearchSelect/SearchSelect";
+import { SimpleSelect } from "@Components/simpleSelect";
+import { InputField } from "@Components/inputFields";
+import { Checkbox } from "@Components/checkbox";
+import { request } from '@Helpers/core';
+import { useForm } from "@Hooks";
 
 const ModalAddBankAccount = (props) => {
   const { data, setOpen } = props;

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { validFloat } from '@/helpers/Utils';
+import { validFloat } from '@Helpers/Utils';
 
 export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, price, subTotal, discountPercent, discount, taxPercent, tax, total, lotCode, dateOutProd, isTaxFree, isBonus, setBulkFormDeta, purchaseDetail, setPurchaseDetail, setBulkForm, isFormValidDeta, setSendFormDeta }) => {
 

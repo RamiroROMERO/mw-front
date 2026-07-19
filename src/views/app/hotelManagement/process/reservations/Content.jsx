@@ -1,6 +1,6 @@
 import Modal from '@Components/modal';
 import ReactTable from "@Components/reactTable";
-import { Colxx } from '@/components/common/CustomBootstrap'
+import { Colxx } from '@Components/common/CustomBootstrap'
 import { Row } from 'reactstrap'
 import { useReservation } from './useReservation'
 import ModalAddRes from './ModalAddRes'

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { IntlMessages, validInt } from '@/helpers/Utils';
-import { request, buildUrl } from '@/helpers/core';
-import { useForm } from '@/hooks';
+import { IntlMessages, validInt } from '@Helpers/Utils';
+import { request, buildUrl } from '@Helpers/core';
+import { useForm } from '@Hooks';
 import { formatDate } from '@Helpers/Utils';
 
 export const usePatientFiles = ({ setLoading }) => {

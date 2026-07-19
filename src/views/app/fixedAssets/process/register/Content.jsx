@@ -1,11 +1,11 @@
 import { Row, Card, CardBody, CardHeader, Table } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import ControlPanel from '@/components/controlPanel';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import ControlPanel from '@Components/controlPanel';
 import { useRegister } from './useRegister';
-import { SimpleSelect } from '@/components/simpleSelect';
-import DateCalendar from '@/components/dateCalendar';
-import { InputField } from '@/components/inputFields';
-import { IntlMessages } from '@/helpers/Utils';
+import { SimpleSelect } from '@Components/simpleSelect';
+import DateCalendar from '@Components/dateCalendar';
+import { InputField } from '@Components/inputFields';
+import { IntlMessages } from '@Helpers/Utils';
 
 const Content = (props) => {
 

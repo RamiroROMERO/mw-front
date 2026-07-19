@@ -1,15 +1,15 @@
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
 import { usePrePayroll } from './usePrePayroll';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import DateCalendar from '@/components/dateCalendar';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import DateCalendar from '@Components/dateCalendar';
 import ReactTable from '@Components/reactTable';
 import Modal from '@Components/modal';
-import { IntlMessages } from '@/helpers/Utils';
+import { IntlMessages } from '@Helpers/Utils';
 import FooterPayroll from './FooterPayroll';
-import { Checkbox } from '@/components/checkbox';
-import { InputField } from '@/components/inputFields';
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { Checkbox } from '@Components/checkbox';
+import { InputField } from '@Components/inputFields';
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 const ModalPrePayroll = ({data, setOpen}) => {
   const {listCustomers, listProjects, listTypeDeductions, listEmployees, listJobPositions, listPaymentMethod, listSchedules,listTypeIncomes, listProjectsFilter, setListProjectsFilter, enableConfidentialPayroll, setLoading, userData, fnViewDetailPayroll, onBulkForm} = data;

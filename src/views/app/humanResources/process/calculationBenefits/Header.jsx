@@ -1,11 +1,11 @@
 import { useHeader } from './useHeader';
-import { InputField } from '@/components/inputFields';
+import { InputField } from '@Components/inputFields';
 import { Button, Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import DateCalendar from '@/components/dateCalendar';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import DateCalendar from '@Components/dateCalendar';
 import Modal from '@Components/modal';
-import { IntlMessages } from '@/helpers/Utils';
+import { IntlMessages } from '@Helpers/Utils';
 
 const Header = ({listEmployees, listTypes, setLoading, enableGenerateReport, setDataBenefits, otherPayments, totalBenefits}) => {
 

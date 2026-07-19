@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom"
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx, Separator } from '@/components/common/CustomBootstrap';
-import Breadcrumb from '@/containers/navs/Breadcrumb';
-import IconCard from '@/components/cards/IconCard';
-import { adminRoot } from '@/constants/defaultValues';
+import { Colxx, Separator } from '@Components/common/CustomBootstrap';
+import Breadcrumb from '@Containers/navs/Breadcrumb';
+import IconCard from '@Components/cards/IconCard';
+import { adminRoot } from '@Constants/defaultValues';
 
 const UserAccounts = (props) => {
   const { match } = props;

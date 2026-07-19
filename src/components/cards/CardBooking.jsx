@@ -1,5 +1,5 @@
-import { formatNumber } from '@/helpers/Utils';
-import IntlMessages from '@/helpers/IntlMessages';
+import { formatNumber } from '@Helpers/Utils';
+import IntlMessages from '@Helpers/IntlMessages';
 import {
   Card,
   CardBody,

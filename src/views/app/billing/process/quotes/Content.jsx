@@ -11,7 +11,7 @@ import DateCalendar from '@Components/dateCalendar';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import Modal from "@Components/modal";
 import { useQuotes } from './useQuotes';
-import { SimpleSelect } from '@/components/simpleSelect';
+import { SimpleSelect } from '@Components/simpleSelect';
 
 const Content = (props) => {
   const { setLoading } = props;

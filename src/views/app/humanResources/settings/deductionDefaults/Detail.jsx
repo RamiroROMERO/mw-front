@@ -1,8 +1,8 @@
-import { Checkbox } from '@/components/checkbox';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import { IntlMessages } from '@/helpers/Utils';
+import { Checkbox } from '@Components/checkbox';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { IntlMessages } from '@Helpers/Utils';
 import { Button, Card, CardBody, Row } from 'reactstrap';
 
 const Detail = ({formState, onInputChange, formValidation, sendForm, listTypeDeductions, listProjects, fnSaveDocument, fnClear}) => {

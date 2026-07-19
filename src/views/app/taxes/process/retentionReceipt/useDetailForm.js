@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { validFloat } from '@/helpers/Utils'
+import { validFloat } from '@Helpers/Utils'
 
 export const useDetailForm = ({ setBulkFormDetail, listTypesRetention, baseValue, setSendFormDeta, retentionDetail, isFormValidDeta, setRetentionDetail, setBulkFormIndex, description, documentCode, percentValue, totalValue }) => {
 

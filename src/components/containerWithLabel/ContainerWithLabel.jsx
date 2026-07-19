@@ -1,4 +1,4 @@
-import { IntlMessages } from '@/helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
 
 export const ContainerWithLabel = ({ label, feedbackText = undefined, children }) => {
   return (

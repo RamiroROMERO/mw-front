@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { request } from '@/helpers/core';
+import { request } from '@Helpers/core';
 
 // Extraído de usePurchases.js: carga las listas de referencia (documentos,
 // tiendas, proveedores, formas de pago) que alimentan los selects del

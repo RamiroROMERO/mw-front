@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { IntlMessages } from '@/helpers/Utils';
+import { IntlMessages } from '@Helpers/Utils';
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import ReactTable from '@/components/reactTable'
+import { Colxx } from '@Components/common/CustomBootstrap';
+import ReactTable from '@Components/reactTable'
 
 const TableReport = ({dataInventory}) => {
 

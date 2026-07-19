@@ -1,7 +1,7 @@
 import { Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import Confirmation from '@/containers/ui/confirmationMsg';
-import ReactTable from "@/components/reactTable";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import Confirmation from '@Containers/ui/confirmationMsg';
+import ReactTable from "@Components/reactTable";
 import Detail from './Detail';
 import { useReasons } from './useReasons';
 

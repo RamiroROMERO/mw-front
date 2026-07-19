@@ -1,11 +1,11 @@
-import { API_URLS } from '@/helpers/APIUrl';
-import { request, buildUrl } from '@/helpers/core';
-import { validFloat, validInt } from '@/helpers/Utils';
-import { RandomCodeGenerator } from '@/helpers/UuIdGenerator';
-import { useForm } from '@/hooks';
+import { API_URLS } from '@Helpers/APIUrl';
+import { request, buildUrl } from '@Helpers/core';
+import { validFloat, validInt } from '@Helpers/Utils';
+import { RandomCodeGenerator } from '@Helpers/UuIdGenerator';
+import { useForm } from '@Hooks';
 import { useEffect, useState } from 'react'
-import DateHelper from '@/helpers/DateHelper';
-import createNotification from "@/containers/ui/Notifications";
+import DateHelper from '@Helpers/DateHelper';
+import createNotification from "@Containers/ui/Notifications";
 
 export const useModalNewQuote = ({ currentItem, setLoading, fnGetData, listCustomers, listRooms, setOpen, fnPrintPdf }) => {
   const [sendForm, setSendForm] = useState(false);

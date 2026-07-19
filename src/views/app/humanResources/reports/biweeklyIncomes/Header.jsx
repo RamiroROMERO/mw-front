@@ -1,9 +1,9 @@
 import { Button, Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from '@Helpers/Utils';
-import DateCalendar from '@/components/dateCalendar';
+import DateCalendar from '@Components/dateCalendar';
 import { useHeader } from './useHeader';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
 
 const Header = ({setLoading, table, setTable, enableGenerateReport, listProjects, listTypeIncomes}) => {
 

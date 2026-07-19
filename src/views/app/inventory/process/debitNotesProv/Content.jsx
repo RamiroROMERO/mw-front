@@ -1,5 +1,5 @@
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
 
 const DebitNotesProv = (props) => {
   return (

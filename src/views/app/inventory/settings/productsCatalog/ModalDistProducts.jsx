@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Button, Card, CardBody, ModalBody, ModalFooter, Row } from "reactstrap";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { IntlMessages, validInt } from "@/helpers/Utils";
-import ReactTable from "@/components/reactTable";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { IntlMessages, validInt } from "@Helpers/Utils";
+import ReactTable from "@Components/reactTable";
 import UseModalDistProducts from "./useModalDistProducts";
-import { SimpleSelect } from "@/components/simpleSelect";
-import { InputField } from "@/components/inputFields";
-import { Checkbox } from "@/components/checkbox";
-import { ContainerWithLabel } from "@/components/containerWithLabel";
+import { SimpleSelect } from "@Components/simpleSelect";
+import { InputField } from "@Components/inputFields";
+import { Checkbox } from "@Components/checkbox";
+import { ContainerWithLabel } from "@Components/containerWithLabel";
 
 
 const ModalDistProducts = (props) => {

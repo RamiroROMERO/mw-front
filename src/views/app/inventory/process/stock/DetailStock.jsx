@@ -1,5 +1,5 @@
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { InputField } from '@/components/inputFields';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
 import { Row } from 'reactstrap';
 
 const DetailStock = ({currentExistence, totalInputs, totalOutputs, maximumCost, minimumCost, averageCost, currentCost, onInputChange}) => {

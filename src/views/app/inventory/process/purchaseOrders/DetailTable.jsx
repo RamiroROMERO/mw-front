@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Colxx } from '@/components/common/CustomBootstrap'
+import { Colxx } from '@Components/common/CustomBootstrap'
 import { Button, Row, Table } from 'reactstrap'
-import { formatNumber, IntlMessages, validFloat } from '@/helpers/Utils'
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { formatNumber, IntlMessages, validFloat } from '@Helpers/Utils'
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 const DetailTable = ({orderDetail, setOrderDetail, setBulkForm}) => {
   const [dataItem, setDataItem] = useState({});

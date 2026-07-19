@@ -1,10 +1,10 @@
 import {Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { Separator } from '@/components/common/CustomBootstrap';
-import ControlPanel from '@/components/controlPanel';
-import ReactTable from '@/components/reactTable';
-import Confirmation from '@/containers/ui/confirmationMsg';
-import Modal from '@/components/modal';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { Separator } from '@Components/common/CustomBootstrap';
+import ControlPanel from '@Components/controlPanel';
+import ReactTable from '@Components/reactTable';
+import Confirmation from '@Containers/ui/confirmationMsg';
+import Modal from '@Components/modal';
 import { useEvents } from './useEvents';
 import ModalEvents from '../patientFiles/ModalEvents';
 import ModalDetail from './ModalDetail';

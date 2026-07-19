@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { Badge, Button, Card, CardBody, CardTitle, Col, Row, Table } from 'reactstrap'
 import DateCalendar from '@Components/dateCalendar';
 import { IntlMessages } from '@Helpers/Utils';
-import { request, buildUrl } from '@/helpers/core';
-import DateHelper from '@/helpers/DateHelper';
+import { request, buildUrl } from '@Helpers/core';
+import DateHelper from '@Helpers/DateHelper';
 
 export const HotelOccupancyToday = ({ setLoading, setCurrentReservation, setOpenModalAdd }) => {
 

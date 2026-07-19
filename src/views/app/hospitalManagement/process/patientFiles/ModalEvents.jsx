@@ -1,10 +1,10 @@
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { IntlMessages } from '@/helpers/Utils'
-import { Colxx } from '@/components/common/CustomBootstrap'
-import { InputField } from '@/components/inputFields'
-import { ContainerWithLabel } from '@/components/containerWithLabel'
-import DateCalendar from '@/components/dateCalendar'
-import SearchSelect from '@/components/SearchSelect/SearchSelect'
+import { IntlMessages } from '@Helpers/Utils'
+import { Colxx } from '@Components/common/CustomBootstrap'
+import { InputField } from '@Components/inputFields'
+import { ContainerWithLabel } from '@Components/containerWithLabel'
+import DateCalendar from '@Components/dateCalendar'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { useNewEvent } from './useNewEvent'
 
 const ModalEvents = ({data, setOpen}) => {

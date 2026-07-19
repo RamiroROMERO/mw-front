@@ -1,12 +1,12 @@
 import { Card, CardBody, Row, Button } from 'reactstrap';
-import { IntlMessages } from "@/helpers/Utils";
-import { Colxx } from '@/components/common/CustomBootstrap';
-import { SimpleSelect } from '@/components/simpleSelect';
-import { Checkbox } from '@/components/checkbox';
-import { InputField } from '@/components/inputFields';
-import SearchSelect from '@/components/SearchSelect/SearchSelect';
-import ReactTable from "@/components/reactTable";
-import Confirmation from '@/containers/ui/confirmationMsg';
+import { IntlMessages } from "@Helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { SimpleSelect } from '@Components/simpleSelect';
+import { Checkbox } from '@Components/checkbox';
+import { InputField } from '@Components/inputFields';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import ReactTable from "@Components/reactTable";
+import Confirmation from '@Containers/ui/confirmationMsg';
 import { useBankAccounts } from './useBankAccounts';
 
 const BanksAccounts = (props) => {

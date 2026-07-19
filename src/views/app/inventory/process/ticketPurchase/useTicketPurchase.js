@@ -1,7 +1,7 @@
-import createNotification from "@/containers/ui/Notifications";
-import { request, buildUrl } from "@/helpers/core";
-import { validInt } from "@/helpers/Utils";
-import { useForm } from "@/hooks"
+import createNotification from "@Containers/ui/Notifications";
+import { request, buildUrl } from "@Helpers/core";
+import { validInt } from "@Helpers/Utils";
+import { useForm } from "@Hooks"
 import { useEffect, useState } from "react";
 
 export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta }) => {
