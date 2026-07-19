@@ -1,0 +1,41 @@
+import React from "react";
+import { Route, Routes } from "react-router-dom"
+
+const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
+const BillingAreas = React.lazy(() => import("@Views/app/billing/settings/billingAreas"));
+const CashBoxes = React.lazy(() => import("@Views/app/billing/settings/cashBoxes"));
+const PaymentMethods = React.lazy(() => import("@Views/app/billing/settings/paymentMethods"));
+const Discounts = React.lazy(() => import("@Views/app/billing/settings/discounts"));
+
+const BillingSettings = React.lazy(() =>
+  import('@Views/app/billing/settings')
+);
+
+const BillingSettingsRoutes = (props) => {
+  const { setLoading } = props;
+  return <Routes>
+    <Route
+      index
+      element={<BillingSettings {...props} setLoading={setLoading} match={{ isExact: true, params: {} }} />}
+    />
+    <Route
+      index
+      path="/billingAreas"
+      element={<BillingAreas setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/cashBoxes"
+      element={<CashBoxes setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/paymentMethods"
+      element={<PaymentMethods setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/discounts"
+      element={<Discounts setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route path={`/*`} element={<PageNotFound />} />
+  </Routes>
+}
+
+export default BillingSettingsRoutes;

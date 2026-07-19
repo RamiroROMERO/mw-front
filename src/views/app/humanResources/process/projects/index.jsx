@@ -1,0 +1,32 @@
+import React, { Suspense, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { onTitleEdit, onBreadcrumbEdit } from '@Redux/actions';
+import { adminRoot } from '@Constants/defaultValues';
+import Breadcrumb from '@Containers/navs/Breadcrumb';
+import { getPrivilegeAdmin, getPrivilegeData } from '@Helpers/Utils';
+
+const Content = React.lazy(() =>
+  import('./Content')
+);
+const Projects = (props) => {
+  const dispatch = useDispatch();
+
+  const PRIVILEGE_CODE = "07.02.010";
+  const screenControl = getPrivilegeData(PRIVILEGE_CODE);
+
+  const adminControl = getPrivilegeAdmin();
+
+  useEffect(() => {
+    dispatch(onTitleEdit("menu.projects"))
+    dispatch(onBreadcrumbEdit(`${adminRoot}/humanResources/process/projects`))
+  }, [])
+
+  return (
+    <Suspense fallback={<div className="loading" />}>
+      <Breadcrumb />
+      <Content screenControl={screenControl} adminControl={adminControl} {...props} />
+    </Suspense>
+  )
+};
+
+export default Projects;
