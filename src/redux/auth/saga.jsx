@@ -1,7 +1,7 @@
 import { all, call, fork, put, takeEvery } from 'redux-saga/effects';
-// import { auth } from '@/helpers/Firebase';
-import { adminRoot } from '@/constants/defaultValues';
-import { setCurrentUser } from '@/helpers/Utils';
+// import { auth } from '@Helpers/Firebase';
+import { adminRoot } from '@Constants/defaultValues';
+import { setCurrentUser } from '@Helpers/Utils';
 
 import {
   LOGIN_USER,
@@ -9,7 +9,7 @@ import {
   LOGOUT_USER,
   // FORGOT_PASSWORD,
   // RESET_PASSWORD,
-} from '../contants';
+} from '../constants';
 import {
   loginUserSuccess,
   loginUserError,
@@ -21,7 +21,7 @@ import {
   // resetPasswordError,
 } from './actions';
 import { Navigate } from 'react-router-dom';
-// import { onUserDataEdit } from '@/redux/generalData/actions';
+// import { onUserDataEdit } from '@Redux/generalData/actions';
 import envs from '@Helpers/envs';
 const urlAPI = envs.URL_API;
 

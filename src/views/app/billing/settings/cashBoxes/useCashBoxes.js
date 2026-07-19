@@ -1,8 +1,8 @@
 import { useEffect, useState, } from "react";
-import { request } from "@/helpers/core";
+import { request } from "@Helpers/core";
 import { useForm } from "@Hooks/useForms";
 
-const useChashBoxes = ({ setLoading }) => {
+const useCashBoxes = ({ setLoading }) => {
 
   const [tableData, setTableData] = useState([]);
   const [listLedgerAccount, setListLedgerAccount] = useState([]);
@@ -166,4 +166,4 @@ const useChashBoxes = ({ setLoading }) => {
   }
 };
 
-export default useChashBoxes;
+export default useCashBoxes;

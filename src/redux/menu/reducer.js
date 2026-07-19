@@ -3,14 +3,14 @@ import {
   defaultMenuType,
   subHiddenBreakpoint,
   menuHiddenBreakpoint,
-} from '@/constants/defaultValues';
+} from '@Constants/defaultValues';
 import {
   MENU_SET_CLASSNAMES,
   MENU_CONTAINER_ADD_CLASSNAME,
   MENU_CLICK_MOBILE_MENU,
   MENU_CHANGE_DEFAULT_CLASSES,
   MENU_CHANGE_HAS_SUB_ITEM_STATUS,
-} from '../contants';
+} from '../constants';
 
 const initialState = {
   containerClassnames: defaultMenuType,

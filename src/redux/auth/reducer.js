@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getCurrentUser } from '@/helpers/Utils';
-import { isAuthGuardActive, currentUser } from '@/constants/defaultValues';
+import { getCurrentUser } from '@Helpers/Utils';
+import { isAuthGuardActive, currentUser } from '@Constants/defaultValues';
 import {
   LOGIN_USER,
   LOGIN_USER_SUCCESS,
@@ -15,7 +15,7 @@ import {
   RESET_PASSWORD,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_ERROR,
-} from '../contants';
+} from '../constants';
 
 const initialState = {
   currentUser: isAuthGuardActive ? currentUser : getCurrentUser(),

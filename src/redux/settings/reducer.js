@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getCurrentLanguage } from '@/helpers/Utils';
-import { CHANGE_LOCALE } from '../contants';
+import { getCurrentLanguage } from '@Helpers/Utils';
+import { CHANGE_LOCALE } from '../constants';
 
 const initialState = {
   locale: getCurrentLanguage(),

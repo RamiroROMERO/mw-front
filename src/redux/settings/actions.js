@@ -1,5 +1,5 @@
-import { setCurrentLanguage } from '@/helpers/Utils';
-import { CHANGE_LOCALE } from '../contants';
+import { setCurrentLanguage } from '@Helpers/Utils';
+import { CHANGE_LOCALE } from '../constants';
 
 // eslint-disable-next-line import/prefer-default-export
 export const changeLocale = (locale) => {

@@ -1,15 +1,15 @@
 import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@/components/common/CustomBootstrap';
-import DataTable from "@/components/reactTable";
-import Confirmation from '@/containers/ui/confirmationMsg';
-import { IntlMessages } from "@/helpers/Utils";
+import { Colxx } from '@Components/common/CustomBootstrap';
+import DataTable from "@Components/reactTable";
+import Confirmation from '@Containers/ui/confirmationMsg';
+import { IntlMessages } from "@Helpers/Utils";
 import { useTableConfig } from '@Hooks';
 import CashBoxDetail from './CashBoxDetail';
-import useChashBoxes from './useChashBoxes';
+import useCashBoxes from './useCashBoxes';
 
 const CashBoxes = (props) => {
   const { setLoading } = props;
-  const { propsToDetail, propsToDetailTable, propsToMsgDelete } = useChashBoxes({ setLoading });
+  const { propsToDetail, propsToDetailTable, propsToMsgDelete } = useCashBoxes({ setLoading });
   const { tableData, fnEditItem, fnDeleteItem } = propsToDetailTable;
 
   const { tableInfo } = useTableConfig({

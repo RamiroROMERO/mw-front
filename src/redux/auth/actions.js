@@ -12,7 +12,7 @@ import {
   RESET_PASSWORD,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_ERROR,
-} from '../contants';
+} from '../constants';
 
 export const loginUser = (user, history) => ({
   type: LOGIN_USER,
