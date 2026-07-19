@@ -20,6 +20,9 @@ const ModalViewEmployees = ({data, setOpen}) => {
     setListFilterMunic(filterMunic);
 
     itemEmpl.municipalityId = validInt(itemEmpl.municipalityId)
+    itemEmpl.shirtSize = itemEmpl.shirtSize || '';
+    itemEmpl.pantSize = itemEmpl.pantSize || '';
+    itemEmpl.shoesSize = itemEmpl.shoesSize || '';
 
     setBulkForm(itemEmpl);
     fnGetProjectEmployee(itemEmpl.id);
