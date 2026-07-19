@@ -1,18 +1,6 @@
-import fs from 'node:fs';
-import { defineConfig, transformWithEsbuild } from 'vite'
+import { defineConfig } from 'vite'
 import path from 'path'
 import react from '@vitejs/plugin-react'
-
-const sourceJSPattern = /\/src\/.*\.js$/;
-const rollupPlugin = (matchers) => ({
-  name: "js-in-jsx",
-  load(id) {
-    if (matchers.some(matcher => matcher.test(id))) {
-      const file = fs.readFileSync(id, { encoding: "utf-8" });
-      return esbuild.transformSync(file, { loader: "jsx" });
-    }
-  }
-});
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -39,6 +27,16 @@ export default defineConfig({
     }
   },
   base: './',
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // Legacy @import + old global color functions (darken/lighten/etc.)
+        // are used throughout src/assets/sass/**; migrating to @use/@forward
+        // and the sass:color module is tracked separately in TECH_DEBT.md.
+        silenceDeprecations: ['import', 'color-functions', 'global-builtin'],
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -52,18 +50,6 @@ export default defineConfig({
       '@Router': path.resolve(__dirname, './src/router'),
       '@Views': path.resolve(__dirname, './src/views'),
     },
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      loader: {
-        ".js": "jsx",
-      },
-    },
-  },
-  esbuild: {
-    loader: "jsx",
-    include: ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", sourceJSPattern],
-    exclude: [],
   },
   test: {
     environment: 'jsdom',

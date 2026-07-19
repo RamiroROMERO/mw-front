@@ -32,7 +32,7 @@ const LedgerAccounts = (props) => {
                     name="code"
                     mask="***.**.**.**"
                     maskChar=" "
-                    tag={InputMask}
+                    // tag={InputMask}
                     onChange={onInputChange}
                     label="page.ledgerAccounts.input.code"
                     invalid={sendForm && !!codeValid}
