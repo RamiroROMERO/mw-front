@@ -48,7 +48,7 @@
     "reactstrap": "^9.2.1",
     "redux": "^5.0.0",
     "redux-saga": "^1.2.3",
-    "uuid": "^13.0.0",
+    "uuid": "^14.0.1",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -60,7 +60,7 @@
     "eslint": "^9.29.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
+    "eslint-plugin-react-refresh": "^0.5.3",
     "fs-extra": "^11.3.2",
     "jsdom": "^29.1.1",
     "sass": "1.69.5",
