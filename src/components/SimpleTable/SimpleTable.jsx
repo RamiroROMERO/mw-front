@@ -10,15 +10,15 @@ export const SimpleTable = ({ columns = [], data = [] }) => {
         <thead>
           <tr>
             {columns.map(col => {
-              return (<th style={{ width: `${col.width}%` }}>{IntlMessages(col.title)}</th>)
+              return (<th key={col.field} scope="col" style={{ width: `${col.width}%` }}>{IntlMessages(col.title)}</th>)
             })}
           </tr>
         </thead>
         <tbody>
           {data.map((item, idx) => {
-            return (<tr id={`det-cot-${idx}`}>
+            return (<tr key={`det-cot-${idx}`} id={`det-cot-${idx}`}>
               {columns.map(col => {
-                return (<SimpleTableTD value={item[col.field]} formatTd={col} />)
+                return (<SimpleTableTD key={col.field} value={item[col.field]} formatTd={col} />)
               })}
             </tr>)
           })}

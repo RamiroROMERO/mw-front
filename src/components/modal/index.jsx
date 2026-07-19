@@ -12,6 +12,7 @@ const ModalMW = (props) => {
         fullscreen={fullscreen || "sm"}
         backdrop={true}
         fade={true}
+        labelledBy="mw-modal-title"
       // scrollable
       >
         <Header title={title} valueTitle={valueTitle} fnClose={setOpen} />

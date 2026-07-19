@@ -9,7 +9,7 @@ const Header = ({ title, valueTitle, fnClose }) => {
     </button>
   );
   return (
-    <ModalHeader toggle={noRefCheck} close={closeBtn}  >
+    <ModalHeader id="mw-modal-title" toggle={noRefCheck} close={closeBtn}  >
       {`${IntlMessagesFn(title)} ${valueTitle}`}
     </ModalHeader>
   )

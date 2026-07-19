@@ -9,11 +9,24 @@ const UploadFile = ({onFileChange, fnViewFile, icon, nameFile, showButtonView}) 
     hiddenFileInput.current.click();
   }
 
+  const onKeyDownFile = e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClickFile(e);
+    }
+  }
+
   return (
     <Card>
       <CardBody className="text-center">
         <Row style={{cursor: 'pointer'}}>
-          <Colxx xxs="12" onClick={onClickFile}>
+          <Colxx
+            xxs="12"
+            role="button"
+            tabIndex={0}
+            onClick={onClickFile}
+            onKeyDown={onKeyDownFile}
+          >
             <i className={icon} />
             <p className="card-text font-weight-semibold mb-0">
               {nameFile}
