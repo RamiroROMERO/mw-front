@@ -3,7 +3,6 @@
 /* eslint-disable no-use-before-define */
 import IntlMessages from '@Helpers/IntlMessages';
 import { useEffect, useState } from 'react';
-import { injectIntl } from 'react-intl';
 import { setCurrentUser } from '@Helpers/Utils';
 import { useNavigate } from 'react-router-dom';
 import envs from '@Helpers/envs';
@@ -43,7 +42,6 @@ import { request } from '@Helpers/core';
 import { PATH_FILES } from '@Helpers/pathFiles';
 
 const TopNav = ({
-  intl,
   history,
   containerClassnames,
   menuClickCount,
@@ -200,7 +198,6 @@ const TopNav = ({
     getProfileImage();
   }, [])
 
-  const { messages } = intl;
   return (
     <nav className="navbar fixed-top">
       <div className="d-flex align-items-center navbar-left">
@@ -308,11 +305,9 @@ const mapStateToProps = ({ menu, settings }) => {
     locale,
   };
 };
-export default injectIntl(
-  connect(mapStateToProps, {
-    setContainerClassnamesAction: setContainerClassnames,
-    clickOnMobileMenuAction: clickOnMobileMenu,
-    logoutUserAction: logoutUser,
-    changeLocaleAction: changeLocale,
-  })(TopNav)
-);
+export default connect(mapStateToProps, {
+  setContainerClassnamesAction: setContainerClassnames,
+  clickOnMobileMenuAction: clickOnMobileMenu,
+  logoutUserAction: logoutUser,
+  changeLocaleAction: changeLocale,
+})(TopNav);

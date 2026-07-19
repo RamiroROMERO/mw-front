@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom';
-import { injectIntl } from 'react-intl';
 import { Badge } from 'reactstrap';
 
 const RecentPost = ({ data }) => {
@@ -30,4 +29,4 @@ const RecentPost = ({ data }) => {
   );
 };
 
-export default injectIntl(RecentPost);
+export default RecentPost;

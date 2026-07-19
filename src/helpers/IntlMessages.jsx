@@ -1,7 +1,5 @@
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 const InjectMassage = (props) => <FormattedMessage {...props} />;
 
-export default injectIntl(InjectMassage, {
-  withRef: false,
-});
+export default InjectMassage;
