@@ -1,6 +1,5 @@
-/* eslint-disable react/no-array-index-key */
 import { useEffect, useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   UncontrolledDropdown,
   DropdownToggle,
@@ -10,21 +9,19 @@ import {
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { adminRoot } from '@Constants/defaultValues';
 import { request } from '@Helpers/core';
+import DateHelper from '@Helpers/DateHelper';
 
 const NotificationItem = ({ img, title, date, data, setOpen }) => {
-  const history = useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const fnOpenProject = () => {
-    if (history.location.pathname === `${adminRoot}/production/process/workOrders/projectDetail`) {
-      history({
-        state: data
-      });
+    const projectDetailPath = `${adminRoot}/production/process/workOrders/projectDetail`;
+    if (location.pathname === projectDetailPath) {
+      navigate(projectDetailPath, { state: data, replace: true });
       window.location.reload(false);
     } else {
-      history.push({
-        pathname: `${adminRoot}/production/process/workOrders/projectDetail`,
-        state: data
-      });
+      navigate(projectDetailPath, { state: data });
     }
     setOpen(false);
   }
@@ -52,17 +49,17 @@ const TopnavNotifications = () => {
   const [openNotifications, setOpenNotifications] = useState(false);
   const toggle = () => setOpenNotifications((prevState) => !prevState);
 
-  // useEffect(() => {
-  //   request.GET('prodProjects/findByNext5Days', (resp) => {
-  //     const listProjects = resp.data.map((item) => {
-  //       item.title = item.name
-  //       item.date = `${item.code} | ${moment(item.startDate).format("DD/MM/YYYY")}`
-  //       return item;
-  //     });
-  //     setDatanotifications(listProjects);
-  //   }, (err) => {
-  //   });
-  // }, []);
+  useEffect(() => {
+    request.GET('prodProjects/findByNext5Days', (resp) => {
+      const listProjects = resp.data.map((item) => {
+        item.title = item.name
+        item.date = `${item.code} | ${DateHelper.format(item.startDate, 'DD/MM/YYYY')}`
+        return item;
+      });
+      setDatanotifications(listProjects);
+    }, (err) => {
+    });
+  }, []);
 
   return (
     <div className="position-relative d-inline-block">

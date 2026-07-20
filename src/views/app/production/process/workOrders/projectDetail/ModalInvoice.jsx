@@ -5,12 +5,12 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { request } from '@Helpers/core';
 import { InputField } from "@Components/inputFields";
 import { useForm } from "@Hooks";
-import moment from 'moment'
+import DateHelper from '@Helpers/DateHelper';
 
 const ModalInvoice = (props) => {
   const { data, setOpen } = props;
   const { projectData, fnGetPayment, setLoading } = data;
-  const date = moment(new Date()).format("YYYY/MM/DD");
+  const date = DateHelper.format(DateHelper.now(), "YYYY/MM/DD");
   const [sendForm, setSendForm] = useState(false);
 
   const invoiceValid = {

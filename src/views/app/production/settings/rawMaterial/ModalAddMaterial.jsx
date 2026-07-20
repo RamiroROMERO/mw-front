@@ -6,7 +6,7 @@ import { InputField } from "@Components/inputFields";
 import { request } from '@Helpers/core';
 import { useForm } from "@Hooks";
 import SearchSelect from "@Components/SearchSelect/SearchSelect";
-import moment from 'moment'
+import DateHelper from '@Helpers/DateHelper';
 
 const ModalAddMaterial = (props) => {
   const { setOpen, data } = props;
@@ -46,7 +46,7 @@ const ModalAddMaterial = (props) => {
       notes,
       qtyIn,
       qtyOut,
-      date: moment(new Date()).format("YYYY-MM-DD")
+      date: DateHelper.format(DateHelper.now(), "YYYY-MM-DD")
     }
     setLoading(true);
     request.POST('prodRMStocks', newData, (resp) => {

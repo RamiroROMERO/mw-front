@@ -28,19 +28,7 @@ const SettingsRoutes = React.lazy(() => import('@Router/SettingsRoutes'));
 const HospitalRoutes = React.lazy(() => import('@Router/HospitalRoutes'));
 const DashboardsRoutes = React.lazy(() => import('@Router/DashboardsRoutes'));
 const HotelRoutes = React.lazy(() => import('@Router/HotelRoutes'));
-
-// const Production = React.lazy(() => import('@Views/app/production'));
-// const ProductionSettings = React.lazy(() => import('@Views/app/production/settings'));
-// const OrdersTypes = React.lazy(() => import('@Views/app/production/settings/ordersTypes'));
-// const Managers = React.lazy(() => import('@Views/app/production/settings/managers'));
-// const Destinations = React.lazy(() => import('@Views/app/production/settings/destinations'));
-// const ProductsTypes = React.lazy(() => import('@Views/app/production/settings/productsTypes'));
-// const RawMaterial = React.lazy(() => import('@Views/app/production/settings/rawMaterial'));
-// const ProductionProcess = React.lazy(() => import('@Views/app/production/process'));
-// const WorkOrdersProd = React.lazy(() => import('@Views/app/production/process/workOrders'));
-// const ProjectDetail = React.lazy(() => import('@Views/app/production/process/workOrders/projectDetail'));
-// const Charges = React.lazy(() => import('@Views/app/production/process/charges')
-// );
+const ProductionRoutes = React.lazy(() => import('@Router/ProductionRoutes'));
 
 const App = (props) => {
 
@@ -97,6 +85,9 @@ const App = (props) => {
                 <Route
                   path={`${adminRoot}/hotelManagement/*`}
                   element={<HotelRoutes setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+                <Route
+                  path={`${adminRoot}/production/*`}
+                  element={<ProductionRoutes setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
 
                 <Route path={`${adminRoot}/*`} element={<PageNotFound />} />
               </Route>

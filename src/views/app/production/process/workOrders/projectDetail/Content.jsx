@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, CardHeader, CardTitle, Row, Nav, NavItem, NavLink, TabContent, TabPane, Button, Badge, Table } from 'reactstrap';
 import { InputField } from '@Components/inputFields';
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { adminRoot } from '@Constants/defaultValues';
 import { request, buildUrl } from '@Helpers/core';
 import { IntlMessages, formatNumber, validFloat, validInt } from '@Helpers/Utils';
@@ -10,8 +10,7 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { useForm } from '@Hooks';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import classnames from 'classnames';
-import Dropzone from '@Components/dropzone';
-import GalleryDetail from '@Containers/pages/GalleryDetail';
+import UploadImages from '@Components/uploadImages/UploadImages';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import DateCalendar from '@Components/dateCalendar';
@@ -23,7 +22,7 @@ const ProjectDetail = (props) => {
   const history = useNavigate();
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
   const [dataProducts, setDataProducts] = useState([]);
-  const projectData = useLocation().state;
+  const projectData = useLocation().state || {};
   const [activeFirstTab, setActiveFirstTab] = useState('1');
   const [currentItemProd, setCurrentItemProd] = useState({});
   const [percentPayment, setPercentPayment] = useState(0);
@@ -69,7 +68,7 @@ const ProjectDetail = (props) => {
     notes: '',
     destinityId: projectData.destinityId ? projectData.destinityId : '0',
     status: projectData.status ? projectData.status : 1,
-    startDate: projectData.startDate !== "0000-00-00" ? projectData.startDate : '',
+    startDate: projectData.startDate && projectData.startDate !== "0000-00-00" ? projectData.startDate : '',
     estimatedValue: projectData.estimatedValue ? projectData.estimatedValue : 0,
     estimatedTime: projectData.estimatedTime ? projectData.estimatedTime : 0,
     customerId: projectData.facCliente ? projectData.facCliente.id : 0,
@@ -159,7 +158,7 @@ const ProjectDetail = (props) => {
       const dataImg = resp.data.map((item) => {
         return {
           id: item.id,
-          img: item.image,
+          src: item.image,
           type: item.type
         }
       });
@@ -355,15 +354,15 @@ const ProjectDetail = (props) => {
     fnGetPayment();
   }, []);
 
-  const fnFileUploaded = (resp) => {
-    const result = JSON.parse(resp.xhr.response);
+  const fnUploadOrderImage = (type) => (updater) => {
+    const [{ name: nameFile }] = updater([]);
     const dataImages = {
       orderId: projectData.id,
-      name: result.data[0].name,
-      image: `/assets/pictures/${result.data[0].name}`,
-      type: 1
+      name: nameFile,
+      image: `/assets/pictures/${nameFile}`,
+      type
     }
-    request.POST('prodOrderImages', dataImages, (res) => {
+    request.POST('prodOrderImages', dataImages, () => {
       fnGetImages();
       setLoading(false);
     }, (err) => {
@@ -371,15 +370,13 @@ const ProjectDetail = (props) => {
     });
   }
 
-  const fnFileUploaded2 = (resp) => {
-    const result = JSON.parse(resp.xhr.response);
-    const dataImages = {
-      orderId: projectData.id,
-      name: result.data[0].name,
-      image: `/assets/pictures/${result.data[0].name}`,
-      type: 2
-    }
-    request.POST('prodOrderImages', dataImages, (res) => {
+  const fnFileUploaded = fnUploadOrderImage(1);
+
+  const fnFileUploaded2 = fnUploadOrderImage(2);
+
+  const fnDeleteOrderImage = (id) => {
+    setLoading(true);
+    request.DELETE(`prodOrderImages/${id}`, (res) => {
       fnGetImages();
       setLoading(false);
     }, (err) => {
@@ -406,6 +403,10 @@ const ProjectDetail = (props) => {
       fnGetPayment,
       setLoading
     }
+  }
+
+  if (!projectData.id) {
+    return <Navigate to={`${adminRoot}/production/process/workOrders`} replace />;
   }
 
   return (
@@ -709,34 +710,20 @@ const ProjectDetail = (props) => {
                   <Row>
                     <Colxx className="mb-3" xxs="12">
                       <ContainerWithLabel label="page.workOrders.detail.initialGallery">
-                        <Row>
-                          <Colxx className="mb-3" xxs="12" sm="6" lg="4" xl="3">
-                            <Row>
-                              <Colxx className="mb-3" xxs="12">
-                                <Dropzone fnComplete={fnFileUploaded} />
-                              </Colxx>
-                            </Row>
-                          </Colxx>
-                          <Colxx xxs="12" sm="6" lg="8" xl="9">
-                            <GalleryDetail id="galery-detail-1" {...propsToGallery} />
-                          </Colxx>
-                        </Row>
+                        <UploadImages
+                          setDataImages={fnFileUploaded}
+                          imagesSaved={propsToGallery.detailImages}
+                          fnDeleteImages={fnDeleteOrderImage}
+                        />
                       </ContainerWithLabel>
                     </Colxx>
                     <Colxx xxs="12">
                       <ContainerWithLabel label="page.workOrders.detail.manufacturingGallery">
-                        <Row>
-                          <Colxx className="mb-3" xxs="12" sm="6" lg="4" xl="3">
-                            <Row>
-                              <Colxx className="mb-3" xxs="12">
-                                <Dropzone fnComplete={fnFileUploaded2} />
-                              </Colxx>
-                            </Row>
-                          </Colxx>
-                          <Colxx xxs="12" sm="6" lg="8" xl="9">
-                            <GalleryDetail id="galery-detail-2" {...propsToGallery2} />
-                          </Colxx>
-                        </Row>
+                        <UploadImages
+                          setDataImages={fnFileUploaded2}
+                          imagesSaved={propsToGallery2.detailImages}
+                          fnDeleteImages={fnDeleteOrderImage}
+                        />
                       </ContainerWithLabel>
                     </Colxx>
                   </Row>

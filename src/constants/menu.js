@@ -1,70 +1,70 @@
 import { adminRoot } from './defaultValues';
 
 const data = [
-  // {
-  //   id: 'production',
-  //   icon: 'bi bi-gem',
-  //   label: 'menu.production',
-  //   to: `${adminRoot}/production`,
-  //   subs: [
-  //     {
-  //       id: 'production-settings',
-  //       icon: 'simple-icon-list',
-  //       label: 'menu.submenu.settings',
-  //       to: `${adminRoot}/production/settings`,
-  //       subs: [
-  //         {
-  //           icon: 'iconsminds-male-female',
-  //           label: 'menu.customers',
-  //           to: `${adminRoot}/production/settings/customers`,
-  //         },
-  //         {
-  //           icon: 'simple-icon-people',
-  //           label: 'menu.managers',
-  //           to: `${adminRoot}/production/settings/managers`,
-  //         },
-  //         {
-  //           icon: 'iconsminds-check',
-  //           label: 'menu.ordersTypes',
-  //           to: `${adminRoot}/production/settings/ordersTypes`,
-  //         },
-  //         {
-  //           icon: 'simple-icon-list',
-  //           label: 'menu.productsTypes',
-  //           to: `${adminRoot}/production/settings/productsTypes`,
-  //         },
-  //         {
-  //           icon: 'bi bi-pin-map',
-  //           label: 'menu.destinations',
-  //           to: `${adminRoot}/production/settings/destinations`,
-  //         },
-  //         {
-  //           icon: 'simple-icon-basket-loaded',
-  //           label: 'menu.rawMaterial',
-  //           to: `${adminRoot}/production/settings/rawMaterial`,
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       id: 'production-process',
-  //       icon: 'simple-icon-layers',
-  //       label: 'menu.submenu.process',
-  //       to: `${adminRoot}/production/process`,
-  //       subs: [
-  //         {
-  //           icon: 'bi bi-clipboard-check',
-  //           label: 'menu.projects',
-  //           to: `${adminRoot}/production/process/workOrders`,
-  //         },
-  //         {
-  //           icon: 'iconsminds-billing',
-  //           label: 'menu.charges',
-  //           to: `${adminRoot}/production/process/charges`,
-  //         },
-  //       ]
-  //     }
-  //   ],
-  // },
+  {
+    id: 'production',
+    icon: 'bi bi-gem',
+    label: 'menu.production',
+    to: `${adminRoot}/production`,
+    subs: [
+      {
+        id: 'production-settings',
+        icon: 'simple-icon-list',
+        label: 'menu.submenu.settings',
+        to: `${adminRoot}/production/settings`,
+        subs: [
+          {
+            icon: 'iconsminds-male-female',
+            label: 'menu.customers',
+            to: `${adminRoot}/production/settings/customers`,
+          },
+          {
+            icon: 'simple-icon-people',
+            label: 'menu.managers',
+            to: `${adminRoot}/production/settings/managers`,
+          },
+          {
+            icon: 'iconsminds-check',
+            label: 'menu.ordersTypes',
+            to: `${adminRoot}/production/settings/ordersTypes`,
+          },
+          {
+            icon: 'simple-icon-list',
+            label: 'menu.productsTypes',
+            to: `${adminRoot}/production/settings/productsTypes`,
+          },
+          {
+            icon: 'bi bi-pin-map',
+            label: 'menu.destinations',
+            to: `${adminRoot}/production/settings/destinations`,
+          },
+          {
+            icon: 'simple-icon-basket-loaded',
+            label: 'menu.rawMaterial',
+            to: `${adminRoot}/production/settings/rawMaterial`,
+          },
+        ],
+      },
+      {
+        id: 'production-process',
+        icon: 'simple-icon-layers',
+        label: 'menu.submenu.process',
+        to: `${adminRoot}/production/process`,
+        subs: [
+          {
+            icon: 'bi bi-clipboard-check',
+            label: 'menu.projects',
+            to: `${adminRoot}/production/process/workOrders`,
+          },
+          {
+            icon: 'iconsminds-billing',
+            label: 'menu.charges',
+            to: `${adminRoot}/production/process/charges`,
+          },
+        ]
+      }
+    ],
+  },
   {
     id: 'dashboards',
     icon: 'bi bi-bar-chart',

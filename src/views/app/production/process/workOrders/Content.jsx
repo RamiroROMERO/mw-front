@@ -5,7 +5,7 @@ import { IntlMessages } from "@Helpers/Utils";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { adminRoot } from '@Constants/defaultValues';
 import { request } from '@Helpers/core';
-import moment from 'moment'
+import DateHelper from '@Helpers/DateHelper';
 import ReactTable from "@Components/reactTable";
 import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
@@ -97,11 +97,9 @@ const WorkOrders = (props) => {
   const fnGetData = () => {
     setLoading(true);
     let colorStatus = "";
-    const today = moment();
     request.GET('prodProjects', (resp) => {
       const data = resp.data.map((item) => {
-        const dateStart = moment(item.startDate);
-        const daysDiff = today.diff(dateStart, 'days');
+        const daysDiff = DateHelper.diff(DateHelper.now(), item.startDate, 'day');
         let timeLeft = item.estimatedTime - daysDiff;
         if (item.status === 1) {
           colorStatus = "warning";
