@@ -1,12 +1,10 @@
-/* eslint-disable react/no-array-index-key */
-import { Component } from 'react';
-import { connect } from 'react-redux';
-import ReactDOM from 'react-dom';
-import { NavLink, useNavigate, useLocation, useParams, useLoaderData } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Nav, NavItem, Collapse } from 'reactstrap';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import classnames from 'classnames';
-import { setContainerClassnames, addContainerClassname, changeDefaultClassnames, changeSelectedMenuHasSubItems } from '@Redux/actions';
+import { setContainerClassnames, addContainerClassname, changeSelectedMenuHasSubItems } from '@Redux/actions';
 import IntlMessages from '@Helpers/IntlMessages';
 import menuTesting from '@Constants/menu';
 
@@ -65,122 +63,62 @@ const fnValidMenuItems = (menuItems) => {
 
   menuItems = [];
   return menuItems
-
-  // let enableBankMenu =  false, enableContabMenu = false, enableFixedAssetsMenu = false, enableHospitalMenu = false, 
-  //   enableInventoryMenu = false, enableInvoiceMenu = false, enableLabMenu = false enableLoansMenu = false, 
-  //   enableRRHHMenu = false, enableTaxMenu = false
-  // if(companyData && companyData.id){
-  //   enableBankMenu =  companyData
-  //   enableContabMenu = false, enableFixedAssetsMenu = false, enableHospitalMenu = false, 
-  //   enableInventoryMenu = false, enableInvoiceMenu = false, enableLabMenu = false enableLoansMenu = false, 
-  //   enableRRHHMenu = false, enableTaxMenu = false
-  // }
-  // return menuItems;
 }
 
-class Sidebar extends Component {
-
-  menuItems = []
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedParentMenu: '',
-      viewingParentMenu: '',
-      collapsedMenus: [],
-    };
-    this.menuItems = fnValidMenuItems(menuTesting);
-  }
-
-  // eslint-disable-next-line react/sort-comp
-  handleWindowResize = (event) => {
-    if (event && !event.isTrusted) {
-      return;
-    }
-    const { containerClassnames } = this.props;
-    const nextClasses = this.getMenuClassesForResize(containerClassnames);
-    // eslint-disable-next-line react/destructuring-assignment
-    this.props.setContainerClassnames(
-      0,
-      nextClasses.join(' '),
-      // eslint-disable-next-line react/destructuring-assignment
-      this.props.selectedMenuHasSubItems
-    );
-  };
-
-  handleDocumentClick = (e) => {
-    const container = this.getContainer();
-    let isMenuClick = false;
+const getMenuClassesForResize = (classes, menuHiddenBreakpoint, subHiddenBreakpoint) => {
+  let nextClasses = classes.split(' ').filter((x) => x !== '');
+  const windowWidth = window.innerWidth;
+  if (windowWidth < menuHiddenBreakpoint) {
+    nextClasses.push('menu-mobile');
+  } else if (windowWidth < subHiddenBreakpoint) {
+    nextClasses = nextClasses.filter((x) => x !== 'menu-mobile');
     if (
-      e.target &&
-      e.target.classList &&
-      (e.target.classList.contains('menu-button') ||
-        e.target.classList.contains('menu-button-mobile'))
+      nextClasses.includes('menu-default') &&
+      !nextClasses.includes('menu-sub-hidden')
     ) {
-      isMenuClick = true;
-    } else if (
-      e.target.parentElement &&
-      e.target.parentElement.classList &&
-      (e.target.parentElement.classList.contains('menu-button') ||
-        e.target.parentElement.classList.contains('menu-button-mobile'))
+      nextClasses.push('menu-sub-hidden');
+    }
+  } else {
+    nextClasses = nextClasses.filter((x) => x !== 'menu-mobile');
+    if (
+      nextClasses.includes('menu-default') &&
+      nextClasses.includes('menu-sub-hidden')
     ) {
-      isMenuClick = true;
-    } else if (
-      e.target.parentElement &&
-      e.target.parentElement.parentElement &&
-      e.target.parentElement.parentElement.classList &&
-      (e.target.parentElement.parentElement.classList.contains('menu-button') ||
-        e.target.parentElement.parentElement.classList.contains(
-          'menu-button-mobile'
-        ))
-    ) {
-      isMenuClick = true;
+      nextClasses = nextClasses.filter((x) => x !== 'menu-sub-hidden');
     }
-    if (container.contains(e.target) || container === e.target || isMenuClick) {
-      return;
-    }
-    this.setState({
-      viewingParentMenu: '',
-    });
-    this.toggle();
-  };
+  }
+  return nextClasses;
+};
 
-  getMenuClassesForResize = (classes) => {
-    const { menuHiddenBreakpoint, subHiddenBreakpoint } = this.props;
-    let nextClasses = classes.split(' ').filter((x) => x !== '');
-    const windowWidth = window.innerWidth;
-    if (windowWidth < menuHiddenBreakpoint) {
-      nextClasses.push('menu-mobile');
-    } else if (windowWidth < subHiddenBreakpoint) {
-      nextClasses = nextClasses.filter((x) => x !== 'menu-mobile');
-      if (
-        nextClasses.includes('menu-default') &&
-        !nextClasses.includes('menu-sub-hidden')
-      ) {
-        nextClasses.push('menu-sub-hidden');
-      }
-    } else {
-      nextClasses = nextClasses.filter((x) => x !== 'menu-mobile');
-      if (
-        nextClasses.includes('menu-default') &&
-        nextClasses.includes('menu-sub-hidden')
-      ) {
-        nextClasses = nextClasses.filter((x) => x !== 'menu-sub-hidden');
-      }
-    }
-    return nextClasses;
-  };
+const Sidebar = () => {
+  const dispatch = useDispatch();
+  const { pathname } = useLocation();
 
-  getContainer = () => {
-    // eslint-disable-next-line react/no-find-dom-node
-    return ReactDOM.findDOMNode(this);
-  };
+  const containerClassnames = useSelector((state) => state.menu.containerClassnames);
+  const subHiddenBreakpoint = useSelector((state) => state.menu.subHiddenBreakpoint);
+  const menuHiddenBreakpoint = useSelector((state) => state.menu.menuHiddenBreakpoint);
+  const menuClickCount = useSelector((state) => state.menu.menuClickCount);
+  const selectedMenuHasSubItems = useSelector((state) => state.menu.selectedMenuHasSubItems);
+  const currentUser = useSelector((state) => state.authUser.currentUser);
 
-  toggle = () => {
-    const hasSubItems = this.getIsHasSubItem();
-    // eslint-disable-next-line react/destructuring-assignment
-    this.props.changeSelectedMenuHasSubItems(hasSubItems);
-    const { containerClassnames, menuClickCount } = this.props;
+  const menuItemsRef = useRef(null);
+  if (menuItemsRef.current === null) {
+    menuItemsRef.current = fnValidMenuItems(menuTesting);
+  }
+  const menuItems = menuItemsRef.current;
+
+  const [selectedParentMenu, setSelectedParentMenu] = useState('');
+  const [viewingParentMenu, setViewingParentMenu] = useState('');
+  const [collapsedMenus, setCollapsedMenus] = useState([]);
+
+  const getIsHasSubItem = useCallback((parentMenu) => {
+    const menuItem = menuItems.find((x) => x.id === parentMenu);
+    return !!(menuItem && menuItem.subs && menuItem.subs.length > 0);
+  }, [menuItems]);
+
+  const toggle = useCallback((hasSubItemsParam) => {
+    const hasSubItems = hasSubItemsParam !== undefined ? hasSubItemsParam : getIsHasSubItem(selectedParentMenu);
+    dispatch(changeSelectedMenuHasSubItems(hasSubItems));
     const currentClasses = containerClassnames
       ? containerClassnames.split(' ').filter((x) => x !== '')
       : '';
@@ -215,32 +153,17 @@ class Sidebar extends Component {
       clickIndex = 0;
     }
     if (clickIndex >= 0) {
-      // eslint-disable-next-line react/destructuring-assignment
-      this.props.setContainerClassnames(
-        clickIndex,
-        containerClassnames,
-        hasSubItems
-      );
+      dispatch(setContainerClassnames(clickIndex, containerClassnames, hasSubItems));
     }
-  };
+  }, [containerClassnames, menuClickCount, selectedParentMenu, getIsHasSubItem, dispatch]);
 
-  handleProps = () => {
-    // this.addEvents();
-  };
+  const setHasSubItemStatus = useCallback((parentMenu) => {
+    const hasSubmenu = getIsHasSubItem(parentMenu);
+    dispatch(changeSelectedMenuHasSubItems(hasSubmenu));
+    toggle(hasSubmenu);
+  }, [getIsHasSubItem, toggle, dispatch]);
 
-  addEvents = () => {
-    ['click', 'touchstart', 'touchend'].forEach((event) =>
-      document.addEventListener(event, this.handleDocumentClick, true)
-    );
-  };
-
-  removeEvents = () => {
-    ['click', 'touchstart', 'touchend'].forEach((event) =>
-      document.removeEventListener(event, this.handleDocumentClick, true)
-    );
-  };
-
-  setSelectedLiActive = (callback) => {
+  const setSelectedLiActive = useCallback(() => {
     const oldli = document.querySelector('.sub-menu  li.active');
     if (oldli != null) {
       oldli.classList.remove('active');
@@ -261,93 +184,36 @@ class Sidebar extends Component {
 
     const selectedlink = document.querySelector('.sub-menu  a.active');
     if (selectedlink != null) {
-      selectedlink.parentElement.classList.add('active');
-      this.setState(
-        {
-          selectedParentMenu:
-            selectedlink.parentElement.parentElement.getAttribute(
-              'data-parent'
-            ),
-        },
-        callback
-      );
+      const newParentMenu = selectedlink.parentElement.parentElement.getAttribute('data-parent');
+      setSelectedParentMenu(newParentMenu);
+      setHasSubItemStatus(newParentMenu);
     } else {
       const selectedParentNoSubItem = document.querySelector(
         '.main-menu  li a.active'
       );
       if (selectedParentNoSubItem != null) {
-        this.setState(
-          {
-            selectedParentMenu:
-              selectedParentNoSubItem.getAttribute('data-flag'),
-          },
-          callback
-        );
-        // eslint-disable-next-line react/destructuring-assignment
-      } else if (this.state.selectedParentMenu === '') {
-        this.setState(
-          {
-            selectedParentMenu: this.menuItems[0].id,
-          },
-          callback
-        );
+        const newParentMenu = selectedParentNoSubItem.getAttribute('data-flag');
+        setSelectedParentMenu(newParentMenu);
+        setHasSubItemStatus(newParentMenu);
+      } else if (selectedParentMenu === '') {
+        const newParentMenu = menuItems[0].id;
+        setSelectedParentMenu(newParentMenu);
+        setHasSubItemStatus(newParentMenu);
       }
     }
-  };
+  }, [selectedParentMenu, menuItems, setHasSubItemStatus]);
 
-  setHasSubItemStatus = () => {
-    const hasSubmenu = this.getIsHasSubItem();
-    // eslint-disable-next-line react/destructuring-assignment
-    this.props.changeSelectedMenuHasSubItems(hasSubmenu);
-    this.toggle();
-  };
-
-  getIsHasSubItem = () => {
-    const { selectedParentMenu } = this.state;
-    const menuItem = this.menuItems.find((x) => x.id === selectedParentMenu);
-    if (menuItem)
-      return !!(menuItem && menuItem.subs && menuItem.subs.length > 0);
-    return false;
-  };
-
-  // eslint-disable-next-line react/sort-comp
-  componentDidUpdate(prevProps) {
-    // eslint-disable-next-line react/destructuring-assignment
-    if (this.props.location.pathname !== prevProps.location.pathname) {
-      this.setSelectedLiActive(this.setHasSubItemStatus);
-
-      window.scrollTo(0, 0);
-    }
-    this.handleProps();
-  }
-
-  componentDidMount() {
-    window.addEventListener('resize', this.handleWindowResize);
-    this.handleWindowResize();
-    this.handleProps();
-    this.setSelectedLiActive(this.setHasSubItemStatus);
-  }
-
-  componentWillUnmount() {
-    // this.removeEvents();
-    window.removeEventListener('resize', this.handleWindowResize);
-  }
-
-  openSubMenu = (e, menuItem) => {
+  const openSubMenu = useCallback((e, menuItem) => {
     const selectedParent = menuItem.id;
     const hasSubMenu = menuItem.subs && menuItem.subs.length > 0;
-    // eslint-disable-next-line react/destructuring-assignment
-    this.props.changeSelectedMenuHasSubItems(hasSubMenu);
+    dispatch(changeSelectedMenuHasSubItems(hasSubMenu));
     if (!hasSubMenu) {
-      this.setState({
-        viewingParentMenu: selectedParent,
-        selectedParentMenu: selectedParent,
-      });
-      this.toggle();
+      setViewingParentMenu(selectedParent);
+      setSelectedParentMenu(selectedParent);
+      toggle();
     } else {
       e.preventDefault();
 
-      const { containerClassnames, menuClickCount } = this.props;
       const currentClasses = containerClassnames
         ? containerClassnames.split(' ').filter((x) => x !== '')
         : '';
@@ -357,288 +223,255 @@ class Sidebar extends Component {
           currentClasses.includes('menu-sub-hidden') &&
           (menuClickCount === 2 || menuClickCount === 0)
         ) {
-          // eslint-disable-next-line react/destructuring-assignment
-          this.props.setContainerClassnames(3, containerClassnames, hasSubMenu);
+          dispatch(setContainerClassnames(3, containerClassnames, hasSubMenu));
         } else if (
           currentClasses.includes('menu-hidden') &&
           (menuClickCount === 1 || menuClickCount === 3)
         ) {
-          // eslint-disable-next-line react/destructuring-assignment
-          this.props.setContainerClassnames(2, containerClassnames, hasSubMenu);
+          dispatch(setContainerClassnames(2, containerClassnames, hasSubMenu));
         } else if (
           currentClasses.includes('menu-default') &&
           !currentClasses.includes('menu-sub-hidden') &&
           (menuClickCount === 1 || menuClickCount === 3)
         ) {
-          // eslint-disable-next-line react/destructuring-assignment
-          this.props.setContainerClassnames(0, containerClassnames, hasSubMenu);
+          dispatch(setContainerClassnames(0, containerClassnames, hasSubMenu));
         }
       } else {
-        // eslint-disable-next-line react/destructuring-assignment
-        this.props.addContainerClassname(
-          'sub-show-temporary',
-          containerClassnames
-        );
+        dispatch(addContainerClassname('sub-show-temporary', containerClassnames));
       }
-      this.setState({
-        viewingParentMenu: selectedParent,
-      });
+      setViewingParentMenu(selectedParent);
     }
-  };
+  }, [containerClassnames, menuClickCount, dispatch, toggle]);
 
-  toggleMenuCollapse = (e, menuKey) => {
+  const toggleMenuCollapse = useCallback((e, menuKey) => {
     e.preventDefault();
-
-    const { collapsedMenus } = this.state;
-    if (collapsedMenus.indexOf(menuKey) > -1) {
-      this.setState({
-        collapsedMenus: collapsedMenus.filter((x) => x !== menuKey),
-      });
-    } else {
-      collapsedMenus.push(menuKey);
-      this.setState({
-        collapsedMenus,
-      });
-    }
+    setCollapsedMenus((prev) =>
+      prev.indexOf(menuKey) > -1
+        ? prev.filter((x) => x !== menuKey)
+        : [...prev, menuKey]
+    );
     return false;
-  };
+  }, []);
 
-  // eslint-disable-next-line no-shadow
-  filteredList = (menuItems) => {
-    const { currentUser } = this.props;
+  const filteredList = useCallback((items) => {
     if (currentUser) {
-      return menuItems.filter(
+      return items.filter(
         (x) => (x.roles && x.roles.includes(currentUser.role)) || !x.roles
       );
     }
-    return menuItems;
-  };
+    return items;
+  }, [currentUser]);
 
-  render() {
-    const { selectedParentMenu, viewingParentMenu, collapsedMenus } =
-      this.state;
-    return (
-      <div className="sidebar">
-        <div className="main-menu">
-          <div className="scroll">
-            <PerfectScrollbar
-              options={{ suppressScrollX: true, wheelPropagation: false }}
-            >
-              <Nav vertical className="list-unstyled">
-                {this.menuItems &&
-                  this.filteredList(this.menuItems).map((item) => {
-                    return (
-                      <NavItem
-                        key={item.id}
-                        className={classnames({
-                          active:
-                            (selectedParentMenu === item.id &&
-                              viewingParentMenu === '') ||
-                            viewingParentMenu === item.id,
-                        })}
-                      >
-                        {item.newWindow ? (
-                          <a
-                            href={item.to}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            <i className={item.icon} />{' '}
-                            <IntlMessages id={item.label} />
-                          </a>
-                        ) : (
-                          <NavLink
-                            to={item.to}
-                            onClick={(e) => this.openSubMenu(e, item)}
-                            data-flag={item.id}
-                          >
-                            <i className={item.icon} />{' '}
-                            <IntlMessages id={item.label} />
-                          </NavLink>
-                        )}
-                      </NavItem>
-                    );
-                  })}
-              </Nav>
-            </PerfectScrollbar>
-          </div>
-        </div>
+  const latestForResizeRef = useRef();
+  latestForResizeRef.current = { containerClassnames, selectedMenuHasSubItems, menuHiddenBreakpoint, subHiddenBreakpoint };
 
-        <div className="sub-menu">
-          <div className="scroll">
-            <PerfectScrollbar
-              options={{ suppressScrollX: true, wheelPropagation: false }}
-            >
-              {this.menuItems &&
-                this.filteredList(this.menuItems).map((item) => {
+  const handleWindowResize = useCallback((event) => {
+    if (event && !event.isTrusted) {
+      return;
+    }
+    const {
+      containerClassnames: currentContainerClassnames,
+      selectedMenuHasSubItems: currentSelectedMenuHasSubItems,
+      menuHiddenBreakpoint: currentMenuHiddenBreakpoint,
+      subHiddenBreakpoint: currentSubHiddenBreakpoint,
+    } = latestForResizeRef.current;
+    const nextClasses = getMenuClassesForResize(
+      currentContainerClassnames,
+      currentMenuHiddenBreakpoint,
+      currentSubHiddenBreakpoint
+    );
+    dispatch(setContainerClassnames(0, nextClasses.join(' '), currentSelectedMenuHasSubItems));
+  }, [dispatch]);
+
+  useEffect(() => {
+    window.addEventListener('resize', handleWindowResize);
+    handleWindowResize();
+    return () => window.removeEventListener('resize', handleWindowResize);
+  }, [handleWindowResize]);
+
+  const setSelectedLiActiveRef = useRef();
+  setSelectedLiActiveRef.current = setSelectedLiActive;
+  const isFirstPathnameEffect = useRef(true);
+
+  useEffect(() => {
+    setSelectedLiActiveRef.current();
+    if (!isFirstPathnameEffect.current) {
+      window.scrollTo(0, 0);
+    }
+    isFirstPathnameEffect.current = false;
+  }, [pathname]);
+
+  return (
+    <div className="sidebar">
+      <div className="main-menu">
+        <div className="scroll">
+          <PerfectScrollbar
+            options={{ suppressScrollX: true, wheelPropagation: false }}
+          >
+            <Nav vertical className="list-unstyled">
+              {menuItems &&
+                filteredList(menuItems).map((item) => {
                   return (
-                    <Nav
+                    <NavItem
                       key={item.id}
                       className={classnames({
-                        'd-block':
-                          // eslint-disable-next-line react/destructuring-assignment
-                          (this.state.selectedParentMenu === item.id &&
-                            // eslint-disable-next-line react/destructuring-assignment
-                            this.state.viewingParentMenu === '') ||
-                          // eslint-disable-next-line react/destructuring-assignment
-                          this.state.viewingParentMenu === item.id,
+                        active:
+                          (selectedParentMenu === item.id &&
+                            viewingParentMenu === '') ||
+                          viewingParentMenu === item.id,
                       })}
-                      data-parent={item.id}
                     >
-                      {item.subs &&
-                        this.filteredList(item.subs).map((sub, index) => {
-                          return (
-                            <NavItem
-                              key={`${item.id}_${index}`}
-                              className={`${sub.subs && sub.subs.length > 0
-                                ? 'has-sub-item'
-                                : ''
-                                }`}
-                            >
-                              {/* eslint-disable-next-line no-nested-ternary */}
-                              {sub.newWindow ? (
-                                <a
-                                  href={sub.to}
-                                  rel="noopener noreferrer"
-                                  target="_blank"
-                                >
-                                  <i className={sub.icon} />{' '}
-                                  <IntlMessages id={sub.label} />
-                                </a>
-                              ) : sub.subs && sub.subs.length > 0 ? (
-                                <>
-                                  <NavLink
-                                    className={`rotate-arrow-icon opacity-50 ${collapsedMenus.indexOf(
-                                      `${item.id}_${index}`
-                                    ) === -1
-                                      ? ''
-                                      : 'collapsed'
-                                      }`}
-                                    to={sub.to}
-                                    id={`${item.id}_${index}`}
-                                    onClick={(e) =>
-                                      this.toggleMenuCollapse(
-                                        e,
-                                        `${item.id}_${index}`
-                                      )
-                                    }
-                                  >
-                                    <i className="simple-icon-arrow-down" />{' '}
-                                    <IntlMessages id={sub.label} />
-                                  </NavLink>
-
-                                  <Collapse
-                                    isOpen={
-                                      collapsedMenus.indexOf(
-                                        `${item.id}_${index}`
-                                      ) === -1
-                                    }
-                                  >
-                                    <Nav className="third-level-menu">
-                                      {this.filteredList(sub.subs).map(
-                                        (thirdSub, thirdIndex) => {
-                                          return (
-                                            <NavItem
-                                              key={`${item.id}_${index}_${thirdIndex}`}
-                                            >
-                                              {thirdSub.newWindow ? (
-                                                <>
-                                                  <i
-                                                    className={thirdSub.icon}
-                                                  />{' '}
-                                                  <a
-                                                    href={thirdSub.to}
-                                                    rel="noopener noreferrer"
-                                                    target="_blank"
-                                                  >
-                                                    <IntlMessages
-                                                      id={thirdSub.label}
-                                                    />
-                                                  </a>
-                                                </>
-                                              ) : (
-                                                <>
-                                                  <i
-                                                    className={thirdSub.icon}
-                                                  />{' '}
-                                                  <NavLink to={thirdSub.to}>
-                                                    <IntlMessages
-                                                      id={thirdSub.label}
-                                                    />
-                                                  </NavLink>
-                                                </>
-                                              )}
-                                            </NavItem>
-                                          );
-                                        }
-                                      )}
-                                    </Nav>
-                                  </Collapse>
-                                </>
-                              ) : (
-                                <NavLink to={sub.to}>
-                                  <i className={sub.icon} />{' '}
-                                  <IntlMessages id={sub.label} />
-                                </NavLink>
-                              )}
-                            </NavItem>
-                          );
-                        })}
-                    </Nav>
+                      {item.newWindow ? (
+                        <a
+                          href={item.to}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          <i className={item.icon} />{' '}
+                          <IntlMessages id={item.label} />
+                        </a>
+                      ) : (
+                        <NavLink
+                          to={item.to}
+                          onClick={(e) => openSubMenu(e, item)}
+                          data-flag={item.id}
+                        >
+                          <i className={item.icon} />{' '}
+                          <IntlMessages id={item.label} />
+                        </NavLink>
+                      )}
+                    </NavItem>
                   );
                 })}
-            </PerfectScrollbar>
-          </div>
+            </Nav>
+          </PerfectScrollbar>
         </div>
       </div>
-    );
-  }
-}
 
-const mapStateToProps = ({ menu, authUser }) => {
-  const {
-    containerClassnames,
-    subHiddenBreakpoint,
-    menuHiddenBreakpoint,
-    menuClickCount,
-    selectedMenuHasSubItems,
-  } = menu;
+      <div className="sub-menu">
+        <div className="scroll">
+          <PerfectScrollbar
+            options={{ suppressScrollX: true, wheelPropagation: false }}
+          >
+            {menuItems &&
+              filteredList(menuItems).map((item) => {
+                return (
+                  <Nav
+                    key={item.id}
+                    className={classnames({
+                      'd-block':
+                        (selectedParentMenu === item.id &&
+                          viewingParentMenu === '') ||
+                        viewingParentMenu === item.id,
+                    })}
+                    data-parent={item.id}
+                  >
+                    {item.subs &&
+                      filteredList(item.subs).map((sub, index) => {
+                        return (
+                          <NavItem
+                            key={`${item.id}_${index}`}
+                            className={`${sub.subs && sub.subs.length > 0
+                              ? 'has-sub-item'
+                              : ''
+                              }`}
+                          >
+                            {sub.newWindow ? (
+                              <a
+                                href={sub.to}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                              >
+                                <i className={sub.icon} />{' '}
+                                <IntlMessages id={sub.label} />
+                              </a>
+                            ) : sub.subs && sub.subs.length > 0 ? (
+                              <>
+                                <NavLink
+                                  className={`rotate-arrow-icon opacity-50 ${collapsedMenus.indexOf(
+                                    `${item.id}_${index}`
+                                  ) === -1
+                                    ? ''
+                                    : 'collapsed'
+                                    }`}
+                                  to={sub.to}
+                                  id={`${item.id}_${index}`}
+                                  onClick={(e) =>
+                                    toggleMenuCollapse(
+                                      e,
+                                      `${item.id}_${index}`
+                                    )
+                                  }
+                                >
+                                  <i className="simple-icon-arrow-down" />{' '}
+                                  <IntlMessages id={sub.label} />
+                                </NavLink>
 
-  const { currentUser } = authUser;
-  return {
-    containerClassnames,
-    subHiddenBreakpoint,
-    menuHiddenBreakpoint,
-    menuClickCount,
-    selectedMenuHasSubItems,
-    currentUser,
-  };
+                                <Collapse
+                                  isOpen={
+                                    collapsedMenus.indexOf(
+                                      `${item.id}_${index}`
+                                    ) === -1
+                                  }
+                                >
+                                  <Nav className="third-level-menu">
+                                    {filteredList(sub.subs).map(
+                                      (thirdSub, thirdIndex) => {
+                                        return (
+                                          <NavItem
+                                            key={`${item.id}_${index}_${thirdIndex}`}
+                                          >
+                                            {thirdSub.newWindow ? (
+                                              <>
+                                                <i
+                                                  className={thirdSub.icon}
+                                                />{' '}
+                                                <a
+                                                  href={thirdSub.to}
+                                                  rel="noopener noreferrer"
+                                                  target="_blank"
+                                                >
+                                                  <IntlMessages
+                                                    id={thirdSub.label}
+                                                  />
+                                                </a>
+                                              </>
+                                            ) : (
+                                              <>
+                                                <i
+                                                  className={thirdSub.icon}
+                                                />{' '}
+                                                <NavLink to={thirdSub.to}>
+                                                  <IntlMessages
+                                                    id={thirdSub.label}
+                                                  />
+                                                </NavLink>
+                                              </>
+                                            )}
+                                          </NavItem>
+                                        );
+                                      }
+                                    )}
+                                  </Nav>
+                                </Collapse>
+                              </>
+                            ) : (
+                              <NavLink to={sub.to}>
+                                <i className={sub.icon} />{' '}
+                                <IntlMessages id={sub.label} />
+                              </NavLink>
+                            )}
+                          </NavItem>
+                        );
+                      })}
+                  </Nav>
+                );
+              })}
+          </PerfectScrollbar>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-const withRouter = (Component) => {
-  const ComponentWithRouterProp = (props) => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const params = useParams();
-    return (
-      <Component
-        {...props}
-        location={location}
-        params={params}
-        navigate={navigate}
-      />
-    );
-  }
-  return ComponentWithRouterProp;
-}
-
-export default withRouter(
-  connect(mapStateToProps, {
-    setContainerClassnames,
-    addContainerClassname,
-    changeDefaultClassnames,
-    changeSelectedMenuHasSubItems,
-  })(Sidebar)
-);
-
-// export default Sidebar;
+export default Sidebar;
