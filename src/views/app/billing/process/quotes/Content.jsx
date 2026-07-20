@@ -33,7 +33,7 @@ const Content = (props) => {
               <Separator className="mt-2 mb-3" />
               <Row>
                 <Colxx xxs={12} md={8} lg={9}>
-                  <Nav tabs className="separator-tabs ml-0 mb-4">
+                  <Nav tabs className="separator-tabs ms-0 mb-4">
                     <NavItem>
                       <NavLink
                         className={classnames({
@@ -193,7 +193,7 @@ const Content = (props) => {
                     </TabPane>
                     <TabPane tabId="2">
                       <Row>
-                        <Colxx xxs={12} className='text-right'>
+                        <Colxx xxs={12} className='text-end'>
                           <Button onClick={fnAddItem} className='btn btn-success'> <i className='bi bi-plus' /> {IntlMessages('button.add')} </Button>
                         </Colxx>
                       </Row>
@@ -218,7 +218,7 @@ const Content = (props) => {
                           value={formatNumber(subtotal, 'Lps. ', 2)}
                           onChange={onInputChange}
                           disabled
-                          className='text-right'
+                          className='text-end'
                         />
                       </Colxx>
                       <Colxx xxs={6} md={12}>
@@ -228,7 +228,7 @@ const Content = (props) => {
                           value={formatNumber(discount, 'Lps. ', 2)}
                           onChange={onInputChange}
                           disabled
-                          className='text-right'
+                          className='text-end'
                         />
                         <InputField
                           label='input.exonerated'
@@ -236,7 +236,7 @@ const Content = (props) => {
                           value={formatNumber(exoneratedValue, 'Lps. ', 2)}
                           onChange={onInputChange}
                           disabled
-                          className='text-right'
+                          className='text-end'
                         />
                         <InputField
                           label='input.exent'
@@ -244,7 +244,7 @@ const Content = (props) => {
                           value={formatNumber(exemptValue, 'Lps. ', 2)}
                           onChange={onInputChange}
                           disabled
-                          className='text-right'
+                          className='text-end'
                         />
                         <InputField
                           label='input.taxed'
@@ -252,7 +252,7 @@ const Content = (props) => {
                           value={formatNumber(taxedValue, 'Lps. ', 2)}
                           onChange={onInputChange}
                           disabled
-                          className='text-right'
+                          className='text-end'
                         />
                         <InputField
                           label='input.tax'
@@ -260,7 +260,7 @@ const Content = (props) => {
                           value={formatNumber(tax, 'Lps. ', 2)}
                           onChange={onInputChange}
                           disabled
-                          className='text-right'
+                          className='text-end'
                         />
                         <InputField
                           label='input.total'
@@ -268,7 +268,7 @@ const Content = (props) => {
                           value={formatNumber(total, 'Lps. ', 2)}
                           onChange={onInputChange}
                           disabled
-                          className='text-right'
+                          className='text-end'
                           invalid={sendForm && !!totalValid}
                           feedbackText={sendForm && (totalValid || null)}
                         />

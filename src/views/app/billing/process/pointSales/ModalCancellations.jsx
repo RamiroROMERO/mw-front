@@ -235,7 +235,7 @@ const ModalCancellations = (props) => {
   return (
     <>
       <ModalBody>
-        <Nav tabs className="separator-tabs ml-0 mb-3">
+        <Nav tabs className="separator-tabs ms-0 mb-3">
           <NavItem>
             <NavLink
               className={classnames({

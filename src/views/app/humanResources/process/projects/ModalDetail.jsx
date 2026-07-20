@@ -80,7 +80,7 @@ const ModalDetail = ({data, setOpen}) => {
           />
         </Colxx>
         <Colxx xxs={12} sm={6} md={8} align="right">
-          <Button color="secondary" onClick={fnClearInputs} className="mr-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
+          <Button color="secondary" onClick={fnClearInputs} className="me-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
           <Button color="primary" onClick={fnSave}>
             <i className="iconsminds-save"/> {IntlMessages("button.save")}
           </Button>

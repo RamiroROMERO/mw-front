@@ -38,25 +38,20 @@ const HeaderControl = ({nameFile, formState, formValidation, sendForm, onInputCh
           <Colxx xxs="12">
             {/* import excel buttons */}
             <div className="mb-3 input-group">
-              <div className="custom-file">
-                <input
-                  type="file"
-                  accept=".xlsx, .xls"
-                  id="nameFile"
-                  name="nameFile"
-                  className="custom-file-input"
-                  onChange={fnImportExcel}
-                />
-                <label className="custom-file-label" htmlFor="load-file">{nameFile}</label>
-              </div>
-              <div className="input-group-prepend">
-                <Button variant="contained" color="success" component="span" onClick={fnSave} style={{marginRight: 5}}>
-                  <i className="bi bi-file-arrow-up"/> {IntlMessages("button.import")}
-                </Button>
-                <Button color="secondary" onClick={fnClearInputs}>
-                  <i className="bi bi-stars"/> {IntlMessages("button.clear")}
-                </Button>
-              </div>
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                id="nameFile"
+                name="nameFile"
+                className="form-control"
+                onChange={fnImportExcel}
+              />
+              <Button variant="contained" color="success" component="span" onClick={fnSave} style={{marginRight: 5}}>
+                <i className="bi bi-file-arrow-up"/> {IntlMessages("button.import")}
+              </Button>
+              <Button color="secondary" onClick={fnClearInputs}>
+                <i className="bi bi-stars"/> {IntlMessages("button.clear")}
+              </Button>
             </div>
           </Colxx>
         </Row>

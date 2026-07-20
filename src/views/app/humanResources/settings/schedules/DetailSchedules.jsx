@@ -301,7 +301,7 @@ const DetailSchedules = ({ name, d1Status, d1HourIn, d1HourOut, d2Status, d2Hour
         <Row>
           <Colxx xxs="12" align="right">
             <Button 
-              color="secondary" onClick={onResetForm} className="mr-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}
+              color="secondary" onClick={onResetForm} className="me-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}
             </Button>
             <Button 
               color="primary" onClick={fnSave}><i className="iconsminds-save" /> {IntlMessages("button.save")}

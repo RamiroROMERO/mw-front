@@ -67,10 +67,10 @@ const DetailJobPosition = ({levelId, name, description, maxHours, status, fnForm
         <Row>
           <Colxx xxs="12" align="right">
             <Button
-              color="success" onClick={fnFormLevel} className="mr-1"><i className="bi bi-stars" /> {IntlMessages("button.level")}
+              color="success" onClick={fnFormLevel} className="me-1"><i className="bi bi-stars" /> {IntlMessages("button.level")}
             </Button>
             <Button
-              color="secondary" onClick={fnClearInputs} className="mr-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}
+              color="secondary" onClick={fnClearInputs} className="me-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}
             </Button>
             <Button
               color="primary" onClick={fnSave}><i className="iconsminds-save" /> {IntlMessages("button.save")}

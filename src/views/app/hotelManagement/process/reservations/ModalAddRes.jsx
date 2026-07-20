@@ -62,7 +62,7 @@ const ModalAddRes = ({data, setOpen}) => {
     <ModalBody>
       <Row>
         <Colxx xxs="12">
-          <Nav tabs className="separator-tabs ml-0 mb-4">
+          <Nav tabs className="separator-tabs ms-0 mb-4">
             <NavItem>
               <NavLink
                 className={classnames({

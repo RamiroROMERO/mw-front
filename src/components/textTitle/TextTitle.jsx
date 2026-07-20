@@ -2,7 +2,7 @@ import { IntlMessages } from '@Helpers/Utils'
 
 const TextTitle = ({title="", subTitle=""}) => {
   return (
-    <div className="float-left float-none-xs mb-2">
+    <div className="float-start float-none-xs mb-2">
       <div className="d-inline-block">
         <h6 className="d-inline">
           {IntlMessages(title)}

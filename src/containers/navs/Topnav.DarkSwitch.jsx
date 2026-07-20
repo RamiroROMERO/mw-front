@@ -29,7 +29,7 @@ const TopnavDarkSwitch = () => {
   };
 
   return (
-    <div className="d-none d-md-inline-block align-middle mr-3">
+    <div className="d-none d-md-inline-block align-middle me-3">
       <Switch
         id="tooltip_switch"
         className="custom-switch custom-switch-primary custom-switch-small"

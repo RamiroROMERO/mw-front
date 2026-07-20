@@ -27,7 +27,7 @@ const OptionCards = ({list=[], fnExecute=undefined, display='grid'}) => {
             />
             <img alt="" src="/assets/img/profiles/l-1.jpg" className="list-thumbnail align-self-center m-1 small" />
               <div className='d-flex flex-grow-1 min-width-zero'>
-                <div className='pl-2 align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero card-body card-body-edited'>
+                <div className='ps-2 align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero card-body card-body-edited'>
                   <div className='min-width-zero'>
                     <div className='truncate mb-1 card-title card-title-edited'>{item.caption}</div>
                     <p className="text-muted text-small mb-2 card-text">{item.description}</p>
@@ -40,7 +40,7 @@ const OptionCards = ({list=[], fnExecute=undefined, display='grid'}) => {
     </div>
     {/* <img alt="profile" src="/assets/img/profiles/l-1.jpg" className="img-thumbnail list-thumbnail align-self-center m-4  rounded-circle small" />
               <div className='d-flex flex-grow-1 min-width-zero'>
-                <div className='pl-0 align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero card-body'>
+                <div className='ps-0 align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero card-body'>
                   <div className='min-width-zero'>
                     <p className='truncate mb-1 card-subtitle'>{item.caption}</p>
                   </div>

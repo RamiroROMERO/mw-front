@@ -76,13 +76,13 @@ const Header = ({listEmployees, listTypes, setLoading, enableGenerateReport, set
           </Colxx>
           <Colxx xxs={12} md={12} lg={5} style={{textAlign: 'right'}}>
             <Button
-              color="primary" onClick={fnGetData} className="mr-1"><i className="bi bi-calculator" /> {IntlMessages("button.calulate")}
+              color="primary" onClick={fnGetData} className="me-1"><i className="bi bi-calculator" /> {IntlMessages("button.calulate")}
             </Button>
             <Button
-              color="secondary" onClick={fnPrintPdf} className="mr-1"><i className="bi bi-printer" /> {IntlMessages("button.print")}
+              color="secondary" onClick={fnPrintPdf} className="me-1"><i className="bi bi-printer" /> {IntlMessages("button.print")}
             </Button>
             <Button
-              color="success" onClick={fnGeneratePaymentPlan} className="mr-1"><i className="bi bi-currency-dollar" /> {IntlMessages("button.generatePaymentPlan")}
+              color="success" onClick={fnGeneratePaymentPlan} className="me-1"><i className="bi bi-currency-dollar" /> {IntlMessages("button.generatePaymentPlan")}
             </Button>
           </Colxx>
         </Row>

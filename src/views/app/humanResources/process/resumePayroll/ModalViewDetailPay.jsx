@@ -30,7 +30,7 @@ const ModalViewDetailPay = ({setOpen, data}) => {
       <ModalBody>
         <Row>
           <Colxx xxs="12">
-            <Nav tabs className="separator-tabs ml-0 mb-4">
+            <Nav tabs className="separator-tabs ms-0 mb-4">
               <NavItem>
                 <NavLink
                   className={classnames({
@@ -246,7 +246,7 @@ const ModalViewDetailPay = ({setOpen, data}) => {
                     />
                   </Colxx>
                   <Colxx xxs="12" align="right" className="mb-3">
-                    <Button color="secondary" onClick={fnClearInputsIncomes} className="mr-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
+                    <Button color="secondary" onClick={fnClearInputsIncomes} className="me-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
                     <Button color="primary" onClick={fnAddIncomes}>
                       <i className="bi bi-plus" /> {IntlMessages("button.add")}
                     </Button>
@@ -335,7 +335,7 @@ const ModalViewDetailPay = ({setOpen, data}) => {
                     />
                   </Colxx>
                   <Colxx xxs="12" sm="9" lg="12" xl="12" align="right" className="mb-3">
-                    <Button color="secondary" onClick={fnClearInputsDeductions} className="mr-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
+                    <Button color="secondary" onClick={fnClearInputsDeductions} className="me-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
                     <Button color="primary" onClick={fnAddDeductionExternal}>
                       <i className="bi bi-plus" /> {IntlMessages("button.add")}
                     </Button>

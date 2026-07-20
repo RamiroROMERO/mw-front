@@ -105,7 +105,7 @@ export const ModalDetail = (props) => {
             </Row>
             <Row>
               <Colxx xxs={12}>
-                <Button className='btn btn-info mr-2' onClick={fnNewDetail}><i className="bi bi-stars" /> {IntlMessages("button.new")} </Button>
+                <Button className='btn btn-info me-2' onClick={fnNewDetail}><i className="bi bi-stars" /> {IntlMessages("button.new")} </Button>
                 <Button className='btn btn-info' onClick={fnSaveDetail}><i className="iconsminds-save" /> {IntlMessages("button.save")} </Button>
               </Colxx>
             </Row>

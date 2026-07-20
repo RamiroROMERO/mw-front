@@ -320,7 +320,7 @@ const Providers = (props) => {
                                       <tr id={`tr-table-dataproducts-${item.id}`} key={idx}>
                                         <th scope="row">{item.bankName}</th>
                                         <td>{item.bankCtaCode}</td>
-                                        <td className="text-right">
+                                        <td className="text-end">
                                           <Button type="button" className="btn-circle-table" color="warning" title={IntlMessages("button.edit")}
                                             onClick={() => { fnEditAccount(item) }}>
                                             <i className='bi bi-pencil' />

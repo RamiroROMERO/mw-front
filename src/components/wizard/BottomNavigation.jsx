@@ -18,7 +18,7 @@ const BottomNavigation = ({
         <div className={`wizard-buttons ${className}`}>
           <Button
             color="primary"
-            className={`mr-1 ${steps.indexOf(step) <= 0 ? 'disabled' : ''}`}
+            className={`me-1 ${steps.indexOf(step) <= 0 ? 'disabled' : ''}`}
             onClick={() => {
               onClickPrev(previous, steps, step);
             }}

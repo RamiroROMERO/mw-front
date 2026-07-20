@@ -19,7 +19,7 @@ const HeaderHR = ({ listProjects, projectId, onProjectChange, fnAddSchedule, fnP
             />
           </Colxx>
           <Colxx xxs={12} md={4} lg={4} style={{ textAlign: 'right' }}>
-            <Button color="secondary" onClick={fnAddSchedule} className="mr-1">
+            <Button color="secondary" onClick={fnAddSchedule} className="me-1">
               <i className="bi bi-plus" /> {IntlMessages("button.add")}
             </Button>
             <Button color="success" onClick={fnPrintSchedule}>

@@ -22,7 +22,7 @@ export const InputMask = ({ name, label = "", value, onChange, type = "text", fe
                 onChange={onChange}
                 type={type}
                 style={{ resize: "none", boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)" }}
-                className={bold ? 'font-weight-bold' : ''}
+                className={bold ? 'fw-bold' : ''}
                 placeholder={mask}
                 {...rest}
             />

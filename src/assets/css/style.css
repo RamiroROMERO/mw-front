@@ -71,6 +71,7 @@
 }
 
 .div-label-border {
+  position: relative;
   border-radius: 0.5rem;
   padding: 10px;
   padding-top: 15px !important;
@@ -102,6 +103,7 @@
 }
 
 .container-with-label {
+  position: relative;
   border: 1.5px solid #d7d7d7;
   border-radius: 0.4rem;
   padding: 10px;

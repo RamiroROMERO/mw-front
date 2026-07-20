@@ -265,7 +265,7 @@ const ModalDeduccBonif = ({ data, setOpen }) => {
         </Row>
         <Row className='mb-2'>
           <Colxx xxs="12" align="right">
-            <Button color="secondary" onClick={fnClearInputs} className="mr-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
+            <Button color="secondary" onClick={fnClearInputs} className="me-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
             <Button color="primary" onClick={fnSave}><i className="iconsminds-save" /> {IntlMessages("button.save")}</Button>
           </Colxx>
         </Row>

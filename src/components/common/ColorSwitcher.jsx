@@ -114,7 +114,7 @@ const ColorSwitcher = () => {
           ))}
         </div>
       </div>
-      <div className=" pb-0 pl-4 pt-4">
+      <div className=" pb-0 ps-4 pt-4">
         <FormGroup>
           <Label for="radiusRadio">Border Radius </Label>
           <div>

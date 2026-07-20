@@ -37,7 +37,7 @@ const NotificationItem = ({ img, title, date, data, setOpen }) => {
           className="img-thumbnail list-thumbnail xsmall border-0 rounded-circle"
         />
       </NavLink> */}
-      <div className="pl-3 pr-2">
+      <div className="ps-3 pe-2">
         <NavLink onClick={fnOpenProject} href="#">
           <p className="font-weight-medium mb-1">{title}</p>
           <p className="text-muted mb-0 text-small">{date}</p>
@@ -66,7 +66,7 @@ const TopnavNotifications = () => {
 
   return (
     <div className="position-relative d-inline-block">
-      <UncontrolledDropdown className="dropdown-menu-right" isOpen={openNotifications} toggle={toggle}>
+      <UncontrolledDropdown isOpen={openNotifications} toggle={toggle}>
         <DropdownToggle
           className="header-icon notificationButton"
           color="empty"

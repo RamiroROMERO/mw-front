@@ -4,7 +4,7 @@ import IntlMessages from '@Helpers/IntlMessages';
 const UserFollow = ({ data }) => {
   return (
     <div className="d-flex flex-row mb-3 pb-3 border-bottom justify-content-between align-items-center">
-      <div className="pl-3 flex-fill">
+      <div className="ps-3 flex-fill">
         <NavLink to="#" location={{}}>
           <p className="font-weight-medium mb-0">{data.name}</p>
           <p className="text-muted mb-0 text-small">{data.status}</p>

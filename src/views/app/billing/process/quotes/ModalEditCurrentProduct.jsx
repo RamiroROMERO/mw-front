@@ -206,7 +206,7 @@ export const ModalEditCurrentProduct = (props) => {
         <hr />
         <Row>
           <Colxx xxs={12}>
-            <h3 className='text-right'>
+            <h3 className='text-end'>
               {`Total: ${formatNumber(total, 'Lps. ', 2)}`}
             </h3>
           </Colxx>

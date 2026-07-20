@@ -685,7 +685,7 @@ const ProjectDetail = (props) => {
                                       <th scope="row">{item.nameRawMaterial}</th>
                                       <td>{item.qtyRawMaterial} G.</td>
                                       <td className='d-xs-none-table-cell'>{item.notesRawMaterial}</td>
-                                      <td className="text-right"><Button type="button" className="btn-circle-table" color="primary" title={IntlMessages("button.edit")}
+                                      <td className="text-end"><Button type="button" className="btn-circle-table" color="primary" title={IntlMessages("button.edit")}
                                         onClick={() => { fnEditItem(item) }}>
                                         <i className='bi bi-pencil' />
                                       </Button>
@@ -773,9 +773,9 @@ const ProjectDetail = (props) => {
                               <tr>
                                 <td>{dataInvoice.setDocument ? dataInvoice.setDocument.name : ""}</td>
                                 <td>{dataInvoice.date}</td>
-                                <td className="text-right">{dataInvoice.facCliente ? dataInvoice.facCliente.nomcli : ""}</td>
-                                <td className="text-right">{dataInvoice.facCliente ? dataInvoice.facCliente.rtn : ""}</td>
-                                <td className="text-right">{formatNumber(dataInvoice.total, 'L.', 2)}</td>
+                                <td className="text-end">{dataInvoice.facCliente ? dataInvoice.facCliente.nomcli : ""}</td>
+                                <td className="text-end">{dataInvoice.facCliente ? dataInvoice.facCliente.rtn : ""}</td>
+                                <td className="text-end">{formatNumber(dataInvoice.total, 'L.', 2)}</td>
                               </tr>
                             </tbody>
                           </Table>
@@ -817,8 +817,8 @@ const ProjectDetail = (props) => {
                                     <th scope="row">{idx + 1}</th>
                                     <td>{item.date}</td>
                                     <td>{item.documentCode}</td>
-                                    <td className="text-right">{formatNumber(item.value, 'L.', 2)}</td>
-                                    <td className="text-right">{(item.value / dataInvoice.total) * 100} %</td>
+                                    <td className="text-end">{formatNumber(item.value, 'L.', 2)}</td>
+                                    <td className="text-end">{(item.value / dataInvoice.total) * 100} %</td>
                                   </tr>
                                 );
                               })}
@@ -826,7 +826,7 @@ const ProjectDetail = (props) => {
                             <tfoot>
                               <tr>
                                 <th scope="row" colSpan="4">{IntlMessages("page.workOrders.detail.payment.total")}</th>
-                                <th className="text-right">{formatNumber(valuePayment, 'L.', 2)}</th>
+                                <th className="text-end">{formatNumber(valuePayment, 'L.', 2)}</th>
                               </tr>
                             </tfoot>
                           </Table>
@@ -840,27 +840,27 @@ const ProjectDetail = (props) => {
                         <tbody>
                           <tr>
                             <td className="text-semi-muted">{IntlMessages("page.workOrders.detail.payment.subTotalValue")}:</td>
-                            <td className="text-right">{formatNumber(dataInvoice.subTotalValue, 'L.', 2)}</td>
+                            <td className="text-end">{formatNumber(dataInvoice.subTotalValue, 'L.', 2)}</td>
                           </tr>
                           <tr>
                             <td className="text-semi-muted">{IntlMessages("page.workOrders.detail.payment.discountValue")} :</td>
-                            <td className="text-right">{formatNumber(dataInvoice.discountValue, 'L.', 2)}</td>
+                            <td className="text-end">{formatNumber(dataInvoice.discountValue, 'L.', 2)}</td>
                           </tr>
                           <tr>
                             <td className="text-semi-muted">{IntlMessages("page.workOrders.detail.payment.taxValue")}:</td>
-                            <td className="text-right">{formatNumber(dataInvoice.taxValue, 'L.', 2)}</td>
+                            <td className="text-end">{formatNumber(dataInvoice.taxValue, 'L.', 2)}</td>
                           </tr>
-                          <tr className="font-weight-bold">
+                          <tr className="fw-bold">
                             <td className="text-semi-muted">{IntlMessages("page.workOrders.detail.payment.total")}:</td>
-                            <td className="text-right">{formatNumber(dataInvoice.total, 'L.', 2)}</td>
+                            <td className="text-end">{formatNumber(dataInvoice.total, 'L.', 2)}</td>
                           </tr>
                           <tr>
                             <td className="text-semi-muted">{IntlMessages("page.workOrders.detail.payment.valuePayment")}:</td>
-                            <td className="text-right">{formatNumber(valuePayment, 'L.', 2)}</td>
+                            <td className="text-end">{formatNumber(valuePayment, 'L.', 2)}</td>
                           </tr>
-                          <tr className="font-weight-bold">
+                          <tr className="fw-bold">
                             <td className="text-semi-muted">{IntlMessages("page.workOrders.detail.payment.valueOwed")} :</td>
-                            <td className="text-right">{dataInvoice.total ? formatNumber(dataInvoice.total - valuePayment, 'L.', 2) : 0}</td>
+                            <td className="text-end">{dataInvoice.total ? formatNumber(dataInvoice.total - valuePayment, 'L.', 2) : 0}</td>
                           </tr>
                         </tbody>
                       </Table>

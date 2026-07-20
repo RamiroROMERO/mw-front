@@ -30,7 +30,7 @@ class ErrorBoundary extends React.Component {
           style={{ minHeight: '100vh', padding: '2rem' }}
         >
           <div>
-            <p className="display-1 font-weight-bold mb-3">Oops!</p>
+            <p className="display-1 fw-bold mb-3">Oops!</p>
             <p className="mb-4">
               Ocurrió un error inesperado. Probá recargar la página; si el problema persiste, contactá a soporte.
             </p>

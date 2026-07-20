@@ -42,7 +42,7 @@ const BreadcrumbContainer = ({ heading, match }) => {
           )}
           <BreadcrumbItems path={path} />
         </Colxx>
-        <Colxx sm={4} md={3} className="d-none d-sm-block text-right">
+        <Colxx sm={4} md={3} className="d-none d-sm-block text-end">
           {companyLogo !== "" && <img className='breadcrumb-logo' src={companyLogo} alt="Logo" />}
         </Colxx>
       </Row>
@@ -59,7 +59,7 @@ const BreadcrumbItems = ({ path }) => {
   }
   return (
     <>
-      <Breadcrumb className="pt-0 breadcrumb-container d-none d-sm-block d-lg-inline-block">
+      <Breadcrumb className="pt-0 breadcrumb-container d-none d-sm-block">
         {paths.map((sub, index) => {
           return (
             <BreadcrumbItem key={index} active={paths.length === index + 1}>

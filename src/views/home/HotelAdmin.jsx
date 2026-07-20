@@ -12,10 +12,10 @@ const HotelAdmin = ({ setLoading }) => {
   return (
     <>
       <Row>
-        <Col xs={12} className='text-right'>
+        <Col xs={12} className='text-end'>
           <Card className='mb-3'>
             <CardBody>
-              <Button className='mr-2' color='success' onClick={fnCreateCustomer}> <i className="bi bi-person-plus"></i> Nuevo Cliente </Button>
+              <Button className='me-2' color='success' onClick={fnCreateCustomer}> <i className="bi bi-person-plus"></i> Nuevo Cliente </Button>
               <Button color='primary' onClick={fnCreateReservation}> <i className="bi bi-node-plus"></i> Nueva Reservación </Button>
             </CardBody>
           </Card>

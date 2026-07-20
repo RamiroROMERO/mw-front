@@ -65,8 +65,8 @@ const FilterPayroll = ({dateFilter, customerIdFilter, projectIdFilter, previousP
         />
       </Colxx>
       <Colxx xxs="12" sm="12" lg="8" align="right">
-        <Button color="secondary" onClick={fnClearInputs} className="mr-1 mb-3 mr-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
-        <Button color="success" onClick={fnGetPayrolls} className="mr-1 mb-3">
+        <Button color="secondary" onClick={fnClearInputs} className="me-1 mb-3 me-1"><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
+        <Button color="success" onClick={fnGetPayrolls} className="me-1 mb-3">
           <i className="bi bi-funnel" /> {IntlMessages("button.filter")}
         </Button>
       </Colxx>

@@ -5,6 +5,15 @@ html {
   scrollbar-color: auto;
 }
 
+// El bootstrap.min.css (BS4) vendored que se usaba antes no traía el
+// subrayado de <a> del reboot (probablemente un build recortado). El
+// paquete npm bootstrap@5 estándar sí lo trae, y ningún estilo del theme
+// lo cancelaba porque nunca hizo falta — se agrega acá para no depender de
+// que cada componente individual lo pise.
+a {
+  text-decoration: none;
+}
+
 body::-webkit-scrollbar-track {
   background: orange;
   /* color of the tracking area */

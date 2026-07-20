@@ -19,7 +19,7 @@ const DetailInput = ({date, onInputChange, fnGetData}) => {
         </Colxx>
         <Colxx>
           <Button
-            color="info" onClick={fnGetData} className="mr-1"><i className="bi bi-arrow-clockwise" /> {IntlMessages("button.update")}
+            color="info" onClick={fnGetData} className="me-1"><i className="bi bi-arrow-clockwise" /> {IntlMessages("button.update")}
           </Button>
         </Colxx>
       </Row>

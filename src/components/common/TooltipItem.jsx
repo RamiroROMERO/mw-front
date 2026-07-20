@@ -6,7 +6,7 @@ const TooltipItem = ({ id, item }) => {
 
   return (
     <span>
-      <Button className="mr-1 mb-2" color="secondary" id={`tooltip_${id}`}>
+      <Button className="me-1 mb-2" color="secondary" id={`tooltip_${id}`}>
         {item.text}
       </Button>
       <Tooltip

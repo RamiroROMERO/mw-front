@@ -103,7 +103,7 @@ const DataTablePagination = ({
     <>
       <div className="text-center">
         {showPageJump && (
-          <div className="float-left pt-2">
+          <div className="float-start pt-2">
             <span>Page </span>
             <UncontrolledDropdown className="d-inline-block">
               <DropdownToggle caret color="outline-primary" size="xs">
@@ -150,8 +150,8 @@ const DataTablePagination = ({
           </PaginationItem>
         </Pagination>
         {showPageSizeOptions && (
-          <div className="float-right pt-2">
-            <span className="text-muted text-small mr-1">Items </span>
+          <div className="float-end pt-2">
+            <span className="text-muted text-small me-1">Items </span>
             <UncontrolledDropdown className="d-inline-block">
               <DropdownToggle caret color="outline-primary" size="xs">
                 {pageSize}

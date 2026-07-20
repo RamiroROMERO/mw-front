@@ -52,7 +52,7 @@ const ProductsCatalog = (props) => {
             <CardBody>
               <ControlPanel {...propsToControlPanel} />
               <Separator className="mt-2 mb-3" />
-              <Nav tabs className="separator-tabs ml-0 mb-4">
+              <Nav tabs className="separator-tabs ms-0 mb-4">
                 <NavItem>
                   <NavLink
                     className={classnames({
@@ -421,7 +421,7 @@ const ProductsCatalog = (props) => {
                                           type="text"
                                         />
                                       </td>
-                                      <td className="text-right">
+                                      <td className="text-end">
                                         <InputField
                                           value={priceLocalMin}
                                           name="priceLocalMin"
@@ -448,7 +448,7 @@ const ProductsCatalog = (props) => {
                                           type="text"
                                         />
                                       </td>
-                                      <td className="text-right">
+                                      <td className="text-end">
                                         <InputField
                                           value={priceLocalMid}
                                           name="priceLocalMid"
@@ -475,7 +475,7 @@ const ProductsCatalog = (props) => {
                                           type="text"
                                         />
                                       </td>
-                                      <td className="text-right">
+                                      <td className="text-end">
                                         <InputField
                                           value={priceLocalMax}
                                           name="priceLocalMax"
@@ -522,7 +522,7 @@ const ProductsCatalog = (props) => {
                                           type="text"
                                         />
                                       </td>
-                                      <td className="text-right">
+                                      <td className="text-end">
                                         <InputField
                                           value={priceOutsideMin}
                                           name="priceOutsideMin"
@@ -549,7 +549,7 @@ const ProductsCatalog = (props) => {
                                           type="text"
                                         />
                                       </td>
-                                      <td className="text-right">
+                                      <td className="text-end">
                                         <InputField
                                           value={priceOutsideMid}
                                           name="priceOutsideMid"
@@ -576,7 +576,7 @@ const ProductsCatalog = (props) => {
                                           type="text"
                                         />
                                       </td>
-                                      <td className="text-right">
+                                      <td className="text-end">
                                         <InputField
                                           value={priceOutsideMax}
                                           name="priceOutsideMax"
@@ -687,7 +687,7 @@ const ProductsCatalog = (props) => {
                               <tfoot>
                                 <tr>
                                   <th scope="row" colSpan="2">Total</th>
-                                  <th className="text-right">00.00</th>
+                                  <th className="text-end">00.00</th>
                                 </tr>
                               </tfoot>
                             </Table>

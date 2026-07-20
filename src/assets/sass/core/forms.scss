@@ -1,7 +1,15 @@
+// Bootstrap 5 eliminó el componente .form-group (existía en el bootstrap.min.css
+// BS4 vendored que se usaba antes: `.form-group{margin-bottom:1rem}`). La app
+// sigue usando className="form-group" directo en varios inputs compartidos
+// (InputLabel, Inputfield, InputMask, SimpleSelect, dateCalendar, dateTimeCalendar,
+// SearchSelect — vía el patrón has-float-label), así que sin esta regla la
+// separación vertical entre inputs colapsa a 0.
+.form-group {
+  margin-bottom: 1rem;
+}
+
 .av-invalid .av-label,
 .form-group.text-danger,
-.was-validated .custom-control-input:invalid~.custom-control-label,
-.custom-control-input.is-invalid~.custom-control-label,
 .was-validated .form-check-input:invalid~.form-check-label,
 .form-check-input.is-invalid~.form-check-label {
   color: $primary-color !important;
@@ -71,8 +79,7 @@
   }
 }
 
-.form-check-label,
-.custom-control-label {
+.form-check-label {
   line-height: 24px !important;
 }
 
@@ -97,126 +104,46 @@ select.form-control:not([size]):not([multiple]) {
   height: initial;
 }
 
-.custom-control-input:disabled~.custom-control-label::before {
-  background-color: rgba($primary-color, 0.25) !important;
-}
-
-.custom-control-input:active~.custom-control-label::before {
-  background-color: transparent;
-}
-
-.custom-checkbox .custom-control-label.indeterminate::after {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4'%3E%3Cpath stroke='" + encodecolor($button-text-color ) + "' d='M0 2h4'/%3E%3C/svg%3E");
-}
-
-.custom-checkbox .custom-control-input:checked~.custom-control-label::after {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='" + encodecolor($button-text-color ) + "' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E");
-}
-
-.custom-radio .custom-control-input:checked~.custom-control-label::after {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='" + encodecolor($button-text-color ) + "'/%3E%3C/svg%3E");
-}
-
-.custom-control-label,
-.custom-control-input {
-  outline: initial !important;
-  box-shadow: initial !important;
-}
-
-.was-validated .custom-control-input:invalid~.custom-control-label::before,
-.custom-control-input.is-invalid~.custom-control-label::before {
-  background-color: initial;
-}
-
-.custom-control-input {
-  left: 1px;
-  top: 3px;
-  opacity: 0;
-  z-index: 1;
-}
-
-.custom-control-label::before {
-  border: 1px solid $muted-color;
-  background: initial;
-}
-
-.was-validated .custom-control-input:invalid~.custom-control-label::before,
-.custom-control-input.is-invalid~.custom-control-label::before {
-  border-color: $muted-color;
-}
-
-.custom-checkbox .custom-control-input:indeterminate~.custom-control-label::before {
+// Bootstrap 5 estiliza .form-check-input directamente sobre el <input> real
+// (appearance: none + background-image), a diferencia del truco de BS4 de
+// dibujar el box/checkmark con ::before/::after sobre el <label>. Estos
+// overrides sólo necesitan recolorear al color del tema; el checkmark/dot/
+// knob ya los da Bootstrap 5 vía las custom properties --bs-form-check-*.
+.form-check-input:checked {
   background-color: $theme-color-1;
+  border-color: $theme-color-1;
 }
 
-.custom-control-input:checked~.custom-control-label::before {
+.form-check-input:focus {
+  border-color: $theme-color-1;
+  box-shadow: 0 0 0 0.25rem rgba($theme-color-1, 0.25);
+}
+
+.form-switch .form-check-input:checked {
   background-color: $theme-color-1;
-  box-shadow: initial !important;
-  border: 1px solid $theme-color-1;
+  border-color: $theme-color-1;
 }
 
-.custom-checkbox .custom-control-input:checked~.custom-control-label::before,
-.custom-radio .custom-control-input:checked~.custom-control-label::before {
-  background-color: $theme-color-1;
-  box-shadow: initial !important;
-}
+// BS5 posiciona el input de .form-check con float (relativo al bloque, no al
+// label), a diferencia de BS4 que dibujaba el box como pseudo-elemento del
+// <label> (elemento inline). Por eso un checkbox dentro de un contenedor
+// alineado a la derecha (text-end, o el atributo legacy align="right" que
+// reenvía Colxx en @Components/common/CustomBootstrap) quedaba "partido":
+// el box pegado a la izquierda (los floats no responden a text-align) y
+// sólo el label movido a la derecha. Se convierte el .form-check afectado
+// en flex para que ambos se muevan juntos, como antes.
+[align='right'] .form-check,
+.text-end .form-check {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-left: 0;
+  gap: 0.5em;
 
-.custom-checkbox .custom-control-input:checked~.custom-control-label::before,
-.custom-radio .custom-control-input:checked~.custom-control-label::before {
-  background-color: $theme-color-1;
-  box-shadow: initial !important;
-}
-
-.custom-control-label::after,
-.custom-control-label::before {
-  box-shadow: initial !important;
-  outline: initial !important;
-}
-
-.check-all {
-  padding-top: 0;
-
-  label.custom-control-label {
-    vertical-align: top;
-    line-height: initial !important;
-
-    &:before,
-    &:after {
-      border: initial !important;
-      background: initial !important;
-    }
+  .form-check-input {
+    float: none;
+    margin-left: 0;
   }
-
-  span.custom-control-label {
-    line-height: 1.1rem !important;
-
-    &:before {
-      top: 0 !important;
-    }
-
-    &.indeterminate {
-      &:after {
-        top: 0 !important;
-      }
-    }
-  }
-
-  .custom-control {
-    margin-top: 11px;
-  }
-
-  .custom-control-input:checked~.custom-control-label span::after {
-    top: 0 !important;
-    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='" + encodecolor($button-text-color ) + "' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E");
-  }
-}
-
-.custom-control-label::before {
-  top: 0.2rem;
-}
-
-.custom-control-label::after {
-  top: 0.2rem;
 }
 
 .btn.rotate-icon-click i {
@@ -225,14 +152,6 @@ select.form-control:not([size]):not([multiple]) {
 
 .btn.rotate i {
   transform: rotate(180deg);
-}
-
-.btn .custom-control-label::before {
-  border: 1px solid $button-text-color;
-}
-
-.btn .custom-control-input:checked~.custom-control-label::before {
-  border: 1px solid $button-text-color;
 }
 
 .btn-group-icon {
@@ -332,45 +251,9 @@ input:-webkit-autofill {
   border-color: $theme-color-1;
 }
 
-.custom-file-input:focus~.custom-file-label {
-  border-color: rgba($theme-color-1, 0.6);
-}
-
-.custom-file-label::after {
-  background: $foreground-color;
-  color: $primary-color;
-  border-color: $separator-color;
-}
-
-.custom-file-input {
-  box-shadow: initial !important;
-}
-
-.custom-file-label {
-  background: $foreground-color;
-  border-color: $separator-color;
-}
-
-.custom-file-label {
-  box-shadow: initial !important;
-  border-radius: $border-radius;
-  height: calc(2.5rem + 2px);
-  padding: 0.75rem 0.75rem 0.5rem 0.75rem;
-}
-
-.custom-file {
-  height: calc(2.5rem + 2px);
-}
-
-.custom-file-label:focus,
-.custom-file-input:focus {
-  border-color: $theme-color-1;
-}
-
-.custom-file-label::after {
-  height: calc(calc(2.5rem + 2px) - 1px * 2);
-  padding: 0.75rem 0.75rem 0.5rem 0.75rem;
-}
+// BS5 no tiene wrapper .custom-file — el <input type="file"> se estiliza
+// directo con .form-control (ver HeaderControl.jsx), que ya cubre focus/
+// radius/padding vía las reglas .form-control existentes de este archivo.
 
 .react-tagsinput-input {
   padding-top: 2px !important;

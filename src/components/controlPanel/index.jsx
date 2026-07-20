@@ -13,7 +13,7 @@ const ControlPanel = (props) => {
   const labelForDelete = btnDeleteForDisable ? "button.disable" : "button.delete"
   return (
     <>
-      <Nav tabs className="separator-tabs ml-0 mb-2">
+      <Nav tabs className="separator-tabs ms-0 mb-2">
         <NavItem>
           <NavLink
             className={classnames({
@@ -56,7 +56,7 @@ const ControlPanel = (props) => {
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId="1">
-          <ButtonGroup className="mr-2">
+          <ButtonGroup className="me-2">
             {fnNew ? <Button color="light" className="btn-control-panel" onClick={fnNew}><i className="bi bi-file-earmark-plus" /><br /> {IntlMessages('button.new')}</Button> : ''}
             {fnSearch ? <Button color="light" className="btn-control-panel" onClick={fnSearch}><i className="bi bi-folder2-open" /><br /> {IntlMessages('button.search')}</Button> : ''}
             {fnSave ? <Button color="light" className="btn-control-panel" onClick={fnSave}><i className="bi bi-floppy" /><br /> {IntlMessages('button.save')}</Button> : ''}

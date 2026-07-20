@@ -6,7 +6,7 @@ import { adminRoot } from '@Constants/defaultValues';
 const TopnavEasyAccess = () => {
   return (
     <div className="position-relative d-none d-sm-inline-block">
-      <UncontrolledDropdown className="dropdown-menu-right">
+      <UncontrolledDropdown>
         <DropdownToggle className="header-icon" color="empty">
           <i className="simple-icon-grid" />
         </DropdownToggle>

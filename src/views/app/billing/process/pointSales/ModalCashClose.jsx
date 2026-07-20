@@ -304,7 +304,7 @@ const ModalCashclose = (props) => {
   return (
     <>
       <ModalBody>
-        <Nav tabs className="separator-tabs ml-0 mb-2">
+        <Nav tabs className="separator-tabs ms-0 mb-2">
           <NavItem>
             <NavLink
               className={classnames({

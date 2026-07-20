@@ -135,16 +135,16 @@ const ModalNewRooms = ({data, setOpen}) => {
                   {listRoomServices.map((item) => {
                     return (
                       <Colxx xxs={12} key={item.id}>
-                        <div className="form-check custom-checkbox custom-control">
+                        <div className="form-check">
                           <input
-                            className="form-check-input custom-control-input"
+                            className="form-check-input"
                             type="checkbox"
                             id={item.id}
                             name={item.id}
                             onChange={onServicesChange}
                             defaultChecked={item.checked}
                           />
-                          <label className="form-check-label custom-control-label" htmlFor={item.id}>
+                          <label className="form-check-label" htmlFor={item.id}>
                             {item.name}
                           </label>
                         </div>

@@ -9,9 +9,9 @@ function XReactTableCheck({ indeterminate, ...rest }) {
     }
   }, [ref, indeterminate]);
 
-  return <div className="custom-control custom-checkbox">
-    <input type="checkbox" className="custom-control-input" ref={ref} {...rest} />
-    <label className="custom-control-label"> </label>
+  return <div className="form-check">
+    <input type="checkbox" className="form-check-input" ref={ref} {...rest} />
+    <label className="form-check-label"> </label>
   </div>
 }
 

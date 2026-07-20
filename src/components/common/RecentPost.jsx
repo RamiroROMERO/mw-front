@@ -20,7 +20,7 @@ const RecentPost = ({ data }) => {
           </Badge>
         )}
       </NavLink>
-      <div className="pl-3 pt-2 pr-2 pb-2">
+      <div className="ps-3 pt-2 pe-2 pb-2">
         <NavLink className="d-block position-relative" to="#" location={{}}>
           <p className="list-item-heading">{data.title}</p>
         </NavLink>

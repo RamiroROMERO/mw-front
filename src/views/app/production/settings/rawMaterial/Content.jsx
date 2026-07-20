@@ -188,13 +188,13 @@ const RawMaterial = (props) => {
         <Colxx xxs="12">
           <Card className="mb-3">
             <CardBody>
-              <Button className="mr-2" color="success" onClick={fnNewProduct}><i className="bi bi-file-earmark-plus mr-1" />
+              <Button className="me-2" color="success" onClick={fnNewProduct}><i className="bi bi-file-earmark-plus me-1" />
                 {IntlMessages("button.newPoduct")}
               </Button>
-              <Button className="mr-2" color="primary" onClick={fnAddRawMaterial}><i className="simple-icon-plus mr-1" />
+              <Button className="me-2" color="primary" onClick={fnAddRawMaterial}><i className="simple-icon-plus me-1" />
                 {IntlMessages("button.addRawMaterial")}
               </Button>
-              <Button className="mr-2" color="danger" onClick={fnDeducRawMaterial}><i className="simple-icon-minus mr-1" />
+              <Button className="me-2" color="danger" onClick={fnDeducRawMaterial}><i className="simple-icon-minus me-1" />
                 {IntlMessages("button.deducRawMaterial")}
               </Button>
             </CardBody>

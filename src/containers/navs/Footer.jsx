@@ -13,7 +13,7 @@ const Footer = () => {
               <p className="mb-0 text-muted">{`${companyData?.dni} | ${companyData?.name}`}</p>
             </Colxx>
             <Colxx className="col-sm-6 d-none d-sm-block">
-              <div className='pt-0 pr-0 float-right'>
+              <div className='pt-0 pe-0 float-end'>
                 <p className="mb-0 text-muted">{`Multiwork ${fullYear} `}</p>
               </div>
             </Colxx>

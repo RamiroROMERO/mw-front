@@ -86,7 +86,7 @@ const ModalViewEmployees = ({data, setOpen}) => {
       </Row>
     </ModalBody>
     <ModalFooter>
-      <Button color="secondary" onClick={fnExportXlsx} className="mr-1 mb-1"><i className="bi bi-file-earmark-excel" /> {IntlMessages("button.export")}</Button>
+      <Button color="secondary" onClick={fnExportXlsx} className="me-1 mb-1"><i className="bi bi-file-earmark-excel" /> {IntlMessages("button.export")}</Button>
       <Button color="danger" onClick={()=>{setOpen(false)}} >
         <i className="bi bi-box-arrow-right"/>{` ${IntlMessages('button.exit')}`}
       </Button>

@@ -220,7 +220,7 @@ const TopNav = ({
           <MobileMenuIcon />
         </NavLink>
         <div className="d-inline-block">
-          <UncontrolledDropdown className="ml-2">
+          <UncontrolledDropdown className="ms-2">
             <DropdownToggle
               caret
               color="light"
@@ -268,9 +268,9 @@ const TopNav = ({
           </button>
         </div>
         <div className="user d-inline-block">
-          <UncontrolledDropdown className="dropdown-menu-right">
+          <UncontrolledDropdown>
             <DropdownToggle className="p-0" color="empty">
-              <span className="name mr-1">{userData.name}</span>
+              <span className="name me-1">{userData.name}</span>
               <span>
                 <img src={`${userImage || 'assets/users/user.png'}`} />
                 {/* <img src={`${'assets/users/user.png'}`} /> */}

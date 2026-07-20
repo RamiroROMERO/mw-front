@@ -16,7 +16,7 @@ const Content = () => {
             {/* <p className="mb-0 text-muted text-small mb-0">
               <IntlMessages id="pages.unauthorized-code" />
             </p> */}
-            <p className="display-1 font-weight-bold mb-5">403</p>
+            <p className="display-1 fw-bold mb-5">403</p>
             <NavLink
               to={adminRoot}
               className="btn btn-primary btn-shadow btn-lg"

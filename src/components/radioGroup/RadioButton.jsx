@@ -4,10 +4,10 @@ import { IntlMessages, validInt } from '@Helpers/Utils'
 export const RadioButton = ({ id, name, label, value, onChange, divLength, ...rest }) => {
 
   return (
-    <div className='custom-radio custom-control form-check'
+    <div className='form-check'
       style={{ width: divLength }} >
       <Input
-        className='form-check-input custom-control-input'
+        className='form-check-input'
         type="radio"
         id={`${name}-${id}`}
         name={name}
@@ -18,7 +18,7 @@ export const RadioButton = ({ id, name, label, value, onChange, divLength, ...re
         {...rest}
       />
       {label && (<Label htmlFor={`${name}-${id}`}
-        className='form-check-label custom-control-label'
+        className='form-check-label'
       >
         {IntlMessages(label)}
       </Label>)}

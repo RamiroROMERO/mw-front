@@ -7,7 +7,7 @@ const PopoverItem = ({ id, item }) => {
   return (
     <span>
       <Button
-        className="mr-1 mb-2"
+        className="me-1 mb-2"
         color="secondary"
         id={`popover_${id}`}
         onClick={() => setPopoverOpen(true)}

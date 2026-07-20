@@ -519,7 +519,7 @@ const UserProfile = (props) => {
           <Card className="mb-4">
             <CardBody>
 
-              <Nav tabs className="separator-tabs ml-0 mb-2">
+              <Nav tabs className="separator-tabs ms-0 mb-2">
                 <NavItem>
                   <NavLink
                     className={classnames({
@@ -754,7 +754,7 @@ const UserProfile = (props) => {
                 </Colxx>
                 <Colxx xxs="8" xs="8" sm="9" md="9" lg="9" xl="9">
                   <CardTitle className='mb-3'>{`${IntlMessages("page.users.profile.title.privileges")} - ${moduleName}`}</CardTitle>
-                  <Nav tabs className="separator-tabs ml-0 mb-2">
+                  <Nav tabs className="separator-tabs ms-0 mb-2">
                     <NavItem>
                       <NavLink
                         className={classnames({

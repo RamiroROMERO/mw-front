@@ -125,7 +125,7 @@ const Login = ({ loading, error, loginUserAction }) => {
                       </div>
                     )}
                   </div>
-                  <div className="text-right">
+                  <div className="text-end">
                     <Button
                       color="primary"
                       className={`btn-shadow btn-multiple-state ${loading ? 'show-spinner' : ''

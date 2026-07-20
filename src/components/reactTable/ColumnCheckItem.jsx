@@ -2,12 +2,12 @@
 const ColumnCheckItem = ({label, name, value, onChange, ...rest}) => {
 
   return (
-    <div 
-      className="form-check custom-checkbox custom-control"
+    <div
+      className="form-check"
       style={{marginLeft:'5px'}}
       >
-      <input 
-        className="form-check-input custom-control-input"
+      <input
+        className="form-check-input"
         type="checkbox"
         id={`dt-rt-chk-${name}`}
         name={`dt-rt-chk-${name}`}
@@ -17,7 +17,7 @@ const ColumnCheckItem = ({label, name, value, onChange, ...rest}) => {
         // defaultChecked={false}
         {...rest}
         />
-      {label && (<label className="form-check-label custom-control-label" htmlFor={`dt-rt-chk-${name}`}>
+      {label && (<label className="form-check-label" htmlFor={`dt-rt-chk-${name}`}>
         {label}
       </label>)}
     </div>

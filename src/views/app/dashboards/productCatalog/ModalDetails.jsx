@@ -93,7 +93,7 @@ export const ModalDetails = (props) => {
                       <tr id={`st-ds-${idx}`}>
                         <td>{st.storeName}</td>
                         <td>{`${ds.undOutName} ${validFloat(ds.valChange) > 1 ? validFloat(ds.valChange, 2) : ''} `}</td>
-                        <td className='text-right'>{formatNumber(validFloat(st.stock) / validFloat(ds.valChange), '', 2)}</td>
+                        <td className='text-end'>{formatNumber(validFloat(st.stock) / validFloat(ds.valChange), '', 2)}</td>
                       </tr>
                     )
                   })
@@ -103,7 +103,7 @@ export const ModalDetails = (props) => {
             }
           </tbody>
         </Table>
-        {totalStock > 0 ? <div className="alert alert-success text-right" role="alert">{`${IntlMessages("common.totalStock")}: ${formatNumber(totalStock, '', 2)}`}</div> : <div className="alert alert-danger text-right" role="alert">{`${IntlMessages("common.totalStock")}: 0`}</div>}
+        {totalStock > 0 ? <div className="alert alert-success text-end" role="alert">{`${IntlMessages("common.totalStock")}: ${formatNumber(totalStock, '', 2)}`}</div> : <div className="alert alert-danger text-end" role="alert">{`${IntlMessages("common.totalStock")}: 0`}</div>}
       </ModalBody>
       <ModalFooter>
         {/* <Button color="danger" onClick={() => { setOpen(false) }} >
