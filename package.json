@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@fullcalendar/daygrid": "^6.1.18",
+    "@fullcalendar/interaction": "^6.1.21",
     "@fullcalendar/react": "^6.1.18",
     "@react-input/mask": "^2.0.4",
     "@reduxjs/toolkit": "^2.12.0",
