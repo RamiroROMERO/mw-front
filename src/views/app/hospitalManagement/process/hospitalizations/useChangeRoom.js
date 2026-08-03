@@ -3,22 +3,16 @@ import { useForm } from '@Hooks';
 import { request } from '@Helpers/core';
 import { IntlMessages, validInt } from '@Helpers/Utils';
 
-export const useHospitalization = ({ currentItem, setLoading, fnGetData, setOpen }) => {
+export const useChangeRoom = ({ currentItem, setLoading, fnGetData, setOpen }) => {
   const [sendForm, setSendForm] = useState(false);
 
   const validation = {
-    admissionSpecialistId: [(val) => validInt(val) !== 0, IntlMessages("msg.required.select.specialistId")],
-    responsibleSpecialistId: [(val) => validInt(val) !== 0, IntlMessages("msg.required.select.specialistId")]
+    roomId: [(val) => validInt(val) !== 0, IntlMessages("msg.required.select.room")]
   }
 
-  const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
+  const { formState, onInputChange, formValidation, isFormValid } = useForm({
     id: currentItem?.id || 0,
-    typeId: 2,
-    admissionSpecialistId: 0,
-    responsibleSpecialistId: 0,
-    reasonId: 0,
-    roomId: 0,
-    status: 1
+    roomId: currentItem?.roomId || 0
   }, validation);
 
   const fnSaveDocument = () => {
@@ -27,7 +21,8 @@ export const useHospitalization = ({ currentItem, setLoading, fnGetData, setOpen
       return;
     }
 
-    request.PUT(`hospital/process/events/${currentItem.id}`, formState, (resp) => {
+    setLoading(true);
+    request.PUT(`hospital/process/events/${currentItem.id}`, { roomId: formState.roomId }, (resp) => {
       setLoading(false);
       fnGetData();
       setOpen(false);

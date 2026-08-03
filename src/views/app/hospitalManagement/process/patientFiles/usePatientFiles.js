@@ -167,7 +167,7 @@ export const usePatientFiles = ({ setLoading }) => {
     setLoading(true);
     request.GET(buildUrl('hospital/process/events', { fatherId: idFather }), (resp) => {
       const data = resp.data.map((item) => {
-        item.principalDoctor = item.specialist1?.name || ''
+        item.principalDoctor = item.attendingSpecialist?.name || ''
         item.typeName = item.typeId === 1 ? 'Evento' : 'Hospitalización'
         return item
       });

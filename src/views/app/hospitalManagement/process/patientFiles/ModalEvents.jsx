@@ -12,9 +12,9 @@ const ModalEvents = ({data, setOpen}) => {
 
   const {idEvent, codeFilePhysic, formState, formValidation, sendForm, onInputChange, fnSaveDocument, fnPrintDocument, onPatientChange} = useNewEvent({IntlMessages, idPatientFile, setLoading, fnGetEvents, setOpen, currentItem, listPatients, codeFile});
 
-  const {id, fatherId, date, areaId, specialistId1, responsibleName, responsiblePhone, notes} = formState;
+  const {id, fatherId, date, areaId, attendingSpecialistId, responsibleName, responsiblePhone, notes} = formState;
 
-  const {dateValid, specialistId1Valid} = formValidation;
+  const {dateValid, attendingSpecialistIdValid} = formValidation;
 
   return (
     <>
@@ -98,13 +98,13 @@ const ModalEvents = ({data, setOpen}) => {
               </Colxx>
               <Colxx xss={12} sm={6}>
                 <SearchSelect
-                  name="specialistId1"
-                  inputValue={specialistId1}
+                  name="attendingSpecialistId"
+                  inputValue={attendingSpecialistId}
                   onChange={onInputChange}
                   options={listDoctors}
                   label="select.doctorId"
-                  invalid={sendForm && !!specialistId1Valid}
-                  feedbackText={sendForm && (specialistId1Valid || null)}
+                  invalid={sendForm && !!attendingSpecialistIdValid}
+                  feedbackText={sendForm && (attendingSpecialistIdValid || null)}
                 />
               </Colxx>
               <Colxx xxs={12} xs={7} md={7}>

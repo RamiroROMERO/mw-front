@@ -102,7 +102,7 @@ export const useEvents = ({ setLoading }) => {
       const data = resp.data.map((item) => {
         item.patient = item.hospExpedient?.name || '';
         item.hall = item.hospArea?.name || '';
-        item.doctor = item.specialist1?.name || '';
+        item.doctor = item.attendingSpecialist?.name || '';
         item.dateEvent = formatDate(item.date);
         return item;
       });

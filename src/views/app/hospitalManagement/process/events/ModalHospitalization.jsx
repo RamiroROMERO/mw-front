@@ -12,9 +12,9 @@ const ModalHospitalization = ({data, setOpen}) => {
 
   const {formState, formValidation, sendForm, onInputChange, fnSaveDocument} = useHospitalization({currentItem, setLoading, fnGetData, setOpen});
 
-  const {specialistId2, specialistId3, reasonId, roomId} = formState
+  const {admissionSpecialistId, responsibleSpecialistId, reasonId, roomId} = formState
 
-  const {specialistId2Valid, specialistId3Valid} = formValidation;
+  const {admissionSpecialistIdValid, responsibleSpecialistIdValid} = formValidation;
 
   return (
     <>
@@ -72,24 +72,24 @@ const ModalHospitalization = ({data, setOpen}) => {
                 </Colxx>
                 <Colxx xss={12} sm={6}>
                   <SearchSelect
-                    name="specialistId2"
-                    inputValue={specialistId2}
+                    name="admissionSpecialistId"
+                    inputValue={admissionSpecialistId}
                     onChange={onInputChange}
                     options={listDoctors}
                     label="select.doctorAdmissionId"
-                    invalid={sendForm && !!specialistId2Valid}
-                    feedbackText={sendForm && (specialistId2Valid || null)}
+                    invalid={sendForm && !!admissionSpecialistIdValid}
+                    feedbackText={sendForm && (admissionSpecialistIdValid || null)}
                   />
                 </Colxx>
                 <Colxx xss={12} sm={6}>
                   <SearchSelect
-                    name="specialistId3"
-                    inputValue={specialistId3}
+                    name="responsibleSpecialistId"
+                    inputValue={responsibleSpecialistId}
                     onChange={onInputChange}
                     options={listDoctors}
                     label="select.doctorResponsibleId"
-                    invalid={sendForm && !!specialistId3Valid}
-                    feedbackText={sendForm && (specialistId3Valid || null)}
+                    invalid={sendForm && !!responsibleSpecialistIdValid}
+                    feedbackText={sendForm && (responsibleSpecialistIdValid || null)}
                   />
                 </Colxx>
                 <Colxx xss={12} sm={6}>

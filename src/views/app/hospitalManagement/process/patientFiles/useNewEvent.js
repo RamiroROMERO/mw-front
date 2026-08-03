@@ -11,7 +11,7 @@ export const useNewEvent = ({ IntlMessages, idPatientFile, setLoading, fnGetEven
 
   const validation = {
     date: [(val) => val !== "", IntlMessages("msg.required.input.date")],
-    specialistId1: [(val) => validInt(val) !== 0, IntlMessages("msg.required.select.specialistId")]
+    attendingSpecialistId: [(val) => validInt(val) !== 0, IntlMessages("msg.required.select.specialistId")]
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
@@ -20,7 +20,7 @@ export const useNewEvent = ({ IntlMessages, idPatientFile, setLoading, fnGetEven
     typeId: 1,
     date: currentItem?.date || '',
     areaId: currentItem?.hospArea?.id || 0,
-    specialistId1: currentItem?.specialist1?.id || 0,
+    attendingSpecialistId: currentItem?.attendingSpecialist?.id || 0,
     responsibleName: currentItem?.responsibleName || '',
     responsiblePhone: currentItem?.responsiblePhone || '',
     notes: currentItem?.notes || '',
