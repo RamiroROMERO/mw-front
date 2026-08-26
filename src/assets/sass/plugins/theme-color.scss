@@ -87,6 +87,11 @@
     background: $theme-color-yellow-granola;
   }
 
+  .theme-color-deepin {
+    border: 3px solid $theme-color-deepin;
+    background: $theme-color-deepin;
+  }
+
   &.shown {
     transform: translate(0, calc(-50% + 0.5px));
     transition: transform 0.4s ease-out;

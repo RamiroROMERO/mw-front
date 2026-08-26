@@ -73,8 +73,21 @@ const ColorSwitcher = () => {
             </a>
           ))}
         </div>
-        <div className="d-flex flex-row justify-content-between mb-4">
+        <div className="d-flex flex-row justify-content-between mb-3">
           {colors.slice(5, 10).map((color) => (
+            <a
+              key={`light.${color}`}
+              href={`#light.${color}`}
+              className={`theme-color theme-color-${color} ${selectedColor === `light.${color}` ? 'active' : ''
+                }`}
+              onClick={(e) => changeThemeColor(e, `light.${color}`)}
+            >
+              <span>{` `}</span>
+            </a>
+          ))}
+        </div>
+        <div className="d-flex flex-row justify-content-between mb-4">
+          {colors.slice(10, 15).map((color) => (
             <a
               key={`light.${color}`}
               href={`#light.${color}`}
@@ -100,8 +113,21 @@ const ColorSwitcher = () => {
             </a>
           ))}
         </div>
-        <div className="d-flex flex-row justify-content-between">
+        <div className="d-flex flex-row justify-content-between mb-3">
           {colors.slice(5, 10).map((color) => (
+            <a
+              key={`dark.${color}`}
+              href={`#dark.${color}`}
+              className={`theme-color theme-color-${color} ${selectedColor === `dark.${color}` ? 'active' : ''
+                }`}
+              onClick={(e) => changeThemeColor(e, `dark.${color}`)}
+            >
+              <span>{` `}</span>
+            </a>
+          ))}
+        </div>
+        <div className="d-flex flex-row justify-content-between">
+          {colors.slice(10, 15).map((color) => (
             <a
               key={`dark.${color}`}
               href={`#dark.${color}`}
