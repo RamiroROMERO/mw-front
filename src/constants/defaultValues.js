@@ -31,6 +31,12 @@ export const currentUser = {
 };
 
 export const themeColorStorageKey = '__theme_selected_color';
+// Sube este número cada vez que se cambie `defaultColor` a propósito, para que
+// el nuevo default se aplique incluso a navegadores con una preferencia de
+// tema ya guardada (sin esto, __theme_selected_color en localStorage siempre
+// gana y el cambio de default requeriría borrar el storage a mano).
+export const themeColorVersionStorageKey = '__theme_selected_color_version';
+export const defaultColorVersion = 1;
 export const isMultiColorActive = true;
 export const defaultColor = 'light.deepin';
 export const isDarkSwitchActive = true;

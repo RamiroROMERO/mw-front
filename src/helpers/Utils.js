@@ -3,8 +3,10 @@ import {
   defaultDirection,
   defaultLocale,
   defaultColor,
+  defaultColorVersion,
   localeOptions,
   themeColorStorageKey,
+  themeColorVersionStorageKey,
   themeRadiusStorageKey,
 } from '@Constants/defaultValues';
 import DateHelper from '@Helpers/DateHelper';
@@ -78,7 +80,13 @@ export const setDirection = (localValue) => {
 export const getCurrentColor = () => {
   let currentColor = defaultColor;
   try {
-    if (localStorage.getItem(themeColorStorageKey)) {
+    const storedVersion = localStorage.getItem(themeColorVersionStorageKey);
+    if (storedVersion !== String(defaultColorVersion)) {
+      // El defaultColor del código cambió desde la última visita: se
+      // descarta la preferencia guardada y se registra la nueva versión.
+      localStorage.removeItem(themeColorStorageKey);
+      localStorage.setItem(themeColorVersionStorageKey, String(defaultColorVersion));
+    } else if (localStorage.getItem(themeColorStorageKey)) {
       currentColor = localStorage.getItem(themeColorStorageKey);
     }
   } catch (error) {
