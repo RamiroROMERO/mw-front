@@ -1,0 +1,158 @@
+$separator-color-light: rgba(255, 255, 255, 0.08);
+$separator-color: rgba(255, 255, 255, 0.15);
+$background-color: #141518;
+$foreground-color: #1E1F22;
+$input-background: #1E1F22;
+
+$dark-btn-background: #E0E0E0;
+$light-btn-background: #E0E0E0;
+$button-text-color: #FFFFFF;
+
+$theme-color-1: #0081FF;
+$theme-color-2: #3399FF;
+$theme-color-3: #0066CC;
+$theme-color-4: #18C96E;
+$theme-color-5: #909090;
+$theme-color-6: #5E5E5E;
+
+$primary-color: #E0E0E0;
+$secondary-color: #909090;
+$muted-color: #5E5E5E;
+
+$gradient-color-1 : #3399FF;
+$gradient-color-2 : #0081FF;
+$gradient-color-3 : #0066CC;
+
+$lp-bg-color-1 : #001F3D;
+$lp-bg-color-2 : #00295C;
+$lp-bg-color-3 : #004C99;
+$lp-bg-color-4 : #0066CC;
+
+$theme-color-danger : #FF4D4F;
+
+$shadow-offsets-top : 1 3 10 14 19;
+$shadow-blurs-top: 2 6 10 14 19;
+$shadow-opacities-top: 0.1 0.3 0.6 0.7 0.8;
+
+$shadow-offsets-bottom : 1 3 6 10 15;
+$shadow-blurs-bottom: 3 6 6 5 6;
+$shadow-opacities-bottom: 0.1 0.3 0.6 0.7 0.8;
+
+$logo-path: "/assets/logos/mw-white.png";
+$logo-path-mobile: "/assets/logos/mw-white-mobile.png";
+
+$lp-logo-path: "/assets/logos/mw-white.png";
+$lp-logo-path-pinned: "/assets/logos/mw-white.png";
+
+$logo-path-white: "/assets/logos/mw-white.png";
+$logo-path-white-pinned: "/assets/logos/mw-white.png";
+
+@import "../main.scss";
+
+// ===================================================
+// Deepin — overrides propios: cards, modales, botones
+// ===================================================
+.card {
+  background-color: rgba(30, 31, 34, 0.75);
+  border: 1px solid $separator-color-light;
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.modal-content {
+  background-color: rgba(30, 31, 34, 0.75);
+  border: 1px solid $separator-color-light;
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.btn,
+.btn-lg,
+.btn-sm,
+.btn-group-lg > .btn,
+.btn-group-sm > .btn {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.btn-primary {
+  box-shadow: 0 4px 14px rgba($theme-color-1, 0.4) !important;
+}
+
+// ===================================================
+// Deepin — overrides propios: forms, alerts, badges, navs/tabs
+// ===================================================
+.form-control,
+.custom-select,
+.input-group-text {
+  border-radius: 8px;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 3px rgba($theme-color-1, 0.25);
+}
+
+.alert {
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.badge {
+  border-radius: 8px;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+  box-shadow: 0 4px 14px rgba($theme-color-1, 0.4);
+}
+
+// ===================================================
+// Deepin — overrides propios: Topnav, Sidebar, Footer
+// ===================================================
+.navbar {
+  background-color: rgba(30, 31, 34, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.sidebar {
+  .main-menu,
+  .sub-menu {
+    background-color: rgba(30, 31, 34, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.rtl .sidebar {
+  .main-menu,
+  .sub-menu {
+    border-top-right-radius: initial;
+    border-bottom-right-radius: initial;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.35);
+  }
+}
+
+footer.page-footer {
+  background-color: rgba(30, 31, 34, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+// ===================================================
+// Deepin — overrides propios: tipografía
+// ===================================================
+body,
+p {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}

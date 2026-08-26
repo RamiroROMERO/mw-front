@@ -1,17 +1,25 @@
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { IntlMessages } from '@Helpers/Utils'
+import { formatNumber, IntlMessages, validFloat } from '@Helpers/Utils'
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { InputField } from '@Components/inputFields';
 import ReactTable from '@Components/reactTable';
 import Modal from '@Components/modal';
+import Confirmation from '@Containers/ui/confirmationMsg';
 import { useModalDetail } from './useModalDetail';
 import ModalAddProduct from './ModalAddProduct';
+import ModalEditProduct from './ModalEditProduct';
 
 const ModalDetail = ({data, setOpen}) => {
   const {currentItem, setLoading, listAreas, listStores} = data;
 
-  const {table, fnAddProduct, fnAddService, openModalAddProduct, setOpenModalAddProduct, fnGetDataDetail} = useModalDetail({setLoading, currentItem});
+  const {
+    table, fnAddProduct, fnAddService, fnPrintDocument, openModalAddProduct, setOpenModalAddProduct,
+    openModalAddService, setOpenModalAddService, openModalEditProduct, setOpenModalEditProduct,
+    currentDetailItem, fnSaveEditProduct, propsToMsgDelete, fnGetDataDetail
+  } = useModalDetail({setLoading, currentItem});
+
+  const totalGeneral = table.data.reduce((sum, item) => sum + validFloat(item.total), 0);
 
   const propsToModalAddProduct = {
     ModalContent: ModalAddProduct,
@@ -24,7 +32,36 @@ const ModalDetail = ({data, setOpen}) => {
       listAreas,
       listStores,
       currentItem,
-      fnGetDataDetail
+      fnGetDataDetail,
+      type: 1
+    }
+  }
+
+  const propsToModalAddService = {
+    ModalContent: ModalAddProduct,
+    title: "page.events.modalAddService.title",
+    open: openModalAddService,
+    setOpen: setOpenModalAddService,
+    maxWidth: 'lg',
+    data: {
+      setLoading,
+      listAreas,
+      listStores,
+      currentItem,
+      fnGetDataDetail,
+      type: 2
+    }
+  }
+
+  const propsToModalEditProduct = {
+    ModalContent: ModalEditProduct,
+    title: "page.events.modalEditProduct.title",
+    open: openModalEditProduct,
+    setOpen: setOpenModalEditProduct,
+    maxWidth: 'sm',
+    data: {
+      currentItem: currentDetailItem,
+      fnSave: fnSaveEditProduct
     }
   }
 
@@ -79,11 +116,19 @@ const ModalDetail = ({data, setOpen}) => {
             <Button color="info" onClick={fnAddService}>
               <i className="bi bi-clipboard-plus"/> {IntlMessages("button.addService")}
             </Button>
+            <Button color="secondary" onClick={fnPrintDocument}>
+              <i className="iconsminds-printer"/> {IntlMessages("button.print")}
+            </Button>
           </Colxx>
         </Row>
         <Row>
           <Colxx xxs={12}>
             <ReactTable {...table}/>
+          </Colxx>
+        </Row>
+        <Row>
+          <Colxx xxs={12}>
+            <h5 className="text-end">{`${IntlMessages("table.column.total")}: ${formatNumber(totalGeneral, '', 2)}`}</h5>
           </Colxx>
         </Row>
       </ModalBody>
@@ -93,6 +138,9 @@ const ModalDetail = ({data, setOpen}) => {
         </Button>
       </ModalFooter>
       <Modal {...propsToModalAddProduct}/>
+      <Modal {...propsToModalAddService}/>
+      <Modal {...propsToModalEditProduct}/>
+      <Confirmation {...propsToMsgDelete}/>
     </>
   )
 }

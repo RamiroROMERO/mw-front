@@ -6,9 +6,9 @@ import { ReactTableEdit } from '@Components/reactTableEdit'
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 
 const ModalAddProduct = ({data, setOpen}) => {
-  const {listAreas, listStores, setLoading, currentItem, fnGetDataDetail} = data;
+  const {listAreas, listStores, setLoading, currentItem, fnGetDataDetail, type = 1} = data;
 
-  const {table, formState, formValidation, sendForm, onInputChange, fnSearchProduct, fnSaveProducts} = useModalAddProduct({setLoading, currentItem, fnGetDataDetail, setOpen});
+  const {table, formState, formValidation, sendForm, onInputChange, fnSearchProduct, fnSaveProducts} = useModalAddProduct({setLoading, currentItem, fnGetDataDetail, setOpen, type});
 
   const {areaId, storeId} = formState;
 
@@ -18,7 +18,7 @@ const ModalAddProduct = ({data, setOpen}) => {
     <>
       <ModalBody>
         <Row>
-          <Colxx xxs={12} xs={6} md={6} xl={4}>
+          <Colxx xxs={12} xs={6} md={6} xl={type === 2 ? 6 : 4}>
             <SearchSelect
               name="areaId"
               inputValue={areaId}
@@ -29,18 +29,20 @@ const ModalAddProduct = ({data, setOpen}) => {
               feedbackText={sendForm && (areaIdValid || null)}
             />
           </Colxx>
-          <Colxx xxs={12} xs={6} md={6} xl={4}>
-            <SearchSelect
-              name="storeId"
-              inputValue={storeId}
-              onChange={onInputChange}
-              options={listStores}
-              label="select.storeId"
-              invalid={sendForm && !!storeIdValid}
-              feedbackText={sendForm && (storeIdValid || null)}
-            />
-          </Colxx>
-          <Colxx xxs={12} xs={6} md={6} xl={4}>
+          {type !== 2 &&
+            <Colxx xxs={12} xs={6} md={6} xl={4}>
+              <SearchSelect
+                name="storeId"
+                inputValue={storeId}
+                onChange={onInputChange}
+                options={listStores}
+                label="select.storeId"
+                invalid={sendForm && !!storeIdValid}
+                feedbackText={sendForm && (storeIdValid || null)}
+              />
+            </Colxx>
+          }
+          <Colxx xxs={12} xs={6} md={6} xl={type === 2 ? 6 : 4}>
             <Button color="primary" onClick={fnSearchProduct}>
               <i className="bi bi-filter"/> {IntlMessages("button.filter")}
             </Button>

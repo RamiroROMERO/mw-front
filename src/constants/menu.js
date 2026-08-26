@@ -200,11 +200,6 @@ const data = [
         label: 'menu.submenu.settings',
         to: `${adminRoot}/hospitalManagement/settings`,
         subs: [{
-          id: 'hospitalManagement-settings-generalSettings',
-          icon: 'bi bi-sliders',
-          label: 'menu.hospitalManagement.generalSettings',
-          to: `${adminRoot}/hospitalManagement/settings/generalSettings`,
-        }, {
           id: 'hospitalManagement-settings-specialties',
           icon: 'bi bi-file-earmark-medical',
           label: 'menu.hospitalManagement.specialties',
