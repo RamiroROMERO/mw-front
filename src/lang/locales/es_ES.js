@@ -1184,7 +1184,6 @@ const esLang = {
   "menu.fixedAssets.accumDeprec": "Depreciación Acumulada",
   "menu.fixedAssets.restDeprec": "Valor de Activos",
   "menu.hospitalManagement": "Gestión Hospitalaria",
-  "menu.hospitalManagement.generalSettings": "Ajustes Generales",
   "menu.hospitalManagement.specialties": "Especialidades",
   "menu.hospitalManagement.specialists": "Especialistas",
   "menu.hospitalManagement.areasIncome": "Areas de Ingreso",
@@ -2901,6 +2900,9 @@ const esLang = {
   "page.events.modalDetail.title": "Detalle de Hospitalización",
   "page.events.modalAddProduct.title": "Agregar Producto",
   "page.events.modalAddProduct.table.title": "Productos Disponibles",
+  "page.events.modalAddService.title": "Agregar Servicio",
+  "page.events.modalAddService.table.title": "Servicios Disponibles",
+  "page.events.modalEditProduct.title": "Editar Producto",
   "page.events.modalHospitalization.title": "Convertir en Hospitalización",
   "page.events.alert.question.closeEvent.title": "¿Esta seguro que desea cerrar este evento?",
   // 90.1 Hospitalizations

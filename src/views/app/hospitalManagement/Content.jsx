@@ -27,17 +27,6 @@ const HospitalManagement = (props) => {
         { replace: true }
       );
     }
-  },
-  {
-    id: 3,
-    icon: "large-icon simple-icon-chart",
-    title: "menu.submenu.reports",
-    fnOnclick: () => {
-      navigate(
-        `${adminRoot}/hospitalManagement/reports`,
-        { replace: true }
-      );
-    }
   }
   ]
   return (

@@ -134,7 +134,15 @@ export const usePatientFiles = ({ setLoading }) => {
     }
   }
 
-  const fnPrintDocument = () => { }
+  const fnPrintDocument = () => {
+    if (validInt(id) === 0) {
+      return;
+    }
+
+    request.GETPdf('hospital/process/expedients/exportPDFFile', { idPatientFile: id }, 'Expediente de Paciente.pdf', (err) => {
+      setLoading(false);
+    });
+  }
 
   const fnDeleteDocument = () => {
     if (id > 0) {

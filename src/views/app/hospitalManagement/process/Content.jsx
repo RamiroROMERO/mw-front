@@ -8,11 +8,44 @@ const Content = (props) => {
   const history = useNavigate();
   const propsToCard = [{
     id: 1,
-    icon: "large-icon bi bi-journal-text",
-    title: "menu.patientFiles",
+    icon: "large-icon bi bi-person-vcard",
+    title: "menu.hospitalManagement.patientFiles",
     fnOnclick: () => {
       history(
         `${adminRoot}/hospitalManagement/process/patientFiles`,
+        { replace: true }
+      );
+    }
+  },
+  {
+    id: 2,
+    icon: "large-icon bi bi-calendar-event",
+    title: "menu.hospitalManagement.events",
+    fnOnclick: () => {
+      history(
+        `${adminRoot}/hospitalManagement/process/events`,
+        { replace: true }
+      );
+    }
+  },
+  {
+    id: 3,
+    icon: "large-icon bi bi-clipboard2-pulse",
+    title: "menu.hospitalManagement.hospitalizations",
+    fnOnclick: () => {
+      history(
+        `${adminRoot}/hospitalManagement/process/hospitalizations`,
+        { replace: true }
+      );
+    }
+  },
+  {
+    id: 4,
+    icon: "large-icon bi bi-calendar2-check",
+    title: "menu.hospitalManagement.scheduledAppointments",
+    fnOnclick: () => {
+      history(
+        `${adminRoot}/hospitalManagement/process/scheduledAppointments`,
         { replace: true }
       );
     }

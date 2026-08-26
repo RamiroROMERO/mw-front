@@ -4,7 +4,6 @@ import { Route, Routes } from "react-router-dom";
 const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
 
 const HospitalSettings = React.lazy(() => import('@Views/app/hospitalManagement/settings'));
-const GeneralSettings = React.lazy(() => import('@Views/app/hospitalManagement/settings/generalSettings'));
 const Specialties = React.lazy(() => import('@Views/app/hospitalManagement/settings/specialties'));
 const Specialists = React.lazy(() => import('@Views/app/hospitalManagement/settings/specialists'));
 const AreasIncome = React.lazy(() => import('@Views/app/hospitalManagement/settings/areasIncome'));
@@ -17,11 +16,6 @@ const HospitalSettingsRoutes = (props) => {
     <Route
       index
       element={<HospitalSettings {...props} setLoading={setLoading} match={{ isExact: true, params: {} }} />}
-    />
-    <Route
-      index
-      path="/generalSettings"
-      element={<GeneralSettings setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />}
     />
     <Route
       index
