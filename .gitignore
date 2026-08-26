@@ -28,3 +28,6 @@ dist-ssr
 *.zip
 post-build.js
 vps.config.json
+
+.claude
+.agents
