@@ -144,3 +144,16 @@
 .rc-switch-checked.custom-switch.custom-switch-small:after {
   left: 14px !important;
 }
+
+// Sol/luna a los costados del switch de tema: sin etiqueta de texto no se
+// entendía qué controlaba. El ícono del lado activo se resalta con el
+// color del tema; el inactivo queda apagado ($muted-color).
+.dark-switch-icon {
+  font-size: 14px;
+  color: $muted-color;
+  transition: color 0.15s ease;
+
+  &.active {
+    color: $theme-color-1;
+  }
+}

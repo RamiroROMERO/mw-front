@@ -8,7 +8,7 @@ import './assets/css/style.css';
 
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
-import { getCurrentColor } from './helpers/Utils';
+import { getCurrentColor, registerInitialTheme } from './helpers/Utils';
 
 if (!String.prototype.toProperCase) {
   String.prototype.toProperCase = function () {
@@ -25,7 +25,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 const currentColor = getCurrentColor();
 const store = configureStore({});
 
+const headChildrenBeforeTheme = new Set(document.head.children);
 import(`./assets/sass/themes/gogo.${currentColor}.scss`).then(() => {
+  registerInitialTheme(currentColor, headChildrenBeforeTheme);
   root.render(
     <React.StrictMode>
       <ErrorBoundary>
