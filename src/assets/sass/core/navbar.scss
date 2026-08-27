@@ -278,6 +278,15 @@
     padding-left: 0.6rem;
     padding-right: 0.6rem;
     vertical-align: initial;
+    // El ícono de notificaciones no trae la clase `d-block` que sí tienen
+    // los de fullScreenButton (display: inline vs block), lo que hacía que
+    // esos botones midieran alturas distintas (~42px vs ~34px) aunque
+    // padding/font-size sean idénticos. Con flex + altura fija, el ícono
+    // queda centrado sin importar su display interno.
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
 
     @include respond-below(xs) {
       padding-left: 0.3rem;
@@ -320,6 +329,12 @@
 
     button {
       color: lighten($primary-color, 30%);
+      // Este botón no tenía altura propia (la daba el avatar de 40px vía
+      // flujo normal); se fija explícita e igual a .header-icon para que
+      // ambos grupos de botones del navbar-right midan lo mismo.
+      display: inline-flex;
+      align-items: center;
+      height: 40px;
     }
 
     img {

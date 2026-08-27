@@ -50,6 +50,43 @@ $logo-path-white-pinned: "/assets/logos/mw-white.png";
 @import "../main.scss";
 
 // ===================================================
+// Deepin — variables --bs-* de Bootstrap (modo oscuro)
+// ===================================================
+// Varios componentes de Bootstrap (.card, .table, .list-group,
+// .dropdown-menu, .accordion, .popover, .offcanvas...) fijan su color de
+// texto directamente vía `color: var(--bs-body-color)` / `var(--bs-emphasis-color)`,
+// no por herencia normal de `body`. Esas variables quedan ancladas a sus
+// valores de modo claro (#212529, #000) porque la app no activa el atributo
+// nativo `data-bs-theme="dark"` de Bootstrap — usa su propio sistema de
+// temas Sass en paralelo. Resultado: cualquier texto que dependa de esas
+// variables (checkboxes, radios, texto de tablas dentro de un .card, etc.)
+// se veía oscuro sobre el panel oscuro, sin importar $primary-color.
+// Se redefinen aquí con la paleta deepin, igual que haría Bootstrap con
+// [data-bs-theme="dark"], para que todos esos componentes hereden el valor
+// correcto de una vez, en vez de parchear cada clase por separado.
+body {
+  --bs-body-color: #{$primary-color};
+  --bs-body-color-rgb: #{red($primary-color)}, #{green($primary-color)}, #{blue($primary-color)};
+  --bs-body-bg: #{$background-color};
+  --bs-body-bg-rgb: #{red($background-color)}, #{green($background-color)}, #{blue($background-color)};
+  --bs-emphasis-color: #fff;
+  --bs-emphasis-color-rgb: 255, 255, 255;
+  --bs-secondary-color: #{$secondary-color};
+  --bs-secondary-color-rgb: #{red($secondary-color)}, #{green($secondary-color)}, #{blue($secondary-color)};
+  --bs-secondary-bg: #{$foreground-color};
+  --bs-secondary-bg-rgb: #{red($foreground-color)}, #{green($foreground-color)}, #{blue($foreground-color)};
+  --bs-tertiary-color: #{rgba($primary-color, 0.5)};
+  --bs-tertiary-bg: #{$foreground-color};
+  --bs-border-color: #{$separator-color};
+  --bs-border-color-translucent: #{$separator-color};
+  // El ícono de .btn-close (X de cerrar modal/alert/toast/offcanvas) es un
+  // SVG con fill negro fijo (--bs-btn-close-bg), invisible sobre fondo
+  // oscuro. Bootstrap resuelve esto con [data-bs-theme="dark"] invirtiendo
+  // el filtro; se replica aquí por la misma razón que las variables de arriba.
+  --bs-btn-close-filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+// ===================================================
 // Deepin — overrides propios: cards, modales, botones
 // ===================================================
 .card {
@@ -61,6 +98,11 @@ $logo-path-white-pinned: "/assets/logos/mw-white.png";
   -webkit-backdrop-filter: blur(20px);
 }
 
+// Bootstrap trae su propio .modal-content { color: var(--bs-modal-color) },
+// que resuelve a --bs-body-color (#212529, fijo en :root) porque la app no
+// usa el data-bs-theme nativo de Bootstrap. Esa regla le gana a nuestro
+// `body { color: $primary-color }` por especificidad, así que el título y
+// texto del modal quedaban gris oscuro sobre el panel oscuro (invisibles).
 .modal-content {
   background-color: rgba(30, 31, 34, 0.75);
   border: 1px solid $separator-color-light;
@@ -68,6 +110,17 @@ $logo-path-white-pinned: "/assets/logos/mw-white.png";
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  color: $primary-color;
+}
+
+// El login (.auth-card, hereda el radius de 16px de .card de arriba) tiene
+// adentro .image-side (panel "Bienvenido"), un div plano sin radius propio
+// que quedaba montado en cuadrado sobre la esquina redondeada de la card.
+// overflow: hidden recorta cualquier hijo al radius del contenedor, sin
+// duplicar el valor por breakpoint (layout en fila en desktop, apilado en
+// mobile/tablet — .image-side cambia de lado en cada uno).
+.auth-card {
+  overflow: hidden;
 }
 
 .btn,
@@ -110,6 +163,75 @@ $logo-path-white-pinned: "/assets/logos/mw-white.png";
   box-shadow: 0 4px 14px rgba($theme-color-1, 0.4);
 }
 
+// Las etiquetas flotantes montaban sobre el borde del input con una
+// máscara ::after para tapar la línea del borde debajo del texto. En
+// paneles de vidrio esa máscara nunca calza bien (ver historial). Se
+// abandona el montaje sobre el borde: la etiqueta pasa a vivir arriba del
+// input, y el wrapper gana padding-top para no pegarse al campo anterior.
+.has-float-label {
+  padding-top: 1.4rem;
+}
+
+.has-float-label label,
+.has-float-label > span:last-of-type {
+  position: absolute;
+  top: 0;
+  left: 0.1rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: $secondary-color;
+  line-height: 1.4;
+  padding: 0;
+}
+
+.has-float-label label::after,
+.has-float-label > span::after {
+  display: none;
+}
+
+// ===================================================
+// Deepin — overrides propios: react-select, react-datepicker
+// (quedaban con $border-radius base de 0.1rem / fondo sólido,
+// desentonando con el radius de 8px y el glass del resto de inputs)
+// ===================================================
+.react-select__control {
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+.react-select__control--is-focused {
+  box-shadow: 0 0 0 3px rgba($theme-color-1, 0.25) !important;
+}
+
+.react-select .react-select__menu {
+  border-radius: 12px !important;
+  background-color: rgba(30, 31, 34, 0.85) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.react-select__option {
+  background-color: transparent !important;
+}
+
+.react-datepicker__input-container input {
+  border-radius: 8px !important;
+}
+
+.react-datepicker {
+  border-radius: 12px !important;
+  background-color: rgba(30, 31, 34, 0.85) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.react-datepicker__header,
+.react-datepicker__time-container .react-datepicker__time {
+  background-color: transparent !important;
+}
+
 // ===================================================
 // Deepin — overrides propios: Topnav, Sidebar, Footer
 // ===================================================
@@ -141,6 +263,38 @@ $logo-path-white-pinned: "/assets/logos/mw-white.png";
     border-bottom-left-radius: 16px;
     box-shadow: -4px 0 20px rgba(0, 0, 0, 0.35);
   }
+}
+
+// El botón de idioma tenía fondo sólido propio ($background-color, se
+// perdía contra el navbar) mientras que campana/fullscreen/usuario ya eran
+// transparentes con borde reservado pero sin color (--bs-btn-border-color:
+// transparent de Bootstrap). Se unifican los cuatro con el mismo borde
+// visible y resaltado al hover. Ojo: el DropdownMenu del usuario se
+// renderiza dentro del mismo div.user, así que hay que distinguir el botón
+// del avatar (lleva clase .btn) de los ítems del menú (solo .dropdown-item,
+// sin .btn) — si el selector fuera "button" a secas el borde se les pega
+// también a Mi Perfil / Historial / Cerrar Sesión.
+.language-button,
+.header-icon,
+.user button.btn {
+  border: 1px solid $separator-color;
+  background-color: transparent;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.language-button:hover,
+.header-icon:hover,
+.user button.btn:hover {
+  border-color: rgba($theme-color-1, 0.5);
+  background-color: rgba($theme-color-1, 0.08);
+}
+
+// Menús de idioma y de usuario: quedaban casi cuadrados con el radius base
+// (0.1rem). Se excluye el de notificaciones (.scroll) porque tiene su
+// propio scroll interno vía PerfectScrollbar — queda para otra pasada.
+.dropdown-menu:not(.scroll) {
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 footer.page-footer {

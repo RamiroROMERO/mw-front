@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Switch from 'rc-switch';
 import 'rc-switch/assets/index.css';
 import { Tooltip } from 'reactstrap';
-import { getCurrentColor, setCurrentColor } from '@Helpers/Utils';
+import { getCurrentColor, setCurrentColor, applyTheme } from '@Helpers/Utils';
 
 const TopnavDarkSwitch = () => {
   const [switchChecked, setSwitchChecked] = useState(false);
@@ -13,7 +13,7 @@ const TopnavDarkSwitch = () => {
     setSwitchChecked(color.indexOf('dark') > -1);
   }, []);
 
-  const changeMode = () => {
+  const changeMode = async () => {
     let color = getCurrentColor();
 
     if (color.indexOf('dark') > -1) {
@@ -23,19 +23,18 @@ const TopnavDarkSwitch = () => {
     }
     setCurrentColor(color);
     setSwitchChecked(color.indexOf('dark') > -1);
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
+    await applyTheme(color);
   };
 
   return (
-    <div className="d-none d-md-inline-block align-middle me-3">
+    <div className="d-none d-md-inline-flex align-items-center me-3 dark-switch-wrapper" id="tooltip_switch">
+      <i className={`bi bi-sun-fill dark-switch-icon ${!switchChecked ? 'active' : ''}`} />
       <Switch
-        id="tooltip_switch"
-        className="custom-switch custom-switch-primary custom-switch-small"
+        className="custom-switch custom-switch-primary custom-switch-small mx-2"
         checked={switchChecked}
         onChange={changeMode}
       />
+      <i className={`bi bi-moon-stars-fill dark-switch-icon ${switchChecked ? 'active' : ''}`} />
       <Tooltip
         placement="left"
         isOpen={tooltipOpen}

@@ -104,6 +104,57 @@ export const setCurrentColor = (color) => {
   }
 };
 
+// Cambio de tema sin recargar la página (evita perder lo que el usuario
+// esté completando en un formulario cuando cambia de tema). main.jsx
+// carga el CSS del tema con `import(\`./themes/gogo.${color}.scss\`)`, que
+// Vite inyecta como <style>/<link> nuevo en <head> sin sacar el anterior;
+// antes de este cambio, TopnavDarkSwitch/ColorSwitcher resolvían el
+// problema con window.location.reload(). Acá se cachea cada hoja de
+// estilos de tema ya cargada (una por color, se importa una sola vez por
+// carga de página — reimportar el mismo módulo ES no vuelve a inyectar
+// nada) y se alterna cuál está activa con la propiedad `disabled`, que
+// funciona tanto en <link> como en <style>.
+const themeStyleTagCache = new Map();
+
+const captureNewHeadChild = (headChildrenBefore) => {
+  return [...document.head.children].find((el) => !headChildrenBefore.has(el));
+};
+
+// Debe llamarse una sola vez, justo después del import() inicial del tema
+// en main.jsx, pasando el snapshot de document.head.children tomado ANTES
+// de ese import — así el resto de applyTheme() sabe qué hoja de estilos ya
+// está activa sin tener que adivinar su nombre de archivo (que en
+// producción lleva un hash y no se puede matchear de forma confiable).
+export const registerInitialTheme = (color, headChildrenBefore) => {
+  const el = captureNewHeadChild(headChildrenBefore);
+  if (el) themeStyleTagCache.set(color, el);
+};
+
+export const applyTheme = async (color) => {
+  if (themeStyleTagCache.has(color)) {
+    themeStyleTagCache.forEach((el, key) => {
+      el.disabled = key !== color;
+    });
+    return;
+  }
+
+  const headChildrenBefore = new Set(document.head.children);
+  await import(`../assets/sass/themes/gogo.${color}.scss`);
+  const added = captureNewHeadChild(headChildrenBefore);
+
+  if (added) {
+    themeStyleTagCache.set(color, added);
+    themeStyleTagCache.forEach((el, key) => {
+      el.disabled = key !== color;
+    });
+  } else {
+    // No se pudo identificar la hoja de estilos recién inyectada — se cae
+    // al reload como red de seguridad, para no dejar la app sin el CSS
+    // del tema.
+    window.location.reload();
+  }
+};
+
 export const getCurrentRadius = () => {
   let currentRadius = 'rounded';
   try {

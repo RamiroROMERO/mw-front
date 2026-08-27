@@ -7,12 +7,13 @@ import {
   setCurrentColor,
   getCurrentRadius,
   setCurrentRadius,
+  applyTheme,
 } from '@Helpers/Utils';
 
 const ColorSwitcher = () => {
   const containerRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedColor] = useState(getCurrentColor());
+  const [selectedColor, setSelectedColor] = useState(getCurrentColor());
   const [radius, setRadius] = useState(getCurrentRadius());
 
   useEffect(() => {
@@ -47,13 +48,12 @@ const ColorSwitcher = () => {
     };
   }, [isOpen]);
 
-  const changeThemeColor = (e, color) => {
+  const changeThemeColor = async (e, color) => {
     e.preventDefault();
     setCurrentColor(color);
+    setSelectedColor(color);
     setIsOpen(false);
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
+    await applyTheme(color);
   };
 
   return (
