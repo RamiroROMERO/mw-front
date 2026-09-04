@@ -19,24 +19,24 @@ export const useForm = (initialForm = {}, formValidations = {}) => {
   const onInputChange = ({ target }) => {
     const { name, value, type, checked } = target;
     const newValue = target.type === 'checkbox' ? checked : value
-    setFormState({
-      ...formState,
+    setFormState((prevFormState) => ({
+      ...prevFormState,
       [name]: newValue
-    });
+    }));
   }
 
   const onBulkForm = (data) => {
-    setFormState({
-      ...formState,
+    setFormState((prevFormState) => ({
+      ...prevFormState,
       ...data
-    });
+    }));
   }
 
   const setBulkForm = (data) => {
-    setFormState({
-      ...formState,
+    setFormState((prevFormState) => ({
+      ...prevFormState,
       ...data
-    });
+    }));
   }
 
   const onResetForm = () => {
