@@ -511,6 +511,8 @@ const enLang = {
   "input.subtotal": "Subtotal",
   "input.discount": "Discount",
   "input.tax": "Tax",
+  "input.hospValue": "Hospital Value",
+  "input.provValue": "Provider Value",
   "input.internalCode": "Internal Code",
   "input.exonerated": "Exonerated",
   "input.exent": "Exempt",
@@ -2888,6 +2890,8 @@ const enLang = {
   "page.events.modalAddService.title": "Add Service",
   "page.events.modalAddService.table.title": "Services Available",
   "page.events.modalEditProduct.title": "Edit Product",
+  "page.events.modalEditService.title": "Service Providers",
+  "page.events.modalAddEditProvider.title": "Add/Edit Provider",
   "page.events.modalHospitalization.title": "Convert to Hospitalization",
   "page.events.alert.question.closeEvent.title": "Are you sure you want to close this event?",
   // 90.1 Hospitalizations

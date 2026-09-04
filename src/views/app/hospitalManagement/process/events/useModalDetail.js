@@ -6,17 +6,20 @@ export const useModalDetail = ({ setLoading, currentItem }) => {
   const [openModalAddProduct, setOpenModalAddProduct] = useState(false);
   const [openModalAddService, setOpenModalAddService] = useState(false);
   const [openModalEditProduct, setOpenModalEditProduct] = useState(false);
+  const [openModalEditService, setOpenModalEditService] = useState(false);
   const [currentDetailItem, setCurrentDetailItem] = useState({});
   const [idRecordToDelete, setIdRecordToDelete] = useState(0);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
 
   const fnEditItem = (item) => {
-    // Servicio (type 2) y Materia Prima quedan pendientes de implementar.
-    if (item.invProduct?.type !== 1) {
-      return;
+    // Materia Prima queda pendiente de implementar.
+    if (item.invProduct?.type === 1) {
+      setCurrentDetailItem(item);
+      setOpenModalEditProduct(true);
+    } else if (item.invProduct?.type === 2) {
+      setCurrentDetailItem(item);
+      setOpenModalEditService(true);
     }
-    setCurrentDetailItem(item);
-    setOpenModalEditProduct(true);
   }
 
   const fnDeleteItem = (item) => {
@@ -139,6 +142,8 @@ export const useModalDetail = ({ setLoading, currentItem }) => {
       setOpenModalAddService,
       openModalEditProduct,
       setOpenModalEditProduct,
+      openModalEditService,
+      setOpenModalEditService,
       currentDetailItem,
       fnSaveEditProduct,
       propsToMsgDelete,

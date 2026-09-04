@@ -9,6 +9,7 @@ import Confirmation from '@Containers/ui/confirmationMsg';
 import { useModalDetail } from './useModalDetail';
 import ModalAddProduct from './ModalAddProduct';
 import ModalEditProduct from './ModalEditProduct';
+import ModalEditService from './ModalEditService';
 
 const ModalDetail = ({data, setOpen}) => {
   const {currentItem, setLoading, listAreas, listStores} = data;
@@ -16,6 +17,7 @@ const ModalDetail = ({data, setOpen}) => {
   const {
     table, fnAddProduct, fnAddService, fnPrintDocument, openModalAddProduct, setOpenModalAddProduct,
     openModalAddService, setOpenModalAddService, openModalEditProduct, setOpenModalEditProduct,
+    openModalEditService, setOpenModalEditService,
     currentDetailItem, fnSaveEditProduct, propsToMsgDelete, fnGetDataDetail
   } = useModalDetail({setLoading, currentItem});
 
@@ -62,6 +64,18 @@ const ModalDetail = ({data, setOpen}) => {
     data: {
       currentItem: currentDetailItem,
       fnSave: fnSaveEditProduct
+    }
+  }
+
+  const propsToModalEditService = {
+    ModalContent: ModalEditService,
+    title: "page.events.modalEditService.title",
+    open: openModalEditService,
+    setOpen: setOpenModalEditService,
+    maxWidth: 'lg',
+    data: {
+      currentItem: currentDetailItem,
+      setLoading
     }
   }
 
@@ -140,6 +154,7 @@ const ModalDetail = ({data, setOpen}) => {
       <Modal {...propsToModalAddProduct}/>
       <Modal {...propsToModalAddService}/>
       <Modal {...propsToModalEditProduct}/>
+      <Modal {...propsToModalEditService}/>
       <Confirmation {...propsToMsgDelete}/>
     </>
   )
