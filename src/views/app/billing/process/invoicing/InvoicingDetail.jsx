@@ -8,9 +8,15 @@ import { InputLabel } from '@Components/inputLabel';
 const InvoicingDetail = (props) => {
   const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
     totalProd, onInputDetaChange, handleQtyChange, handlePriceChange, handleDiscPercentChange, handleTaxPercentChange,
-    fnViewProducts, fnChangePrice, fnAddProduct, formValidationDetail, sendFormDetail } = props;
+    fnViewProducts, fnChangePrice, fnAddProduct, formValidationDetail, sendFormDetail, isInvoiceSaved } = props;
 
   const { productCodeValid, qtyValid, priceValid } = formValidationDetail;
+
+  // Documento ya guardado: ya no se puede agregar ni modificar ítems del detalle
+  // (igual que el legacy: Textbox_hw48 != 0 bloquea la edición completa de la venta).
+  if (isInvoiceSaved) {
+    return null;
+  }
 
   return (
     <>

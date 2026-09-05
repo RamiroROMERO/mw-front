@@ -131,6 +131,11 @@ const PointSales = (props) => {
 
   const { id, customerId, customerDNI, customerName, notes, documentCode, documentType, currency, printType, date, dateInProcess, cashierId, documentExo, documentId, numcai, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue: taxValueInvoice, total, valueCustomer, valueRestore } = formIndex;
 
+  // Documento ya guardado (via checkout) — igual que el legacy (fac_pos.sc2: si
+  // Textbox_hw48 != 0, deshabilita cliente y tipo de documento): ya no se puede
+  // modificar la cabecera de la venta ni el detalle, solo consultarla/imprimirla.
+  const isInvoiceSaved = validInt(id) > 0;
+
   const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue, total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, qtyDist, haveComiss, areaId, storeId, productType } = formDetail;
 
   const handleAreaChange = e => {
@@ -1014,18 +1019,18 @@ const PointSales = (props) => {
   const propsToInvoicingForm = {
     documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, storeId, cashierId,
     documentExo, documentId, numcai, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange,
-    recordSelected, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, hasSellerControl
+    recordSelected, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, hasSellerControl, isInvoiceSaved
   }
 
   const propsToInvoicingDetail = {
     productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
     totalProd, onInputDetaChange, handleQtyChange, handlePriceChange, handleDiscPercentChange, handleTaxPercentChange,
-    fnViewProducts, fnChangePrice, fnAddProduct, formValidationDetail, sendFormDetail
+    fnViewProducts, fnChangePrice, fnAddProduct, formValidationDetail, sendFormDetail, isInvoiceSaved
   }
 
   const propsToInvoicingTable = {
     invoiceDetail, subTotalValue, discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValueInvoice, total, onInputChangeIndex,
-    fnDeleteProduct
+    fnDeleteProduct, isInvoiceSaved
   }
 
   const propsToMsgCancelInvoice = {

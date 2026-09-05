@@ -9,7 +9,7 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import DateCalendar from '@Components/dateCalendar'
 
 const InvoicingForm = (props) => {
-  const { documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, cashierId, storeId, documentExo, documentId, numcai, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, onInputDetaChange, hasSellerControl } = props;
+  const { documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, cashierId, storeId, documentExo, documentId, numcai, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, onInputDetaChange, hasSellerControl, isInvoiceSaved } = props;
 
   const { documentCodeValid, customerIdValid, documentTypeValid, currencyValid } = formValidationIndex;
 
@@ -36,6 +36,7 @@ const InvoicingForm = (props) => {
                   value={documentCode}
                   onChange={onInputChangeIndex}
                   options={listTypeDocuments}
+                  disabled={isInvoiceSaved}
                   invalid={sendFormIndex && !!documentCodeValid}
                   feedbackText={sendFormIndex && (documentCodeValid || null)}
                 />
@@ -72,6 +73,7 @@ const InvoicingForm = (props) => {
                     inputValue={customerId}
                     onChange={onCustomerChange}
                     options={listCustomers}
+                    isDisabled={isInvoiceSaved}
                     invalid={sendFormIndex && !!customerIdValid}
                     feedbackText={sendFormIndex && (customerIdValid || null)}
                   />
@@ -96,8 +98,8 @@ const InvoicingForm = (props) => {
                   onChange={onInputChangeIndex}
                   options={
                     [
-                      { id: 1, label: "page.invoicing.radio.cash" },
-                      { id: 2, label: "page.invoicing.radio.credit" }
+                      { id: 1, label: "page.invoicing.radio.cash", disabled: isInvoiceSaved },
+                      { id: 2, label: "page.invoicing.radio.credit", disabled: isInvoiceSaved }
                     ]
                   }
                   invalid={sendFormIndex && !!documentTypeValid}
@@ -173,6 +175,7 @@ const InvoicingForm = (props) => {
                   value={areaId}
                   onChange={handleAreaChange}
                   options={listAreas}
+                  disabled={isInvoiceSaved}
                 />
               </Colxx>
               <Colxx xxs="12" sm="6" md="6" lg="12">
@@ -182,6 +185,7 @@ const InvoicingForm = (props) => {
                   value={storeId}
                   onChange={onInputDetaChange}
                   options={listWarehouse}
+                  disabled={isInvoiceSaved}
                 />
               </Colxx>
               {hasSellerControl && (
@@ -192,6 +196,7 @@ const InvoicingForm = (props) => {
                     inputValue={cashierId}
                     onChange={onInputChangeIndex}
                     options={listSellers}
+                    isDisabled={isInvoiceSaved}
                   />
                 </Colxx>
               )}

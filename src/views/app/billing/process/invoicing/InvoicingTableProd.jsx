@@ -5,7 +5,7 @@ import { ContainerWithLabel } from '@Components/containerWithLabel';
 
 const InvoicingTable = (props) => {
   const { invoiceDetail, subTotalValue, discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValueInvoice, total,
-    fnDeleteProduct } = props;
+    fnDeleteProduct, isInvoiceSaved } = props;
 
   return (
     <>
@@ -42,10 +42,12 @@ const InvoicingTable = (props) => {
                             <td className='d-md-none-table-cell' align='right'>{formatNumber(item.taxValue)}</td>
                             <td align='right'>{formatNumber(item.total)}</td>
                             <td align='right'>
-                              <Button type="button" className="btn-circle-table" color="outline-danger" title="Eliminar"
-                                onClick={() => { fnDeleteProduct(item) }} key={`buttons-${idx}`}>
-                                <i className='bi bi-trash' />
-                              </Button>
+                              {!isInvoiceSaved && (
+                                <Button type="button" className="btn-circle-table" color="outline-danger" title="Eliminar"
+                                  onClick={() => { fnDeleteProduct(item) }} key={`buttons-${idx}`}>
+                                  <i className='bi bi-trash' />
+                                </Button>
+                              )}
                             </td>
                           </tr>
                         );
