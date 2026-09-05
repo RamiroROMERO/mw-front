@@ -9,7 +9,7 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import DateCalendar from '@Components/dateCalendar'
 
 const InvoicingForm = (props) => {
-  const { documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, cashierId, storeId, documentExo, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, onInputDetaChange } = props;
+  const { documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, cashierId, storeId, documentExo, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, onInputDetaChange, hasSellerControl } = props;
 
   const { documentCodeValid, customerIdValid, documentTypeValid, currencyValid } = formValidationIndex;
 
@@ -126,7 +126,7 @@ const InvoicingForm = (props) => {
           </Colxx>
           <Colxx xxs="12" xs="12" sm="12" md="12" lg="4">
             <Row>
-              <Colxx xxs="12" sm="6" md="6" lg="12">
+              <Colxx xxs="12" sm="6" md="6" lg="6">
                 <DateCalendar
                   value={dateInProcess}
                   disabled
@@ -135,9 +135,10 @@ const InvoicingForm = (props) => {
                   onChange={onInputChangeIndex}
                 />
               </Colxx>
-              <Colxx xxs="12" sm="6" md="6" lg="12">
+              <Colxx xxs="12" sm="6" md="6" lg="6">
                 <DateCalendar
                   value={date}
+                  disabled
                   name="date"
                   label="page.invoicing.input.dateDocument"
                   onChange={onInputChangeIndex}
@@ -161,15 +162,17 @@ const InvoicingForm = (props) => {
                   options={listWarehouse}
                 />
               </Colxx>
-              <Colxx xxs="12" sm="6" md="6" lg="12">
-                <SearchSelect
-                  label='page.invoicing.select.sellerId'
-                  name='cashierId'
-                  inputValue={cashierId}
-                  onChange={onInputChangeIndex}
-                  options={listSellers}
-                />
-              </Colxx>
+              {hasSellerControl && (
+                <Colxx xxs="12" sm="6" md="6" lg="12">
+                  <SearchSelect
+                    label='page.invoicing.select.sellerId'
+                    name='cashierId'
+                    inputValue={cashierId}
+                    onChange={onInputChangeIndex}
+                    options={listSellers}
+                  />
+                </Colxx>
+              )}
             </Row>
           </Colxx>
         </Row>

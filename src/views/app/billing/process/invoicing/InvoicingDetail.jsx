@@ -1,8 +1,9 @@
-import { Row, Form, Button } from 'reactstrap';
+import { Row, Form, Button, Input, InputGroup } from 'reactstrap';
 import { IntlMessages } from "@Helpers/Utils";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { InputField } from '@Components/inputFields';
+import { InputLabel } from '@Components/inputLabel';
 
 const InvoicingDetail = (props) => {
   const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
@@ -19,16 +20,24 @@ const InvoicingDetail = (props) => {
             <ContainerWithLabel label="page.invoicing.title.addProduct">
               <Row>
                 <Colxx xxs="12" xs="4" sm="3" md="3" lg="2">
-                  <InputField
-                    value={productCode}
-                    name="productCode"
-                    onChange={onInputDetaChange}
-                    type="text"
-                    onClick={fnViewProducts}
-                    label="page.invoicing.input.codeProduct"
-                    invalid={sendFormDetail && !!productCodeValid}
-                    feedbackText={sendFormDetail && (productCodeValid || null)}
-                  />
+                  <InputLabel label="page.invoicing.input.codeProduct" feedbackText={sendFormDetail && (productCodeValid || null)}>
+                    <InputGroup size="sm">
+                      <Input
+                        bsSize="sm"
+                        value={productCode}
+                        id="productCode"
+                        name="productCode"
+                        type="text"
+                        readOnly
+                        onClick={fnViewProducts}
+                        invalid={sendFormDetail && !!productCodeValid}
+                        style={{ cursor: 'pointer', resize: 'none', boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)' }}
+                      />
+                      <Button color="secondary" outline onClick={fnViewProducts} title={IntlMessages("page.invoicing.input.codeProduct")}>
+                        <i className="bi bi-search" />
+                      </Button>
+                    </InputGroup>
+                  </InputLabel>
                 </Colxx>
                 <Colxx xxs="12" xs="8" sm="6" md="6" lg="4">
                   <InputField

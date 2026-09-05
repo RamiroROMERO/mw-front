@@ -11,7 +11,7 @@ import createNotification from "@Containers/ui/Notifications";
 const ModalPayment = (props) => {
   const { data, setOpen } = props;
   const { id, dateInProcess, total, cashId, cashierId, customerId, customerDNI, customerName, userName, typePrint, listTypePayments, setListTypePayments,
-    setLoading } = data;
+    setLoading, invoiceHeader, invoiceDetail, fnCheckoutSuccess } = data;
 
   const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     valueCustomer: 0,
@@ -49,6 +49,7 @@ const ModalPayment = (props) => {
     }
 
     if (id && id > 0) {
+      // Pago de una factura ya guardada — fuera del checkout atómico de creación.
       setLoading(true);
       request.PUT(`billing/process/invoices/${id}`, updatePay, () => {
         const dataPrint = {
@@ -83,7 +84,35 @@ const ModalPayment = (props) => {
         }
       });
       setOpen(false);
+      return;
     }
+
+    // Venta nueva: checkout atómico — valida stock, genera factura, detalle, kardex,
+    // partida contable y CxC en una sola transacción (todo o nada).
+    const paymentMethods = listTypePayments
+      .filter(item => validFloat(item.value) > 0)
+      .map(item => ({ paymentTypeDetailId: item.id, total: validFloat(item.value), reference: '' }));
+
+    const checkoutPayload = {
+      invoice: {
+        ...invoiceHeader,
+        valueCustomer,
+        valueRestore,
+        customerDNI: newCustomerDNI,
+        customerName: newCustomerName
+      },
+      detail: invoiceDetail,
+      paymentMethods
+    }
+
+    setLoading(true);
+    request.POST('billing/process/pointSales/checkout', checkoutPayload, (resp) => {
+      setLoading(false);
+      setOpen(false);
+      fnCheckoutSuccess(resp.data);
+    }, (err) => {
+      setLoading(false);
+    });
   }
 
   const propsToTableTypePayments = {

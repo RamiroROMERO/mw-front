@@ -39,6 +39,7 @@ const PointSales = (props) => {
   const [listTypeExpenses, setListTypeExpenses] = useState([]);
   const [listTypePayments, setListTypePayments] = useState([]);
   const [listLedgerAccount, setListLedgerAccount] = useState([]);
+  const [hasSellerControl, setHasSellerControl] = useState(false);
   const [invoiceDetail, setInvoiceDetail] = useState([]);
   const [dataInvoicing, setDataInvoicing] = useState([]);
   const [recordSelected, setRecordSelected] = useState({});
@@ -82,7 +83,10 @@ const PointSales = (props) => {
     documentType: 1,
     currency: 1,
     printType: dataCashBox ? dataCashBox.printType : 1,
-    date: '',
+    // Por defecto igual a dateInProcess (venta nueva) — solo cambia a la fecha real
+    // almacenada cuando se busca/carga una factura existente (fnViewInvoice), y ahí
+    // el campo queda deshabilitado (el usuario no debe poder modificarla).
+    date: DateHelper.format(new Date()),
     dateInProcess: DateHelper.format(new Date()),
     cashierId: 0,
     documentExo: false,
@@ -120,12 +124,13 @@ const PointSales = (props) => {
     unitedCoste: 0,
     unitedOut: 0,
     qtyDist: 0,
-    haveComiss: 0
+    haveComiss: 0,
+    productType: 0
   }, invoiceDetailValid);
 
   const { id, customerId, customerDNI, customerName, notes, documentCode, documentType, currency, printType, date, dateInProcess, cashierId, documentExo, documentId, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue: taxValueInvoice, total, valueCustomer, valueRestore } = formIndex;
 
-  const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue, total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, qtyDist, haveComiss, areaId, storeId } = formDetail;
+  const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue, total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, qtyDist, haveComiss, areaId, storeId, productType } = formDetail;
 
   const handleAreaChange = e => {
     let valueStore = "0";
@@ -317,94 +322,33 @@ const PointSales = (props) => {
       return;
     }
 
-    const newData = {
-      documentCode,
-      cashId: dataCashBox.cashId,
-      cashierId: dataCashBox.cashierId,
-      notes,
-      date: dateInProcess === '' ? DateHelper.format(new Date()) : dateInProcess,
-      customerId,
-      subTotalValue,
-      discountValue: discount,
-      subtotTaxValue,
-      subTotExeValue,
-      subTotExoValue,
-      taxValue: taxValueInvoice,
-      total,
-      isPos: 1,
-      currency: validInt(currency),
-      customerDNI,
-      customerName,
-      documentType: validInt(documentType),
-      documentExo,
-      documentId,
-      cai: '',
-      numcai: '',
-      dateOut: '',
-      range: '',
-      typeChange: "1.0000",
-      valueCustomer,
-      valueRestore
-    }
-
-    invoiceDetail.map((item) => {
-      delete item.id;
-      return item;
-    });
-
     if (id && id > 0) {
       notification('warning', 'msg.alert.invoice.saved', 'alert.warning.title');
-    } else {
-      // Generar documento
-      setLoading(true);
-      request.POST('admin/documents/getCurrentNumber', { code: documentCode }, (resp1) => {
-        newData.documentId = resp1.data.codeInt;
-        newData.cai = resp1.data.cai;
-        newData.numcai = resp1.data.numCai;
-        newData.dateOut = resp1.data.limitDate !== "" ? resp1.data.limitDate : "1900-01-01";
-        newData.range = resp1.data.noRange;
-        onInputChangeIndex({ target: { name: 'documentId', value: resp1.data.codeInt } });
-        setLoading(true);
-
-        // guardar factura
-        request.POST('billing/process/invoices', newData, (resp) => {
-          onInputChangeIndex({ target: { name: 'id', value: resp.data.id } });
-          // guardar productos
-          const dataProducts = invoiceDetail.map((item) => {
-            item.idFather = resp.data.id;
-            return item;
-          });
-
-          request.POST('billing/process/invoiceDetail/createMany', dataProducts, () => {
-            // realizar cobro
-            const newListTypePayments = listTypePayments.map(item => {
-              if (item.id === 3) {
-                item.value = parseFloat(total);
-              } else {
-                item.value = 0
-              }
-              return item;
-            });
-            setListTypePayments(newListTypePayments);
-            setOpenModalPayment(true);
-            setLoading(false);
-          }, (err) => {
-
-            setLoading(false);
-          }, false);
-
-          setLoading(false);
-        }, (err) => {
-
-          setLoading(false);
-        }, false);
-
-        setLoading(false);
-      }, (err) => {
-
-        setLoading(false);
-      }, false);
+      return;
     }
+
+    // El checkout (validar stock, kardex, partida contable y CxC en una sola
+    // transacción) se dispara al aceptar el pago en ModalPayment, no acá — así no se
+    // crea factura/detalle antes de saber si el proceso completo puede terminar.
+    const newListTypePayments = listTypePayments.map(item => ({ ...item, value: 0 }));
+    setListTypePayments(newListTypePayments);
+    setOpenModalPayment(true);
+  }
+
+  const fnCheckoutSuccess = (resultData) => {
+    onInputChangeIndex({ target: { name: 'id', value: resultData.id } });
+    onInputChangeIndex({ target: { name: 'documentId', value: resultData.documentId } });
+    const dataPrint = {
+      id: resultData.id, userName: userData.name, typePrint: printType
+    }
+    setLoading(true);
+    request.GETPdfUrl('billing/process/invoices/exportInvoicePDF', dataPrint, (resp) => {
+      setDocumentPath(resp);
+      setOpenViewFile(true);
+      setLoading(false);
+    }, (err) => {
+      setLoading(false);
+    });
   }
 
   const fnPrintInvoicing = () => {
@@ -478,20 +422,29 @@ const PointSales = (props) => {
   }
 
   const fnSelectProduct = (item) => {
-    onResetFormDetail();
+    // No se usa onResetFormDetail() acá: reseteaba TODO el formulario de detalle,
+    // incluyendo areaId/storeId/typePrice — el usuario los elige una vez y agrega
+    // varios productos contra esa misma área/almacén, así que no deben perderse al
+    // seleccionar cada producto. Solo se limpia lo propio del producto anterior.
     const newProduct = {
       productCode: item.productCode,
-      description: item.name,
-      unitProd: item.unitProd,
+      description: item.productName,
+      unitProd: item.undoutName,
       taxPercent: validFloat(item.taxPercent),
       qty: 1,
+      discountPercent: 0,
+      discountValue: 0,
       priceLocalMin: item.min,
       priceLocalMid: item.med,
       priceLocalMax: item.max,
       unitedCoste: item.costValue,
-      unitedOut: item.outputUnit,
-      qtyDist: item.qtyDist,
-      haveComiss: item.paymentComiss
+      unitedOut: item.undoutName,
+      // El factor de conversión de unidad (ej. Caja=5 unidades) — el kardex se rebaja
+      // multiplicando qty * qtyDist, así que un valor incorrecto acá descuadra el
+      // inventario real de lo vendido.
+      qtyDist: validFloat(item.valChange) > 0 ? validFloat(item.valChange) : 1,
+      haveComiss: item.paymentComiss,
+      productType: validInt(item.typeId)
     }
     if (validInt(typePrice) === 1) {
       newProduct.price = validFloat(item.min);
@@ -518,20 +471,31 @@ const PointSales = (props) => {
     }
     setLoading(true);
     setListProducts([]);
-    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId }), (resp) => {
-      const products = resp.data.map((item) => {
-        item.taxPercent = item.percentTax
-        item.unitProd = item.outputUnit
-        item.min = item.priceLocalMin
-        item.med = item.priceLocalMid
-        item.max = item.priceLocalMax
-        item.stock = formatNumber(item.stockQty)
-        item.options = <TableButton color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
-        return item;
+    // El buscador del legacy (getProductsForSale) trae productos y servicios juntos en
+    // un solo listado — acá el backend los expone en dos endpoints separados
+    // (getStocks/getServices), así que se combinan del lado del cliente.
+    const mapProduct = (item) => {
+      item.taxPercent = item.percentTax
+      item.unitProd = item.undoutName
+      item.min = item.localMinPrice
+      item.med = item.localMedPrice
+      item.max = item.localMaxPrice
+      item.stock = formatNumber(item.qtyStock)
+      item.options = <TableButton color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
+      return item;
+    }
+    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId, inStock: true }), (resp) => {
+      const products = resp.data.map(mapProduct);
+      request.GET('inventory/process/stocks/getServices', (resp2) => {
+        const services = resp2.data.map(mapProduct);
+        setListProducts([...products, ...services]);
+        setOpenModalProducts(true);
+        setLoading(false);
+      }, (err) => {
+        setListProducts(products);
+        setOpenModalProducts(true);
+        setLoading(false);
       });
-      setListProducts(products);
-      setOpenModalProducts(true);
-      setLoading(false);
     }, (err) => {
 
       setLoading(false);
@@ -554,7 +518,7 @@ const PointSales = (props) => {
       return;
     }
 
-    if (validInt(cashierId) === 0) {
+    if (hasSellerControl && validInt(cashierId) === 0) {
       notification('warning', 'msg.required.select.seller', 'alert.warning.title');
       return;
     }
@@ -588,7 +552,8 @@ const PointSales = (props) => {
       sellerCode: filterSellers ? filterSellers.code : "",
       qtyDist: validFloat(qtyDist),
       unitedOut,
-      haveComiss: validInt(haveComiss)
+      haveComiss: validInt(haveComiss),
+      productType: validInt(productType)
     }
 
     const sumSubtotal = invoiceDetail.map(item => validFloat(item.subtotal)).reduce((prev, curr) => prev + curr, 0);
@@ -642,7 +607,8 @@ const PointSales = (props) => {
       unitedCoste: 0,
       qtyDist: 0,
       unitedOut: "",
-      unitProd: ""
+      unitProd: "",
+      productType: 0
     }
     setBulkFormDetail(cleanProd);
     setSendFormDetail(false);
@@ -740,24 +706,32 @@ const PointSales = (props) => {
       setLoading(false);
     });
     setLoading(true);
-    request.GET('admin/users?status=1', (resp) => {
-      const users = resp.data.map((item) => {
+    request.GET('admin/users/getSellers', (resp) => {
+      const sellers = resp.data.map((item) => {
         return {
           label: `${item.sellerCode} | ${item.name}`,
           value: item.id,
           code: item.sellerCode,
-          isSeller: item.isSeller,
-          isCashier: item.isCashier,
+          isSeller: 1,
           name: item.name
         }
       });
-      const sellers = users.filter((item) => {
-        return item.isSeller === 1
-      });
-      const cashiers = users.filter((item) => {
-        return item.isCashier === 1
-      });
       setListSellers(sellers);
+      setLoading(false);
+    }, (err) => {
+
+      setLoading(false);
+    });
+    setLoading(true);
+    request.GET('admin/users/getCashiers', (resp) => {
+      const cashiers = resp.data.map((item) => {
+        return {
+          label: item.name,
+          value: item.id,
+          isCashier: 1,
+          name: item.name
+        }
+      });
       setListCashiers(cashiers);
       setLoading(false);
     }, (err) => {
@@ -773,12 +747,11 @@ const PointSales = (props) => {
 
       setLoading(false);
     });
-    request.GET('admin/paymentTypes', (resp) => {
+    request.GET('billing/settings/paymentTypeDetails?status=1', (resp) => {
       const payments = resp.data.map(item => {
         return {
           id: item.id,
-          name: item.name,
-          usageType: item.usageType,
+          name: item.description,
           value: 0
         }
       });
@@ -808,6 +781,11 @@ const PointSales = (props) => {
     }, (err) => {
 
       setLoading(false);
+    });
+    request.GET('admin/companies/getOperationalSettings', (resp) => {
+      setHasSellerControl(!!resp.data.hasSellerControl);
+    }, (err) => {
+
     });
   }, []);
 
@@ -1002,14 +980,39 @@ const PointSales = (props) => {
       typePrint: printType,
       listTypePayments,
       setListTypePayments,
-      setLoading
+      setLoading,
+      invoiceHeader: {
+        documentCode,
+        notes,
+        date: dateInProcess === '' ? DateHelper.format(new Date()) : dateInProcess,
+        customerId,
+        subtotalValue: subTotalValue,
+        discountValue: discount,
+        subtotTaxValue,
+        subtotExeValue: subTotExeValue,
+        subtotExoValue: subTotExoValue,
+        taxValue: taxValueInvoice,
+        total,
+        isPos: 1,
+        currency: validInt(currency),
+        customerDNI,
+        customerName,
+        documentType: validInt(documentType),
+        documentExo,
+        cashId: dataCashBox ? dataCashBox.cashId : 0,
+        cashierId: dataCashBox ? dataCashBox.cashierId : 0,
+        valueCustomer,
+        valueRestore
+      },
+      invoiceDetail,
+      fnCheckoutSuccess
     }
   }
 
   const propsToInvoicingForm = {
     documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, storeId, cashierId,
     documentExo, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange,
-    recordSelected, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex
+    recordSelected, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, hasSellerControl
   }
 
   const propsToInvoicingDetail = {
