@@ -18,6 +18,8 @@ import Modal from "@Components/modal";
 import ModalTypeSheet from "@Components/modalTypeSheet";
 import ModalConcepts from "./ModalConcepts";
 import ModalUnpaidBills from "./ModalUnpaidBills";
+import notification from '@Containers/ui/Notifications';
+import { validFloat } from "@Helpers/Utils";
 
 const ModalCancellations = (props) => {
   const { data, setOpen } = props;
@@ -56,55 +58,70 @@ const ModalCancellations = (props) => {
     actions: []
   });
 
-  const [tableDocuments, setTableDocuments] = useState({
+  const tableDocuments = {
     title: IntlMessages("page.pointSales.modal.cancellations.title.documents"),
     columns: [
       {
-        label: "page.pointSales.modal.cancellations.tableDocuments.document", field: "document",
-        headerStyle: {
-          textAlign: 'center',
-          width: '50%'
-        },
-        bodyStyle: {
-          width: '50%'
-        }
+        label: "page.pointSales.modal.cancellations.tableDocuments.document", field: "documentCode",
+        headerStyle: { textAlign: 'center', width: '45%' },
+        bodyStyle: { width: '45%' }
       },
       {
-        label: "page.pointSales.modal.cancellations.tableDocuments.balance", field: "balance",
-        headerStyle: {
-          textAlign: 'center',
-          width: '25%'
-        },
-        bodyStyle: {
-          width: '25%'
-        }
+        label: "page.pointSales.modal.cancellations.tableDocuments.balance", field: "originalValue",
+        headerStyle: { textAlign: 'center', width: '25%' },
+        bodyStyle: { width: '25%', textAlign: 'right' }
       },
       {
-        label: "page.pointSales.modal.cancellations.tableDocuments.canceled", field: "valuePaid", isEditable: true,
-        headerStyle: {
-          textAlign: 'center',
-          width: '25%'
-        },
-        bodyStyle: {
-          width: '25%',
-          textAlign: 'right',
-        }
+        label: "page.pointSales.modal.cancellations.tableDocuments.canceled", field: "valuePaid", isEditable: id === 0,
+        headerStyle: { textAlign: 'center', width: '20%' },
+        bodyStyle: { width: '20%', textAlign: 'right' }
+      },
+      {
+        label: "table.column.options", field: "options",
+        headerStyle: { textAlign: 'center', width: '10%' },
+        bodyStyle: { width: '10%', textAlign: 'right' }
       }
     ],
-    data: listDocCancel,
+    data: listDocCancel.map((item) => ({
+      ...item,
+      options: id === 0
+        ? <TableButtons color='danger' icon='bi bi-trash' fnOnClick={() => fnRemoveDocument(item.id)} />
+        : null
+    })),
     onChangeData: setListDocCancel,
     options: {
       columnActions: "options",
       tableHeight: '90px'
     }
-  });
+  };
 
   const fnAddDocument = () => {
+    if (!customerId) {
+      notification('warning', 'page.pointSales.modal.cancellations.validation.customerRequired', 'alert.warning.title');
+      return;
+    }
     setOpenModalUnpaidBills(true);
+  }
+
+  const fnAddDocuments = (newDocs) => {
+    setListDocCancel((prev) => {
+      const merged = [...prev];
+      newDocs.forEach((doc) => {
+        if (!merged.some((item) => item.id === doc.id)) {
+          merged.push(doc);
+        }
+      });
+      return merged;
+    });
+  }
+
+  const fnRemoveDocument = (id) => {
+    setListDocCancel((prev) => prev.filter((item) => item.id !== id));
   }
 
   const fnNewCancellation = () => {
     onResetForm();
+    setListDocCancel([]);
     const clearListTypePayments = listTypePayments.map(elem => {
       elem.value = 0;
       return elem;
@@ -154,6 +171,14 @@ const ModalCancellations = (props) => {
 
       setLoading(false);
     });
+    request.GET(buildUrl('accounting/process/cxcPayments', { fatherId: viewItem.id }), (resp) => {
+      setListDocCancel(resp.data.map((item) => ({
+        id: item.cxcId,
+        documentCode: item.documentCode,
+        originalValue: item.valuePayment,
+        valuePaid: item.valuePayment
+      })));
+    }, (err) => { });
     setActiveTab("1");
   }
 
@@ -182,6 +207,50 @@ const ModalCancellations = (props) => {
     setOpenModalConcepts(true);
   }
 
+  const fnSaveReceipt = () => {
+    if (!customerId || listDocCancel.length === 0) {
+      notification('warning', 'page.pointSales.modal.cancellations.validation.documentsRequired', 'alert.warning.title');
+      return;
+    }
+
+    const paymentMethods = listTypePayments
+      .filter(item => validFloat(item.value) !== 0)
+      .map(item => ({ paymentTypeDetailId: item.id, total: validFloat(item.value) }));
+
+    if (paymentMethods.length === 0) {
+      notification('warning', 'page.pointSales.modal.cancellations.validation.paymentRequired', 'alert.warning.title');
+      return;
+    }
+
+    const customer = listCustomers.find((item) => item.id === customerId);
+
+    setLoading(true);
+    request.POST('billing/process/cancellations/saveReceipt', {
+      cancellationData: {
+        documentCode,
+        date,
+        customerId,
+        customerName: customer ? customer.name : '',
+        reference,
+        description,
+        cashId,
+        cashierId,
+        ctaDiffId
+      },
+      documents: listDocCancel.map(({ id: docId, documentCode: docCode, originalValue, valuePaid }) => ({
+        id: docId, documentCode: docCode, originalValue, valuePaid: validFloat(valuePaid)
+      })),
+      paymentMethods
+    }, (resp) => {
+      setBulkForm({ id: resp.data.id });
+      notification('success', 'msg.save.record', 'alert.warning.title');
+      fnGetCancellations();
+      setLoading(false);
+    }, (err) => {
+      setLoading(false);
+    });
+  }
+
   useEffect(() => {
     fnGetCancellations();
     fnNewCancellation();
@@ -205,7 +274,9 @@ const ModalCancellations = (props) => {
     setOpen: setOpenModalUnpaidBills,
     maxWidth: "lg",
     data: {
-      setLoading
+      setLoading,
+      customerId,
+      fnAddDocuments
     }
   }
 
@@ -423,7 +494,7 @@ const ModalCancellations = (props) => {
         </TabContent>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary">
+        <Button color="primary" onClick={fnSaveReceipt} disabled={id > 0}>
           <i className="iconsminds-save" />{IntlMessages("button.save")}
         </Button>
         <Button color="danger" onClick={() => { setOpen(false) }}>

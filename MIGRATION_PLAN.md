@@ -173,6 +173,15 @@ Orden pensado por dependencia (el framework compartido bloquea a todo lo demás)
 - En Inventario, priorizar `inv_compras` (una vez descartadas sus 3 copias obsoletas), kardex y órdenes de compra.
 - Backend ya es el más maduro de los dos (39 controllers en Inventario) — foco principal aquí es frontend + QA de reglas de negocio, no diseño de API desde cero.
 
+**Avance en `fac_pos.sc2` (2026-09-04/05):**
+- ✅ Checkout atómico (una sola transacción: factura + detalle + kardex + partida contable + CxC), reemplazando el patrón legacy de guardado + regeneración manual en "Administrador". Verificado end-to-end contra datos reales (venta contado y crédito).
+- ✅ Bloqueo de edición sobre documento ya guardado (documento/cliente/tipo de venta/área/almacén/vendedor y detalle), igual que el legacy.
+- ✅ Búsqueda de productos (`getProductsForSale`), control de vendedor condicionado a `hasSellerControl` de la empresa, exportación de PDF de factura.
+- ✅ Auditoría de los ~20 botones del ControlPanel (tabs Inicio/Opciones/Administrador): Ent./Sal Efectivo, Cancelaciones/Cierre de Caja/Apertura de Caja ya existían migrados de una fase previa (`ModalCashOpening/Close/Out`, `ModalCancellations`). Se completó **Recibos de Cancelación de Clientes** (`fac_pos_cancela.sc2`): antes solo tenía el formulario sin guardar nada (botón sin `onClick`, submodal de facturas pendientes vacío); ahora es un flujo atómico completo — busca CxC pendientes reales (`accounting/process/cxc/pendingByCustomer`, considera tanto pagos nuevos como el histórico legacy en `cont_pda2`), aplica el pago (`cont_cxc_payments`, tabla nueva con FK directa a la CxC, reemplaza el `cont_pda2` del legacy) y genera la partida contable en la misma transacción (`billing/process/cancellations/saveReceipt`). Verificado con pruebas reales (pago exacto, sobrepago rechazado, diferencia sin cuenta configurada rechazada) sin dejar registros huérfanos.
+- ⏸️ Pendiente de decisión del usuario (no implementado, contradice o requiere definir la regla de inmutabilidad de documento guardado): "Anular Documento" (Controlpanel21.btnDeleteDocument — el legacy lo hace con UPDATEs/DELETEs sueltos, no transaccional) y "Cambiar Producto"/"Costos y Dist." (editan una factura ya guardada).
+- 🔵 Fuera de alcance de Fase 2 (confirmado Hospital/Coffee-específico vía `.Init` gateado por `nIs_Hospital`/`nIs_Coffee`): Descuento Global, Recibo HM, Valores Hosp, Adelantos, Evento/Hosp, Importar (Coffee). Préstamos (Controlpanelbtn7) descartado por decisión de Fase 0.
+- 🔵 "Orden Compra→Factura" e "Importar Documento no-POS" (Controlpanel21.OptPages.Page2.Controlpanelbtn1/6): requieren el módulo de Cotizaciones/Presupuestos, no evaluado aún — queda para cuando se aborde ese módulo.
+
 ### Fase 3 — Contabilidad y Bancos
 *Cerrar el desbalance backend/frontend de Contabilidad*
 - Contabilidad tiene backend fuerte (22 controllers, 23 models) pero solo 50 archivos de frontend contra 99 formularios legacy — foco en UI, el backend probablemente ya soporta más de lo que la interfaz expone hoy.
