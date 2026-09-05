@@ -1757,6 +1757,8 @@ const esLang = {
   "page.invoicing.select.areaId": "Area",
   "page.invoicing.select.warehouseId": "Almacén",
   "page.invoicing.select.sellerId": "Vendedor",
+  "page.invoicing.input.internalNumber": "Número Interno",
+  "page.invoicing.input.fiscalNumber": "Número Fiscal",
   "page.invoicing.check.exemptInvoice": "Factura Exonerada",
   "page.invoicing.input.codeProduct": "Producto",
   "page.invoicing.input.descriptionProd": "Descripción",

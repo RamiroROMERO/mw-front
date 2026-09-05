@@ -9,7 +9,7 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import DateCalendar from '@Components/dateCalendar'
 
 const InvoicingForm = (props) => {
-  const { documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, cashierId, storeId, documentExo, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, onInputDetaChange, hasSellerControl } = props;
+  const { documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, cashierId, storeId, documentExo, documentId, numcai, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, onInputDetaChange, hasSellerControl } = props;
 
   const { documentCodeValid, customerIdValid, documentTypeValid, currencyValid } = formValidationIndex;
 
@@ -38,6 +38,28 @@ const InvoicingForm = (props) => {
                   options={listTypeDocuments}
                   invalid={sendFormIndex && !!documentCodeValid}
                   feedbackText={sendFormIndex && (documentCodeValid || null)}
+                />
+              </Colxx>
+            </Row>
+            <Row>
+              <Colxx xxs="4">
+                <InputField
+                  value={documentId || ''}
+                  name="documentId"
+                  type="text"
+                  disabled
+                  label="page.invoicing.input.internalNumber"
+                  style={{ resize: 'none', boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)', fontSize: '1rem' }}
+                />
+              </Colxx>
+              <Colxx xxs="8">
+                <InputField
+                  value={numcai}
+                  name="numcai"
+                  type="text"
+                  disabled
+                  label="page.invoicing.input.fiscalNumber"
+                  style={{ resize: 'none', boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)', fontSize: '1rem' }}
                 />
               </Colxx>
             </Row>

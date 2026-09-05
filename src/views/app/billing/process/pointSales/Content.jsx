@@ -91,6 +91,7 @@ const PointSales = (props) => {
     cashierId: 0,
     documentExo: false,
     documentId: 0,
+    numcai: '',
     subTotalValue: 0,
     discountValue: 0,
     subTotExeValue: 0,
@@ -128,7 +129,7 @@ const PointSales = (props) => {
     productType: 0
   }, invoiceDetailValid);
 
-  const { id, customerId, customerDNI, customerName, notes, documentCode, documentType, currency, printType, date, dateInProcess, cashierId, documentExo, documentId, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue: taxValueInvoice, total, valueCustomer, valueRestore } = formIndex;
+  const { id, customerId, customerDNI, customerName, notes, documentCode, documentType, currency, printType, date, dateInProcess, cashierId, documentExo, documentId, numcai, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue: taxValueInvoice, total, valueCustomer, valueRestore } = formIndex;
 
   const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue, total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, qtyDist, haveComiss, areaId, storeId, productType } = formDetail;
 
@@ -338,6 +339,7 @@ const PointSales = (props) => {
   const fnCheckoutSuccess = (resultData) => {
     onInputChangeIndex({ target: { name: 'id', value: resultData.id } });
     onInputChangeIndex({ target: { name: 'documentId', value: resultData.documentId } });
+    onInputChangeIndex({ target: { name: 'numcai', value: resultData.numcai } });
     const dataPrint = {
       id: resultData.id, userName: userData.name, typePrint: printType
     }
@@ -1011,7 +1013,7 @@ const PointSales = (props) => {
 
   const propsToInvoicingForm = {
     documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, storeId, cashierId,
-    documentExo, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange,
+    documentExo, documentId, numcai, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange,
     recordSelected, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, hasSellerControl
   }
 

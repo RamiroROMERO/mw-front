@@ -1741,6 +1741,8 @@ const enLang = {
   "page.invoicing.select.areaId": "Area",
   "page.invoicing.select.warehouseId": "Warehouse",
   "page.invoicing.select.sellerId": "Seller",
+  "page.invoicing.input.internalNumber": "Internal Number",
+  "page.invoicing.input.fiscalNumber": "Fiscal Number",
   "page.invoicing.check.exemptInvoice": "Exempt Invoice",
   "page.invoicing.input.codeProduct": "Product",
   "page.invoicing.input.descriptionProd": "Description",
