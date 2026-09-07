@@ -64,6 +64,11 @@ const ModalPrintCashClose = (props) => {
 
         setLoading(false);
       });
+    } else if (validInt(typePrint) === 4) {
+      request.GETPdf('billing/process/cashClose/exportPDFPaymentMethod', dataPrint, 'Cierre de Caja por Forma de Pago.pdf', (err) => {
+
+        setLoading(false);
+      });
     } else if (validInt(typePrint) === 7) {
       request.GETPdf('billing/process/cashClose/exportPDFExpenses', dataPrint, 'Detalle de Gastos', (err) => {
 
@@ -71,6 +76,11 @@ const ModalPrintCashClose = (props) => {
       });
     } else if (validInt(typePrint) === 8) {
       request.GETPdf('billing/process/cashClose/exportPDFCancellations', dataPrint, 'Detalle de Cancelaciones', (err) => {
+
+        setLoading(false);
+      });
+    } else if (validInt(typePrint) === 9) {
+      request.GETPdf('billing/process/cashClose/exportPDFOthers', dataPrint, 'Otras Entradas y Salidas.pdf', (err) => {
 
         setLoading(false);
       });
@@ -92,11 +102,11 @@ const ModalPrintCashClose = (props) => {
                   { id: 1, label: "page.pointSales.modal.printCashClose.summary" },
                   { id: 2, label: "page.pointSales.modal.printCashClose.detailed" },
                   { id: 3, label: "page.pointSales.modal.printCashClose.billingArea" },
-                  // {id:4, label:"page.pointSales.modal.printCashClose.paymentMethod"},
+                  { id: 4, label: "page.pointSales.modal.printCashClose.paymentMethod" },
                   { id: 5, label: "page.pointSales.modal.printCashClose.totalDailyClosings" },
-                  { id: 6, label: "page.pointSales.modal.printCashClose.deposits" },
                   { id: 7, label: "page.pointSales.modal.printCashClose.detailExpenses" },
                   { id: 8, label: "page.pointSales.modal.printCashClose.cancellations" },
+                  { id: 9, label: "page.pointSales.modal.printCashClose.others" },
                 ]
               }
             />

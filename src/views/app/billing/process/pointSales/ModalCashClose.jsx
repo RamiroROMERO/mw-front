@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Colxx } from "@Components/common/CustomBootstrap";
-import { Button, ModalBody, ModalFooter, Nav, NavItem, NavLink, Row, TabContent, Table, TabPane } from "reactstrap";
+import { Badge, Button, ModalBody, ModalFooter, Nav, NavItem, NavLink, Row, TabContent, Table, TabPane } from "reactstrap";
 import { formatNumber, IntlMessages, validFloat, validInt } from "@Helpers/Utils";
 import { useForm } from "@Hooks";
 import { request, buildUrl } from "@Helpers/core";
 import { SimpleSelect } from "@Components/simpleSelect";
+import { Checkbox } from "@Components/checkbox";
 import { InputField } from "@Components/inputFields";
 import { ContainerWithLabel } from "@Components/containerWithLabel";
 import notification from '@Containers/ui/Notifications';
@@ -25,6 +26,7 @@ const ModalCashclose = (props) => {
   const [openModalPrint, setOpenModalPrint] = useState(false);
   const [openMsgCancelCashClose, setOpenMsgCancelCashClose] = useState(false);
   const [openMsgSaveCashClose, setOpenMsgSaveCashClose] = useState(false);
+  const [openMsgApplyCashClose, setOpenMsgApplyCashClose] = useState(false);
   const [sendForm, setSendForm] = useState(false);
 
   const cashCloseValid = {
@@ -53,26 +55,61 @@ const ModalCashclose = (props) => {
     totalTaxed: 0,
     invoiced: 0,
     cancellations: 0,
-    expenses: 0
+    expenses: 0,
+    allCashiers: 0,
+    othersIn: 0,
+    othersOut: 0,
+    depositNumber: "",
+    depositValue: 0,
+    isApplied: 0
   }, cashCloseValid);
 
   const { id, date, idCash, idCashier, initValue, cashValue, total, missingExcess, totalSale, cashSales, creditSales, totalDiscounts,
-    totalExempt, totalTaxed, invoiced, cancellations, expenses } = formState;
+    totalExempt, totalTaxed, invoiced, cancellations, expenses, allCashiers, othersIn, othersOut, depositNumber, depositValue, isApplied } = formState;
 
   const { dateValid, idCashValid, idCashierValid, initValueValid, cashValueValid, totalValid } = formValidation;
+
+  // Mantiene "Total en Caja (Teórico)" y "Faltante/Sobrante" en sincronía si el usuario edita
+  // Valor Inicial, Total Efectivo, Otras Entradas u Otras Salidas después de Calcular Cierre —
+  // `invoiced`/`cancellations` ya son la porción en efectivo real (ver fnCalcCashClose).
+  useEffect(() => {
+    const theoreticalTotal = validFloat(initValue) + validFloat(invoiced) + validFloat(cancellations)
+      + validFloat(othersIn) - validFloat(expenses) - validFloat(othersOut);
+    const excess = validFloat(cashValue) - theoreticalTotal;
+    if (theoreticalTotal !== total || excess !== missingExcess) {
+      setBulkForm({ total: theoreticalTotal, missingExcess: excess });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initValue, cashValue, invoiced, cancellations, expenses, othersIn, othersOut]);
 
   const [table, setTable] = useState({
     title: " ",
     columns: [
-      { text: IntlMessages("page.pointSales.modal.cashClose.table.date"), dataField: "date", headerStyle: { 'width': '20%' } },
-      { text: IntlMessages("page.pointSales.modal.cashClose.table.cashier"), dataField: "cashier", headerStyle: { 'width': '40%' } },
+      { text: IntlMessages("page.pointSales.modal.cashClose.table.date"), dataField: "date", headerStyle: { 'width': '15%' } },
+      { text: IntlMessages("page.pointSales.modal.cashClose.table.cashier"), dataField: "cashier", headerStyle: { 'width': '30%' } },
       {
         text: IntlMessages("page.pointSales.modal.cashClose.table.total"),
         dataField: "totalValue",
-        headerStyle: { 'width': '20%' },
+        headerStyle: { 'width': '15%' },
         style: { textAlign: 'right' }
       },
-      { text: IntlMessages("table.column.options"), dataField: "options", headerStyle: { "width": "20%" }, style: { textAlign: 'right' } }
+      {
+        text: IntlMessages("page.pointSales.modal.cashClose.table.status"),
+        dataField: "isClose",
+        headerStyle: { 'width': '15%' },
+        style: { textAlign: 'center' },
+        // Este ReactTable usa la API de tanstack-table (`cell`), no `formatter` (prop
+        // muerta de una versión anterior). IntlMessages usa el hook useIntl(): acá es
+        // seguro porque `cell` lo ejecuta la tabla durante su propio render, no en el
+        // callback async de fnGetCashClose (eso rompía las reglas de hooks y dejaba la
+        // tabla vacía).
+        cell: ({ row }) => (
+          <Badge color={validInt(row.original.isClose) === 1 ? 'success' : 'warning'} pill>
+            {IntlMessages(validInt(row.original.isClose) === 1 ? 'page.pointSales.modal.cashClose.status.applied' : 'page.pointSales.modal.cashClose.status.pending')}
+          </Badge>
+        )
+      },
+      { text: IntlMessages("table.column.options"), dataField: "options", headerStyle: { "width": "25%" }, style: { textAlign: 'right' } }
     ],
     data: [],
     actions: []
@@ -91,12 +128,20 @@ const ModalCashclose = (props) => {
     let idCashierClose = idCashier;
     let idCashClose = idCash;
     let cashTotal = cashValue;
+    let allCashiersFlag = allCashiers;
+    let initValueClose = initValue;
+    let othersInClose = othersIn;
+    let othersOutClose = othersOut;
     if (item2 !== null) {
       closedId = item2.id;
       dateClose = item2.date;
       idCashierClose = item2.idCashier;
       idCashClose = item2.idCash;
       cashTotal = item2.cashValue;
+      allCashiersFlag = item2.allCashiers;
+      initValueClose = item2.initValue;
+      othersInClose = item2.othersIn;
+      othersOutClose = item2.othersOut;
     } else {
       if (idCash === 0) {
         notification('warning', 'msg.required.select.cashBox', 'alert.warning.title');
@@ -116,8 +161,14 @@ const ModalCashclose = (props) => {
       }
     }
 
+    // "Todos los Cajeros": se omite cashierId del query — findResumeCalculate/etc. agrupan
+    // por cajero igual, y el .reduce() de más abajo ya suma todas las filas que devuelvan.
+    const detailQuery = allCashiersFlag
+      ? { closedId, date: dateClose, cashId: idCashClose }
+      : { closedId, date: dateClose, cashierId: idCashierClose, cashId: idCashClose };
+
     setLoading(true);
-    request.GET(buildUrl('billing/process/cashClose/getDetail', { closedId, date: dateClose, cashierId: idCashierClose, cashId: idCashClose }), (resp) => {
+    request.GET(buildUrl('billing/process/cashClose/getDetail', detailQuery), (resp) => {
       const detailCashClose = resp.data;
       if (detailCashClose.resumeInvoices.length === 0 && item2 === null) {
         notification('warning', 'msg.alert.cashCloseAplly', 'alert.warning.title');
@@ -136,8 +187,33 @@ const ModalCashclose = (props) => {
       const totalDiscount = detailCashClose.resumeInvoices.map(item => validFloat(item.discountValue)).reduce((prev, curr) => prev + curr, 0);
       const exempt = detailCashClose.resumeInvoices.map(item => validFloat(item.subTotExeValue)).reduce((prev, curr) => prev + curr, 0);
       const taxed = detailCashClose.resumeInvoices.map(item => validFloat(item.subtotTaxValue)).reduce((prev, curr) => prev + curr, 0);
-      const totalCancel = detailCashClose.resumeCancela.map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0);
-      const totalExpense = detailCashClose.resumeExpenses.map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0);
+      // resumeExpenses trae Entradas (movementType 1) y Salidas (movementType 2) por separado —
+      // solo las Salidas son "Gastos" que reducen la caja, una Entrada la reintegra.
+      const totalExpense = detailCashClose.resumeExpenses
+        .map(item => validInt(item.movementType) === 2 ? validFloat(item.value) : -validFloat(item.value))
+        .reduce((prev, curr) => prev + curr, 0);
+
+      // "Ventas al Contado" es por TIPO DE VENTA (Contado/Crédito del documento), no por
+      // instrumento de pago — una factura Contado puede pagarse por transferencia, tarjeta, etc.
+      // Para la conciliación de caja (efectivo real) hay que quedarse solo con las filas de
+      // forma de pago/cancelación cuya cuenta contable coincide con la cuenta de efectivo de
+      // ESTA caja registradora (fac_formaspagctas.numcta === fac_cajas.numcta_caja), igual que
+      // se resolvió para Salidas/Entradas de Efectivo.
+      const selectedCashBox = listCashBoxes.find(item => validInt(item.id) === validInt(idCashClose));
+      const cashAccount = selectedCashBox ? selectedCashBox.idCtaCash : null;
+      const cashFromSales = detailCashClose.detailForPaymentMethod
+        .filter(item => cashAccount && item.paymentTypeDetail?.idCtaCont === cashAccount)
+        .map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0);
+      const cashFromCancellations = (detailCashClose.resumeCancela || [])
+        .filter(item => cashAccount && item.paymentTypeDetail?.idCtaCont === cashAccount)
+        .map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0);
+
+      // Total en Caja (teórico) = fondo inicial + efectivo real de ventas/cancelaciones +
+      // otras entradas manuales - gastos (neto Salida-Entrada) - otras salidas manuales.
+      // Faltante/Sobrante = Total Efectivo contado físicamente - Total en Caja (teórico).
+      const theoreticalTotal = validFloat(initValueClose) + cashFromSales + cashFromCancellations
+        + validFloat(othersInClose) - totalExpense - validFloat(othersOutClose);
+
       const viewData = {
         totalSale: totalInvoiced,
         cashSales: totalCashSales,
@@ -145,11 +221,11 @@ const ModalCashclose = (props) => {
         totalDiscounts: totalDiscount,
         totalExempt: exempt,
         totalTaxed: taxed,
-        invoiced: totalCashSales,
-        cancellations: totalCancel,
+        invoiced: cashFromSales,
+        cancellations: cashFromCancellations,
         expenses: totalExpense,
-        total: totalCashSales,
-        missingExcess: cashTotal - totalCashSales,
+        total: theoreticalTotal,
+        missingExcess: cashTotal - theoreticalTotal,
         date: dateClose,
         idCash: idCashClose,
         idCashier: idCashierClose
@@ -158,6 +234,12 @@ const ModalCashclose = (props) => {
         viewData.id = item2.id
         viewData.initValue = item2.initValue
         viewData.cashValue = item2.cashValue
+        viewData.allCashiers = item2.allCashiers
+        viewData.othersIn = item2.othersIn
+        viewData.othersOut = item2.othersOut
+        viewData.depositNumber = item2.depositNumber
+        viewData.depositValue = item2.depositValue
+        viewData.isApplied = item2.isClose
       }
       setDetailPayments(detailCashClose.detailForPaymentMethod);
       setBulkForm(viewData);
@@ -204,19 +286,44 @@ const ModalCashclose = (props) => {
     });
   }
 
+  // Reversión (no borrado, a diferencia del legacy que hacía DELETE del registro de
+  // cierre): revierte closedId a 0 en facturas/gastos/cancelaciones etiquetadas a este
+  // cierre y lo marca status:0/aplica:0 — mismo criterio de reversión no destructiva ya
+  // usado en Anular Documento y Anular Salida/Entrada de Efectivo esta migración.
   const fnOkCancelCashClose = () => {
-    const dataCancel = {
-      status: 0
-    }
     setLoading(true);
-    request.PUT(`billing/process/cashClose/${id}`, dataCancel, (resp) => {
+    request.DELETE(`billing/process/pointSales/cashCloseApply/${id}`, () => {
       fnGetCashClose();
+      onResetForm();
       setOpenMsgCancelCashClose(false);
+      notification('success', 'msg.success.voidCashClose', 'alert.success.title');
       setLoading(false);
     }, (err) => {
-
+      notification('error', 'msg.delete.record.error', 'alert.error.title');
       setLoading(false);
-    });
+    }, false);
+  }
+
+  const fnApplyCashClose = () => {
+    if (id === 0 || validInt(isApplied) === 1) {
+      return;
+    }
+    setOpenMsgApplyCashClose(true);
+  }
+
+  const fnOkApplyCashClose = () => {
+    setLoading(true);
+    request.POST(`billing/process/pointSales/cashCloseApply/${id}`, {}, () => {
+      fnGetCashClose();
+      setOpenMsgApplyCashClose(false);
+      setOpen(false);
+      localStorage.setItem('dataCashBox_current', JSON.stringify({}));
+      notification('success', 'msg.success.applyCashClose', 'alert.success.title');
+      setLoading(false);
+    }, (err) => {
+      notification('error', 'msg.save.record.error', 'alert.error.title');
+      setLoading(false);
+    }, false);
   }
 
   const fnNewCashClose = () => {
@@ -237,6 +344,10 @@ const ModalCashclose = (props) => {
     setOpenMsgSaveCashClose(true);
   }
 
+  // Guardar solo graba los números calculados (aplica/isClose queda en 0) — separado de
+  // Aplicar, que es lo que realmente etiqueta closedId en facturas/gastos/cancelaciones y
+  // bloquea el día. Mismo criterio que btnSaveDocument/btnContabDocument en
+  // fac_pos_close.scx (dos pasos distintos, no uno solo).
   const fnOkSaveCashClose = () => {
     const newData = {
       date,
@@ -245,14 +356,18 @@ const ModalCashclose = (props) => {
       initValue: validFloat(initValue),
       cashValue: validFloat(cashValue),
       total: validFloat(total),
-      isClose: 1,
+      othersIn: validFloat(othersIn),
+      othersOut: validFloat(othersOut),
+      allCashiers: allCashiers ? 1 : 0,
+      depositNumber,
+      depositValue: validFloat(depositValue),
       status: 1
     }
+    setLoading(true);
     request.POST(`billing/process/cashClose`, newData, (resp) => {
+      setBulkForm({ id: resp.data.id, isApplied: 0 });
       fnGetCashClose();
       setOpenMsgSaveCashClose(false);
-      setOpen(false);
-      localStorage.setItem('dataCashBox_current', JSON.stringify({}));
       setLoading(false);
     }, (err) => {
 
@@ -301,6 +416,13 @@ const ModalCashclose = (props) => {
     title: "msg.question.save.document.title"
   }
 
+  const propsToMsgApplyCashClose = {
+    open: openMsgApplyCashClose,
+    setOpen: setOpenMsgApplyCashClose,
+    fnOnOk: fnOkApplyCashClose,
+    title: "msg.question.applyCashClose.title"
+  }
+
   return (
     <>
       <ModalBody>
@@ -341,6 +463,9 @@ const ModalCashclose = (props) => {
                 <Button color="info" onClick={fnPrintCashClose}>
                   <i className="iconsminds-printer" />{IntlMessages("button.print")}
                 </Button>
+                <Button color="success" disabled={id === 0 || validInt(isApplied) === 1} onClick={fnApplyCashClose}>
+                  <i className="bi bi-check2-circle" />{IntlMessages("button.applyCashClose")}
+                </Button>
               </Colxx>
             </Row>
             <Row className="mt-3">
@@ -376,6 +501,14 @@ const ModalCashclose = (props) => {
                       options={listCashiers}
                       invalid={sendForm && !!idCashierValid}
                       feedbackText={sendForm && (idCashierValid || null)}
+                    />
+                  </Colxx>
+                  <Colxx xxs="12">
+                    <Checkbox
+                      onChange={onInputChange}
+                      name="allCashiers"
+                      value={allCashiers}
+                      label="page.pointSales.modal.cashClose.check.allCashiers"
                     />
                   </Colxx>
                   <Colxx xxs="12" xs="4" sm="3" md="6">
@@ -422,6 +555,24 @@ const ModalCashclose = (props) => {
                       label="page.pointSales.modal.cashClose.input.missingExcess"
                     />
                   </Colxx>
+                  <Colxx xxs="12" xs="6" sm="6" md="6">
+                    <InputField
+                      value={depositNumber}
+                      name="depositNumber"
+                      onChange={onInputChange}
+                      type="text"
+                      label="page.pointSales.modal.cashClose.input.depositNumber"
+                    />
+                  </Colxx>
+                  <Colxx xxs="12" xs="6" sm="6" md="6">
+                    <InputField
+                      value={depositValue}
+                      name="depositValue"
+                      onChange={onInputChange}
+                      type="number"
+                      label="page.pointSales.modal.cashClose.input.depositValue"
+                    />
+                  </Colxx>
                 </Row>
                 <Row>
                   <Colxx xxs="12">
@@ -448,7 +599,7 @@ const ModalCashclose = (props) => {
                         <tfoot>
                           <tr>
                             <th scope="row">Total</th>
-                            <td align="right">{formatNumber(total, 'L. ', 2)}</td>
+                            <td align="right">{formatNumber(detailPayments.reduce((prev, curr) => prev + validFloat(curr.value), 0), 'L. ', 2)}</td>
                           </tr>
                         </tfoot>
                       </Table>
@@ -565,6 +716,24 @@ const ModalCashclose = (props) => {
                             label="page.pointSales.modal.cashClose.input.expenses"
                           />
                         </Colxx>
+                        <Colxx xxs="12">
+                          <InputField
+                            value={othersIn}
+                            name="othersIn"
+                            onChange={onInputChange}
+                            type="number"
+                            label="page.pointSales.modal.cashClose.input.othersIn"
+                          />
+                        </Colxx>
+                        <Colxx xxs="12">
+                          <InputField
+                            value={othersOut}
+                            name="othersOut"
+                            onChange={onInputChange}
+                            type="number"
+                            label="page.pointSales.modal.cashClose.input.othersOut"
+                          />
+                        </Colxx>
                       </Row>
                     </Colxx>
                   </Row>
@@ -592,6 +761,7 @@ const ModalCashclose = (props) => {
       <Modal {...propsToModalPrint} />
       <Confirmation {...propsToMsgCancelCashClose} />
       <Confirmation {...propsToMsgSaveCashClose} />
+      <Confirmation {...propsToMsgApplyCashClose} />
     </>
   )
 }

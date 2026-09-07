@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Card, CardBody, Row } from 'reactstrap';
-import { validFloat, formatNumber, validInt } from "@Helpers/Utils";
+import { Badge, Card, CardBody, Row } from 'reactstrap';
+import { validFloat, formatNumber, validInt, IntlMessages } from "@Helpers/Utils";
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks';
@@ -8,7 +8,6 @@ import DateHelper from '@Helpers/DateHelper';
 import ControlPanel from '@Components/controlPanel';
 import TableButton from "@Components/tableButtons";
 import notification from '@Containers/ui/Notifications';
-import Confirmation from '@Containers/ui/confirmationMsg';
 import Modal from "@Components/modal";
 import ModalProducts from '../invoicing/ModalProducts';
 import ModalChangePrice from '../invoicing/ModalChangePrice';
@@ -19,13 +18,16 @@ import ModalCashOut from './ModalCashOut';
 import ModalCancellations from './ModalCancellations';
 import ModalQuotation from '../invoicing/ModalQuotation';
 import ModalPayment from './ModalPayment';
+import ModalVoidInvoice from './ModalVoidInvoice';
+import ModalAddition from './ModalAddition';
+import ModalGlobalDiscount from './ModalGlobalDiscount';
 import InvoicingForm from '../invoicing/InvoicingForm';
 import InvoicingDetail from '../invoicing/InvoicingDetail';
 import InvoicingTable from '../invoicing/InvoicingTableProd';
 import ViewPdf from '@Components/ViewPDF/ViewPdf';
 
 const PointSales = (props) => {
-  const { setLoading } = props;
+  const { setLoading, screenControl = {} } = props;
   const dataCashBox = JSON.parse(localStorage.getItem('dataCashBox_current'));
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
   const [listTypeDocuments, setListTypeDocuments] = useState([]);
@@ -40,6 +42,7 @@ const PointSales = (props) => {
   const [listTypePayments, setListTypePayments] = useState([]);
   const [listLedgerAccount, setListLedgerAccount] = useState([]);
   const [hasSellerControl, setHasSellerControl] = useState(false);
+  const [roundInPos, setRoundInPos] = useState(false);
   const [invoiceDetail, setInvoiceDetail] = useState([]);
   const [dataInvoicing, setDataInvoicing] = useState([]);
   const [recordSelected, setRecordSelected] = useState({});
@@ -47,11 +50,13 @@ const PointSales = (props) => {
   const [openModalInvoices, setOpenModalInvoices] = useState(false);
   const [openModalPrice, setOpenModalPrice] = useState(false);
   const [openModalCashOpening, setOpenModalCashOpening] = useState(false);
-  const [openMsgCancelInvoice, setOpenMsgCancelInvoice] = useState(false);
+  const [openModalVoidInvoice, setOpenModalVoidInvoice] = useState(false);
   const [openModalCashClose, setOpenModalCashClose] = useState(false);
   const [openModalCashOut, setOpenModalCashOut] = useState(false);
   const [openModalCancellations, setOpenModalCancellations] = useState(false);
   const [openModalQuotation, setOpenModalQuotation] = useState(false);
+  const [openModalAddition, setOpenModalAddition] = useState(false);
+  const [openModalGlobalDiscount, setOpenModalGlobalDiscount] = useState(false);
   const [openModalPayment, setOpenModalPayment] = useState(false);
   const [sendFormIndex, setSendFormIndex] = useState(false);
   const [sendFormDetail, setSendFormDetail] = useState(false);
@@ -245,7 +250,7 @@ const PointSales = (props) => {
   }
 
   const fnNewInvoicing = () => {
-    if (dataCashBox && !dataCashBox.cashId) {
+    if (!dataCashBox?.cashId) {
       return;
     }
     setInvoiceDetail([]);
@@ -256,7 +261,7 @@ const PointSales = (props) => {
   }
 
   const fnSearchInvoicing = () => {
-    if (dataCashBox && !dataCashBox.cashId) {
+    if (!dataCashBox?.cashId) {
       return;
     }
     setLoading(true);
@@ -315,7 +320,7 @@ const PointSales = (props) => {
   }
 
   const fnSaveInvoicing = () => {
-    if (dataCashBox && !dataCashBox.cashId) {
+    if (!dataCashBox?.cashId) {
       return;
     }
 
@@ -376,47 +381,56 @@ const PointSales = (props) => {
 
   const fnCancelInvoicing = () => {
     if (id > 0) {
-      setOpenMsgCancelInvoice(true);
+      setOpenModalVoidInvoice(true);
     }
   }
 
-  const fnCancelInvoice = () => {
-    const dataCancel = {
-      isDeleted: 1
-    }
+  // Reversión transaccional (kardex, partida contable y CxC) — no un simple marcado de
+  // isDeleted como antes: eso dejaba el stock descontado, la partida contable vigente y
+  // la CxC cobrándole al cliente una factura anulada.
+  const fnVoidInvoice = (reason) => {
     setLoading(true);
-    request.PUT(`billing/process/invoices/${id}`, dataCancel, (resp) => {
-      setOpenMsgCancelInvoice(false);
+    request.DELETE(buildUrl(`billing/process/pointSales/voidInvoice/${id}`, { reason }), () => {
+      setOpenModalVoidInvoice(false);
+      fnNewInvoicing();
+      notification('success', 'msg.success.voidInvoice', 'alert.success.title');
       setLoading(false);
     }, (err) => {
-
+      const errorCode = err?.messages?.[0]?.description?.name;
+      if (errorCode === 'invoice.hasPayments') {
+        notification('error', 'msg.error.voidInvoice.hasPayments', 'alert.error.title');
+      } else if (errorCode === 'invoice.cashClosed') {
+        notification('error', 'msg.error.voidInvoice.cashClosed', 'alert.error.title');
+      } else {
+        notification('error', 'msg.delete.record.error', 'alert.error.title');
+      }
       setLoading(false);
-    });
+    }, false);
   }
 
   const fnCashOpening = () => {
-    if (dataCashBox && dataCashBox.cashId) {
+    if (dataCashBox?.cashId) {
       return;
     }
     setOpenModalCashOpening(true);
   }
 
   const fnCashClosing = () => {
-    if (dataCashBox && !dataCashBox.cashId) {
+    if (!dataCashBox?.cashId) {
       return;
     }
     setOpenModalCashClose(true);
   }
 
   const fnCashOut = () => {
-    if (dataCashBox && !dataCashBox.cashId) {
+    if (!dataCashBox?.cashId) {
       return;
     }
     setOpenModalCashOut(true);
   }
 
   const fnCancellations = () => {
-    if (dataCashBox && !dataCashBox.cashId) {
+    if (!dataCashBox?.cashId) {
       return;
     }
     setOpenModalCancellations(true);
@@ -473,7 +487,7 @@ const PointSales = (props) => {
   }
 
   const fnViewProducts = () => {
-    if (dataCashBox && !dataCashBox.cashId) {
+    if (!dataCashBox?.cashId) {
       return;
     }
     setLoading(true);
@@ -510,14 +524,14 @@ const PointSales = (props) => {
   }
 
   const fnChangePrice = () => {
-    if (dataCashBox && !dataCashBox.cashId) {
+    if (!dataCashBox?.cashId) {
       return;
     }
     setOpenModalPrice(true);
   }
 
   const fnAddProduct = () => {
-    if (dataCashBox && !dataCashBox.cashId) {
+    if (!dataCashBox?.cashId) {
       return;
     }
     setSendFormDetail(true);
@@ -661,6 +675,142 @@ const PointSales = (props) => {
     setBulkFormIndex(deleteProd);
   }
 
+  // Recalcula los totales de cabecera a partir del detalle completo — mismo criterio de
+  // fnAddProduct/fnDeleteProduct (clasifica gravado/exento y respeta el flag "documento
+  // exonerado"), reusado acá porque Adición y Descuento Global mutan TODAS las líneas a la
+  // vez en vez de sumar/restar una sola.
+  const fnRecalculateHeaderTotals = (detailArray) => {
+    const sumSubtotal = detailArray.map(item => validFloat(item.subtotal)).reduce((prev, curr) => prev + curr, 0);
+    const sumDiscount = detailArray.map(item => validFloat(item.discountValue)).reduce((prev, curr) => prev + curr, 0);
+    const sumExempt = detailArray.map(item => validFloat(item.subTotExeValue)).reduce((prev, curr) => prev + curr, 0);
+    const sumTaxes = detailArray.map(item => validFloat(item.taxValue)).reduce((prev, curr) => prev + curr, 0);
+    const sumTaxed = detailArray.map(item => validFloat(item.subtotTaxValue)).reduce((prev, curr) => prev + curr, 0);
+    const sumTotal = detailArray.map(item => validFloat(item.total)).reduce((prev, curr) => prev + curr, 0);
+
+    let valueExonerated = 0;
+    let valueTaxed = 0;
+    let valueTaxes = 0;
+    let totalInvoice = 0;
+    if (documentExo === true || documentExo === 1) {
+      valueExonerated = sumTaxed;
+      valueTaxed = 0;
+      valueTaxes = 0;
+      totalInvoice = sumTotal - sumTaxes;
+    } else {
+      valueExonerated = 0;
+      valueTaxed = sumTaxed;
+      valueTaxes = sumTaxes;
+      totalInvoice = sumTotal;
+    }
+
+    return {
+      subTotalValue: sumSubtotal,
+      discountValue: sumDiscount,
+      subTotExeValue: sumExempt,
+      subTotExoValue: valueExonerated,
+      subtotTaxValue: valueTaxed,
+      taxValue: valueTaxes,
+      total: totalInvoice
+    };
+  }
+
+  const fnOpenModalAddition = () => {
+    if (isInvoiceSaved || invoiceDetail.length === 0) {
+      return;
+    }
+    setOpenModalAddition(true);
+  }
+
+  // Controlpanelbtn1 ("Adición") de fac_pos.sc2: aumenta el precio unitario de todas las
+  // líneas un mismo porcentaje y recalcula subtotal/descuento/impuesto/total en cascada —
+  // solo mientras se edita, nunca sobre un documento ya guardado.
+  const fnApplyAddition = (percent) => {
+    let newDetail = invoiceDetail.map(item => {
+      const newPrice = validFloat(item.price) + (validFloat(item.price) * (percent / 100));
+      const newSubtotal = newPrice * validFloat(item.qty);
+      const discountValue = validFloat(item.discountPercent) !== 0 ? newSubtotal * (validFloat(item.discountPercent) / 100) : 0;
+      const taxValue = validFloat(item.taxPercent) !== 0 ? (newSubtotal - discountValue) * (validFloat(item.taxPercent) / 100) : 0;
+      const total = newSubtotal - discountValue + taxValue;
+      return {
+        ...item,
+        price: newPrice,
+        subtotal: newSubtotal,
+        discountValue,
+        taxValue,
+        total,
+        subtotTaxValue: taxValue > 0 ? newSubtotal : 0,
+        subTotExeValue: taxValue === 0 ? newSubtotal : 0
+      };
+    });
+
+    // Empresas con "redondeo en POS" activo: el total de cada línea se redondea al Lempira
+    // entero y precio/descuento/impuesto se recalculan hacia atrás desde ese total redondeado
+    // (en vez de simplemente truncar), para que sigan cuadrando exactos entre sí.
+    if (roundInPos) {
+      newDetail = newDetail.map(item => {
+        const qty = validFloat(item.qty) || 1;
+        const taxPercent = validFloat(item.taxPercent);
+        const discountPercent = validFloat(item.discountPercent);
+        const roundedTotal = Math.round(validFloat(item.total));
+        const tax = taxPercent !== 0 ? roundedTotal - (roundedTotal / (1 + (taxPercent / 100))) : 0;
+        const subtotal = discountPercent !== 0 ? (roundedTotal - tax) * (100 / (100 - discountPercent)) : roundedTotal - tax;
+        const discountValue = discountPercent !== 0 ? subtotal * (discountPercent / 100) : 0;
+        const price = subtotal / qty;
+        return {
+          ...item,
+          price,
+          subtotal,
+          discountValue,
+          taxValue: tax,
+          total: roundedTotal,
+          subtotTaxValue: tax > 0 ? subtotal : 0,
+          subTotExeValue: tax === 0 ? subtotal : 0
+        };
+      });
+    }
+
+    setInvoiceDetail(newDetail);
+    setBulkFormIndex(fnRecalculateHeaderTotals(newDetail));
+    setOpenModalAddition(false);
+  }
+
+  const fnOpenModalGlobalDiscount = () => {
+    if (isInvoiceSaved || invoiceDetail.length === 0) {
+      return;
+    }
+    setOpenModalGlobalDiscount(true);
+  }
+
+  // Controlpanelbtn2 ("Descuento") de fac_pos.sc2, Descuento Global: por porcentaje, se
+  // aplica el mismo % a cada línea sobre su propio subtotal; por valor, se divide el valor
+  // entre el TOTAL actual de la factura para obtener un porcentaje equivalente único, y ese
+  // porcentaje se aplica igual a todas las líneas — mismo cálculo exacto que el legacy.
+  const fnApplyGlobalDiscount = (discountType, discountValueInput) => {
+    const percent = validInt(discountType) === 1
+      ? validFloat(discountValueInput)
+      : (validFloat(discountValueInput) / validFloat(total || 1)) * 100;
+
+    const newDetail = invoiceDetail.map(item => {
+      const subtotal = validFloat(item.subtotal);
+      const discountValue = subtotal * (percent / 100);
+      const taxValue = validFloat(item.taxPercent) !== 0 ? (subtotal - discountValue) * (validFloat(item.taxPercent) / 100) : 0;
+      const total2 = subtotal - discountValue + taxValue;
+      return {
+        ...item,
+        discountPercent: percent,
+        discountValue,
+        taxValue,
+        total: total2,
+        subtotTaxValue: taxValue > 0 ? subtotal : 0,
+        subTotExeValue: taxValue === 0 ? subtotal : 0
+      };
+    });
+
+    setInvoiceDetail(newDetail);
+    setBulkFormIndex(fnRecalculateHeaderTotals(newDetail));
+    setOpenModalGlobalDiscount(false);
+  }
+
   useEffect(() => {
     setLoading(true);
     request.GET('admin/documents?status=1&useBill=1', (resp) => {
@@ -791,6 +941,7 @@ const PointSales = (props) => {
     });
     request.GET('admin/companies/getOperationalSettings', (resp) => {
       setHasSellerControl(!!resp.data.hasSellerControl);
+      setRoundInPos(!!resp.data.roundInPos);
     }, (err) => {
 
     });
@@ -798,7 +949,18 @@ const PointSales = (props) => {
 
   useEffect(() => {
     if (recordSelected.id) {
-      setBulkFormIndex(recordSelected);
+      // `recordSelected` viene del backend con los nombres reales de columna
+      // (subtotalValue/subtotExeValue/subtotExoValue), pero el estado del formulario
+      // usa subTotalValue/subTotExeValue/subTotExoValue (con T mayúscula) — el mismo
+      // remapeo que ya se hace a mano en sentido inverso al armar invoiceHeader para el
+      // checkout. Sin esto, esas tres claves del footer se quedaban en su valor inicial
+      // (0) al abrir una factura guardada, aunque el resto de los totales sí cargaban.
+      setBulkFormIndex({
+        ...recordSelected,
+        subTotalValue: recordSelected.subtotalValue,
+        subTotExeValue: recordSelected.subtotExeValue,
+        subTotExoValue: recordSelected.subtotExoValue
+      });
     } else {
       onResetFormIndex();
     }
@@ -809,7 +971,7 @@ const PointSales = (props) => {
     fnSearch: fnSearchInvoicing,
     fnSave: fnSaveInvoicing,
     fnPrint: fnPrintInvoicing,
-    fnCancel: fnCancelInvoicing,
+    fnCancel: screenControl.fnDelete ? fnCancelInvoicing : null,
     buttonsHome: [
       {
         title: "button.cashOpening",
@@ -837,7 +999,18 @@ const PointSales = (props) => {
         onClick: fnQuotation
       }
     ],
-    buttonsOptions: [],
+    buttonsOptions: [
+      {
+        title: "button.addition",
+        icon: "bi bi-percent",
+        onClick: fnOpenModalAddition
+      },
+      {
+        title: "button.globalDiscount",
+        icon: "bi bi-tag",
+        onClick: fnOpenModalGlobalDiscount
+      }
+    ],
     buttonsAdmin: []
   }
 
@@ -921,7 +1094,7 @@ const PointSales = (props) => {
     title: "page.pointSales.modal.cashOut.title",
     open: openModalCashOut,
     setOpen: setOpenModalCashOut,
-    maxWidth: "lg",
+    maxWidth: "md",
     data: {
       dateInProcess,
       cashId: dataCashBox ? dataCashBox.cashId : 0,
@@ -1033,11 +1206,41 @@ const PointSales = (props) => {
     fnDeleteProduct, isInvoiceSaved
   }
 
-  const propsToMsgCancelInvoice = {
-    open: openMsgCancelInvoice,
-    setOpen: setOpenMsgCancelInvoice,
-    fnOnOk: fnCancelInvoice,
-    title: "msg.question.cancelInvoice.title"
+  const propsToModalVoidInvoice = {
+    ModalContent: ModalVoidInvoice,
+    title: "button.cancel2",
+    open: openModalVoidInvoice,
+    setOpen: setOpenModalVoidInvoice,
+    maxWidth: "md",
+    data: {
+      invoiceNumber: `${documentCode}-${documentId}`,
+      numcai,
+      fnConfirm: fnVoidInvoice
+    }
+  }
+
+  const propsToModalAddition = {
+    ModalContent: ModalAddition,
+    title: "button.addition",
+    open: openModalAddition,
+    setOpen: setOpenModalAddition,
+    maxWidth: "sm",
+    data: {
+      fnConfirm: fnApplyAddition
+    }
+  }
+
+  const propsToModalGlobalDiscount = {
+    ModalContent: ModalGlobalDiscount,
+    title: "button.globalDiscount",
+    open: openModalGlobalDiscount,
+    setOpen: setOpenModalGlobalDiscount,
+    maxWidth: "sm",
+    data: {
+      total,
+      hasExistingDiscounts: invoiceDetail.some(item => validFloat(item.discountValue) > 0),
+      fnConfirm: fnApplyGlobalDiscount
+    }
   }
 
   const propsToViewPDF = {
@@ -1051,6 +1254,9 @@ const PointSales = (props) => {
       documentPath
     }
   }
+
+  const isCashOpen = !!dataCashBox?.cashId;
+  const cashBoxName = listCashBoxes.find(item => item.id === dataCashBox?.cashId)?.name || '';
 
   return (
     <>
@@ -1067,6 +1273,17 @@ const PointSales = (props) => {
           </Card>
         </Colxx>
       </Row>
+      <div className="pos-cash-status-bar">
+        <Badge color={isCashOpen ? 'success' : 'danger'} pill>
+          {IntlMessages(isCashOpen ? 'page.pointSales.status.cashOpen' : 'page.pointSales.status.cashClosed')}
+        </Badge>
+        {isCashOpen && (
+          <>
+            <span>{IntlMessages('page.pointSales.status.cashName')}: <strong>{cashBoxName}</strong></span>
+            <span>{IntlMessages('page.pointSales.status.cashierName')}: <strong>{userData?.name}</strong></span>
+          </>
+        )}
+      </div>
       <Modal {...propsToModalProducts} />
       <Modal {...propsToModalPrices} />
       <Modal {...propsToModalInvoices} />
@@ -1077,7 +1294,9 @@ const PointSales = (props) => {
       <Modal {...propsToModalQuotation} />
       <Modal {...propsToPayment} />
       <Modal {...propsToViewPDF} />
-      <Confirmation {...propsToMsgCancelInvoice} />
+      <Modal {...propsToModalVoidInvoice} />
+      <Modal {...propsToModalAddition} />
+      <Modal {...propsToModalGlobalDiscount} />
     </>
   );
 }

@@ -106,6 +106,14 @@ $logo-path-white-pinned: "/assets/logos/mw-white.png";
   box-shadow: 0 0 0 3px rgba($theme-color-1, 0.15);
 }
 
+// RadioGroup (.div-label-border, ver src/components/radioGroup) trae fondo
+// sólido ($input-background) por defecto — desentona con el resto de
+// controles "glass" del tema. Es la única clase que usa RadioGroup, así que
+// el override queda acotado a ese componente sin afectar nada más.
+.div-label-border {
+  background: transparent;
+}
+
 .alert {
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
