@@ -17,13 +17,17 @@ export const useStoresProducts = ({ setLoading }) => {
   const storesProductsValid = {
     storeId: [(val) => validInt(val) > 0, "msg.required.select.warehouse"],
     productId: [(val) => val.length > 0, "msg.required.select.product"],
-    location: [(val) => val.length > 0, "msg.required.select.location"]
+    locationId: [(val) => validInt(val) > 0, "msg.required.select.location"]
   }
 
+  // `locationId` (FK real a inv_ubicaciones) y `stock` deben coincidir EXACTO con los
+  // nombres de atributo del modelo (`database/invSetProductsStore.js`) — antes se
+  // llamaban `location`/`currentExistence`, nombres que no matcheaban ningún campo del
+  // modelo, así que `getValuesPOST/PUT` los descartaba en silencio y nunca se guardaban.
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
-    location: 0,
-    currentExistence: 0,
+    locationId: 0,
+    stock: 0,
     qtyMin: 0,
     qtyMax: 0,
     storeId: 0,
@@ -166,7 +170,7 @@ export const useStoresProducts = ({ setLoading }) => {
     request.GET('inventory/settings/locations', (resp) => {
       const listLoc = resp.data.map((item) => {
         return {
-          id: item.name,
+          id: item.id,
           name: item.name
         }
       });
@@ -176,6 +180,19 @@ export const useStoresProducts = ({ setLoading }) => {
       setLoading(false);
     });
   }, []);
+
+  // Legacy: botón sin etiqueta (ícono refresh) que llama CALL updateStokManual() —
+  // recalcula inv_bodprod.existe desde el kardex real. El stored procedure ya existe
+  // migrado en la base, solo faltaba conectarlo.
+  const fnRefreshStock = () => {
+    setLoading(true);
+    request.POST('inventory/settings/productsStore/refreshStock', {}, () => {
+      fnGetData();
+      setLoading(false);
+    }, (err) => {
+      setLoading(false);
+    });
+  }
 
   const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDisableDocument, title: "alert.question.title", setCurrentItem }
 
@@ -196,6 +213,7 @@ export const useStoresProducts = ({ setLoading }) => {
       setListLocations,
       fnClearInputs,
       fnSave,
+      fnRefreshStock,
       onInputChange
     }
   )

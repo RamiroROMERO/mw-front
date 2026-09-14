@@ -8,6 +8,8 @@ export const useBoxesReport = ({ setLoading }) => {
   const [listPaymentMethods, setListPaymentMethods] = useState([]);
   const [listCashRegisters, setListCashRegisters] = useState([]);
   const [openModalSummary, setOpenModalSummary] = useState(false);
+  const [openModalCashClose, setOpenModalCashClose] = useState(false);
+  const [openModalTips, setOpenModalTips] = useState(false);
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
     startDate: '',
@@ -92,6 +94,14 @@ export const useBoxesReport = ({ setLoading }) => {
     setOpenModalSummary(true);
   }
 
+  const fnViewCashClose = () => {
+    setOpenModalCashClose(true);
+  }
+
+  const fnViewTips = () => {
+    setOpenModalTips(true);
+  }
+
   useEffect(() => {
     setLoading(true);
     request.GET('admin/users/getSellers', (resp) => {
@@ -149,15 +159,22 @@ export const useBoxesReport = ({ setLoading }) => {
     listPaymentMethods,
     listCashRegisters,
     fnSearchReport,
-    fnViewSummary
+    fnViewSummary,
+    fnViewCashClose,
+    fnViewTips
   }
 
   return (
     {
       table,
+      formState,
       propsToHeaderReport,
       openModalSummary,
-      setOpenModalSummary
+      setOpenModalSummary,
+      openModalCashClose,
+      setOpenModalCashClose,
+      openModalTips,
+      setOpenModalTips
     }
   )
 }

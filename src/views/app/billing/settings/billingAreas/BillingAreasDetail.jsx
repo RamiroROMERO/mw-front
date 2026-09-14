@@ -8,7 +8,7 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 
 const BillingAreasDetail = ({ formState, listDocument, listLedgerAccount, listStores, onInputChange, sendForm, formValidation, isHospitalControl }) => {
 
-  const {name, idCtaIng, idCtaDiscount, idCtaTax, idCtaCxc, idStore, codeDocument, localPriceType, outsiderPriceType, isDefault, useBilling, useRrhh, useFixedAssets, isHospital, idCtaRrhhFourteenth, idCtaRrhhNotice, idCtaRrhhSeverance,idCtaRrhhThirteenth, idCtaRrhhVacation, idCtaFaCost, idCtaFaDeprec, status } = formState;
+  const {name, idCtaIng, idCtaDiscount, idCtaTax, idCtaCxc, idCtaShortage, idStore, codeDocument, localPriceType, outsiderPriceType, isDefault, useBilling, useRrhh, useFixedAssets, isHospital, idCtaRrhhFourteenth, idCtaRrhhNotice, idCtaRrhhSeverance,idCtaRrhhThirteenth, idCtaRrhhVacation, idCtaFaCost, idCtaFaDeprec, status } = formState;
 
   const {nameValid, idStoreValid, codeDocumentValid, localPriceTypeValid, outsiderPriceTypeValid} = formValidation;
 
@@ -105,6 +105,15 @@ const BillingAreasDetail = ({ formState, listDocument, listLedgerAccount, listSt
                   label="page.billingAreas.select.idCtaCxc"
                   name="idCtaCxc"
                   inputValue={idCtaCxc}
+                  options={listLedgerAccount}
+                  onChange={onInputChange}
+                />
+              </Colxx>
+              <Colxx xxs="12">
+                <SearchSelect
+                  label="page.billingAreas.select.idCtaShortage"
+                  name="idCtaShortage"
+                  inputValue={idCtaShortage}
                   options={listLedgerAccount}
                   onChange={onInputChange}
                 />

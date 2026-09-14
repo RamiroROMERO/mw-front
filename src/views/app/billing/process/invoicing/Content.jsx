@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
-import { validFloat, formatNumber, validInt } from "@Helpers/Utils";
+import { validFloat, formatNumber, validInt, IntlMessagesFn } from "@Helpers/Utils";
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks'
@@ -17,13 +17,20 @@ import ModalPrintInvoice from './ModalPrintInvoice';
 import ModalGenerateInvoice from './ModalGenerateInvoice';
 import ModalQuotation from './ModalQuotation';
 import ModalDeliveryDoc from './ModalDeliveryDoc';
+import ModalVoidInvoice from '../pointSales/ModalVoidInvoice';
+import ModalCreditStatus from './ModalCreditStatus';
+import ModalEditCostDist from './ModalEditCostDist';
+import ModalSeekPurchaseOrders from '../purchaseOrders/ModalSeekPurchaseOrders';
+import ModalChangeProduct from './ModalChangeProduct';
+import ModalEditInvoiceInfo from './ModalEditInvoiceInfo';
+import ModalSendEmail from './ModalSendEmail';
 import InvoicingForm from './InvoicingForm';
 import InvoicingDetail from './InvoicingDetail';
 import InvoicingTable from './InvoicingTableProd';
 import ViewPdf from '@Components/ViewPDF/ViewPdf';
 
 const Invoicing = (props) => {
-  const { setLoading } = props;
+  const { setLoading, voidControl, editInfoControl, changeProductControl } = props;
   const [listTypeDocuments, setListTypeDocuments] = useState([]);
   const [listCustomers, setListCustomers] = useState([]);
   const [listAreas, setListAreas] = useState([]);
@@ -40,18 +47,33 @@ const Invoicing = (props) => {
   const [openModalQuotation, setOpenModalQuotation] = useState(false);
   const [openModalDeliveryDoc, setOpenModalDeliveryDoc] = useState(false);
   const [openMsgCancelInvoice, setOpenMsgCancelInvoice] = useState(false);
+  const [openModalVoidInvoice, setOpenModalVoidInvoice] = useState(false);
   const [openMsgGenerateInvoice, setOpenMsgGenerateInvoice] = useState(false);
   const [sendFormIndex, setSendFormIndex] = useState(false);
   const [sendFormDetail, setSendFormDetail] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [idProd, setIdProd] = useState(0);
+  const [hasSellerControl, setHasSellerControl] = useState(false);
+  const [hasDateOutControl, setHasDateOutControl] = useState(false);
+  const [hasStoreControl, setHasStoreControl] = useState(false);
+  const [hasStockControl, setHasStockControl] = useState(false);
+  const [creditLimit, setCreditLimit] = useState(0);
+  const [creditCurrent, setCreditCurrent] = useState(0);
+  const [openModalCreditStatus, setOpenModalCreditStatus] = useState(false);
+  const [openModalEditCostDist, setOpenModalEditCostDist] = useState(false);
+  const [openModalSeekPurchaseOrders, setOpenModalSeekPurchaseOrders] = useState(false);
+  const [dataSeekPurchaseOrders, setDataSeekPurchaseOrders] = useState([]);
+  const [dateFormat, setDateFormat] = useState('DMY');
+  const [openModalProforma, setOpenModalProforma] = useState(false);
+  const [documentPathProforma, setDocumentPathProforma] = useState('');
+  const [openModalChangeProduct, setOpenModalChangeProduct] = useState(false);
+  const [selectedChangeLine, setSelectedChangeLine] = useState(null);
+  const [openModalEditInfo, setOpenModalEditInfo] = useState(false);
+  const [openSendEmail, setOpenSendEmail] = useState(false);
 
   const [recordSelected, setRecordSelected] = useState({});
 
-  //print invoice
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
-  const [openViewFile, setOpenViewFile] = useState(false);
-  const [documentPath, setDocumentPath] = useState("");
 
   const invoicingValid = {
     documentCode: [(val) => val !== "0" && val !== "", "msg.required.select.typeDocument"],
@@ -80,6 +102,7 @@ const Invoicing = (props) => {
     cashierId: 0,
     documentExo: false,
     documentId: 0,
+    numcai: '',
     subTotalValue: 0,
     discountValue: 0,
     subTotExeValue: 0,
@@ -111,16 +134,45 @@ const Invoicing = (props) => {
     unitedCoste: 0,
     unitedOut: 0,
     qtyDist: 0,
-    haveComiss: 0
+    haveComiss: 0,
+    lotCode: '',
+    dateOut: '',
+    productType: 0,
+    existQty: 0
   }, invoiceDetailValid);
 
   const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
     total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, qtyDist,
-    haveComiss, areaId, storeId } = formDetail;
+    haveComiss, areaId, storeId, lotCode, dateOut, productType, existQty } = formDetail;
 
   const { id, customerId, customerDNI, customerName, notes, documentCode, documentType, currency, date, dateInProcess, cashierId,
-    documentExo, documentId, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue:
+    documentExo, documentId, numcai, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue:
     taxValueInvoice, total } = formIndex;
+
+  // Documento Fiscal ya fue Generado (CAI asignado) — igual que el legacy
+  // (fac_facturacion.sc2: si Textbox_hw48/documentId != 0, bloquea modificar el
+  // documento): ya no se puede editar la cabecera ni el detalle, solo consultar/imprimir.
+  const isInvoiceSaved = validInt(documentId) > 0;
+
+  // Estado del crédito del cliente (fac_pos_credit_status.sc2): "Crédito Actual" es la
+  // suma de CxC pendientes del cliente (sin contar la venta en proceso, que todavía no
+  // se ha generado). Solo aplica a ventas a Crédito, igual que el legacy
+  // (Optiongroup_hw1.InteractiveChange retorna de inmediato si el valor es Contado).
+  let creditStatusLevel = null;
+  if (validInt(documentType) === 2 && validInt(customerId) > 0) {
+    const creditRest = validFloat(creditLimit) - validFloat(creditCurrent);
+    if (creditRest <= 0) {
+      creditStatusLevel = 'over';
+    } else if (validFloat(creditLimit) > 0 && (validFloat(creditCurrent) / validFloat(creditLimit)) * 100 > 80) {
+      creditStatusLevel = 'warning';
+    } else {
+      creditStatusLevel = 'ok';
+    }
+  }
+
+  const fnViewCreditStatus = () => {
+    setOpenModalCreditStatus(true);
+  }
 
   const handleAreaChange = e => {
     let valueStore = "0";
@@ -176,7 +228,7 @@ const Invoicing = (props) => {
   const handleDiscPercentChange = e => {
     const discount1 = validFloat((e.target.value * subtotal) / 100);
     const tax3 = validFloat((taxPercent * (subtotal - discount1)) / 100);
-    const total3 = validFloat((subtotal - discount1) + taxValue);
+    const total3 = validFloat((subtotal - discount1) + tax3);
     const newDiscount = {
       taxValue: tax3,
       total: total3,
@@ -263,7 +315,9 @@ const Invoicing = (props) => {
           sellerCode: item2.sellerCode,
           qtyDist: item2.qtyDist,
           unitedOut: item2.unitedOut,
-          haveComiss: item2.haveComiss
+          haveComiss: item2.haveComiss,
+          lotCode: item2.lotCode,
+          dateOut: item2.dateOut
         }
       });
       setInvoiceDetail(invoiceProducts);
@@ -379,22 +433,45 @@ const Invoicing = (props) => {
     }
   }
 
+  // Antes imprimía directo en formato Detallada; ahora abre ModalPrintInvoice para que
+  // el usuario elija Detallada/Resumida por Tipo (ese modal existía pero no estaba
+  // conectado a ningún botón).
   const fnPrintInvoicing = () => {
     if (id > 0) {
-      request.GETPdfUrl('billing/process/invoices/exportPDF', { id, userName: userData.name }, (resp) => {
-        setDocumentPath(resp);
-        setOpenViewFile(true);
-      }, (err) => {
-
-        setLoading(false);
-      });
+      setOpenModalPrint(true);
     }
   }
 
+  // Documento sin CAI generado (borrador): nada se contabilizó todavía, un simple
+  // marcado alcanza. Documento ya timbrado: hay que revertir kardex/partida/CxC, igual
+  // que el POS (ver fnVoidInvoice más abajo).
   const fnCancelInvoicing = () => {
-    if (id > 0) {
+    if (id > 0 && documentId > 0) {
+      setOpenModalVoidInvoice(true);
+    } else if (id > 0) {
       setOpenMsgCancelInvoice(true);
     }
+  }
+
+  // Reversión transaccional (kardex, partida contable y CxC) — no un simple marcado de
+  // isDeleted como antes: eso dejaba el stock descontado, la partida contable vigente y
+  // la CxC cobrándole al cliente una factura anulada.
+  const fnVoidInvoice = (reason) => {
+    setLoading(true);
+    request.DELETE(buildUrl(`billing/process/invoices/void/${id}`, { reason }), () => {
+      setOpenModalVoidInvoice(false);
+      fnNewInvoicing();
+      notification('success', 'msg.success.voidInvoice', 'alert.success.title');
+      setLoading(false);
+    }, (err) => {
+      const errorCode = err?.messages?.[0]?.description?.name;
+      if (errorCode === 'invoice.hasPayments') {
+        notification('error', 'msg.error.voidInvoice.hasPayments', 'alert.error.title');
+      } else {
+        notification('error', 'msg.delete.record.error', 'alert.error.title');
+      }
+      setLoading(false);
+    }, false);
   }
 
   const fnCancelInvoice = () => {
@@ -430,7 +507,97 @@ const Invoicing = (props) => {
     setOpenModalGenerate(true);
   }
 
-  const fnReferralGuide = () => { }
+  // Botón "Cargar Orden de Compra": solo aplica a un documento nuevo/sin guardar, igual
+  // que el legacy (fac_facturacion.sc2:3960, Textbox_hw1.Value != 0 -> Return). Requiere
+  // Área/Almacén ya seleccionados (y Vendedor si hasSellerControl está activo).
+  const fnSearchPurchaseOrderToLoad = () => {
+    if (id > 0) {
+      return;
+    }
+    if (validInt(areaId) === 0 || validInt(storeId) === 0 || (hasSellerControl && validInt(cashierId) === 0)) {
+      notification('warning', 'msg.required.areaStoreSeller', 'alert.warning.title');
+      return;
+    }
+    setLoading(true);
+    request.GET('billing/process/purchaseOrders', (resp) => {
+      setDataSeekPurchaseOrders(resp.data);
+      setOpenModalSeekPurchaseOrders(true);
+      setLoading(false);
+    }, (err) => {
+
+      setLoading(false);
+    });
+  }
+
+  // Solo trae las líneas de productos de la Orden de Compra (se agregan al detalle
+  // actual, sin reemplazarlo) — igual que el flujo activo del legacy, que NO copia
+  // cliente/cabecera de la orden, solo sus productos.
+  const fnLoadPurchaseOrder = (row) => {
+    setOpenModalSeekPurchaseOrders(false);
+    setLoading(true);
+    request.GET(buildUrl('billing/process/purchaseOrderDetails', { idFather: row.id }), (resp) => {
+      request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId, enableForSale: 1 }), (resp2) => {
+        const costByCode = new Map(resp2.data.map((item) => [item.productCode, validFloat(item.costValue)]));
+        const sellerData = listSellers.find((item) => item.value === cashierId);
+
+        const newLines = resp.data.map((item) => {
+          const taxedValue = validFloat(item.taxValue) > 0 ? validFloat(item.subtotal) : 0;
+          const exemptValue = validFloat(item.taxValue) === 0 ? validFloat(item.subtotal) : 0;
+          return {
+            id: new Date().getTime() + Math.random(),
+            productCode: item.productCode,
+            description: item.productData?.name || '',
+            qty: validFloat(item.qty),
+            price: validFloat(item.price),
+            subtotal: validFloat(item.subtotal),
+            discountPercent: validFloat(item.discountPercent),
+            discountValue: validFloat(item.discountValue),
+            subtotTaxValue: taxedValue,
+            subTotExeValue: exemptValue,
+            taxPercent: validFloat(item.taxPercent),
+            taxValue: validFloat(item.taxValue),
+            total: validFloat(item.total),
+            areaId: validInt(areaId),
+            storeId: validInt(storeId),
+            unitedCoste: costByCode.get(item.productCode) || 0,
+            typePrice: validInt(item.typePrice),
+            sellerCode: sellerData ? sellerData.code : "",
+            qtyDist: validFloat(item.qtyDist),
+            unitedOut: item.undOutData?.name || '',
+            haveComiss: 1
+          }
+        });
+
+        const mergedDetail = [...invoiceDetail, ...newLines];
+        setInvoiceDetail(mergedDetail);
+
+        const sumSubtotal = mergedDetail.reduce((sum, item) => sum + validFloat(item.subtotal), 0);
+        const sumDiscount = mergedDetail.reduce((sum, item) => sum + validFloat(item.discountValue), 0);
+        const sumExempt = mergedDetail.reduce((sum, item) => sum + validFloat(item.subTotExeValue), 0);
+        const sumTaxes = mergedDetail.reduce((sum, item) => sum + validFloat(item.taxValue), 0);
+        const sumTaxed = mergedDetail.reduce((sum, item) => sum + validFloat(item.subtotTaxValue), 0);
+        const sumTotal = mergedDetail.reduce((sum, item) => sum + validFloat(item.total), 0);
+
+        const isExo = documentExo === true || documentExo === 1;
+        setBulkFormIndex({
+          subTotalValue: sumSubtotal,
+          discountValue: sumDiscount,
+          subTotExeValue: sumExempt,
+          subTotExoValue: isExo ? sumTaxed : 0,
+          subtotTaxValue: isExo ? 0 : sumTaxed,
+          taxValue: isExo ? 0 : sumTaxes,
+          total: isExo ? (sumTotal - sumTaxes) : sumTotal
+        });
+        setLoading(false);
+      }, (err) => {
+
+        setLoading(false);
+      });
+    }, (err) => {
+
+      setLoading(false);
+    });
+  }
 
   const fnDeliver = () => {
     if (id > 0 && documentId > 0) {
@@ -438,6 +605,72 @@ const Invoicing = (props) => {
     } else if (documentId === 0) {
       notification('warning', 'msg.deliveryDoc', 'alert.warning.title');
     }
+  }
+
+  const fnEditCostDist = () => {
+    if (id > 0) {
+      setOpenModalEditCostDist(true);
+    }
+  }
+
+  const fnEditInfo = () => {
+    if (id > 0) {
+      setOpenModalEditInfo(true);
+    }
+  }
+
+  // Refleja en el formulario los campos que el modal de "Editar Información" acaba de
+  // guardar — evita tener que recargar toda la factura desde el backend.
+  const fnEditInfoSuccess = ({ customerDNI: newDNI, customerName: newName, notes: newNotes, documentType: newType, documentExo: newExo }) => {
+    setBulkFormIndex({
+      customerDNI: newDNI,
+      customerName: newName,
+      notes: newNotes,
+      documentType: newType,
+      documentExo: newExo
+    });
+  }
+
+  const fnOpenSendEmail = () => {
+    if (id === 0) {
+      return;
+    }
+    setOpenSendEmail(true);
+  }
+
+  // Imprime la factura tal como está guardada, con formato simplificado (sin CAI/rango,
+  // que normalmente todavía no existen en este punto) — igual que el legacy, que
+  // permite (y espera) usar esto ANTES de generar el documento fiscal.
+  const fnPrintProforma = () => {
+    if (id === 0) {
+      notification('warning', 'msg.required.saveDocument', 'alert.warning.title');
+      return;
+    }
+    setLoading(true);
+    request.GETPdfUrl('billing/process/invoices/exportPDFProforma', { id, userName: userData.name }, (resp) => {
+      setDocumentPathProforma(resp);
+      setOpenModalProforma(true);
+      setLoading(false);
+    }, (err) => {
+
+      setLoading(false);
+    });
+  }
+
+  // Solo aplica a una factura con documento fiscal ya generado — antes de eso no hay
+  // kardex que corregir, el usuario simplemente edita/borra la línea directo.
+  const fnOpenChangeProduct = (item) => {
+    if (documentId === 0) {
+      return;
+    }
+    setSelectedChangeLine(item);
+    setOpenModalChangeProduct(true);
+  }
+
+  const fnChangeProductSuccess = (lineId, newProductCode, newProductName) => {
+    setInvoiceDetail((current) => current.map((item) => (
+      item.id === lineId ? { ...item, productCode: newProductCode, description: newProductName } : item
+    )));
   }
 
   const fnSelectProduct = (item) => {
@@ -454,7 +687,9 @@ const Invoicing = (props) => {
       unitedCoste: item.costValue,
       unitedOut: item.outputUnit,
       qtyDist: item.qtyDist,
-      haveComiss: item.paymentComiss
+      haveComiss: item.paymentComiss,
+      productType: validInt(item.typeId),
+      existQty: validFloat(item.qtyStock)
     }
     if (validInt(typePrice) === 1) {
       newProduct.price = validFloat(item.min);
@@ -505,8 +740,16 @@ const Invoicing = (props) => {
       return;
     }
 
-    if (validInt(cashierId) === 0) {
+    if (hasSellerControl && validInt(cashierId) === 0) {
       notification('warning', 'msg.required.select.seller', 'alert.warning.title');
+      return;
+    }
+
+    // Igual que el legacy (fac_facturacion.sc2:2941): solo bloquea si el almacén y la
+    // empresa tienen control de existencia activos, y solo para productos físicos
+    // (type=1) — servicios y materia prima no se validan.
+    if (hasStoreControl && hasStockControl && validInt(productType) === 1 && validFloat(existQty) < validFloat(qty)) {
+      notification('warning', 'msg.error.insufficientStock', 'alert.warning.title');
       return;
     }
 
@@ -539,7 +782,9 @@ const Invoicing = (props) => {
       sellerCode: filterSellers ? filterSellers.code : "",
       qtyDist: validFloat(qtyDist),
       unitedOut,
-      haveComiss: validInt(haveComiss)
+      haveComiss: validInt(haveComiss),
+      lotCode,
+      dateOut: dateOut || null
     }
 
     const sumSubtotal = invoiceDetail.map(item => validFloat(item.subtotal)).reduce((prev, curr) => prev + curr, 0);
@@ -593,7 +838,9 @@ const Invoicing = (props) => {
       unitedCoste: 0,
       qtyDist: 0,
       unitedOut: "",
-      unitProd: ""
+      unitProd: "",
+      lotCode: "",
+      dateOut: ""
     }
     setBulkFormDetail(cleanProd);
     setSendFormDetail(false);
@@ -606,7 +853,7 @@ const Invoicing = (props) => {
 
     const sumSubtotal = newArray.map(item => validFloat(item.subtotal)).reduce((prev, curr) => prev + curr, 0);
     const sumDiscount = newArray.map(item => validFloat(item.discountValue)).reduce((prev, curr) => prev + curr, 0);
-    const sumExempt = newArray.map(item => validFloat(item.exempt)).reduce((prev, curr) => prev + curr, 0);
+    const sumExempt = newArray.map(item => validFloat(item.subTotExeValue)).reduce((prev, curr) => prev + curr, 0);
 
     const sumTaxes = newArray.map(item => validFloat(item.taxValue)).reduce((prev, curr) => prev + curr, 0);
     const sumTaxed = newArray.map(item => validFloat(item.subtotTaxValue)).reduce((prev, curr) => prev + curr, 0);
@@ -675,7 +922,8 @@ const Invoicing = (props) => {
           label: `${item.id} | ${item.rtn} | ${item.nomcli}`,
           value: item.id,
           rtn: item.rtn,
-          name: item.nomcli
+          name: item.nomcli,
+          email: item.email
         }
       });
       setListCustomers(customers);
@@ -717,6 +965,15 @@ const Invoicing = (props) => {
 
       setLoading(false);
     });
+    request.GET('admin/companies/getOperationalSettings', (resp) => {
+      setHasSellerControl(!!resp.data.hasSellerControl);
+      setHasDateOutControl(!!resp.data.hasDateOutControl);
+      setHasStoreControl(!!resp.data.hasStoreControl);
+      setHasStockControl(!!resp.data.hasStockControl);
+      setDateFormat(resp.data.formatDate || 'DMY');
+    }, (err) => {
+
+    });
   }, []);
 
   useEffect(() => {
@@ -727,12 +984,33 @@ const Invoicing = (props) => {
     }
   }, [recordSelected]);
 
+  // Recalcula el estado de crédito cada vez que cambia el cliente o el tipo de venta,
+  // igual que el legacy (se dispara al elegir cliente y al alternar Contado/Crédito).
+  useEffect(() => {
+    if (validInt(documentType) !== 2 || validInt(customerId) === 0) {
+      setCreditLimit(0);
+      setCreditCurrent(0);
+      return;
+    }
+    request.GET(`billing/settings/customers/${customerId}`, (resp) => {
+      setCreditLimit(validFloat(resp.data.limcred));
+    }, (err) => {
+
+    });
+    request.GET(buildUrl('accounting/process/cxc/pendingByCustomer', { customerId }), (resp) => {
+      const pending = resp.data.reduce((sum, item) => sum + validFloat(item.balance), 0);
+      setCreditCurrent(pending);
+    }, (err) => {
+
+    });
+  }, [customerId, documentType]);
+
   const propsToControlPanel = {
     fnNew: fnNewInvoicing,
     fnSearch: fnSearchInvoicing,
     fnSave: fnSaveInvoicing,
     fnPrint: fnPrintInvoicing,
-    fnCancel: fnCancelInvoicing,
+    fnCancel: voidControl.fnDelete ? fnCancelInvoicing : null,
     buttonsHome: [
       {
         title: "button.quotation",
@@ -745,17 +1023,38 @@ const Invoicing = (props) => {
         onClick: fnInvoice
       },
       {
-        title: "button.referralGuide",
-        icon: "bi bi-file-earmark-text",
-        onClick: fnReferralGuide
-      },
-      {
         title: "button.deliver",
         icon: "bi bi-clipboard2-check",
         onClick: fnDeliver
+      },
+      {
+        title: "button.loadPurchaseOrder",
+        icon: "bi bi-file-earmark-arrow-down",
+        onClick: fnSearchPurchaseOrderToLoad
+      },
+      {
+        title: "button.printProforma",
+        icon: "bi bi-file-earmark-text",
+        onClick: fnPrintProforma
+      },
+      {
+        title: "button.sendEmail",
+        icon: "bi bi-envelope",
+        onClick: fnOpenSendEmail
       }
     ],
-    buttonsOptions: [],
+    buttonsOptions: [
+      editInfoControl.fnUpdate && {
+        title: "button.editCostDistribution",
+        icon: "bi bi-sliders",
+        onClick: fnEditCostDist
+      },
+      editInfoControl.fnUpdate && {
+        title: "button.editInfo",
+        icon: "bi bi-pencil-square",
+        onClick: fnEditInfo
+      }
+    ],
     buttonsAdmin: []
   }
 
@@ -825,14 +1124,12 @@ const Invoicing = (props) => {
       discount,
       subTotExeValue,
       subTotExoValue,
-      typeDocument: documentCode,
       subtotTaxValue,
       taxValueInvoice,
       total,
       currency,
       setLoading,
       userData,
-      setOpenModalPrint,
       onInputChangeIndex
     }
   }
@@ -865,6 +1162,101 @@ const Invoicing = (props) => {
     }
   }
 
+  const propsToModalCreditStatus = {
+    ModalContent: ModalCreditStatus,
+    title: "page.invoicing.modal.creditStatus.title",
+    open: openModalCreditStatus,
+    setOpen: setOpenModalCreditStatus,
+    maxWidth: 'sm',
+    data: {
+      creditLimit,
+      creditCurrent
+    }
+  }
+
+  const propsToModalEditCostDist = {
+    ModalContent: ModalEditCostDist,
+    title: "page.invoicing.modal.editCostDist.title",
+    open: openModalEditCostDist,
+    setOpen: setOpenModalEditCostDist,
+    maxWidth: 'xl',
+    data: {
+      id,
+      setLoading
+    }
+  }
+
+  const propsToModalSeekPurchaseOrders = {
+    ModalContent: ModalSeekPurchaseOrders,
+    title: "page.invoicing.modal.seekPurchaseOrders.title",
+    open: openModalSeekPurchaseOrders,
+    setOpen: setOpenModalSeekPurchaseOrders,
+    maxWidth: 'lg',
+    data: {
+      dataPurchaseOrders: dataSeekPurchaseOrders,
+      fnViewItem: fnLoadPurchaseOrder,
+      dateFormat
+    }
+  }
+
+  const propsToModalProforma = {
+    ModalContent: ViewPdf,
+    title: "page.invoicing.modal.proforma.title",
+    open: openModalProforma,
+    setOpen: setOpenModalProforma,
+    maxWidth: 'xl',
+    data: {
+      documentPath: documentPathProforma
+    }
+  }
+
+  const propsToModalChangeProduct = {
+    ModalContent: ModalChangeProduct,
+    title: "page.invoicing.modal.changeProduct.title",
+    open: openModalChangeProduct,
+    setOpen: setOpenModalChangeProduct,
+    maxWidth: 'lg',
+    data: {
+      invoiceId: id,
+      line: selectedChangeLine,
+      storeId,
+      setLoading,
+      fnSuccess: fnChangeProductSuccess
+    }
+  }
+
+  const propsToModalEditInfo = {
+    ModalContent: ModalEditInvoiceInfo,
+    title: "page.invoicing.modal.editInfo.title",
+    open: openModalEditInfo,
+    setOpen: setOpenModalEditInfo,
+    maxWidth: 'lg',
+    data: {
+      id,
+      hasSellerControl,
+      listSellers,
+      setLoading,
+      fnSuccess: fnEditInfoSuccess
+    }
+  }
+
+  const propsToModalSendEmail = {
+    ModalContent: ModalSendEmail,
+    title: "button.sendEmail",
+    open: openSendEmail,
+    setOpen: setOpenSendEmail,
+    maxWidth: 'md',
+    data: {
+      setLoading,
+      sendUrl: 'billing/process/invoices/sendEmail',
+      documentId: id,
+      attachmentName: `Factura_${id}.pdf`,
+      defaultTo: listCustomers.find((item) => item.value === customerId)?.email || '',
+      defaultSubject: `${IntlMessagesFn('page.invoicing.modal.sendEmail.defaultSubject')} ${id}`,
+      defaultBody: IntlMessagesFn('page.invoicing.modal.sendEmail.defaultBody')
+    }
+  }
+
   const propsToInvoicingForm = {
     documentCode,
     customerId,
@@ -877,6 +1269,8 @@ const Invoicing = (props) => {
     storeId,
     cashierId,
     documentExo,
+    documentId,
+    numcai,
     listTypeDocuments,
     listCustomers,
     listAreas,
@@ -889,18 +1283,23 @@ const Invoicing = (props) => {
     formValidationIndex,
     sendFormIndex,
     setBulkFormIndex,
-    onInputDetaChange
+    onInputDetaChange,
+    hasSellerControl,
+    isInvoiceSaved,
+    creditStatusLevel,
+    fnViewCreditStatus
   }
 
   const propsToInvoicingDetail = {
     productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
     totalProd, onInputDetaChange, handleQtyChange, handlePriceChange, handleDiscPercentChange, handleTaxPercentChange,
-    fnViewProducts, fnChangePrice, fnAddProduct, formValidationDetail, sendFormDetail
+    fnViewProducts, fnChangePrice, fnAddProduct, formValidationDetail, sendFormDetail, isInvoiceSaved,
+    lotCode, dateOut, hasDateOutControl
   }
 
   const propsToInvoicingTable = {
     invoiceDetail, subTotalValue, discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValueInvoice, total, onInputChangeIndex,
-    fnDeleteProduct
+    fnDeleteProduct, isInvoiceSaved, hasDateOutControl, fnOpenChangeProduct, canChangeProduct: changeProductControl.fnUpdate
   }
 
   const propsToMsgCancelInvoice = {
@@ -908,6 +1307,19 @@ const Invoicing = (props) => {
     setOpen: setOpenMsgCancelInvoice,
     fnOnOk: fnCancelInvoice,
     title: "msg.question.cancelInvoice.title"
+  }
+
+  const propsToModalVoidInvoice = {
+    ModalContent: ModalVoidInvoice,
+    title: "button.cancel2",
+    open: openModalVoidInvoice,
+    setOpen: setOpenModalVoidInvoice,
+    maxWidth: "md",
+    data: {
+      invoiceNumber: `${documentCode}-${documentId}`,
+      numcai,
+      fnConfirm: fnVoidInvoice
+    }
   }
 
   const propsToMsgGenerateInvoice = {
@@ -922,18 +1334,6 @@ const Invoicing = (props) => {
     setOpen: setOpenMsgQuestion,
     fnOnOk: fnDeleteOkProduct,
     title: "alert.question.title"
-  }
-
-  const propsToViewPDF = {
-    ModalContent: ViewPdf,
-    title: "modal.viewDocument.invoice",
-    valueTitle: documentId,
-    open: openViewFile,
-    setOpen: setOpenViewFile,
-    maxWidth: 'xl',
-    data: {
-      documentPath
-    }
   }
 
   return (
@@ -958,7 +1358,14 @@ const Invoicing = (props) => {
       <Modal {...propsToModalGenerate} />
       <Modal {...propsToModalQuotation} />
       <Modal {...propsToModalDeliveryDoc} />
-      <Modal {...propsToViewPDF} />
+      <Modal {...propsToModalVoidInvoice} />
+      <Modal {...propsToModalCreditStatus} />
+      <Modal {...propsToModalEditCostDist} />
+      <Modal {...propsToModalSeekPurchaseOrders} />
+      <Modal {...propsToModalProforma} />
+      <Modal {...propsToModalChangeProduct} />
+      <Modal {...propsToModalEditInfo} />
+      <Modal {...propsToModalSendEmail} />
       <Confirmation {...propsToMsgDelete} />
       <Confirmation {...propsToMsgCancelInvoice} />
       <Confirmation {...propsToMsgGenerateInvoice} />

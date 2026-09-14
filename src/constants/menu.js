@@ -313,6 +313,11 @@ const data = [
             to: `${adminRoot}/billing/process/quotes`,
           },
           {
+            icon: 'iconsminds-shopping-cart',
+            label: 'menu.billingPurchaseOrders',
+            to: `${adminRoot}/billing/process/purchaseOrders`,
+          },
+          {
             icon: 'iconsminds-billing',
             label: 'menu.invoicing',
             to: `${adminRoot}/billing/process/invoicing`,
@@ -369,6 +374,11 @@ const data = [
             icon: 'bi bi-bar-chart',
             label: 'menu.boxesReport',
             to: `${adminRoot}/billing/reports/cashReports`,
+          },
+          {
+            icon: 'simple-icon-chart',
+            label: 'menu.otherSalesReports',
+            to: `${adminRoot}/billing/reports/otherSalesReports`,
           }
         ],
       },
@@ -415,6 +425,11 @@ const data = [
             icon: 'iconsminds-box-with-folders',
             label: 'menu.storesProducts',
             to: `${adminRoot}/inventory/settings/storesProducts`,
+          },
+          {
+            icon: 'iconsminds-coins',
+            label: 'menu.costsAndPrices',
+            to: `${adminRoot}/inventory/settings/costsAndPrices`,
           }
         ],
       },

@@ -3,6 +3,16 @@ import { useForm } from '@Hooks/useForms';
 import { IntlMessages } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
 import { validFloat } from '@Helpers/Utils';
+import notification from '@Containers/ui/Notifications';
+
+// Equivalente a "Esta Conversión ya existe!" del legacy — ver ConversionFactorsController.
+const fnHandleSaveError = (err) => {
+  if (err?.messages?.[0]?.message === 'conversionFactor.alreadyExists') {
+    notification('error', 'msg.error.conversionFactor.alreadyExists', 'alert.error.title');
+  } else {
+    notification('error', 'msg.save.record.error', 'alert.error.title');
+  }
+}
 
 export const useConversionFactors = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
@@ -95,7 +105,7 @@ export const useConversionFactors = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-
+        fnHandleSaveError(err);
         setLoading(false);
       });
     } else {
@@ -105,10 +115,21 @@ export const useConversionFactors = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-
+        fnHandleSaveError(err);
         setLoading(false);
       });
     }
+  }
+
+  // Equivalente al botón "Agregar Todas" del legacy.
+  const fnBulkAddAll = () => {
+    setLoading(true);
+    request.POST('inventory/settings/conversionFactors/bulkAddAll', {}, () => {
+      fnGetData();
+      setLoading(false);
+    }, () => {
+      setLoading(false);
+    });
   }
 
   const fnDisableDocument = () => {
@@ -134,7 +155,7 @@ export const useConversionFactors = ({ setLoading }) => {
     fnGetData();
 
     setLoading(true);
-    request.GET('inventory/settings/measurementUnits?elimina=0', (resp) => {
+    request.GET('inventory/settings/measurementUnits?status=1', (resp) => {
       const listUnits = resp.data.map((item) => {
         return {
           label: item.name,
@@ -161,6 +182,7 @@ export const useConversionFactors = ({ setLoading }) => {
       listMUnits,
       fnClearInputs,
       fnSave,
+      fnBulkAddAll,
       onInputChange
     }
   )

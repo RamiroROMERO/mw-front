@@ -4,7 +4,11 @@ import { IntlMessages } from '@Helpers/Utils';
 import { Button, Row } from 'reactstrap';
 import { SimpleSelect } from '@Components/simpleSelect';
 
-const HeaderDash = ({ reportId, setReportId, noYear, setNoYear, fnSearchDash }) => {
+const HeaderDash = ({ reportId, setReportId, noYear, setNoYear, listYears, fnSearchDash }) => {
+  // El año solo aplica al reporte "Ventas Mensuales" (opción 1) — los otros dos
+  // reportes usan una ventana móvil de fechas (últimos 6/12 meses), igual que
+  // Combobox_hw2.Enabled en el legacy (Combobox_hw1.InteractiveChange).
+  const yearSelectEnabled = String(reportId) === '1';
 
   return (
     <>
@@ -24,7 +28,8 @@ const HeaderDash = ({ reportId, setReportId, noYear, setNoYear, fnSearchDash }) 
             label="table.column.year"
             value={noYear}
             onChange={({ target }) => setNoYear(target.value)}
-            options={[{ id: 2025, name: '2025' }, { id: 2024, name: '2024' }, { id: 2023, name: '2023' }]}
+            disabled={!yearSelectEnabled}
+            options={listYears.map((year) => ({ id: year, name: String(year) }))}
           />
         </Colxx>
 

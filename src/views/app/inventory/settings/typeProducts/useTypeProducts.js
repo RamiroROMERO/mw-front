@@ -2,15 +2,26 @@ import { useEffect, useState } from 'react'
 import { useForm } from '@Hooks/useForms';
 import { IntlMessages } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
+import notification from '@Containers/ui/Notifications';
+
+// Equivalente a "Codigo Interno ya existe!" del legacy.
+const fnHandleSaveError = (err) => {
+  if (err?.messages?.[0]?.message === 'typeProduct.codeInitExists') {
+    notification('error', 'msg.error.typeProduct.codeInitExists', 'alert.error.title');
+  } else {
+    notification('error', 'msg.save.record.error', 'alert.error.title');
+  }
+}
 
 export const useTypeProducts = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
+  const [listLedgerAccount, setListLedgerAccount] = useState([]);
 
   const typeProductsValid = {
     name: [(val) => val !== "", "msg.required.input.name"],
-    codeInit: [(val) => val !== "" || val.length > 3, "msg.required.input.codeInit"]
+    codeInit: [(val) => val !== "", "msg.required.input.codeInit"]
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
@@ -19,6 +30,10 @@ export const useTypeProducts = ({ setLoading }) => {
     description: '',
     codeInit: '',
     codeSeq: '00000',
+    inventoryAccount: '',
+    costAccount: '',
+    expenseAccount: '',
+    incomeAccount: '',
     status: true
   }, typeProductsValid);
 
@@ -91,6 +106,7 @@ export const useTypeProducts = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
+        fnHandleSaveError(err);
         setLoading(false);
       });
     } else {
@@ -100,6 +116,7 @@ export const useTypeProducts = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
+        fnHandleSaveError(err);
         setLoading(false);
       });
     }
@@ -125,6 +142,11 @@ export const useTypeProducts = ({ setLoading }) => {
 
   useEffect(() => {
     fnGetData();
+
+    request.GET('accounting/settings/accountants/getSL', (resp) => {
+      const listAccount = resp.data.map((item) => ({ label: `${item.cta} - ${item.nombre}`, value: item.cta }));
+      setListLedgerAccount(listAccount);
+    }, () => { });
   }, []);
 
   const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDisableDocument, title: "alert.question.title", setCurrentItem }
@@ -136,6 +158,7 @@ export const useTypeProducts = ({ setLoading }) => {
       propsToMsgDelete,
       formState,
       formValidation,
+      listLedgerAccount,
       fnClearInputs,
       fnSave,
       onInputChange

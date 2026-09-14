@@ -4,11 +4,13 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { InputField } from '@Components/inputFields';
 import { InputLabel } from '@Components/inputLabel';
+import DateCalendar from '@Components/dateCalendar';
 
 const InvoicingDetail = (props) => {
   const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
     totalProd, onInputDetaChange, handleQtyChange, handlePriceChange, handleDiscPercentChange, handleTaxPercentChange,
-    fnViewProducts, fnChangePrice, fnAddProduct, formValidationDetail, sendFormDetail, isInvoiceSaved } = props;
+    fnViewProducts, fnChangePrice, fnAddProduct, formValidationDetail, sendFormDetail, isInvoiceSaved,
+    lotCode, dateOut, hasDateOutControl } = props;
 
   const { productCodeValid, qtyValid, priceValid } = formValidationDetail;
 
@@ -148,6 +150,27 @@ const InvoicingDetail = (props) => {
                   />
                 </Colxx>
               </Row>
+              {hasDateOutControl && (
+                <Row>
+                  <Colxx xxs="6" xs="4" sm="3" md="3" lg="2">
+                    <InputField
+                      value={lotCode}
+                      name="lotCode"
+                      onChange={onInputDetaChange}
+                      type="text"
+                      label="page.invoicing.input.lotCode"
+                    />
+                  </Colxx>
+                  <Colxx xxs="6" xs="4" sm="3" md="3" lg="2">
+                    <DateCalendar
+                      value={dateOut}
+                      name="dateOut"
+                      label="page.invoicing.input.dateOut"
+                      onChange={onInputDetaChange}
+                    />
+                  </Colxx>
+                </Row>
+              )}
               <Row className="mb-1">
                 <Colxx xxs="12" align="right">
                   <Button color="primary" onClick={() => { fnAddProduct() }}>

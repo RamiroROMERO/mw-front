@@ -1,29 +1,29 @@
 import { useState } from "react";
-import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
+import { Button, ModalBody, ModalFooter, Row, Alert } from "reactstrap";
 import { Colxx } from '@Components/common/CustomBootstrap';
-import { IntlMessages } from "@Helpers/Utils";
+import { IntlMessages, formatNumber } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import { RadioGroup } from "@Components/radioGroup";
 import { ContainerWithLabel } from "@Components/containerWithLabel";
 import { InputField } from "@Components/inputFields";
-import DateHelper from '@Helpers/DateHelper';
 import DateCalendar from '@Components/dateCalendar';
 import ViewPdf from "@Components/ViewPDF/ViewPdf";
 import Modal from "@Components/modal";
+import notification from '@Containers/ui/Notifications';
 
 const ModalGenerateInvoice = (props) => {
   const { data, setOpen } = props;
   const { id, subTotalValue, discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValueInvoice, total, currency,
-    typeDocument, setLoading, setOpenModalPrint, userData, onInputChangeIndex } = data;
+    setLoading, userData, onInputChangeIndex } = data;
 
   //print invoice
   const [openViewFile, setOpenViewFile] = useState(false);
   const [documentPath, setDocumentPath] = useState("");
+  const [documentGenerated, setDocumentGenerated] = useState(false);
+  const [stockShortages, setStockShortages] = useState([]);
 
   const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
-    documentId: 0,
-    date: "",
     cai: "",
     numcai: "",
     range: "",
@@ -34,54 +34,48 @@ const ModalGenerateInvoice = (props) => {
     exemptedRecord: ""
   });
 
-  const { documentId, date, cai, numcai, range, dateOut, typeChange, exemptedCertificate, exemptedNumber,
-    exemptedRecord } = formState;
+  const { cai, numcai, range, dateOut, typeChange, exemptedCertificate, exemptedNumber, exemptedRecord } = formState;
 
+  // Genera el documento fiscal (CAI) y, en la misma transacción atómica del backend,
+  // el kardex de salida, la partida contable y la CxC del cliente — reemplaza el flujo
+  // anterior de "previsualizar número" + PUT suelto, que nunca contabilizaba nada.
   const fnGenerateInvoice = () => {
-    request.POST('admin/documents/getCurrentNumber', { code: typeDocument }, (resp2) => {
+    setLoading(true);
+    setStockShortages([]);
+    request.POST(`billing/process/invoices/generateFiscalDocument/${id}`, { typeChange, exemptedCertificate, exemptedNumber, exemptedRecord }, (resp) => {
       const newDocument = {
-        documentId: resp2.data.codeInt,
-        cai: resp2.data.cai,
-        numcai: resp2.data.numCai,
-        dateOut: resp2?.data?.limitDate || "1900-01-01",
-        range: resp2.data.noRange
+        cai: resp.data.cai,
+        numcai: resp.data.numcai,
+        range: resp.data.range,
+        dateOut: resp.data.dateOut
       }
       setBulkForm(newDocument);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-  }
-
-  const fnSaveInvoice = () => {
-
-    const newData = {
-      documentId,
-      date: date === '' ? DateHelper.format(new Date()) : date,
-      cai,
-      numcai,
-      range,
-      dateOut,
-      typeChange,
-      exemptedCertificate,
-      exemptedNumber,
-      exemptedRecord
-    }
-
-    setLoading(true);
-    request.PUT(`billing/process/invoices/${id}`, newData, (resp) => {
-      onInputChangeIndex({ target: { name: 'documentId', value: documentId } });
-      request.GETPdfUrl('billing/process/invoices/exportPDF', { id, userName: userData.name }, (resp) => {
-        setDocumentPath(resp);
+      setDocumentGenerated(true);
+      onInputChangeIndex({ target: { name: 'documentId', value: resp.data.documentId } });
+      onInputChangeIndex({ target: { name: 'numcai', value: resp.data.numcai } });
+      request.GETPdfUrl('billing/process/invoices/exportPDF', { id, userName: userData.name }, (resp2) => {
+        setDocumentPath(resp2);
         setOpenViewFile(true);
+        setLoading(false);
       }, (err) => {
 
         setLoading(false);
       });
-      setLoading(false);
     }, (err) => {
-
+      // Misma validación de existencias que ya corre GenerateFiscalDocumentService
+      // (fnValidExist del legacy) — antes fallaba en silencio, ahora se muestra el
+      // listado de faltantes (equivalente a fac_pos_no_exist.scx).
+      const errorInfo = err?.messages?.[0]?.description;
+      if (errorInfo?.name === 'stock.insufficient') {
+        try {
+          setStockShortages(JSON.parse(errorInfo.description) || []);
+        } catch (parseErr) {
+          setStockShortages([]);
+        }
+        notification('error', 'msg.error.generateFiscalDocument.stockInsufficient', 'alert.error.title');
+      } else {
+        notification('error', 'msg.error.generateFiscalDocument.generic', 'alert.error.title');
+      }
       setLoading(false);
     });
   }
@@ -103,22 +97,7 @@ const ModalGenerateInvoice = (props) => {
         <Row>
           <Colxx xxs="12" lg="10">
             <ContainerWithLabel label="page.invoicing.modal.generateInvoice.title.taxDocument">
-              <Row className="mb-2">
-                <Colxx xxs="12" align="right">
-                  <Button color="info" onClick={fnGenerateInvoice}>
-                    <i className="bi bi-arrow-clockwise" /> {IntlMessages("button.generate")}
-                  </Button>
-                </Colxx>
-              </Row>
               <Row>
-                <Colxx xxs="12" md="6">
-                  <DateCalendar
-                    value={date}
-                    name="date"
-                    label="page.invoicing.input.dateDocument"
-                    onChange={onInputChange}
-                  />
-                </Colxx>
                 <Colxx xxs="12" md="6">
                   <InputField
                     value={cai}
@@ -133,6 +112,7 @@ const ModalGenerateInvoice = (props) => {
                   <InputField
                     value={typeChange}
                     name="typeChange"
+                    disabled={documentGenerated}
                     onChange={onInputChange}
                     type="text"
                     label="page.invoicing.modal.generateInvoice.input.exchangeRate"
@@ -271,6 +251,7 @@ const ModalGenerateInvoice = (props) => {
                   <InputField
                     value={exemptedCertificate}
                     name="exemptedCertificate"
+                    disabled={documentGenerated}
                     onChange={onInputChange}
                     type="text"
                     label="page.invoicing.modal.generateInvoice.input.orderNumber"
@@ -280,6 +261,7 @@ const ModalGenerateInvoice = (props) => {
                   <InputField
                     value={exemptedNumber}
                     name="exemptedNumber"
+                    disabled={documentGenerated}
                     onChange={onInputChange}
                     type="text"
                     label="page.invoicing.modal.generateInvoice.input.certificateNumber"
@@ -290,6 +272,7 @@ const ModalGenerateInvoice = (props) => {
                     value={exemptedRecord}
                     id="exemptedRecord"
                     name="exemptedRecord"
+                    disabled={documentGenerated}
                     onChange={onInputChange}
                     type="text"
                     label="page.invoicing.modal.generateInvoice.input.identificationNumber"
@@ -299,9 +282,27 @@ const ModalGenerateInvoice = (props) => {
             </ContainerWithLabel>
           </Colxx>
         </Row>
+        {stockShortages.length > 0 && (
+          <Row>
+            <Colxx xxs="12">
+              <Alert color="danger">
+                <strong>{IntlMessages("page.invoicing.modal.generateInvoice.stockShortages.title")}</strong>
+                <ul className="mb-0">
+                  {stockShortages.map((item, idx) => (
+                    <li key={`shortage-${idx}`}>
+                      {item.productCode} — {IntlMessages("page.invoicing.modal.generateInvoice.stockShortages.requested")}: {formatNumber(item.requested)}, {IntlMessages("page.invoicing.modal.generateInvoice.stockShortages.available")}: {formatNumber(item.available)}
+                    </li>
+                  ))}
+                </ul>
+              </Alert>
+            </Colxx>
+          </Row>
+        )}
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={fnSaveInvoice}><i className="iconsminds-save" /> {IntlMessages("button.save")}</Button>
+        <Button color="primary" disabled={documentGenerated} onClick={fnGenerateInvoice}>
+          <i className="bi bi-arrow-clockwise" /> {IntlMessages("button.generate")}
+        </Button>
         <Button color="danger" onClick={() => { setOpen(false) }} >
           <i className="bi bi-box-arrow-right" />
           {` ${IntlMessages('button.exit')}`}

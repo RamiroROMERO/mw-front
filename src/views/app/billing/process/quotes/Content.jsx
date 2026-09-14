@@ -14,12 +14,12 @@ import { useQuotes } from './useQuotes';
 import { SimpleSelect } from '@Components/simpleSelect';
 
 const Content = (props) => {
-  const { setLoading } = props;
+  const { setLoading, screenControl = {} } = props;
   const [activeTab, setActiveTab] = useState('1');
 
-  const { propsToControlPanel, formState, formValidation, onInputChange, isFormValid, propsToMsgDelete, propsToMsgDeleteItem, columnDetails, dataDetails, fnAddItem, propsToModalSeekCustomers, propsToModalNewCustomer, propsToModalSeekProducts, propsToModalEditCurrentProduct, sellerList, sendForm, propsToModalSeekDocuments, propsToViewPDF } = useQuotes({ setLoading, setActiveTab });
+  const { propsToControlPanel, formState, formValidation, onInputChange, isFormValid, propsToMsgDelete, propsToMsgDeleteItem, columnDetails, dataDetails, fnAddItem, propsToModalSeekCustomers, propsToModalNewCustomer, propsToModalSeekProducts, propsToModalEditCurrentProduct, sellerList, storeList, isDateEditable, sendForm, propsToModalSeekDocuments, propsToModalSendEmail, propsToViewPDF } = useQuotes({ setLoading, setActiveTab, screenControl });
 
-  const { date, customerId, customerCode, customerName, phone, email, address, sellerId, notes, condDeliveryTime, condPaymentMethod, subtotal, discount, exoneratedValue, exemptValue, taxedValue, tax, total } = formState;
+  const { id, date, customerId, customerCode, customerName, phone, email, address, sellerId, storeId, notes, condDeliveryTime, condPaymentMethod, subtotal, discount, exoneratedValue, exemptValue, taxedValue, tax, total } = formState;
 
   const { dateValid, sellerIdValid, customerNameValid, phoneValid, totalValid } = formValidation;
 
@@ -33,30 +33,38 @@ const Content = (props) => {
               <Separator className="mt-2 mb-3" />
               <Row>
                 <Colxx xxs={12} md={8} lg={9}>
-                  <Nav tabs className="separator-tabs ms-0 mb-4">
-                    <NavItem>
-                      <NavLink
-                        className={classnames({
-                          active: activeTab === '1',
-                          'nav-link': true,
-                        })}
-                        onClick={() => setActiveTab('1')}
-                      >
-                        {IntlMessages("menu.quotes")}
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink
-                        className={classnames({
-                          active: activeTab === '2',
-                          'nav-link': true,
-                        })}
-                        onClick={() => setActiveTab('2')}
-                      >
-                        {IntlMessages("button.detail")}
-                      </NavLink>
-                    </NavItem>
-                  </Nav>
+                  <div className="d-flex justify-content-between align-items-center mb-4">
+                    <Nav tabs className="separator-tabs ms-0 mb-0">
+                      <NavItem>
+                        <NavLink
+                          className={classnames({
+                            active: activeTab === '1',
+                            'nav-link': true,
+                          })}
+                          onClick={() => setActiveTab('1')}
+                        >
+                          {IntlMessages("menu.quotes")}
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <NavLink
+                          className={classnames({
+                            active: activeTab === '2',
+                            'nav-link': true,
+                          })}
+                          onClick={() => setActiveTab('2')}
+                        >
+                          {IntlMessages("button.detail")}
+                        </NavLink>
+                      </NavItem>
+                    </Nav>
+                    {/* Siempre visible sin importar el tab activo — igual que "Número
+                        Interno" en el POS/Facturación: en blanco mientras el documento
+                        es nuevo, muestra el id apenas queda guardado. */}
+                    <span className="text-nowrap ms-3">
+                      {IntlMessages('input.number')} <strong>{id || ''}</strong>
+                    </span>
+                  </div>
                   <TabContent activeTab={activeTab}>
                     <TabPane tabId="1">
                       <Row className='mb-2'>
@@ -66,11 +74,12 @@ const Content = (props) => {
                             name="date"
                             value={date}
                             onChange={onInputChange}
+                            disabled={!isDateEditable}
                             invalid={sendForm && !!dateValid}
                             feedbackText={sendForm && (dateValid || null)}
                           />
                         </Colxx>
-                        <Colxx xxs={12} md={8} lg={9}>
+                        <Colxx xxs={12} md={4} lg={4}>
                           <SimpleSelect
                             label="table.column.seller"
                             name="sellerId"
@@ -79,6 +88,15 @@ const Content = (props) => {
                             options={sellerList}
                             invalid={sendForm && !!sellerIdValid}
                             feedbackText={sendForm && (sellerIdValid || null)}
+                          />
+                        </Colxx>
+                        <Colxx xxs={12} md={4} lg={5}>
+                          <SimpleSelect
+                            label="select.storeId"
+                            name="storeId"
+                            value={storeId}
+                            onChange={onInputChange}
+                            options={storeList}
                           />
                         </Colxx>
                       </Row>
@@ -286,6 +304,7 @@ const Content = (props) => {
       <Modal {...propsToModalNewCustomer} />
       <Modal {...propsToModalSeekProducts} />
       <Modal {...propsToModalEditCurrentProduct} />
+      <Modal {...propsToModalSendEmail} />
       <Modal {...propsToViewPDF} />
       <Confirmation {...propsToMsgDeleteItem} />
       <Confirmation {...propsToMsgDelete} />

@@ -36,7 +36,7 @@ const ProductsCatalog = (props) => {
     fnConfirmGenerateCode,
     listProducts,
     dataStock,
-    propsToModalDistProduct, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct } = useProductsCatalog({ setLoading });
+    propsToModalDistProduct, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalStockControl, propsToModalCosts, propsToModalCopy } = useProductsCatalog({ setLoading });
 
   const { id, code, name, status, description, submConversion, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
     typeCalculatePrice, typeCalculateCost, percentLocalPriceMin, valuePercentLocalPriceMin, priceLocalMin, percentLocalPriceMid,
@@ -743,6 +743,9 @@ const ProductsCatalog = (props) => {
       <Modal {...propsToModalAddTrademarks} />
       <Modal {...propsToModalCompProduct} />
       <Modal {...propsToModalImagesProduct} />
+      <Modal {...propsToModalStockControl} />
+      <Modal {...propsToModalCosts} />
+      <Modal {...propsToModalCopy} />
       <Confirmation {...propsToMsgCode} />
       <Confirmation {...propsToMsgDeleteProduct} />
     </>

@@ -31,3 +31,5 @@ vps.config.json
 
 .claude
 .agents
+
+mw_legacy/

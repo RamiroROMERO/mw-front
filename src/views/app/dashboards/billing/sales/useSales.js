@@ -14,13 +14,25 @@ export const useSales = ({ setLoading }) => {
   const [labelSalesForClassif, setLabelSalesForClassif] = useState([]);
   const [dataSalesForDepto, setDataSalesForDepto] = useState([]);
   const [labelSalesForDepto, setLabelSalesForDepto] = useState([]);
-  const [dataTotals, setDataTotals] = useState([]);
+  const [dataResumeCards, setDataResumeCards] = useState([]);
+  const [topVendorCard, setTopVendorCard] = useState(null);
   const [dataMonthDetail, setDataMonthDetail] = useState([]);
+  const [listYears, setListYears] = useState([]);
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [reportId, setReportId] = useState('1');
   const [noYear, setNoYear] = useState(new Date().getFullYear());
+
+  // Combobox_hw2 del legacy arma sus opciones desde los años reales con facturas
+  // y selecciona el más reciente por defecto (Go top tras ORDER BY year DESC) —
+  // en vez de asumir el año del reloj del sistema, que puede no tener datos.
+  useEffect(() => {
+    request.GET('dashboard/sales/years', (resp) => {
+      setListYears(resp.data);
+      if (resp.data.length > 0) setNoYear(resp.data[0]);
+    }, () => { });
+  }, []);
 
   const fnSetDates = () => {
     let currStartDate = '', currEndDate = ''
@@ -85,6 +97,11 @@ export const useSales = ({ setLoading }) => {
 
       //ventas por vendedor
       const labelSalesforSeller = [''];
+      // El backend ya ordena por total DESC (igual que el legacy "Go Top" tras el
+      // ORDER BY) — el primero de la lista es el vendedor con más ventas.
+      setTopVendorCard(salesforSeller.length > 0
+        ? { title: 'Máximo Vendedor', value: `${salesforSeller[0].label} - ${formatNumber(salesforSeller[0].total, 'L. ', 2)}` }
+        : { title: 'Máximo Vendedor', value: 'L. 0.00' });
       salesforSeller = salesforSeller.map((item) => {
         item.data = [validFloat(item.total)]
         return item
@@ -121,7 +138,7 @@ export const useSales = ({ setLoading }) => {
     }, false);
 
     setLoading(true);
-    request.POST('dashboard/sales/dashResumeCards', { year: noYear }, resp => {
+    request.POST('dashboard/sales/dashResumeCards', { startDate, endDate }, resp => {
       let { monthDetails, totalSales, mediaSales, totalItems } = resp.data;
 
       const totals = [
@@ -135,11 +152,11 @@ export const useSales = ({ setLoading }) => {
         },
         {
           title: 'Total Items Vendidos',
-          value: formatNumber(totalItems, "L. ", 2)
+          value: formatNumber(totalItems, "", 0)
         },
       ]
 
-      setDataTotals(totals);
+      setDataResumeCards(totals);
       setDataMonthDetail(monthDetails);
       setLoading(false);
     }, err => {
@@ -147,11 +164,16 @@ export const useSales = ({ setLoading }) => {
     }, false);
   }
 
+  // "Máximo Vendedor" viene de una llamada separada (dashboard/sales) — se agrega
+  // aquí en vez de en dashResumeCards para no acoplar las dos respuestas del backend.
+  const dataTotals = topVendorCard ? [...dataResumeCards, topVendorCard] : dataResumeCards;
+
   const propsToHeaderReport = {
     reportId,
     setReportId,
     noYear,
     setNoYear,
+    listYears,
     fnSearchDash
   }
 

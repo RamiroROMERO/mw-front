@@ -13,9 +13,9 @@ import { useStore } from './useStore';
 const Store = (props) => {
   const { setLoading } = props;
 
-  const { sendForm, listType, listLedgerAccounts, table, dataTable, propsToMsgDelete, formState, formValidation, fnClearInputs, fnSave, onInputChange } = useStore({ setLoading });
+  const { sendForm, listType, listLedgerAccounts, coffeeControl, table, dataTable, propsToMsgDelete, formState, formValidation, fnClearInputs, fnSave, onInputChange } = useStore({ setLoading });
 
-  const { name, description, type, status, idCtaInventory, idCtaCost, idCtaExpense } = formState;
+  const { name, description, type, status, idCtaInventory, idCtaCost, idCtaExpense, fertilizerCredit } = formState;
 
   const { nameValid } = formValidation;
 
@@ -60,6 +60,17 @@ const Store = (props) => {
                   </Colxx>
                 </Row>
                 <Row>
+                  {coffeeControl && (
+                    <Colxx xxs="12">
+                      <Checkbox
+                        onChange={onInputChange}
+                        type="checkbox"
+                        value={fertilizerCredit}
+                        name="fertilizerCredit"
+                        label="page.store.check.fertilizerCredit"
+                      />
+                    </Colxx>
+                  )}
                   <Colxx xxs="12" align="right">
                     <Checkbox
                       onChange={onInputChange}

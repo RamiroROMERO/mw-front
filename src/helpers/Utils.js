@@ -308,7 +308,7 @@ export function formatNumber(number, simbol = '', decimals = 2) {
     const [a, b] = Number.parseFloat(number).toFixed(decimals).split(".");
     splitRight = b;
   }
-  return simbol + splitLeft + sepDecimal + splitRight;
+  return decimals > 0 ? simbol + splitLeft + sepDecimal + splitRight : simbol + splitLeft;
 }
 
 export const validInt = (number = 0) => {

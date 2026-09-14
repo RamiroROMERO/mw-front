@@ -2,6 +2,18 @@ import { useEffect, useState } from 'react'
 import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import { request } from '@Helpers/core';
+import notification from '@Containers/ui/Notifications';
+
+// Equivalente al bloqueo del legacy ("Ya Existe un Documento Predeterminado para
+// Cobro... Cambie el valor del Documento Anterior") — el backend valida la unicidad de
+// `isDefault`, acá solo se traduce el código de error a un mensaje visible.
+const fnHandleSaveError = (err) => {
+  if (err?.messages?.[0]?.message === 'paymentType.alreadyDefault') {
+    notification('error', 'msg.error.paymentType.alreadyDefault', 'alert.error.title');
+  } else {
+    notification('error', 'msg.save.record.error', 'alert.error.title');
+  }
+}
 
 export const usePaymentMethods = ({ setLoading }) => {
   const [tableData, setTableData] = useState([]);
@@ -74,7 +86,7 @@ export const usePaymentMethods = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-
+        fnHandleSaveError(err);
         setLoading(false);
       });
     } else {
@@ -84,7 +96,7 @@ export const usePaymentMethods = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
-
+        fnHandleSaveError(err);
         setLoading(false);
       });
     }

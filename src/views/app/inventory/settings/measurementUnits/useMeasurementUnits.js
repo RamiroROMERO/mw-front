@@ -9,6 +9,10 @@ export const useMeasurementUnits = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
+  // "Uso en Liquidación de Contenedores" (Checkbox_hw1) solo se muestra si la empresa
+  // tiene el control de contenedores activo (mw_setting.cont_control), igual que en
+  // el legacy (Checkbox_hw1.Init: This.Visible = IIF(nIs_ContControl == 1, .T., .F.)).
+  const [containerControl, setContainerControl] = useState(false);
 
   const measurementUnitsValid = {
     code: [(val) => val !== "", "msg.required.input.code"],
@@ -21,6 +25,8 @@ export const useMeasurementUnits = ({ setLoading }) => {
     name: '',
     description: '',
     type: false,
+    quantity: 0,
+    containerUse: false,
     status: true
   }, measurementUnitsValid);
 
@@ -30,7 +36,6 @@ export const useMeasurementUnits = ({ setLoading }) => {
   };
 
   const fnDeleteItem = (item) => {
-    return;
     setCurrentItem(item);
     setOpenMsgQuestion(true);
   };
@@ -136,6 +141,14 @@ export const useMeasurementUnits = ({ setLoading }) => {
 
   useEffect(() => {
     fnGetData();
+
+    const companyData = JSON.parse(localStorage.getItem('mw_current_company'));
+    if (companyData?.id) {
+      request.GET(`admin/companyInternalSettings?companyId=${companyData.id}`, (resp) => {
+        const [settings] = resp.data;
+        setContainerControl(!!settings?.containerControl);
+      }, () => { });
+    }
   }, []);
 
   const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDisableDocument, title: "alert.question.title", setCurrentItem }
@@ -147,6 +160,7 @@ export const useMeasurementUnits = ({ setLoading }) => {
       propsToMsgDelete,
       formState,
       formValidation,
+      containerControl,
       fnClearInputs,
       fnSave,
       onInputChange

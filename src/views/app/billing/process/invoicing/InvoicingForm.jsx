@@ -7,9 +7,10 @@ import { Checkbox } from '@Components/checkbox';
 import { InputField } from '@Components/inputFields';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import DateCalendar from '@Components/dateCalendar'
+import { IntlMessages } from '@Helpers/Utils';
 
 const InvoicingForm = (props) => {
-  const { documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, cashierId, storeId, documentExo, documentId, numcai, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, onInputDetaChange, hasSellerControl, isInvoiceSaved } = props;
+  const { documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, cashierId, storeId, documentExo, documentId, numcai, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, onInputDetaChange, hasSellerControl, isInvoiceSaved, creditStatusLevel, fnViewCreditStatus } = props;
 
   const { documentCodeValid, customerIdValid, documentTypeValid, currencyValid } = formValidationIndex;
 
@@ -84,6 +85,16 @@ const InvoicingForm = (props) => {
                     type="text"
                     label="page.invoicing.input.reference"
                   />
+                  {creditStatusLevel && creditStatusLevel !== 'ok' && (
+                    <div
+                      className={creditStatusLevel === 'over' ? 'text-danger' : 'text-warning'}
+                      style={{ cursor: 'pointer', fontWeight: 'bold' }}
+                      onClick={fnViewCreditStatus}
+                    >
+                      <i className="bi bi-exclamation-triangle-fill" />{' '}
+                      {IntlMessages(creditStatusLevel === 'over' ? 'page.invoicing.modal.creditStatus.exceeded' : 'page.invoicing.modal.creditStatus.warning')}
+                    </div>
+                  )}
                 </ContainerWithLabel>
               </Colxx>
             </Row>

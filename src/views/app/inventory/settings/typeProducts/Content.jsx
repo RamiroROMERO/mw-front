@@ -3,6 +3,7 @@ import { IntlMessages, validInt } from "@Helpers/Utils";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { InputField } from '@Components/inputFields';
 import { Checkbox } from '@Components/checkbox';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ReactTable from "@Components/reactTable";
 import { useTypeProducts } from './useTypeProducts';
@@ -10,11 +11,14 @@ import { useTypeProducts } from './useTypeProducts';
 const TypeProducts = (props) => {
   const { setLoading } = props;
 
-  const { formState, formValidation, sendForm, table, propsToMsgDelete, onInputChange, fnClearInputs, fnSave } = useTypeProducts({ setLoading });
+  const { formState, formValidation, sendForm, table, propsToMsgDelete, listLedgerAccount, onInputChange, fnClearInputs, fnSave } = useTypeProducts({ setLoading });
 
-  const { name, description, codeInit, codeSeq, status } = formState;
+  const { id, name, description, codeInit, codeSeq, inventoryAccount, costAccount, expenseAccount, incomeAccount, status } = formState;
 
   const { nameValid, codeInitValid } = formValidation;
+  // El legacy deshabilita ambos campos una vez que el registro ya existe (Grid1.DblClick),
+  // para que el prefijo de código interno no cambie después de generarse productos con él.
+  const codeLocked = validInt(id) > 0;
 
   return (
     <>
@@ -53,7 +57,7 @@ const TypeProducts = (props) => {
                       value={codeInit}
                       name="codeInit"
                       onChange={onInputChange}
-                      disabled={validInt(codeSeq) > 0 ? true : false}
+                      disabled={codeLocked}
                       type="text"
                       label="page.typeProducts.input.codeInit"
                       invalid={sendForm && !!codeInitValid}
@@ -65,9 +69,50 @@ const TypeProducts = (props) => {
                       value={codeSeq}
                       name="codeSeq"
                       onChange={onInputChange}
-                      disabled={validInt(codeSeq) > 0 ? true : false}
+                      disabled={codeLocked}
                       type="text"
                       label="page.typeProducts.input.codeSeq"
+                    />
+                  </Colxx>
+                </Row>
+                <Row>
+                  <Colxx xxs="12">
+                    <span className="text-muted small">{IntlMessages("page.typeProducts.title.accounts")}</span>
+                  </Colxx>
+                  <Colxx xxs="12" md="6" lg="12">
+                    <SearchSelect
+                      label="page.typeProducts.select.inventoryAccount"
+                      name="inventoryAccount"
+                      inputValue={inventoryAccount}
+                      options={listLedgerAccount}
+                      onChange={onInputChange}
+                    />
+                  </Colxx>
+                  <Colxx xxs="12" md="6" lg="12">
+                    <SearchSelect
+                      label="page.typeProducts.select.costAccount"
+                      name="costAccount"
+                      inputValue={costAccount}
+                      options={listLedgerAccount}
+                      onChange={onInputChange}
+                    />
+                  </Colxx>
+                  <Colxx xxs="12" md="6" lg="12">
+                    <SearchSelect
+                      label="page.typeProducts.select.expenseAccount"
+                      name="expenseAccount"
+                      inputValue={expenseAccount}
+                      options={listLedgerAccount}
+                      onChange={onInputChange}
+                    />
+                  </Colxx>
+                  <Colxx xxs="12" md="6" lg="12">
+                    <SearchSelect
+                      label="page.typeProducts.select.incomeAccount"
+                      name="incomeAccount"
+                      inputValue={incomeAccount}
+                      options={listLedgerAccount}
+                      onChange={onInputChange}
                     />
                   </Colxx>
                 </Row>

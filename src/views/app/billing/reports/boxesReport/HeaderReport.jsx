@@ -4,7 +4,7 @@ import DateCalendar from '@Components/dateCalendar';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { IntlMessages } from '@Helpers/Utils';
 
-const HeaderReport = ({formState, onInputChange, listCashiers, listPaymentMethods, listCashRegisters, fnSearchReport, fnViewSummary}) => {
+const HeaderReport = ({formState, onInputChange, listCashiers, listPaymentMethods, listCashRegisters, fnSearchReport, fnViewSummary, fnViewCashClose, fnViewTips}) => {
 
   const {startDate, endDate, cashierId, cashId, paymentTypeId} = formState;
 
@@ -70,6 +70,12 @@ const HeaderReport = ({formState, onInputChange, listCashiers, listPaymentMethod
         </Button>
         <Button color="secondary" onClick={() => { fnViewSummary() }}>
           <i className='bi bi-list' /> {IntlMessages("button.summary")}
+        </Button>
+        <Button color="secondary" onClick={() => { fnViewCashClose() }}>
+          <i className='bi bi-journal-check' /> {IntlMessages("page.boxesReport.button.cashClose")}
+        </Button>
+        <Button color="secondary" onClick={() => { fnViewTips() }}>
+          <i className='bi bi-cash-coin' /> {IntlMessages("page.boxesReport.button.tips")}
         </Button>
       </Colxx>
     </Row>

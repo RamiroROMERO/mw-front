@@ -29,6 +29,7 @@ const useBillingAreas = ({ setLoading }) => {
     idCtaDiscount: '',
     idCtaTax: '',
     idCtaCxc: '',
+    idCtaShortage: '',
     idCtaRrhhFourteenth: '',
     idCtaRrhhNotice: '',
     idCtaRrhhSeverance: '',
@@ -48,7 +49,7 @@ const useBillingAreas = ({ setLoading }) => {
     status: true
   }, billingAreasValid);
 
-  const { id, name, idCtaIng, idCtaDiscount, idCtaTax, idCtaCxc, idStore, codeDocument, localPriceType, outsiderPriceType, useBilling, useRrhh, useFixedAssets, isHospital, idCtaRrhhFourteenth, idCtaRrhhNotice, idCtaRrhhSeverance, idCtaRrhhThirteenth, idCtaRrhhVacation, idCtaFaCost, idCtaFaDeprec, isDefault, status } = formState;
+  const { id, name, idCtaIng, idCtaDiscount, idCtaTax, idCtaCxc, idCtaShortage, idStore, codeDocument, localPriceType, outsiderPriceType, useBilling, useRrhh, useFixedAssets, isHospital, idCtaRrhhFourteenth, idCtaRrhhNotice, idCtaRrhhSeverance, idCtaRrhhThirteenth, idCtaRrhhVacation, idCtaFaCost, idCtaFaDeprec, isDefault, status } = formState;
 
   const fnDeleteItem = (item) => {
     setBulkForm(item);
@@ -85,6 +86,7 @@ const useBillingAreas = ({ setLoading }) => {
       idCtaDiscount,
       idCtaTax,
       idCtaCxc,
+      idCtaShortage,
       idStore,
       codeDocument,
       localPriceType,

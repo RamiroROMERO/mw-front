@@ -5,10 +5,17 @@ import Modal from '@Components/modal';
 import { useBoxesReport } from './useBoxesReport';
 import HeaderReport from './HeaderReport';
 import ModalSummary from './ModalSummary';
+import ModalCashClose from './ModalCashClose';
+import ModalTips from './ModalTips';
 
 const BoxesReport = ({ setLoading }) => {
 
-  const { table, propsToHeaderReport, openModalSummary, setOpenModalSummary } = useBoxesReport({ setLoading });
+  const {
+    table, formState, propsToHeaderReport,
+    openModalSummary, setOpenModalSummary,
+    openModalCashClose, setOpenModalCashClose,
+    openModalTips, setOpenModalTips
+  } = useBoxesReport({ setLoading });
 
    const propsToModalSummary = {
     ModalContent: ModalSummary,
@@ -18,6 +25,32 @@ const BoxesReport = ({ setLoading }) => {
     maxWidth: 'lg',
     data: {
       setLoading
+    }
+  }
+
+  const propsToModalCashClose = {
+    ModalContent: ModalCashClose,
+    title: "page.boxesReport.button.cashClose",
+    open: openModalCashClose,
+    setOpen: setOpenModalCashClose,
+    maxWidth: 'xl',
+    data: {
+      setLoading,
+      startDate: formState.startDate,
+      endDate: formState.endDate
+    }
+  }
+
+  const propsToModalTips = {
+    ModalContent: ModalTips,
+    title: "page.boxesReport.button.tips",
+    open: openModalTips,
+    setOpen: setOpenModalTips,
+    maxWidth: 'lg',
+    data: {
+      setLoading,
+      startDate: formState.startDate,
+      endDate: formState.endDate
     }
   }
 
@@ -38,6 +71,8 @@ const BoxesReport = ({ setLoading }) => {
         </Colxx>
       </Row>
       <Modal {...propsToModalSummary} />
+      <Modal {...propsToModalCashClose} />
+      <Modal {...propsToModalTips} />
     </>
   );
 }

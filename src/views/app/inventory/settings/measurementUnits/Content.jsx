@@ -10,9 +10,9 @@ import { useMeasurementUnits } from './useMeasurementUnits';
 const MeasurementUnits = (props) => {
   const { setLoading } = props;
 
-  const { formState, formValidation, sendForm, table, propsToMsgDelete, onInputChange, fnClearInputs, fnSave } = useMeasurementUnits({ setLoading });
+  const { formState, formValidation, sendForm, table, propsToMsgDelete, containerControl, onInputChange, fnClearInputs, fnSave } = useMeasurementUnits({ setLoading });
 
-  const { id, code, name, description, type, status } = formState;
+  const { id, code, name, description, type, quantity, containerUse, status } = formState;
 
   const { codeValid, nameValid } = formValidation;
 
@@ -59,6 +59,17 @@ const MeasurementUnits = (props) => {
                     />
                   </Colxx>
                 </Row>
+                <Row>
+                  <Colxx xxs="12" sm="6" lg="12">
+                    <InputField
+                      value={quantity}
+                      name="quantity"
+                      onChange={onInputChange}
+                      type="number"
+                      label="page.measurementUnits.input.quantity"
+                    />
+                  </Colxx>
+                </Row>
                 <Row className='mb-3'>
                   <Colxx xxs="12" sm="6" lg="12">
                     <Checkbox
@@ -68,6 +79,16 @@ const MeasurementUnits = (props) => {
                       label="page.measurementUnits.check.presentation"
                     />
                   </Colxx>
+                  {containerControl && (
+                    <Colxx xxs="12" sm="6" lg="12">
+                      <Checkbox
+                        onChange={onInputChange}
+                        name="containerUse"
+                        value={containerUse}
+                        label="page.measurementUnits.check.containerUse"
+                      />
+                    </Colxx>
+                  )}
                   <Colxx xxs="12" sm="6" lg="12">
                     <Checkbox
                       onChange={onInputChange}

@@ -3,10 +3,11 @@ import { Colxx } from '../common/CustomBootstrap'
 import './styleCard.css';
 
 const CardTotals = ({data}) => {
+  const colWidth = Math.max(3, Math.floor(12 / (data.length || 1)));
   return (
     <Row>
       {data.map((item, index) => (
-        <Colxx xxs={12} md={4} lg={4} key={index}>
+        <Colxx xxs={12} md={colWidth} lg={colWidth} key={index}>
           <Card
             className="mb-3 info-card text-center"
             style={{

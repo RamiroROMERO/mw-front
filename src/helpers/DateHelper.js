@@ -21,6 +21,17 @@ dayjs.extend(weekday);
 // sin este plugin dayjs ignora el format string y devuelve Invalid Date.
 dayjs.extend(customParseFormat);
 
+// Códigos de mw_setting.form_date (ajustables por el Administrador en
+// mw_empresas_admin.sc2 del legacy, vía Thisform.Combobox_hw1) → formato dayjs.
+// "DMY" es el default del legacy cuando el ajuste viene vacío (fac_quotes.sc2 y otros:
+// `Iif(Empty(form_date),"DMY", Alltrim(form_date))`).
+const COMPANY_DATE_FORMATS = {
+  DMY: 'DD/MM/YYYY',
+  AMERICAN: 'MM/DD/YYYY',
+  YMD: 'YYYY/MM/DD',
+  GERMAN: 'DD.MM.YYYY'
+};
+
 class DateHelper {
   // Detecta automáticamente la zona horaria del sistema
   static defaultTimezone = dayjs.tz.guess();
@@ -223,6 +234,16 @@ class DateHelper {
 
   static guessTimezone() {
     return dayjs.tz.guess();
+  }
+
+  // Resuelve el código de mw_setting.form_date (DMY/AMERICAN/YMD/GERMAN) al formato
+  // dayjs correspondiente — DMY es el fallback si el código viene vacío o desconocido.
+  static getCompanyDateFormat(code) {
+    return COMPANY_DATE_FORMATS[code] || COMPANY_DATE_FORMATS.DMY;
+  }
+
+  static formatCompany(date, code) {
+    return DateHelper.format(date, DateHelper.getCompanyDateFormat(code));
   }
 
   // Formatos comunes

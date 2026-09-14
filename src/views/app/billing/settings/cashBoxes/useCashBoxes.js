@@ -11,11 +11,14 @@ const useCashBoxes = ({ setLoading }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
 
+  // `billingAreaId` es opcional en el legacy (fac_cajas.sc2: `nCodArea = Val(...)`, sin
+  // validación de bloqueo, a diferencia de nombre/cuenta de efectivo/cuenta de depósito
+  // que sí tienen su propio msgError) — no exigirla aquí para no ser más estricto que el
+  // legacy.
   const cashBoxValid = {
     name: [(val) => val.length > 5, "msg.required.input.name"],
     idCtaCash: [(val) => val !== "", "msg.required.input.cashAccount"],
-    idCtaDeposit: [(val) => val !== "", "msg.required.input.depositAccount"],
-    billingAreaId: [(val) => val !== "", "msg.required.select.areaId"]
+    idCtaDeposit: [(val) => val !== "", "msg.required.input.depositAccount"]
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({

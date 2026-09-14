@@ -5,15 +5,17 @@ import { IntlMessagesFn, validFloat, validInt } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
 import { RandomCodeGenerator } from '@Helpers/UuIdGenerator';
 import { API_URLS } from '@Helpers/APIUrl';
+import DateHelper from '@Helpers/DateHelper';
 import TableButtons from '@Components/tableButtons';
 import ModalViewCust from '../customers/ModalViewCust';
 import ModalProducts from '../invoicing/ModalProducts';
 import { ModalEditCurrentProduct } from './ModalEditCurrentProduct';
 import { ModalNewCustomer } from './ModalNewCustomer';
 import ModalSeekQuotes from './ModalSeekQuotes';
+import ModalSendEmail from './ModalSendEmail';
 import ViewPdf from '@Components/ViewPDF/ViewPdf';
 
-export const useQuotes = ({ setLoading, setActiveTab }) => {
+export const useQuotes = ({ setLoading, setActiveTab, screenControl = {} }) => {
 
   const [sendForm, setSendForm] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -23,7 +25,16 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
   const [openSeekProducts, setOpenSeekProducts] = useState(false);
   const [openEditCurrentProduct, setOpenEditCurrentProduct] = useState(false);
   const [openSeekDocument, setOpenSeekDocument] = useState(false);
+  const [openSendEmail, setOpenSendEmail] = useState(false);
   const [sellerList, setSellerList] = useState([]);
+  const [storeList, setStoreList] = useState([]);
+  // Tiempo límite (en días) para poder seguir editando la fecha de una cotización ya
+  // guardada — equivalente a nTimeOutQuote del legacy (time_quote en mw_setting).
+  const [timeQuote, setTimeQuote] = useState(0);
+  const [isDateEditable, setIsDateEditable] = useState(true);
+  // Formato de fecha configurado por el Administrador (mw_setting.form_date) — DMY es
+  // el default del legacy cuando el ajuste viene vacío.
+  const [dateFormat, setDateFormat] = useState('DMY');
   const [dataDetails, setDataDetails] = useState([]);
   const [customersList, setCustomersList] = useState([]);
   const [listProducts, setListProducts] = useState([]);
@@ -95,6 +106,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     email: "",
     address: "",
     sellerId: 0,
+    storeId: 0,
     condDeliveryTime: "",
     condPaymentMethod: "",
     notes: "",
@@ -113,6 +125,9 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
   const fnEditDocument = (row) => {
     setOpenSeekDocument(false);
     onBulkForm(row);
+    // Igual que el legacy (Textbox_hw2.Enabled = .F. si la fecha es más vieja que
+    // nTimeOutQuote días): pasado ese límite ya no se puede correr la fecha del documento.
+    setIsDateEditable(timeQuote <= 0 || !DateHelper.isBefore(row.date, DateHelper.subtract(DateHelper.now(), timeQuote, 'day')));
     setLoading(true);
     const { id } = row;
     request.GET(buildUrl(`${API_URLS.FAC_PROC_QUOTES_DETAIL}`, { idFather: id }), ({ data }) => {
@@ -134,6 +149,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     setSendForm(false);
     onResetForm();
     setDataDetails([]);
+    setIsDateEditable(true);
     setActiveTab("1")
   }
 
@@ -207,6 +223,11 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     setOpenMsgQuestion(true);
   };
 
+  const fnOpenSendEmail = () => {
+    if (validInt(id) <= 0) return;
+    setOpenSendEmail(true);
+  };
+
   const fnDelete = () => {
     setOpenMsgQuestion(false);
     if (validInt(id) === 0) {
@@ -247,6 +268,15 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
       });
       setSellerList(currSellers);
     });
+
+    request.GET('inventory/settings/stores?type=1', (resp) => {
+      setStoreList(resp.data);
+    }, (err) => { });
+
+    request.GET('admin/companies/getOperationalSettings', (resp) => {
+      setTimeQuote(validInt(resp.data.timeQuote));
+      setDateFormat(resp.data.formatDate || 'DMY');
+    }, (err) => { });
   }
 
   const fnNewCustomer = () => {
@@ -327,19 +357,62 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     setDataDetails([...dataDetails, currentItem]);
   }
 
+  // Igual que Textbox_hw8.KeyPress del legacy: sin almacén seleccionado se cotiza contra
+  // el catálogo general (sin existencia real, view_stock_for_quotes); con almacén
+  // seleccionado se usa el mismo buscador de productos que el POS, filtrado por esa bodega.
   const fnAddItem = () => {
+    setIsEditItem(false);
 
-    request.GET(`inventory/process/stocks/getStockForQuotes`, (resp) => {
-      const products = resp.data.map((item) => {
-        item.name = item.productName;
-        item.unitProd = item.undoutName;
-        item.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
-        return item;
+    if (validInt(formState.storeId) === 0) {
+      request.GET(`inventory/process/stocks/getStockForQuotes`, (resp) => {
+        const products = resp.data.map((item) => {
+          item.name = item.productName;
+          item.unitProd = item.undoutName;
+          item.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
+          return item;
+        });
+        setListProducts(products);
+        setOpenSeekProducts(true);
+        setLoading(false);
+      }, (err) => {
+
+        setLoading(false);
       });
-      setIsEditItem(false);
-      setListProducts(products);
-      setOpenSeekProducts(true);
-      setLoading(false);
+      return;
+    }
+
+    const mapProduct = (item) => {
+      const currProduct = {
+        productCode: item.productCode,
+        productName: item.productName,
+        undoutId: item.undoutId,
+        undoutName: item.undoutName,
+        valChange: item.valChange,
+        min: item.localMinPrice,
+        med: item.localMedPrice,
+        max: item.localMaxPrice,
+        percentTax: item.percentTax,
+        includeTaxPrice: !!item.priceIncludeTax,
+        stock: item.qtyStock
+      };
+      currProduct.name = currProduct.productName;
+      currProduct.unitProd = currProduct.undoutName;
+      currProduct.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectProduct(currProduct)} />
+      return currProduct;
+    }
+
+    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId: formState.storeId, inStock: true }), (resp) => {
+      const products = resp.data.map(mapProduct);
+      request.GET('inventory/process/stocks/getServices', (resp2) => {
+        const services = resp2.data.map(mapProduct);
+        setListProducts([...products, ...services]);
+        setOpenSeekProducts(true);
+        setLoading(false);
+      }, (err) => {
+        setListProducts(products);
+        setOpenSeekProducts(true);
+        setLoading(false);
+      });
     }, (err) => {
 
       setLoading(false);
@@ -352,7 +425,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     fnSearch: fnSearchDocument,
     fnSave: fnSaveDocument,
     fnPrint: fnPrintDocument,
-    fnDelete: fnDeleteDocument,
+    fnDelete: screenControl.fnDelete ? fnDeleteDocument : null,
     buttonsHome: [{
       title: "button.newCustomer",
       icon: "bi bi-person-plus",
@@ -361,6 +434,10 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
       title: "button.searchCustomer",
       icon: "bi bi-search",
       onClick: fnSeekCustomerList
+    }, {
+      title: "button.sendEmail",
+      icon: "bi bi-envelope",
+      onClick: fnOpenSendEmail
     }],
     buttonsOptions: [],
     buttonsAdmin: []
@@ -383,6 +460,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     data: {
       dataQuotes: dataSeekDocument,
       fnViewItem: fnEditDocument,
+      dateFormat,
       setLoading
     }
   }
@@ -447,6 +525,23 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     fnOnNo: fnCancelDeleteItem
   };
 
+  const propsToModalSendEmail = {
+    ModalContent: ModalSendEmail,
+    title: "button.sendEmail",
+    open: openSendEmail,
+    setOpen: setOpenSendEmail,
+    maxWidth: 'md',
+    data: {
+      setLoading,
+      sendUrl: 'billing/process/quotes/sendEmail',
+      documentId: id,
+      attachmentName: `Cotizacion_${id}.pdf`,
+      defaultTo: formState.email,
+      defaultSubject: `${IntlMessagesFn('page.quotes.modal.sendEmail.defaultSubject')} ${id}`,
+      defaultBody: IntlMessagesFn('page.quotes.modal.sendEmail.defaultBody')
+    }
+  }
+
   const propsToViewPDF = {
     ModalContent: ViewPdf,
     title: "modal.viewDocument.quote",
@@ -468,6 +563,8 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
   return {
     formState,
     sellerList,
+    storeList,
+    isDateEditable,
     onInputChange,
     onResetForm,
     onBulkForm,
@@ -487,6 +584,7 @@ export const useQuotes = ({ setLoading, setActiveTab }) => {
     propsToModalSeekProducts,
     propsToModalEditCurrentProduct,
     propsToMsgDeleteItem,
+    propsToModalSendEmail,
     propsToViewPDF
   }
 }

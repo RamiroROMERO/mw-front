@@ -14,7 +14,7 @@ const ModalAddLocations = ({ setOpen, data }) => {
     request.GET('inventory/settings/locations', (resp) => {
       const listLoc = resp.data.map((item) => {
         return {
-          id: item.name,
+          id: item.id,
           name: item.name
         }
       });

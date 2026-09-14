@@ -11,7 +11,7 @@ import { useConversionFactors } from './useConversionFactors';
 const ConversionFactors = (props) => {
   const { setLoading } = props;
 
-  const {formState, formValidation, sendForm, table, propsToMsgDelete, listMUnits, onInputChange, fnClearInputs, fnSave} = useConversionFactors({setLoading});
+  const {formState, formValidation, sendForm, table, propsToMsgDelete, listMUnits, onInputChange, fnClearInputs, fnSave, fnBulkAddAll} = useConversionFactors({setLoading});
 
   const { inputUnit, outputUnit, valueFactor, status } = formState;
 
@@ -80,6 +80,13 @@ const ConversionFactors = (props) => {
           </Card>
         </Colxx>
         <Colxx xxs="12" xs="12" sm="12" md="12" lg="8">
+          <Row className="mb-2">
+            <Colxx xxs="12" className="div-action-button-container">
+              <Button color="secondary" onClick={fnBulkAddAll}>
+                <i className="simple-icon-plus" /> {IntlMessages("page.conversionFactors.button.addAll")}
+              </Button>
+            </Colxx>
+          </Row>
           <ReactTable
             {...table}
           />

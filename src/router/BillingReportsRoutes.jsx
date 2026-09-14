@@ -8,6 +8,7 @@ const SummaryByProduct = React.lazy(() => import("@Views/app/billing/reports/sum
 const SalesBySalesperson = React.lazy(() => import("@Views/app/billing/reports/salesBySalesperson"));
 const MonthlySalesCustomer = React.lazy(() => import("@Views/app/billing/reports/monthlySalesCustomer"));
 const CashReports = React.lazy(() => import("@Views/app/billing/reports/boxesReport"));
+const OtherSalesReports = React.lazy(() => import("@Views/app/billing/reports/otherSalesReports"));
 const BillingReports = React.lazy(() => import('@Views/app/billing/reports'));
 
 const BillingReportsRoutes = (props) => {
@@ -41,6 +42,10 @@ const BillingReportsRoutes = (props) => {
       index
       path="/cashReports"
       element={<CashReports setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/otherSalesReports"
+      element={<OtherSalesReports setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }

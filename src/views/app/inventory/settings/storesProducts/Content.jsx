@@ -15,11 +15,11 @@ import { useStoresProducts } from './useStoresProducts';
 const StoresProducts = (props) => {
   const { setLoading } = props;
 
-  const {formState, formValidation, sendForm, table, propsToMsgDelete, listLocations, listProducts, listWarehouse, openModalAddLocations, openModalAddxLotes, setListLocations, setOpenModalAddLocation, setOpenModalAddxLotes, onInputChange, fnClearInputs, fnSave} = useStoresProducts({setLoading});
+  const {formState, formValidation, sendForm, table, propsToMsgDelete, listLocations, listProducts, listWarehouse, openModalAddLocations, openModalAddxLotes, setListLocations, setOpenModalAddLocation, setOpenModalAddxLotes, onInputChange, fnClearInputs, fnSave, fnRefreshStock} = useStoresProducts({setLoading});
 
-  const { location, currentExistence, qtyMin, qtyMax, storeId, productId, status } = formState;
+  const { locationId, stock, qtyMin, qtyMax, storeId, productId, status } = formState;
 
-  const { storeIdValid, productIdValid, locationValid } = formValidation;
+  const { storeIdValid, productIdValid, locationIdValid } = formValidation;
 
   const propsToModalAddLocations = {
     ModalContent: ModalAddLocations,
@@ -77,21 +77,22 @@ const StoresProducts = (props) => {
                   </Colxx>
                   <Colxx xxs="12" md="6" lg="3" xl="3">
                     <SimpleSelect
-                      name="location"
+                      name="locationId"
                       onChange={onInputChange}
-                      value={location}
+                      value={locationId}
                       label="page.storesProducts.select.location"
                       options={listLocations}
-                      invalid={sendForm && !!locationValid}
-                      feedbackText={sendForm && (locationValid || null)}
+                      invalid={sendForm && !!locationIdValid}
+                      feedbackText={sendForm && (locationIdValid || null)}
                     />
                   </Colxx>
                   <Colxx xxs="12" xs="6" sm="4" md="3">
                     <InputField
-                      value={currentExistence}
-                      name="currentExistence"
+                      value={stock}
+                      name="stock"
                       onChange={onInputChange}
                       type="text"
+                      disabled
                       label="page.storesProducts.input.currentExistence"
                     />
                   </Colxx>
@@ -125,7 +126,8 @@ const StoresProducts = (props) => {
                 <Row>
                   <Colxx xxs="12" sm={6}>
                     <Button style={{ marginRight: '5px' }} color="primary" onClick={() => setOpenModalAddLocation(true)}><i className="bi bi-compass" /> {IntlMessages("button.locations")}</Button>
-                    <Button color="info" onClick={() => setOpenModalAddxLotes(true)}><i className="bi bi-card-checklist" /> {IntlMessages("button.lots")}</Button>
+                    <Button style={{ marginRight: '5px' }} color="info" onClick={() => setOpenModalAddxLotes(true)}><i className="bi bi-card-checklist" /> {IntlMessages("button.lots")}</Button>
+                    <Button color="secondary" onClick={fnRefreshStock}><i className="bi bi-arrow-clockwise" /> {IntlMessages("button.refreshStock")}</Button>
                   </Colxx>
                   <Colxx xxs="12" sm={6} className="div-action-button-container">
                     <Button color="secondary" onClick={fnClearInputs}><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>

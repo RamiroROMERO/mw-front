@@ -1,4 +1,4 @@
-import { validInt } from "@Helpers/Utils";
+import { validInt, validFloat, formatDate, IntlMessagesFn } from "@Helpers/Utils";
 import { request, buildUrl } from "@Helpers/core";
 import { useEffect, useState } from "react";
 import ModalViewProd from "./ModalViewProd";
@@ -8,6 +8,10 @@ import { useForm } from "@Hooks/useForms";
 import { PATH_FILES } from '/src/helpers/pathFiles';
 import { ModalCompProduct } from "./ModalCompProduct";
 import ModalImages from "./ModalImages";
+import ModalStockControl from "./ModalStockControl";
+import ModalCosts from "./ModalCosts";
+import ModalCopy from "./ModalCopy";
+import { NotificationManager } from "@Components/common/react-notifications";
 
 const useProductsCatalog = ({ setLoading }) => {
 
@@ -16,6 +20,7 @@ const useProductsCatalog = ({ setLoading }) => {
   const [listMeasurementUnits, setListMeasurementUnits] = useState([]);
   const [listPackagingUnits, setListPackagingUnits] = useState([]);
   const [listMarks, setListMarks] = useState([]);
+  const [listProviders, setListProviders] = useState([]);
   const [dataProducts, setDataProducts] = useState([]);
   const [activeTab, setActiveTab] = useState('1');
   const [activeTabPrices, setActiveTabPrices] = useState('1');
@@ -31,6 +36,14 @@ const useProductsCatalog = ({ setLoading }) => {
   const [openModalAddTrademark, setOpenModalAddTrademark] = useState(false);
   const [openModalCompProduct, setOpenModalCompProduct] = useState(false);
   const [openModalImages, setOpenModalImages] = useState(false);
+  const [openModalStockControl, setOpenModalStockControl] = useState(false);
+  const [openModalCosts, setOpenModalCosts] = useState(false);
+  const [openModalCopy, setOpenModalCopy] = useState(false);
+
+  const msgCopySelectProduct = IntlMessagesFn('msg.copy.selectProduct');
+  const msgCopyMissingClassificationType = IntlMessagesFn('msg.copy.missingClassificationType');
+  const msgCopyMissingUnits = IntlMessagesFn('msg.copy.missingUnits');
+  const msgCopyZeroCost = IntlMessagesFn('msg.copy.zeroCost');
 
   const productsCatalogValid = {
     code: [(val) => val !== "", "msg.required.input.code"],
@@ -133,15 +146,11 @@ const useProductsCatalog = ({ setLoading }) => {
     item.taxValue = tax;
     setBulkForm(item);
     setOpenModalProducts(false);
-    // request.GET(`inventory/settings/products/getLastPurchase/${item.code}`, res => {
-    //   const { data } = res;
-    //   const { date, providerName, numCai } = data;
-    //   const purchaseData = { dateLastPurchase: date, provLastPurchase: providerName, numLastPurchase: numCai }
-    //   const itemData = { ...item, ...purchaseData };
-    //   setBulkForm(itemData);
-    // }, err => {
-    //   setBulkForm({});
-    // });
+    request.GET(`inventory/settings/products/getLastPurchase/${item.code}`, res => {
+      const { data } = res;
+      const purchaseData = { dateLastPurchase: data?.date ? formatDate(data.date) : '', provLastPurchase: data?.providerName || '', numLastPurchase: data?.numCai || '' }
+      setBulkForm(purchaseData);
+    }, () => { });
   }
 
   useEffect(() => {
@@ -190,6 +199,18 @@ const useProductsCatalog = ({ setLoading }) => {
     }, (err) => {
       setLoading(false);
     });
+    request.GET(buildUrl('inventory/process/providers', { status: 1 }), (resp) => {
+      const providers = resp.data.map((item) => {
+        return {
+          label: item.name,
+          value: item.id
+        }
+      });
+      setListProviders(providers);
+      setLoading(false);
+    }, (err) => {
+      setLoading(false);
+    });
   }, []);
 
   const fnNewProduct = () => {
@@ -219,55 +240,59 @@ const useProductsCatalog = ({ setLoading }) => {
     });
   }
 
+  // Whitelist de campos persistibles de un producto — compartida entre el alta/edición normal
+  // y "Copiar" (que clona este mismo payload con código/nombre/clasificación nuevos).
+  const fnBuildProductPayload = () => ({
+    code,
+    name,
+    description,
+    classification,
+    type,
+    paymentTax,
+    percentTax,
+    typeId, undinId, undoutId, packId, tradeId,
+    submConversion,
+    typeCalculateCost,
+    typeCalculatePrice,
+    enableForPurchase,
+    enableForSale,
+    requireExpLot,
+    validToSale,
+    paymentComiss,
+    priceIncludeTax,
+    percentLocalPriceMin,
+    valuePercentLocalPriceMin,
+    priceLocalMin,
+    percentLocalPriceMid,
+    valuePercentLocalPriceMid,
+    priceLocalMid,
+    percentLocalPriceMax,
+    valuePercentLocalPriceMax,
+    priceLocalMax,
+    percentOutsidePriceMin,
+    valuePercentOutsidePriceMin,
+    priceOutsideMin,
+    percentOutsidePriceMid,
+    valuePercentOutsidePriceMid,
+    priceOutsideMid,
+    percentOutsidePriceMax,
+    valuePercentOutsidePriceMax,
+    priceOutsideMax,
+    costValue,
+    lastCostValue,
+    maxCostValue,
+    notes,
+    parentProduct: validInt(id) > 0 ? parentProduct : code,
+    status
+  });
+
   const fnSaveProduct = () => {
     setSendForm(true);
     if (!isFormValid) {
       return;
     }
 
-    const newData = {
-      code,
-      name,
-      description,
-      classification,
-      type,
-      paymentTax,
-      percentTax,
-      typeId, undinId, undoutId, packId, tradeId,
-      submConversion,
-      typeCalculateCost,
-      typeCalculatePrice,
-      enableForPurchase,
-      enableForSale,
-      requireExpLot,
-      validToSale,
-      paymentComiss,
-      priceIncludeTax,
-      percentLocalPriceMin,
-      valuePercentLocalPriceMin,
-      priceLocalMin,
-      percentLocalPriceMid,
-      valuePercentLocalPriceMid,
-      priceLocalMid,
-      percentLocalPriceMax,
-      valuePercentLocalPriceMax,
-      priceLocalMax,
-      percentOutsidePriceMin,
-      valuePercentOutsidePriceMin,
-      priceOutsideMin,
-      percentOutsidePriceMid,
-      valuePercentOutsidePriceMid,
-      priceOutsideMid,
-      percentOutsidePriceMax,
-      valuePercentOutsidePriceMax,
-      priceOutsideMax,
-      costValue,
-      lastCostValue,
-      maxCostValue,
-      notes,
-      parentProduct: validInt(id) > 0 ? parentProduct : code,
-      status
-    }
+    const newData = fnBuildProductPayload();
 
     if (id > 0) {
       setLoading(true);
@@ -351,17 +376,72 @@ const useProductsCatalog = ({ setLoading }) => {
 
   const fnCodes = () => { }
 
-  const fnCosts = () => { }
+  const fnCosts = () => {
+    if (validInt(id) === 0) return;
+    setOpenModalCosts(true);
+  }
 
   const fnPrices = () => { }
 
-  const fnStockControl = () => { }
+  const fnStockControl = () => {
+    if (validInt(id) === 0) return;
+    setOpenModalStockControl(true);
+  }
 
   const fnBrands = () => {
     setOpenModalAddTrademark(true);
   }
 
-  const fnCopy = () => { }
+  // Copiar Producto (inv_prod_copy.sc2 + Controlpanelbtn7.Click de inv_products.sc2):
+  // mismas validaciones previas que el legacy antes de abrir el diálogo.
+  const fnCopy = () => {
+    if (validInt(id) === 0) {
+      NotificationManager.error(msgCopySelectProduct, '', 4000, null, null, '');
+      return;
+    }
+    if (validInt(typeId) === 0 || validInt(type) === 0) {
+      NotificationManager.error(msgCopyMissingClassificationType, '', 4000, null, null, '');
+      return;
+    }
+    if (validInt(undinId) === 0 || validInt(undoutId) === 0 || validFloat(submConversion) === 0) {
+      NotificationManager.error(msgCopyMissingUnits, '', 4000, null, null, '');
+      return;
+    }
+    if (validFloat(costValue) === 0) {
+      NotificationManager.error(msgCopyZeroCost, '', 4000, null, null, '');
+      return;
+    }
+    setOpenModalCopy(true);
+  }
+
+  // El legacy resetea Descripción a vacío y arranca Existe/Elimina en 0 para el clon;
+  // el resto de los campos (costos, precios, unidades, checks) se clonan tal cual.
+  const fnSaveCopy = (newTypeId, newCode, newName) => {
+    const newData = {
+      ...fnBuildProductPayload(),
+      code: newCode,
+      name: newName,
+      description: '',
+      typeId: newTypeId,
+      parentProduct: newCode,
+      status: 0
+    };
+
+    setLoading(true);
+    request.POST('inventory/settings/products', newData, (resp) => {
+      setBulkForm({
+        ...newData,
+        id: resp.data.id,
+        dateLastPurchase: '',
+        numLastPurchase: '',
+        provLastPurchase: ''
+      });
+      setOpenModalCopy(false);
+      setLoading(false);
+    }, () => {
+      setLoading(false);
+    });
+  }
 
   const propsToControlPanel = {
     fnNew: fnNewProduct,
@@ -490,6 +570,53 @@ const useProductsCatalog = ({ setLoading }) => {
     }
   }
 
+  const propsToModalStockControl = {
+    ModalContent: ModalStockControl,
+    title: "page.productsCatalog.modal.stockControl.title",
+    open: openModalStockControl,
+    setOpen: setOpenModalStockControl,
+    maxWidth: 'lg',
+    data: {
+      setLoading,
+      productId: id,
+      productCode: code,
+      productName: name,
+      listProviders,
+      product: formState,
+      setBulkForm
+    }
+  }
+
+  const propsToModalCosts = {
+    ModalContent: ModalCosts,
+    title: "page.productsCatalog.modal.costs.title",
+    open: openModalCosts,
+    setOpen: setOpenModalCosts,
+    maxWidth: 'sm',
+    data: {
+      setLoading,
+      productId: id,
+      productCode: code,
+      productName: name,
+      setBulkForm
+    }
+  }
+
+  const propsToModalCopy = {
+    ModalContent: ModalCopy,
+    title: "page.productsCatalog.modal.copy.title",
+    open: openModalCopy,
+    setOpen: setOpenModalCopy,
+    maxWidth: 'md',
+    data: {
+      currentCode: code,
+      currentName: name,
+      currentTypeId: typeId,
+      listClassifications,
+      fnSaveCopy
+    }
+  }
+
   const propsToMsgCode = {
     open: openMsgGenerateCode,
     setOpen: setOpenMsgGenerateCode,
@@ -517,6 +644,7 @@ const useProductsCatalog = ({ setLoading }) => {
     listPackagingUnits,
     listTaxPercent,
     listProducts,
+    listProviders,
     activeTab,
     setActiveTab,
     activeTabPrices,
@@ -532,7 +660,10 @@ const useProductsCatalog = ({ setLoading }) => {
     propsToModalDistProduct,
     propsToModalAddTrademarks,
     propsToModalCompProduct,
-    propsToModalImagesProduct
+    propsToModalImagesProduct,
+    propsToModalStockControl,
+    propsToModalCosts,
+    propsToModalCopy
   }
 
 };

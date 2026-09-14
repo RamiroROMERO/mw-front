@@ -4,7 +4,7 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --force",
     "dev:debug": "vite --debug hmr",
     "build": "vite build && node post-build.js demo",
     "build:provasa": "vite build --mode provasa && node post-build.js provasa",

@@ -10,6 +10,7 @@ const ConversionFactors = React.lazy(() => import('@Views/app/inventory/settings
 const TypeProducts = React.lazy(() => import('@Views/app/inventory/settings/typeProducts'));
 const ProductsCatalog = React.lazy(() => import('@Views/app/inventory/settings/productsCatalog'));
 const StoresProducts = React.lazy(() => import('@Views/app/inventory/settings/storesProducts'));
+const CostsAndPrices = React.lazy(() => import('@Views/app/inventory/settings/costsAndPrices'));
 
 const InventorySettingsRoutes = (props) => {
   const { setLoading } = props;
@@ -42,6 +43,10 @@ const InventorySettingsRoutes = (props) => {
       index
       path="/storesProducts"
       element={<StoresProducts setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/costsAndPrices"
+      element={<CostsAndPrices setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }

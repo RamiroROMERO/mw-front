@@ -5,7 +5,7 @@ import { ContainerWithLabel } from '@Components/containerWithLabel';
 
 const InvoicingTable = (props) => {
   const { invoiceDetail, subTotalValue, discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValueInvoice, total,
-    fnDeleteProduct, isInvoiceSaved } = props;
+    fnDeleteProduct, isInvoiceSaved, hasDateOutControl, fnOpenChangeProduct, canChangeProduct } = props;
 
   return (
     <>
@@ -26,6 +26,12 @@ const InvoicingTable = (props) => {
                         <th className='d-xs-none-table-cell'>{IntlMessages("page.invoicing.input.discValue")}</th>
                         <th className='d-md-none-table-cell'>{IntlMessages("page.invoicing.input.taxValue")}</th>
                         <th>{IntlMessages("page.invoicing.input.totalProd")}</th>
+                        {hasDateOutControl && (
+                          <>
+                            <th className='d-md-none-table-cell'>{IntlMessages("page.invoicing.input.lotCode")}</th>
+                            <th className='d-md-none-table-cell'>{IntlMessages("page.invoicing.input.dateOut")}</th>
+                          </>
+                        )}
                         <th>{IntlMessages("page.invoicing.options")}</th>
                       </tr>
                     </thead>
@@ -41,11 +47,23 @@ const InvoicingTable = (props) => {
                             <td className='d-xs-none-table-cell' align='right'>{formatNumber(item.discountValue)}</td>
                             <td className='d-md-none-table-cell' align='right'>{formatNumber(item.taxValue)}</td>
                             <td align='right'>{formatNumber(item.total)}</td>
+                            {hasDateOutControl && (
+                              <>
+                                <td className='d-md-none-table-cell'>{item.lotCode}</td>
+                                <td className='d-md-none-table-cell'>{item.dateOut}</td>
+                              </>
+                            )}
                             <td align='right'>
                               {!isInvoiceSaved && (
                                 <Button type="button" className="btn-circle-table" color="outline-danger" title="Eliminar"
                                   onClick={() => { fnDeleteProduct(item) }} key={`buttons-${idx}`}>
                                   <i className='bi bi-trash' />
+                                </Button>
+                              )}
+                              {isInvoiceSaved && canChangeProduct && (
+                                <Button type="button" className="btn-circle-table" color="outline-primary" title={IntlMessages("page.invoicing.modal.changeProduct.title")}
+                                  onClick={() => { fnOpenChangeProduct(item) }} key={`buttons-change-${idx}`}>
+                                  <i className='bi bi-arrow-left-right' />
                                 </Button>
                               )}
                             </td>

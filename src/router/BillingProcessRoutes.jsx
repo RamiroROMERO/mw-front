@@ -8,6 +8,7 @@ const PointSales = React.lazy(() => import("@Views/app/billing/process/pointSale
 const CreditNotes = React.lazy(() => import("@Views/app/billing/process/custCreditNotes"));
 const DebitNotes = React.lazy(() => import("@Views/app/billing/process/custDebitNotes"));
 const Quotes = React.lazy(() => import("@Views/app/billing/process/quotes"));
+const PurchaseOrders = React.lazy(() => import("@Views/app/billing/process/purchaseOrders"));
 
 const BillingProcess = React.lazy(() =>
   import('@Views/app/billing/process')
@@ -28,6 +29,10 @@ const BillingProcessRoutes = (props) => {
       index
       path="/quotes"
       element={<Quotes setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/purchaseOrders"
+      element={<PurchaseOrders setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
       path="/invoicing"

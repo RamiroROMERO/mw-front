@@ -11,10 +11,14 @@ const useDiscounts = ({ setLoading }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
 
+  // `idCtaAccount` en el legacy (fac_desc.sc2) solo es obligatoria `If contMenu == 1`
+  // (módulo de Contabilidad activo para la empresa) — no incondicionalmente. No se
+  // replica esa condicional exacta (requeriría resolver el origen de `contMenu`, un
+  // flag de módulo por empresa sin equivalente directo ya expuesto en v2); se opta por
+  // el criterio más seguro de no ser más estricto que el legacy y dejarla opcional.
   const discountValidations = {
     name: [(val) => val.length > 5, "msg.required.input.description"],
-    percentValue: [(val) => validInt(val) > 0 && validInt(val) <= 100, "msg.required.input.amount"],
-    idCtaAccount: [(val) => validInt(val) > 0, "msg.required.input.account"]
+    percentValue: [(val) => validInt(val) > 0 && validInt(val) <= 100, "msg.required.input.amount"]
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({

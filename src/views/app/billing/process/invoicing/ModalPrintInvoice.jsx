@@ -4,13 +4,20 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
 import { RadioGroup } from "@Components/radioGroup";
+import ViewPdf from "@Components/ViewPDF/ViewPdf";
+import Modal from "@Components/modal";
 
+// Antes desconectado de cualquier botón (código muerto) — ahora lo abre el botón
+// "Imprimir" del panel principal (fnPrintInvoicing en Content.jsx), igual que el
+// legacy (btnPrintDocument ofrecía varios layouts de impresión al imprimir).
 const ModalPrintInvoice = (props) => {
   const { data, setOpen } = props;
   const { id, setLoading } = data;
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
-  const [typePrint, setTypePrint] = useState(0);
+  const [typePrint, setTypePrint] = useState("1");
+  const [openViewFile, setOpenViewFile] = useState(false);
+  const [documentPath, setDocumentPath] = useState("");
 
   const mapSetValue = {
     typePrint: { setValue: setTypePrint }
@@ -22,18 +29,27 @@ const ModalPrintInvoice = (props) => {
   }
 
   const fnPrintInvoice = () => {
-    if (typePrint === "1") {
-      request.GETPdf('billing/process/invoices/exportPDF', { id, userName: userData.name }, 'Factura Detallada.pdf', (err) => {
+    setLoading(true);
+    const endpoint = typePrint === "3" ? 'billing/process/invoices/exportPDFByType' : 'billing/process/invoices/exportPDF';
+    request.GETPdfUrl(endpoint, { id, userName: userData.name }, (resp) => {
+      setDocumentPath(resp);
+      setOpenViewFile(true);
+      setLoading(false);
+    }, (err) => {
 
-        setLoading(false);
-      });
-    } else if (typePrint === "3") {
-      request.GETPdf('billing/process/invoices/exportPDFByType', { id, userName: userData.name }, 'Factura Resumida por Tipo.pdf', (err) => {
+      setLoading(false);
+    });
+  }
 
-        setLoading(false);
-      });
+  const propsToViewPDF = {
+    ModalContent: ViewPdf,
+    title: "page.invoicing.modal.printInvoice.title",
+    open: openViewFile,
+    setOpen: setOpenViewFile,
+    maxWidth: 'xl',
+    data: {
+      documentPath
     }
-    setOpen(false);
   }
 
   return (
@@ -42,7 +58,7 @@ const ModalPrintInvoice = (props) => {
         <Row>
           <Colxx xxs="12">
             <RadioGroup
-              label="page.invoicing.modal.printInvoice.radio.detailed"
+              label="page.invoicing.title.printType"
               name="typePrint"
               value={typePrint}
               onChange={handleInputChange}
@@ -63,6 +79,7 @@ const ModalPrintInvoice = (props) => {
           {` ${IntlMessages('button.exit')}`}
         </Button>
       </ModalFooter>
+      <Modal {...propsToViewPDF} />
     </>
   )
 }

@@ -10,6 +10,9 @@ export const useStore = ({ setLoading }) => {
   const [dataTable, setDataTable] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
+  // "Crédito Fertilizantes" solo se muestra si la empresa tiene coffeeControl activo
+  // (mw_setting.coffee), igual que Checkbox_hw2.Init en el legacy.
+  const [coffeeControl, setCoffeeControl] = useState(false);
   const listType = [{ id: 1, name: "Almacen" }, { id: 2, name: "Centro de Destino" }, { id: 3, name: "Ambos" }]
 
   const storeValid = {
@@ -24,7 +27,8 @@ export const useStore = ({ setLoading }) => {
     status: true,
     idCtaInventory: '',
     idCtaCost: '',
-    idCtaExpense: ''
+    idCtaExpense: '',
+    fertilizerCredit: false
   }, storeValid);
 
   const fnEditItem = (item) => {
@@ -137,6 +141,14 @@ export const useStore = ({ setLoading }) => {
     }, (err) => {
       setLoading(false);
     });
+
+    const companyData = JSON.parse(localStorage.getItem('mw_current_company'));
+    if (companyData?.id) {
+      request.GET(`admin/companyInternalSettings?companyId=${companyData.id}`, (resp) => {
+        const [settings] = resp.data;
+        setCoffeeControl(!!settings?.coffeeControl);
+      }, () => { });
+    }
   }, []);
 
   const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDisableDocument, title: "alert.question.title", setCurrentItem }
@@ -146,6 +158,7 @@ export const useStore = ({ setLoading }) => {
       sendForm,
       listType,
       listLedgerAccounts,
+      coffeeControl,
       table,
       dataTable,
       propsToMsgDelete,
