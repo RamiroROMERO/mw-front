@@ -3,6 +3,16 @@ import { useForm } from '@Hooks/useForms';
 import { IntlMessages } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
+import notification from '@Containers/ui/Notifications';
+
+// Equivalente a "El Producto ya fue agregado a este Almacen" del legacy — ver InvSetProductStoreController.
+const fnHandleSaveError = (err) => {
+  if (err?.messages?.[0]?.message === 'storesProducts.alreadyExists') {
+    notification('error', 'msg.error.storesProducts.alreadyExists', 'alert.error.title');
+  } else {
+    notification('error', 'msg.save.record.error', 'alert.error.title');
+  }
+}
 
 export const useStoresProducts = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
@@ -52,7 +62,8 @@ export const useStoresProducts = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell', headerClasses: 'd-xs-none-table-cell'
       },
       { text: IntlMessages("page.storesProducts.table.code"), dataField: "code", headerStyle: { 'width': '20%' } },
-      { text: IntlMessages("page.storesProducts.table.nameProduct"), dataField: "nameProduct", headerStyle: { 'width': '45%' } }
+      { text: IntlMessages("page.storesProducts.table.nameProduct"), dataField: "nameProduct", headerStyle: { 'width': '35%' } },
+      { text: IntlMessages("page.storesProducts.table.status"), dataField: "status", type: 'boolean', headerStyle: { 'width': '10%' } }
     ],
     data: [],
     actions: [{
@@ -72,9 +83,9 @@ export const useStoresProducts = ({ setLoading }) => {
     setLoading(true);
     request.GET('inventory/settings/productsStore', (resp) => {
       const data = resp.data.map((item) => {
-        item.storeName = item.invStore ? item.invStore.name : ''
+        item.storeName = item.storeData ? item.storeData.name : ''
         item.code = item.productId
-        item.nameProduct = item.invProduct ? item.invProduct.name : ''
+        item.nameProduct = item.productData ? item.productData.name : ''
         return item;
       });
       const tableData = {
@@ -106,6 +117,7 @@ export const useStoresProducts = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
+        fnHandleSaveError(err);
         setLoading(false);
       });
     } else {
@@ -115,6 +127,7 @@ export const useStoresProducts = ({ setLoading }) => {
         fnGetData();
         setLoading(false);
       }, (err) => {
+        fnHandleSaveError(err);
         setLoading(false);
       });
     }
@@ -141,15 +154,23 @@ export const useStoresProducts = ({ setLoading }) => {
   useEffect(() => {
     fnGetData();
     setLoading(true);
-    request.GET('inventory/settings/stores', (resp) => {
-      const listStores = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id,
-          name: item.name,
-          id: item.id,
-        }
-      });
+    // getSL (no /) ya filtra status=1 (solo Almacenes activos) — la ruta base find no
+    // filtraba por status, por eso Almacenes desactivados seguían apareciendo acá.
+    request.GET('inventory/settings/stores/getSL', (resp) => {
+      // Solo Almacenes tipo 1 y 3 (a pedido del usuario) — excluye tipo 2 (bodegas de
+      // clientes/proveedores) que no aplican para asignar productos. Filtrado en el
+      // cliente porque el middleware global validQuery.js no soporta valores de query
+      // repetidos (?type=1&type=3 rompe con "query[elem].trim is not a function").
+      const listStores = resp.data
+        .filter((item) => [1, 3].includes(item.type))
+        .map((item) => {
+          return {
+            label: item.name,
+            value: item.id,
+            name: item.name,
+            id: item.id,
+          }
+        });
       setListWarehouse(listStores);
       setLoading(false);
     }, (err) => {

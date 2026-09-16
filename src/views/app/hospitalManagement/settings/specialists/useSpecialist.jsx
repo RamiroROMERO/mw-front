@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { request } from '@Helpers/core';
-import { IntlMessages, validInt } from '@Helpers/Utils';
+import { IntlMessages, validInt, validBool } from '@Helpers/Utils';
 
 export const useSpecialist = ({ setLoading }) => {
   const [idRecord, setIdRecord] = useState(0);
@@ -13,7 +13,7 @@ export const useSpecialist = ({ setLoading }) => {
     request.GET('hospital/settings/specialists', (resp) => {
       const data = resp.data.map((item) => {
         item.specialty = item.hospSpecialty?.name || ''
-        item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
+        item.statusIcon = validBool(item.status) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;
       });
       setTable({ ...table, data });

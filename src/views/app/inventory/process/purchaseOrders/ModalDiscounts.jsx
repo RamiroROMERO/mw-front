@@ -6,7 +6,7 @@ import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { InputField } from '@Components/inputFields'
 
 const ModalDiscounts = ({data, setOpen}) => {
-  const {orderDetail, setOrderDetail, setBulkForm} = data;
+  const {orderDetail, setOrderDetail, fnRecalculateTotals} = data;
   const {formState, onInputChange, onResetForm, setBulkForm: setBulkFormDisc} = useForm({
     typeDiscount: 1,
     valueDiscount: 0
@@ -31,14 +31,8 @@ const ModalDiscounts = ({data, setOpen}) => {
       return item;
     });
 
-    const sumDiscount = newDiscount.map(item => validFloat(item.discount)).reduce((prev, curr) => prev + curr, 0);
-    const sumTotal = newDiscount.map(item => validFloat(item.total)).reduce((prev, curr) => prev + curr, 0);
-    const updateDisc = {
-      valueDiscount: sumDiscount,
-      valueTotal: sumTotal
-    }
-    setBulkForm(updateDisc);
     setOrderDetail(newDiscount);
+    fnRecalculateTotals(newDiscount);
     setOpen(false);
   }
 

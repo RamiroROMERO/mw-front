@@ -1,14 +1,16 @@
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { ContainerWithLabel } from '@Components/containerWithLabel'
 import { InputField } from '@Components/inputFields'
+import { SimpleSelect } from '@Components/simpleSelect'
+import { Checkbox } from '@Components/checkbox'
 import { formatNumber, IntlMessages, validFloat, validInt } from '@Helpers/Utils'
 import { Button, Row } from 'reactstrap'
 
-const DetailProduct = ({productCode, nameProduct, qty, price, subTotal, percentDiscount, discount, percentTax, tax, total,
-  nameUM, onInputChangeDeta, fnViewProducts, setBulkFormDeta, orderDetail, setOrderDetail, setBulkForm, formValidationDeta,
-  isFormValidDeta, sendFormDeta, setSendFormDeta}) => {
+const DetailProduct = ({productCode, nameProduct, marca, qty, price, subTotal, percentDiscount, discount, percentTax, tax, total,
+  nameUM, undId, conversionFactor, unitOptions, isExonerated, onUnitChange, onExoneratedChange, onInputChangeDeta, fnViewProducts,
+  setBulkFormDeta, orderDetail, setOrderDetail, fnRecalculateTotals, formValidationDeta, isFormValidDeta, sendFormDeta, setSendFormDeta}) => {
 
-  const {productCodeValid, qtyValid, priceValid} = formValidationDeta;
+  const {productCodeValid, qtyValid, priceValid, undIdValid} = formValidationDeta;
 
   const onQtyChange = e =>{
     const subtotal = validFloat(price) * e.target.value;
@@ -80,15 +82,11 @@ const DetailProduct = ({productCode, nameProduct, qty, price, subTotal, percentD
       return;
     }
 
-    const taxedValue = tax > 0 ? subTotal : 0;
-    const exemptValue = tax === 0 ? subTotal : 0;
-
-    const taxType = validInt(percentTax) === 15 ? 1 : validInt(percentTax) === 18 ? 2 : 0;
-
     const detail = {
       id: new Date().getTime(),
       productCode,
       nameProduct,
+      marca,
       qty: validFloat(qty),
       qtyReceibed: 0,
       qtyRec: 0,
@@ -101,36 +99,21 @@ const DetailProduct = ({productCode, nameProduct, qty, price, subTotal, percentD
       tax: validFloat(tax),
       total: validFloat(total),
       nameUM,
-      taxType,
-      subtotTaxValue: validFloat(taxedValue),
-      subTotExeValue: validFloat(exemptValue)
+      undId: validInt(undId),
+      conversionFactor: validFloat(conversionFactor) || 1,
+      // Legacy (tax_type): 1 = Exonerado (checkbox), no un tramo de impuesto derivado.
+      taxType: isExonerated ? 1 : 0
     }
 
-    const sumDiscount = orderDetail.map(item => validFloat(item.discount)).reduce((prev, curr) => prev + curr, 0);
-    const sumExempt = orderDetail.map(item => validFloat(item.subTotExeValue)).reduce((prev, curr) => prev + curr, 0);
-    
-    const sumTaxes = orderDetail.map(item => validFloat(item.tax)).reduce((prev, curr) => prev + curr, 0);
-    const sumTaxed = orderDetail.map(item => validFloat(item.subtotTaxValue)).reduce((prev, curr) => prev + curr, 0);
-    const sumTotal = orderDetail.map(item => validFloat(item.total)).reduce((prev, curr) => prev + curr, 0);
-    
-    const valueTaxed =  validFloat(taxedValue) + sumTaxed;
-    const valueTaxes = validFloat(tax) + sumTaxes;
-    const totalInvoice = validFloat(total) + sumTotal;
+    const newArray = [...orderDetail, detail];
+    setOrderDetail(newArray);
+    fnRecalculateTotals(newArray);
 
-    const addProduct = {
-      valueExcent: validFloat(exemptValue) + sumExempt,
-      valueTaxed,
-      valueTax: valueTaxes,
-      valueDiscount: validFloat(discount) + sumDiscount,
-      valueTotal: totalInvoice
-    }
-    setBulkForm(addProduct);
-
-    setOrderDetail(current => [...current, detail]);
     // limpiar inputs para agregar otro producto
     const cleanProd = {
       productCode: "",
       nameProduct: "",
+      marca: "",
       qty: 1,
       price: 0,
       subTotal: 0,
@@ -139,7 +122,11 @@ const DetailProduct = ({productCode, nameProduct, qty, price, subTotal, percentD
       percentTax: 0,
       tax: 0,
       total: 0,
-      nameUM: ""
+      nameUM: "",
+      undId: 0,
+      conversionFactor: 1,
+      unitOptions: [],
+      isExonerated: false
     }
     setBulkFormDeta(cleanProd);
     setSendFormDeta(false);
@@ -163,7 +150,7 @@ const DetailProduct = ({productCode, nameProduct, qty, price, subTotal, percentD
                 feedbackText={sendFormDeta && (productCodeValid || null)}
               />
             </Colxx>
-            <Colxx xxs="12" xs="7" md="6" lg="4">
+            <Colxx xxs="12" xs="7" md="4" lg="3">
               <InputField
                 name="nameProduct"
                 label='page.purchaseOrders.input.nameProduct'
@@ -171,6 +158,17 @@ const DetailProduct = ({productCode, nameProduct, qty, price, subTotal, percentD
                 onChange={onInputChangeDeta}
                 type="text"
                 disabled
+              />
+            </Colxx>
+            <Colxx xxs="12" xs="5" md="3" lg="2">
+              <SimpleSelect
+                name="undId"
+                label='page.purchaseOrders.input.unit'
+                value={undId}
+                onChange={onUnitChange}
+                options={unitOptions}
+                invalid={sendFormDeta && !!undIdValid}
+                feedbackText={sendFormDeta && (undIdValid || null)}
               />
             </Colxx>
             <Colxx xxs="12" xs="4" md="3" lg="2">
@@ -241,6 +239,14 @@ const DetailProduct = ({productCode, nameProduct, qty, price, subTotal, percentD
                 onChange={onInputChangeDeta}
                 type="text"
                 disabled
+              />
+            </Colxx>
+            <Colxx xxs="12" xs="4" md="3" lg="2" className="d-flex align-items-end">
+              <Checkbox
+                name="isExonerated"
+                label="page.purchaseOrders.checkbox.exonerated"
+                value={isExonerated}
+                onChange={onExoneratedChange}
               />
             </Colxx>
             <Colxx xxs="12" xs="4" md="3" lg="2">

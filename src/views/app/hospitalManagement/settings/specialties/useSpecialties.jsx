@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { IntlMessages, validInt } from '@Helpers/Utils';
+import { IntlMessages, validInt, validBool } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 
 export const useSpecialties = ({ setLoading }) => {
@@ -11,7 +11,7 @@ export const useSpecialties = ({ setLoading }) => {
     setLoading(true);
     request.GET('hospital/settings/specialties', (resp) => {
       const data = resp.data.map((item) => {
-        item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
+        item.statusIcon = validBool(item.status) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;
       });
       setTable({ ...table, data });

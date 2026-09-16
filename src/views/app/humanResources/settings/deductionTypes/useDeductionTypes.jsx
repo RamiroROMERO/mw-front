@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { request } from '@Helpers/core';
-import { validInt } from '@Helpers/Utils';
+import { validInt, validBool } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import notification from '@Containers/ui/Notifications';
 
@@ -34,7 +34,7 @@ export const useDeductionTypes = ({ setLoading, screenControl }) => {
     request.GET('rrhh/settings/deductionTypes', (resp) => {
       const data = resp.data.map((item) => {
         item.ctaAccount = item.contCta?.name || ''
-        item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
+        item.statusIcon = validBool(item.status) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;
       });
       setDataDeductions(data);

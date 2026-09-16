@@ -41,7 +41,8 @@ export const usePurchaseDeta = ({ setLoading, setPurchaseDetail }) => {
     setLoading(true);
     request.GET(buildUrl('inventory/process/purchaseDetail', { purchaseId }), (resp) => {
       const purchaseDeta = resp.data.map((item) => {
-        item.nameProduct = item.invProduct.name
+        item.nameProduct = item.productData.name
+        item.subTotal = item.subtotal
         return item;
       });
       setPurchaseDetail(purchaseDeta);

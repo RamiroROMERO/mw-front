@@ -1,6 +1,6 @@
 import { API_URLS } from '@Helpers/APIUrl';
 import { request } from '@Helpers/core';
-import { validFloat, validInt } from '@Helpers/Utils';
+import { validFloat, validInt, validBool } from '@Helpers/Utils';
 import { useForm } from '@Hooks';
 import { useEffect, useState } from 'react'
 
@@ -43,7 +43,7 @@ export const useDeductionDefaults = ({ setLoading, screenControl }) => {
       const data = resp.data.map((item) => {
         item.deductionType = item.deductionTypeData?.name || ''
         item.projectName = item.projectData?.name || ''
-        item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
+        item.statusIcon = validBool(item.status) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;
       });
       setData(data);

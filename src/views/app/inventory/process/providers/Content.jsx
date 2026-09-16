@@ -19,6 +19,7 @@ const Providers = (props) => {
     propsToModalBankAccount,
     propsToModalBillingData,
     propsToModalViewProv,
+    propsToModalUpdateAllAccounts,
     propsToMsgDeleteAccount,
     propsToMsgDeleteProv,
     listTypeProviders,
@@ -27,14 +28,15 @@ const Providers = (props) => {
     fnAddAccount,
     fnEditAccount,
     fnDeleteAccount,
-    isCoffeeControl } = useProviders({ setLoading });
+    isCoffeeControl,
+    isHospitalControl } = useProviders({ setLoading });
 
-  const { id, dni, name, providerType, phone, email, address, paymentConditions, creditDays, shipDays, isInternational, isPettyCash,
+  const { id, dni, name, providerTypeId, phone, email, address, paymentConditions, creditDays, shipDays, isInternational, isPettyCash,
     status, isProducer, isPartner, contactManager, contactManagerPhone, contactContab, contactContabPhone, contactSales, contactSalesPhone,
-    contactLogistic, contactLogisticPhone, idCtaCxp, idCtaDes, idCtaTax, idCtaFle, idCtaBonific, idCtaOthers, taxCertificateDateOut } =
-    formState;
+    contactLogistic, contactLogisticPhone, idCtaCxp, idCtaDes, idCtaTax, idCtaFle, idCtaBonific, idCtaOthers, taxCertificateDateOut,
+    percHosp, percProv } = formState;
 
-  const { providerTypeValid, dniValid, nameValid, phoneValid, emailValid, idCtaCxpValid, idCtaDesValid, idCtaTaxValid, idCtaFleValid,
+  const { providerTypeIdValid, dniValid, nameValid, phoneValid, emailValid, idCtaCxpValid, idCtaDesValid, idCtaTaxValid, idCtaFleValid,
     idCtaOthersValid } = formValidation;
 
   return (
@@ -51,13 +53,13 @@ const Providers = (props) => {
                     <Row>
                       <Colxx xxs="12" sm="6" md="12" lg="6">
                         <SimpleSelect
-                          name="providerType"
-                          value={providerType}
+                          name="providerTypeId"
+                          value={providerTypeId}
                           onChange={onInputChange}
                           label="page.providers.select.typeProvider"
                           options={listTypeProviders}
-                          invalid={sendForm && !!providerTypeValid}
-                          feedbackText={sendForm && (providerTypeValid || null)}
+                          invalid={sendForm && !!providerTypeIdValid}
+                          feedbackText={sendForm && (providerTypeIdValid || null)}
                         />
                       </Colxx>
                       <Colxx xxs="12" sm="6" md="12" lg="6">
@@ -204,6 +206,26 @@ const Providers = (props) => {
                           name="isPartner"
                           value={isPartner}
                           label="page.providers.check.isPartner"
+                        />
+                      </Colxx>
+                    </Row>)}
+                    {isHospitalControl && (<Row>
+                      <Colxx xxs="12" xs="6" md="6" lg="6">
+                        <InputField
+                          value={percHosp}
+                          name="percHosp"
+                          onChange={onInputChange}
+                          type="text"
+                          label="page.providers.input.percHosp"
+                        />
+                      </Colxx>
+                      <Colxx xxs="12" xs="6" md="6" lg="6">
+                        <InputField
+                          value={percProv}
+                          name="percProv"
+                          onChange={onInputChange}
+                          type="text"
+                          label="page.providers.input.percProv"
                         />
                       </Colxx>
                     </Row>)}
@@ -426,6 +448,7 @@ const Providers = (props) => {
       <Modal {...propsToModalBankAccount} />
       <Modal {...propsToModalViewProv} />
       <Modal {...propsToModalBillingData} />
+      <Modal {...propsToModalUpdateAllAccounts} />
       <Confirmation {...propsToMsgDeleteAccount} />
       <Confirmation {...propsToMsgDeleteProv} />
     </>

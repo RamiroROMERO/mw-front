@@ -4,6 +4,17 @@ import { Colxx } from '@Components/common/CustomBootstrap'
 import { IntlMessages } from '@Helpers/Utils'
 import { InputField } from '@Components/inputFields'
 import { request } from '@Helpers/core'
+import notification from '@Containers/ui/Notifications';
+
+// Equivalente a "El Nombre que desea crear para esta Ubicación ya existe en la base de
+// Datos" del legacy (inv_almac_prod_new_location.sc2) — ver InvSetLocationController.
+const fnHandleSaveError = (err) => {
+  if (err?.messages?.[0]?.message === 'location.alreadyExists') {
+    notification('error', 'msg.error.location.alreadyExists', 'alert.error.title');
+  } else {
+    notification('error', 'msg.save.record.error', 'alert.error.title');
+  }
+}
 
 const ModalAddLocations = ({ setOpen, data }) => {
   const { setLoading, setListLocations } = data;
@@ -36,8 +47,8 @@ const ModalAddLocations = ({ setOpen, data }) => {
       fnGetLocations();
       setOpen(false)
     }, err => {
+      fnHandleSaveError(err);
       setLoading(false);
-      setOpen(false);
     });
   }
 

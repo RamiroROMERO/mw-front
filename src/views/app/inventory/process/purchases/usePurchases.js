@@ -5,6 +5,9 @@ import { request, buildUrl } from '@Helpers/core';
 import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import { usePurchaseFormLists } from './usePurchaseFormLists';
 import { usePurchaseOrders } from './usePurchaseOrders';
+import { usePurchaseApplyInventory } from './usePurchaseApplyInventory';
+import { usePurchaseAccounting } from './usePurchaseAccounting';
+import { usePurchaseComplementary } from './usePurchaseComplementary';
 
 export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setPurchaseDetail }) => {
 
@@ -12,6 +15,8 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
   const [dataPurchases, setdataPurchases] = useState([]);
   const [openModalPurchases, setOpenModalPurchases] = useState(false);
   const [openMsgCancelPurchase, setOpenMsgCancelPurchase] = useState(false);
+  const [openModalExonerated, setOpenModalExonerated] = useState(false);
+  const [openModalImportation, setOpenModalImportation] = useState(false);
   const [sendFormDeta, setSendFormDeta] = useState(false);
   const [sendForm, setSendForm] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
@@ -52,10 +57,18 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     nameRequire: '',
     description: '',
     providerType: 0,
-    bonification: 0
+    bonification: 0,
+    exemptedCertificate: '',
+    exemptedNumber: '',
+    exemptedRecord: '',
+    importNumberDua: '',
+    importTicket: '',
+    importCif: 0,
+    importDai: 0,
+    importSelect: 0
   }, purchasesValid);
 
-  const { id, documentCode, documentId, storeId, providerId, paymentTypeId, cai, numCai, date, dateOut, nameRequire, orderId, typeDocto, valueSubtotal, valueDiscount, exent, exonera, gravado, valueTax, freight, otherCharges, valueTotal, providerType, description, noCtaExpense } = formState;
+  const { id, documentCode, documentId, storeId, providerId, paymentTypeId, cai, numCai, date, dateOut, nameRequire, orderId, typeDocto, valueSubtotal, valueDiscount, exent, exonera, gravado, valueTax, freight, otherCharges, valueTotal, providerType, description, noCtaExpense, exemptedCertificate, exemptedNumber, exemptedRecord, importNumberDua, importTicket, importCif, importDai, importSelect } = formState;
 
   const { dataOrders, openModalViewOrders, setOpenModalViewOrders, fnViewPurchaseOrders, fnViewOrder } = usePurchaseOrders({
     setLoading,
@@ -63,6 +76,14 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     setPurchaseDetail,
     setBulkForm
   });
+
+  const { openModalApplyInventory, setOpenModalApplyInventory, applyInventoryRows, fnApplyInventory,
+    fnUpdateApplyInventoryRow, fnConfirmApplyInventory } = usePurchaseApplyInventory({ setLoading, id });
+
+  const { openMsgAccountDocument, setOpenMsgAccountDocument, fnAccountDocument, fnOkAccountDocument } = usePurchaseAccounting({ setLoading, id });
+
+  const propsToComplementary = usePurchaseComplementary({ setLoading, fatherId: id, listProviders, listPaymentTypes });
+  const { fnComplementaryInvoices } = propsToComplementary;
 
   const fnNewPurchase = () => {
     onResetForm();
@@ -76,7 +97,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     setLoading(true);
     request.GET(buildUrl('inventory/process/purchases', { isExpense: 0 }), (resp) => {
       const purchases = resp.data.map((item) => {
-        item.provider = item.invProvider.name
+        item.provider = item.providerData.name
         item.dateIn = formatDate(item.date)
         item.valueTotal = formatNumber(item.total)
         item.valueSubtotal = formatNumber(item.subtotal)
@@ -127,11 +148,19 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
       orderId,
       nameRequire,
       description,
-      providerType
+      providerType,
+      exemptedCertificate,
+      exemptedNumber,
+      exemptedRecord,
+      importNumberDua,
+      importTicket,
+      importCif,
+      importDai,
+      importSelect
     }
 
     purchaseDetail.map((item) => {
-      delete item.invProduct;
+      delete item.productData;
       return item;
     });
 
@@ -148,7 +177,8 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
           purchaseDetail.forEach(item => {
             const detailPurchase = {
               purchaseId: resp.data.id,
-              ...item
+              ...item,
+              subtotal: item.subTotal
             }
             setLoading(true);
             request.POST('inventory/process/purchaseDetail', detailPurchase, () => {
@@ -179,7 +209,8 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
           purchaseDetail.forEach(item => {
             const detailPurchase = {
               purchaseId: id,
-              ...item
+              ...item,
+              subtotal: item.subTotal
             }
             setLoading(true);
             request.POST('inventory/process/purchaseDetail', detailPurchase, () => {
@@ -222,27 +253,25 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
   }
 
   const fnOkCancelPurchase = () => {
-    const dataCancel = {
-      status: 0
-    }
     setLoading(true);
-    request.PUT(`inventory/process/purchases/${id}`, dataCancel, (resp) => {
+    request.POST(`inventory/process/purchases/${id}/cancel`, {}, () => {
+      notification('success', 'msg.success.cancelPurchase', 'alert.success.title');
       setOpenMsgCancelPurchase(false);
       setLoading(false);
-    }, (err) => {
+      fnNewPurchase();
+    }, (resp) => {
+      const messageKey = resp?.messages?.[0]?.message || 'msg.save.record.error';
+      notification('error', messageKey, 'alert.error.title');
+      setOpenMsgCancelPurchase(false);
       setLoading(false);
-    });
+    }, false);
   }
 
   const fnPaymentTerms = () => { }
 
-  const fnApplyInventory = () => { }
+  const fnExonerated = () => { setOpenModalExonerated(true); }
 
-  const fnCount = () => { }
-
-  const fnExonerated = () => { }
-
-  const fnImportation = () => { }
+  const fnImportation = () => { setOpenModalImportation(true); }
 
   const fnReportPurchases = () => { }
 
@@ -266,7 +295,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
       {
         title: "button.count",
         icon: "bi bi-journal-check",
-        onClick: fnCount
+        onClick: fnAccountDocument
       },
       {
         title: "button.exonerated",
@@ -277,6 +306,11 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
         title: "button.importation",
         icon: "bi bi-book-half",
         onClick: fnImportation
+      },
+      {
+        title: "button.complementaryInvoices",
+        icon: "bi bi-receipt-cutoff",
+        onClick: fnComplementaryInvoices
       },
       {
         title: "button.viewPurchaseOrders",
@@ -315,6 +349,19 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     dataOrders,
     openModalViewOrders,
     setOpenModalViewOrders,
-    fnViewOrder
+    fnViewOrder,
+    openModalApplyInventory,
+    setOpenModalApplyInventory,
+    applyInventoryRows,
+    fnUpdateApplyInventoryRow,
+    fnConfirmApplyInventory,
+    openMsgAccountDocument,
+    setOpenMsgAccountDocument,
+    fnOkAccountDocument,
+    openModalExonerated,
+    setOpenModalExonerated,
+    openModalImportation,
+    setOpenModalImportation,
+    propsToComplementary
   };
 }

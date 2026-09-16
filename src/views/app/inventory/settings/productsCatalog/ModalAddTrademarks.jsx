@@ -4,6 +4,16 @@ import { Colxx } from '@Components/common/CustomBootstrap'
 import { IntlMessages } from '@Helpers/Utils'
 import { InputField } from '@Components/inputFields'
 import { request } from '@Helpers/core'
+import notification from '@Containers/ui/Notifications';
+
+// Mismo patrón que ModalAddLocations.jsx — ver TrademarkController.
+const fnHandleSaveError = (err) => {
+  if (err?.messages?.[0]?.message === 'trademark.alreadyExists') {
+    notification('error', 'msg.error.trademark.alreadyExists', 'alert.error.title');
+  } else {
+    notification('error', 'msg.save.record.error', 'alert.error.title');
+  }
+}
 
 const ModalAddTrademarks = ({ setOpen, data }) => {
   const { setLoading, setListTrademarks } = data;
@@ -27,7 +37,7 @@ const ModalAddTrademarks = ({ setOpen, data }) => {
   }
 
   const fnSaveTrademark = () => {
-    if (nameTrademark.lenght < 3) {
+    if (nameTrademark.length < 3) {
       return
     }
     const data = { name: nameTrademark };
@@ -37,8 +47,8 @@ const ModalAddTrademarks = ({ setOpen, data }) => {
       fnGetTrademarks();
       setOpen(false)
     }, err => {
+      fnHandleSaveError(err);
       setLoading(false);
-      setOpen(false);
     });
   }
 

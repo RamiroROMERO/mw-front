@@ -18,8 +18,8 @@ export const usePurchaseOrders = ({ setLoading, providerId, setPurchaseDetail, s
     setLoading(true);
     request.GET(buildUrl('inventory/process/purchaseOrders', { providerId }), (resp) => {
       const orders = resp.data.map((item) => {
-        item.provider = item.invProvider.name
-        item.address = item.invProvider.address
+        item.provider = item.providerData.name
+        item.address = item.providerData.address
         item.total = formatNumber(item.valueTotal, '', 2)
         return item;
       });
@@ -37,7 +37,7 @@ export const usePurchaseOrders = ({ setLoading, providerId, setPurchaseDetail, s
     setLoading(true);
     request.GET(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: item.id }), (resp) => {
       const ordersDeta = resp.data.map((item) => {
-        item.nameProduct = item.invProduct.name
+        item.nameProduct = item.productData.name
         return item;
       });
       setPurchaseDetail(ordersDeta);

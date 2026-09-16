@@ -1,19 +1,16 @@
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { InputField } from '@Components/inputFields'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
-import { formatNumber, validFloat } from '@Helpers/Utils'
+import { formatNumber } from '@Helpers/Utils'
 import { Row } from 'reactstrap'
 
-const FooterOrder = ({applicantName, workOrderId, notes, valueExcent, valueTaxed, valueDiscount, valueTax,
-  valueOthers, valueTotal, descriptionOthers, listWorkOrders, onInputChange, setBulkForm}) => {
+const FooterOrder = ({applicantName, workOrderId, notes, valueExonerated, valueExcent, valueTaxed, valueDiscount, valueTax,
+  valueOthers, valueTotal, descriptionOthers, listWorkOrders, orderDetail, onInputChange, fnRecalculateTotals}) => {
 
-  const onOtherValueChange = e=>{
-    const total = validFloat(valueExcent) + validFloat(valueTaxed) + validFloat(valueTax) + validFloat(e.target.value) - validFloat(valueDiscount);
-    const newValue = {
-      valueTotal: total,
-      valueOthers: e.target.value
-    }
-    setBulkForm(newValue);
+  // Legacy (fnCalculateTotals): "Otros Recargos" es el único total que se captura a mano,
+  // el resto siempre se recalcula sumando el detalle completo.
+  const onOtherValueChange = e => {
+    fnRecalculateTotals(orderDetail, e.target.value);
   }
 
   return (
@@ -51,6 +48,16 @@ const FooterOrder = ({applicantName, workOrderId, notes, valueExcent, valueTaxed
       </Colxx>
       <Colxx xxs="12" sm="5" md="4">
         <Row>
+          <Colxx xxs="12" xs="6" sm="12" lg="6">
+            <InputField
+              name="valueExonerated"
+              label='page.purchaseOrders.input.valueExonerated'
+              value={formatNumber(valueExonerated)}
+              onChange={onInputChange}
+              type="text"
+              disabled
+            />
+          </Colxx>
           <Colxx xxs="12" xs="6" sm="12" lg="6">
             <InputField
               name="valueExcent"

@@ -1,5 +1,5 @@
 import { request } from '@Helpers/core';
-import { IntlMessages, validInt } from '@Helpers/Utils';
+import { IntlMessages, validBool } from '@Helpers/Utils';
 import { useEffect, useState } from 'react'
 import notification from '@Containers/ui/Notifications';
 
@@ -95,7 +95,7 @@ export const useCustomer = ({ setLoading, screenControl }) => {
     setLoading(true);
     request.GET(`hotel/settings/customers`, (resp) => {
       const data = resp.data.map((item) => {
-        item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
+        item.statusIcon = validBool(item.status) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;
       });
       const tableData = {

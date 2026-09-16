@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { request, buildUrl } from '@Helpers/core';
-import { validInt } from '@Helpers/Utils';
+import { validInt, validBool } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 import notification from '@Containers/ui/Notifications';
 
@@ -32,7 +32,7 @@ export const useRoomTypes = ({ setLoading, screenControl }) => {
     setLoading(true);
     request.GET(buildUrl('hotel/settings/roomTypes/paginate', { page, limit: pageSize, q: searchText }), (resp) => {
       const data = resp.data.map((item) => {
-        item.statusIcon = (validInt(item.status) === 1 || item.status === true) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
+        item.statusIcon = validBool(item.status) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;
       });
       const pageTotal = resp.pagination.totalPages;

@@ -50,8 +50,9 @@ const PurchaseOrders = (props) => {
 
   const purchaseOrderDetailValid = {
     productCode: [(val) => val !== "", "msg.required.input.codeProduct"],
-    qty: [(val) => validInt(val) > 0, "msg.required.input.qty"],
-    price: [(val) => validInt(val) > 0, "msg.required.input.price"]
+    qty: [(val) => validFloat(val) > 0, "msg.required.input.qty"],
+    price: [(val) => validFloat(val) > 0, "msg.required.input.price"],
+    undId: [(val) => validInt(val) > 0, "msg.required.select.units"]
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
@@ -65,6 +66,7 @@ const PurchaseOrders = (props) => {
     applicantName: '',
     workOrderId: 0,
     notes: '',
+    valueExonerated: 0,
     valueExcent: 0,
     valueTaxed: 0,
     valueDiscount: 0,
@@ -78,6 +80,7 @@ const PurchaseOrders = (props) => {
     onInputChangeDeta, onResetForm: onResetFormDeta, setBulkForm: setBulkFormDeta } = useForm({
       productCode: '',
       nameProduct: '',
+      marca: '',
       qty: 1,
       price: 0,
       subTotal: 0,
@@ -86,22 +89,29 @@ const PurchaseOrders = (props) => {
       percentTax: 0,
       tax: 0,
       total: 0,
-      nameUM: ''
+      nameUM: '',
+      undId: 0,
+      conversionFactor: 1,
+      unitOptions: [],
+      isExonerated: false
     }, purchaseOrderDetailValid);
 
   const { id, date, providerId, paymentTypeId, address, creditDays, expectedDate, applicantName, workOrderId, notes,
-    valueExcent, valueTaxed, valueDiscount, valueTax, valueOthers, valueTotal, descriptionOthers } = formState;
-  const { productCode, nameProduct, qty, price, subTotal, percentDiscount, discount, percentTax, tax, total, nameUM } = formStateDeta;
+    valueExonerated, valueExcent, valueTaxed, valueDiscount, valueTax, valueOthers, valueTotal, descriptionOthers } = formState;
+  const { productCode, nameProduct, marca, qty, price, subTotal, percentDiscount, discount, percentTax, tax, total, nameUM,
+    undId, conversionFactor, unitOptions, isExonerated } = formStateDeta;
 
   const fnViewOrderDetail = (orderId) => {
     setLoading(true);
     request.GET(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: orderId }), (resp) => {
       const ordersDeta = resp.data.map((item) => {
-        item.nameProduct = item.invProduct.name
+        item.nameProduct = item.productData.name
+        item.marca = item.productData.tradeMark
         item.qtyRec = 0
         return item;
       });
       setOrderDetail(ordersDeta);
+      fnRecalculateTotals(ordersDeta);
       setLoading(false);
     }, (err) => {
 
@@ -122,8 +132,8 @@ const PurchaseOrders = (props) => {
     setLoading(true);
     request.GET('inventory/process/purchaseOrders', (resp) => {
       const orders = resp.data.map((item) => {
-        item.provider = item.invProvider.name
-        item.address = item.invProvider.address
+        item.provider = item.providerData.name
+        item.address = item.providerData.address
         item.total = formatNumber(item.valueTotal, '', 2)
         return item;
       });
@@ -144,6 +154,14 @@ const PurchaseOrders = (props) => {
 
     if (orderDetail.length === 0) {
       notification('warning', 'msg.required.select.product', 'alert.warning.title');
+      return;
+    }
+
+    // Legacy (btnSaveDocument.Click): red de seguridad adicional a la validación que ya
+    // bloquea agregar una línea con precio=0 — antes de guardar, vuelve a chequear que
+    // ninguna línea del detalle quedó con precio en cero.
+    if (orderDetail.some((item) => validFloat(item.price) === 0)) {
+      notification('warning', 'msg.purchaseOrder.priceZero', 'alert.warning.title');
       return;
     }
 
@@ -305,9 +323,80 @@ const PurchaseOrders = (props) => {
     setOpenModalProducts(true);
   }
 
+  // Legacy (Textbox_hw4.KeyPress, F1): al elegir el producto arma el combo de Unidad de
+  // Medida con la unidad de empaque (Presentación) y, si es distinta, la unidad de
+  // entrada — con la de empaque preseleccionada por defecto.
   const fnSelectProduct = (item) => {
-    setBulkFormDeta(item);
+    const options = [];
+    if (item.packId) {
+      options.push({ id: item.packId, name: item.packingData?.name || item.submission });
+    }
+    if (item.undinId && item.undinId !== item.packId) {
+      options.push({ id: item.undinId, name: item.undInData?.name || item.inputUnit });
+    }
+    const defaultUnit = options[0];
+
+    setBulkFormDeta({
+      ...item,
+      marca: item.tradeMark,
+      unitOptions: options,
+      undId: defaultUnit?.id || 0,
+      nameUM: defaultUnit?.name || item.nameUM,
+      conversionFactor: item.submConversion || 1
+    });
     setOpenModalProducts(false);
+  }
+
+  const onUnitChange = (e) => {
+    const selectedId = validInt(e.target.value);
+    const selectedOption = unitOptions.find((opt) => opt.id === selectedId);
+    setBulkFormDeta({
+      undId: selectedId,
+      nameUM: selectedOption?.name || ''
+    });
+  }
+
+  // Legacy (Checkbox_hw1.Click, "Exonerado"): al marcarlo pone en cero el % de Impuesto y
+  // el Impuesto de la línea que se está por agregar (no restaura nada al desmarcarlo,
+  // igual que legacy).
+  const onExoneratedChange = (e) => {
+    const checked = e.target.checked;
+    if (checked) {
+      const newTotal = validFloat(subTotal) - validFloat(discount);
+      setBulkFormDeta({ isExonerated: true, percentTax: 0, tax: 0, total: newTotal });
+    } else {
+      setBulkFormDeta({ isExonerated: false });
+    }
+  }
+
+  // Legacy (fnCalculateTotals): suma el detalle completo cada vez (no acumula deltas) —
+  // Gravado = subtotales con impuesto != 0, Exento = subtotales sin impuesto y no
+  // exonerados, Exonerado = subtotales de líneas marcadas Exonerado (tax_type=1),
+  // independientemente del legacy no persiste "Exonerado" como columna propia del
+  // encabezado — se recalcula siempre desde el detalle, así que tampoco se envía al backend.
+  const fnRecalculateTotals = (details, othersValue = valueOthers) => {
+    const gravado = details
+      .filter((item) => !item.taxType && validFloat(item.tax) !== 0)
+      .reduce((sum, item) => sum + validFloat(item.subTotal), 0);
+    const exento = details
+      .filter((item) => !item.taxType && validFloat(item.tax) === 0)
+      .reduce((sum, item) => sum + validFloat(item.subTotal), 0);
+    const exonerado = details
+      .filter((item) => item.taxType)
+      .reduce((sum, item) => sum + validFloat(item.subTotal), 0);
+    const descuento = details.reduce((sum, item) => sum + validFloat(item.discount), 0);
+    const impuesto = details.reduce((sum, item) => sum + validFloat(item.tax), 0);
+    const total = exento + gravado + exonerado - descuento + impuesto + validFloat(othersValue);
+
+    setBulkForm({
+      valueExcent: exento,
+      valueTaxed: gravado,
+      valueExonerated: exonerado,
+      valueDiscount: descuento,
+      valueTax: impuesto,
+      valueOthers: othersValue,
+      valueTotal: total
+    });
   }
 
   const fnViewOrder = (itemOrder) => {
@@ -492,6 +581,7 @@ const PurchaseOrders = (props) => {
   const propsToDetailProduct = {
     productCode,
     nameProduct,
+    marca,
     qty,
     price,
     subTotal,
@@ -501,12 +591,18 @@ const PurchaseOrders = (props) => {
     tax,
     total,
     nameUM,
+    undId,
+    conversionFactor,
+    unitOptions,
+    isExonerated,
+    onUnitChange,
+    onExoneratedChange,
     onInputChangeDeta,
     fnViewProducts,
     setBulkFormDeta,
     orderDetail,
     setOrderDetail,
-    setBulkForm,
+    fnRecalculateTotals,
     formValidationDeta,
     isFormValidDeta,
     sendFormDeta,
@@ -516,13 +612,14 @@ const PurchaseOrders = (props) => {
   const propsToDetailTable = {
     orderDetail,
     setOrderDetail,
-    setBulkForm
+    fnRecalculateTotals
   }
 
   const propsToFooterOrder = {
     applicantName,
     workOrderId,
     notes,
+    valueExonerated,
     valueExcent,
     valueTaxed,
     valueDiscount,
@@ -531,8 +628,10 @@ const PurchaseOrders = (props) => {
     valueTotal,
     descriptionOthers,
     listWorkOrders,
+    orderDetail,
     onInputChange,
-    setBulkForm
+    setBulkForm,
+    fnRecalculateTotals
   }
 
   const propsToModalViewProd = {
@@ -542,7 +641,11 @@ const PurchaseOrders = (props) => {
     setOpen: setOpenModalProducts,
     maxWidth: 'lg',
     data: {
-      dataProducts
+      dataProducts,
+      // ModalViewProd espera `fnSelectItem` (ver src/views/app/settings/productsCatalog/
+      // ModalViewProd.jsx) — faltaba, así que el botón "ver" del catálogo nunca
+      // seleccionaba nada: agregar productos a la orden estaba roto siempre.
+      fnSelectItem: fnSelectProduct
     }
   }
 
@@ -566,8 +669,8 @@ const PurchaseOrders = (props) => {
     maxWidth: "sm",
     data: {
       orderDetail,
-      setBulkForm,
       setOrderDetail,
+      fnRecalculateTotals,
       setLoading
     }
   }

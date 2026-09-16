@@ -321,6 +321,18 @@ export const validFloat = (float = 0.00, decimals = 2) => {
   return Number.parseFloat(Number.parseFloat(float).toFixed(decimals));
 };
 
+// Normaliza un valor "booleano" que llega del backend a un boolean real de JS. Necesario
+// porque un campo BOOLEAN del modelo (Sequelize) se serializa como true/false en el JSON,
+// mientras que uno declarado INTEGER llega como 0/1 — validInt(valor) === 1 falla en el
+// primer caso (parseInt(true)/parseInt(false) son ambos NaN, así que validInt(...) siempre
+// da 0). Usar validBool en vez de validInt/validFloat para cualquier campo lógicamente booleano.
+export const validBool = (value) => {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value !== 0;
+  if (typeof value === 'string') return value === '1' || value.toLowerCase() === 'true';
+  return !!value;
+};
+
 export const getMonthLetter = (date) => {
   const months = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
