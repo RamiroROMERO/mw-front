@@ -5,20 +5,24 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { useOtherPurchases } from './useOtherPurchases';
 import DateCalendar from '@Components/dateCalendar';
 import { RadioGroup } from '@Components/radioGroup';
-// import ReactInputMask from 'react-input-mask';
 import ControlPanel from '@Components/controlPanel';
 import { Separator } from '@Components/common/CustomBootstrap';
 import Modal from "@Components/modal";
+import Confirmation from '@Containers/ui/confirmationMsg';
 import ModalViewPurchases from '../purchases/ModalViewPurchases';
 
 const OtherPurchases = (props) => {
   const { setLoading } = props;
-  const { listDocuments, listProviders, listPaymentTypes, listLedgerAccounts, formState, formValidation, isFormValid, onInputChange, sendForm, propsToControlPanel, openSearch, setOpenSearch, dataPurchases, setBulkForm } = useOtherPurchases({ setLoading });
+  const {
+    listDocuments, listTaxStatNames, listProviders, listPaymentTypes, listLedgerAccounts, listWorkOrders, caiRequired,
+    formState, formValidation, onInputChange, sendForm, propsToControlPanel, openSearch, setOpenSearch, dataPurchases, setBulkForm,
+    openMsgCancelDocument, setOpenMsgCancelDocument, fnOkCancelDocument,
+    openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument
+  } = useOtherPurchases({ setLoading });
 
-  const { documentCode, documentId, date, dateOut, typeDocto, providerType, orderId, providerId, paymentTypeId, cai, numCai, description, noCtaExpense, exemptedCertificate, exemptedNumber, exemptedRecord, subtotal, discount, exonera, exent, gravado, tax, freight, otherCharges, total, nameRequire } = formState;
+  const { documentCode, documentId, typeTax, date, dateOut, typeFp, orderId, workedId, providerId, paymentTypeId, cai, numCai, description, noCtaExpense, exemptedCertificate, exemptedNumber, exemptedRecord, subtotal, discount, exonera, exent, gravado, tax, freight, otherCharges, total, nameRequire } = formState;
 
-  const { documentCodeValid, dateValid, dateOutValid, typeDoctoValid, providerTypeValid, providerIdValid, paymentTypeIdValid, caiValid, numCaiValid, noCtaExpenseValid } = formValidation;
-
+  const { documentCodeValid, typeTaxValid, dateValid, dateOutValid, typeFpValid, providerIdValid, paymentTypeIdValid, numCaiValid, noCtaExpenseValid, descriptionValid, nameRequireValid, totalValid } = formValidation;
 
   const propsToModalPurchases = {
     ModalContent: ModalViewPurchases,
@@ -33,6 +37,20 @@ const OtherPurchases = (props) => {
     }
   }
 
+  const propsToMsgCancelDocument = {
+    open: openMsgCancelDocument,
+    setOpen: setOpenMsgCancelDocument,
+    fnOnOk: fnOkCancelDocument,
+    title: "msg.question.cancel.document.title"
+  }
+
+  const propsToMsgAccountDocument = {
+    open: openMsgAccountDocument,
+    setOpen: setOpenMsgAccountDocument,
+    fnOnOk: fnOkAccountDocument,
+    title: "msg.question.accountDocument.title"
+  }
+
   return (
     <>
       <Row>
@@ -44,7 +62,18 @@ const OtherPurchases = (props) => {
               <Row>
                 <Colxx xxs={12} md={8} lg={9} className="order-xs-2 order-lg-1">
                   <Row>
-                    <Colxx xxs={12} sm={8} >
+                    <Colxx xxs={12} sm={6} >
+                      <SearchSelect
+                        label="page.purchases.modal.complementary.select.typeTax"
+                        name="typeTax"
+                        inputValue={typeTax}
+                        options={listTaxStatNames}
+                        onChange={onInputChange}
+                        invalid={sendForm && !!typeTaxValid}
+                        feedbackText={sendForm && (typeTaxValid || null)}
+                      />
+                    </Colxx>
+                    <Colxx xxs={12} sm={6} >
                       <SearchSelect
                         label="pages.select.documentCode"
                         name="documentCode"
@@ -53,14 +82,6 @@ const OtherPurchases = (props) => {
                         onChange={onInputChange}
                         invalid={sendForm && !!documentCodeValid}
                         feedbackText={sendForm && (documentCodeValid || null)}
-                      />
-                    </Colxx>
-                    <Colxx xxs={12} sm={4} >
-                      <InputField
-                        label="pages.input.documentId"
-                        name="documentId"
-                        value={documentId}
-                        disabled
                       />
                     </Colxx>
                   </Row>
@@ -92,7 +113,6 @@ const OtherPurchases = (props) => {
                         label="page.purchases.input.orderId"
                         name="orderId"
                         value={orderId}
-                        onChange={onInputChange}
                         disabled
                       />
                     </Colxx>
@@ -106,11 +126,9 @@ const OtherPurchases = (props) => {
                         value={cai}
                         onChange={onInputChange}
                         type="text"
+                        disabled={!caiRequired}
                         mask="******-******-******-******-******-**"
                         maskChar=" "
-                        // tag={ReactInputMask}
-                        invalid={sendForm && !!caiValid}
-                        feedbackText={sendForm && (caiValid || null)}
                       />
                     </Colxx>
                     <Colxx xxs="12" xl="4">
@@ -120,9 +138,6 @@ const OtherPurchases = (props) => {
                         value={numCai}
                         onChange={onInputChange}
                         type="text"
-                        mask="***-***-**-********"
-                        maskChar=" "
-                        // tag={ReactInputMask}
                         invalid={sendForm && !!numCaiValid}
                         feedbackText={sendForm && (numCaiValid || null)}
                       />
@@ -136,11 +151,13 @@ const OtherPurchases = (props) => {
                         value={description}
                         onChange={onInputChange}
                         type="textarea"
+                        invalid={sendForm && !!descriptionValid}
+                        feedbackText={sendForm && (descriptionValid || null)}
                       />
                     </Colxx>
                   </Row>
                   <Row>
-                    <Colxx xxs={12} >
+                    <Colxx xxs={12} md={6} >
                       <SearchSelect
                         label="page.purchases.select.accountExpense"
                         name="noCtaExpense"
@@ -149,6 +166,15 @@ const OtherPurchases = (props) => {
                         onChange={onInputChange}
                         invalid={sendForm && !!noCtaExpenseValid}
                         feedbackText={sendForm && (noCtaExpenseValid || null)}
+                      />
+                    </Colxx>
+                    <Colxx xxs={12} md={6} >
+                      <SearchSelect
+                        label="select.workOrderId"
+                        name="workedId"
+                        inputValue={workedId}
+                        options={listWorkOrders}
+                        onChange={onInputChange}
                       />
                     </Colxx>
                   </Row>
@@ -185,8 +211,8 @@ const OtherPurchases = (props) => {
                         label="input.subtotal"
                         name="subtotal"
                         value={subtotal}
-                        onChange={onInputChange}
                         type="number"
+                        disabled
                       />
                     </Colxx>
                     <Colxx xxs={12} xs={6} md={4}>
@@ -257,8 +283,10 @@ const OtherPurchases = (props) => {
                         label="input.total"
                         name="total"
                         value={total}
-                        onChange={onInputChange}
                         type="number"
+                        disabled
+                        invalid={sendForm && !!totalValid}
+                        feedbackText={sendForm && (totalValid || null)}
                       />
                     </Colxx>
                   </Row>
@@ -270,6 +298,8 @@ const OtherPurchases = (props) => {
                         name="nameRequire"
                         value={nameRequire}
                         onChange={onInputChange}
+                        invalid={sendForm && !!nameRequireValid}
+                        feedbackText={sendForm && (nameRequireValid || null)}
                       />
                     </Colxx>
                   </Row>
@@ -299,31 +329,24 @@ const OtherPurchases = (props) => {
                     <Colxx xxs="12" sm={6} lg={12}>
                       <RadioGroup
                         label="page.purchases.radio.typePurchase"
-                        name="typeDocto"
-                        value={typeDocto}
+                        name="typeFp"
+                        value={typeFp}
                         onChange={onInputChange}
                         options={[
                           { id: 1, label: 'page.purchases.radio.cash' },
                           { id: 2, label: 'page.purchases.radio.credit' }
                         ]}
                         display='flex'
-                        invalid={sendForm && !!typeDoctoValid}
-                        feedbackText={sendForm && (typeDoctoValid || null)}
+                        invalid={sendForm && !!typeFpValid}
+                        feedbackText={sendForm && (typeFpValid || null)}
                       />
                     </Colxx>
-                    <Colxx xxs="12" sm={6} lg={12}>
-                      <RadioGroup
-                        label="page.providers.select.typeProvider"
-                        name="providerType"
-                        value={providerType}
-                        onChange={onInputChange}
-                        options={[
-                          { id: 1, label: 'page.purchases.radio.provider' },
-                          { id: 2, label: 'page.purchases.radio.vendor' }
-                        ]}
-                        display='flex'
-                        invalid={sendForm && !!providerTypeValid}
-                        feedbackText={sendForm && (providerTypeValid || null)}
+                    <Colxx xxs={12} sm={6} lg={12}>
+                      <InputField
+                        label="pages.input.documentId"
+                        name="documentId"
+                        value={documentId}
+                        disabled
                       />
                     </Colxx>
                   </Row>
@@ -334,6 +357,8 @@ const OtherPurchases = (props) => {
         </Colxx>
       </Row>
       <Modal {...propsToModalPurchases} />
+      <Confirmation {...propsToMsgCancelDocument} />
+      <Confirmation {...propsToMsgAccountDocument} />
     </>
   );
 }
