@@ -4,9 +4,9 @@ import { InputField } from '@Components/inputFields'
 import DateCalendar from '@Components/dateCalendar'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 
-const FormTicket = ({documentId, providerId, paymentTypeId, date, purchaseOrder, listDocuments, listProviders, listPaymentTypes, onInputChange, sendForm, formValidation}) => {
+const FormTicket = ({documentCode, documentId, providerId, paymentTypeId, date, purchaseOrder, listDocuments, listProviders, listPaymentTypes, onInputChange, sendForm, formValidation}) => {
 
-  const {documentIdValid, dateValid, providerIdValid, paymentTypeIdValid} = formValidation;
+  const {documentCodeValid, dateValid, providerIdValid, paymentTypeIdValid} = formValidation;
 
   return (
     <Row>
@@ -15,12 +15,12 @@ const FormTicket = ({documentId, providerId, paymentTypeId, date, purchaseOrder,
           <Colxx xxs="12" lg="6" xl="4">
             <SearchSelect
               label='select.documentId'
-              name='documentId'
-              inputValue={documentId}
+              name='documentCode'
+              inputValue={documentCode}
               options={listDocuments}
               onChange={onInputChange}
-              invalid={sendForm && !!documentIdValid}
-              feedbackText={sendForm && (documentIdValid || null)}
+              invalid={sendForm && !!documentCodeValid}
+              feedbackText={sendForm && (documentCodeValid || null)}
             />
           </Colxx>
           <Colxx xxs="12" lg="6" xl="5">
@@ -66,6 +66,14 @@ const FormTicket = ({documentId, providerId, paymentTypeId, date, purchaseOrder,
               value={purchaseOrder}
               onChange={onInputChange}
               type="text"
+              disabled
+            />
+          </Colxx>
+          <Colxx xxs="12" sm="12">
+            <InputField
+              name="documentId"
+              label='pages.input.documentId'
+              value={documentId}
               disabled
             />
           </Colxx>

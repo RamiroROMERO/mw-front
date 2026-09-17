@@ -2889,6 +2889,15 @@ const esLang = {
   /* 73. Ticket purchase page in inventory */
   "page.ticketPurchase.check.toInventory": "Al Inventario",
   "page.ticketPurchase.modal.viewTickets.title": "Boletas de Compra",
+  "page.ticketPurchase.modal.settings.title": "Configuración de Boletas de Compra",
+  "page.ticketPurchase.input.maxCompany": "Máximo Compras por Empresa",
+  "page.ticketPurchase.input.maxProvider": "Máximo Compras por Proveedor",
+  "page.ticketPurchase.modal.bulkLoad.title": "Cargar Orden de Compra",
+  "page.ticketPurchase.modal.bulkLoad.text": "Seleccione el Almacén, la Cuenta Contable y si aplica a inventario. Se aplicarán a todas las líneas que se importen de la Orden de Compra.",
+  "page.ticketPurchase.check.applyToAllLines": "Aplica a Inventario (todas las líneas)",
+  "msg.error.ticketPurchase.selectProviderFirst": "Seleccione un proveedor primero!",
+  "msg.error.ticketPurchase.already.processed": "Este Documento ya fue aplicado, no puede ser modificado!",
+  "msg.required.addProducts": "Agregue productos al documento para poder guardarlo!",
   /* 74. Stock page in inventory */
   "page.stock.tableDetail.title": "Detalle de Inventario",
   "page.stock.table.column.qtyInput": "Cant. Entrada",

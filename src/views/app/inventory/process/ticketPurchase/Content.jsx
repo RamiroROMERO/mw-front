@@ -4,6 +4,7 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { Separator } from '@Components/common/CustomBootstrap';
 import ControlPanel from '@Components/controlPanel';
 import Modal from "@Components/modal";
+import Confirmation from '@Containers/ui/confirmationMsg';
 import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
 import ModalViewOrders from '../purchaseOrders/ModalViewOrders';
 import { useTicketPurchase } from './useTicketPurchase';
@@ -12,13 +13,21 @@ import DetailProduct from './DetailProduct';
 import FormTicket from './FormTicket';
 import DetailTable from './DetailTable';
 import ModalViewTickets from './ModalViewTickets';
+import ModalTicketSettings from './ModalTicketSettings';
+import ModalBulkLoadOptions from './ModalBulkLoadOptions';
 
 const TicketPurchase = ({ setLoading }) => {
   const [ticketDetail, setTicketDetail] = useState([]);
 
-  const { formStateDeta, onInputChangeDeta, openModalProducts, setOpenModalProducts, fnViewProducts, dataProducts, onBulkFormDeta, sendFormDeta, setSendFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTicketDetail({ setLoading });
+  const { formStateDeta, onInputChangeDeta, openModalProducts, setOpenModalProducts, fnViewProducts, fnSelectProduct, dataProducts, onBulkFormDeta, sendFormDeta, setSendFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTicketDetail({ setLoading });
 
-  const { propsToControlPanel, formState, onInputChange, listDocuments, listProviders, listPaymentTypes, listAccounts, listStores, onBulkForm, sendForm, formValidation, openModalViewTicket, setOpenModalViewTickets, dataOrders, openModalViewOrders, setOpenModalViewOrders, fnViewOrder } = useTicketPurchase({ setLoading, setTicketDetail, onResetFormDeta });
+  const {
+    propsToControlPanel, formState, onInputChange, listDocuments, listProviders, listPaymentTypes, listAccounts, listStores,
+    onBulkForm, sendForm, formValidation, openModalViewTicket, setOpenModalViewTickets, dataOrders, dataTickets,
+    openModalViewOrders, setOpenModalViewOrders, fnViewOrder, fnViewTicket, openMsgAccountDocument, setOpenMsgAccountDocument,
+    fnOkAccountDocument, openMsgCancelDocument, setOpenMsgCancelDocument, fnOkCancelDocument, openModalSettings,
+    setOpenModalSettings, openModalBulkLoad, setOpenModalBulkLoad, fnConfirmBulkLoad
+  } = useTicketPurchase({ setLoading, setTicketDetail, ticketDetail, onResetFormDeta });
 
   const propToFormTicket = {
     ...formState,
@@ -64,7 +73,8 @@ const TicketPurchase = ({ setLoading }) => {
     setOpen: setOpenModalProducts,
     maxWidth: 'lg',
     data: {
-      dataProducts
+      dataProducts,
+      fnSelectItem: fnSelectProduct
     }
   }
 
@@ -74,7 +84,10 @@ const TicketPurchase = ({ setLoading }) => {
     open: openModalViewTicket,
     setOpen: setOpenModalViewTickets,
     maxWidth: 'lg',
-    data: {}
+    data: {
+      dataTickets,
+      fnViewTicket
+    }
   }
 
   const propsToModalViewOrders = {
@@ -87,6 +100,42 @@ const TicketPurchase = ({ setLoading }) => {
       dataOrders,
       fnViewOrder
     }
+  }
+
+  const propsToModalSettings = {
+    ModalContent: ModalTicketSettings,
+    title: "page.ticketPurchase.modal.settings.title",
+    open: openModalSettings,
+    setOpen: setOpenModalSettings,
+    maxWidth: 'sm',
+    data: {}
+  }
+
+  const propsToModalBulkLoad = {
+    ModalContent: ModalBulkLoadOptions,
+    title: "page.ticketPurchase.modal.bulkLoad.title",
+    open: openModalBulkLoad,
+    setOpen: setOpenModalBulkLoad,
+    maxWidth: 'md',
+    data: {
+      listStores,
+      listAccounts,
+      fnConfirmBulkLoad
+    }
+  }
+
+  const propsToMsgAccountDocument = {
+    open: openMsgAccountDocument,
+    setOpen: setOpenMsgAccountDocument,
+    fnOnOk: fnOkAccountDocument,
+    title: "msg.question.accountDocument.title"
+  }
+
+  const propsToMsgCancelDocument = {
+    open: openMsgCancelDocument,
+    setOpen: setOpenMsgCancelDocument,
+    fnOnOk: fnOkCancelDocument,
+    title: "msg.question.cancel.document.title"
   }
 
   return (
@@ -107,6 +156,10 @@ const TicketPurchase = ({ setLoading }) => {
       <Modal {...propsToModalViewProd} />
       <Modal {...propsToModalViewTickets} />
       <Modal {...propsToModalViewOrders} />
+      <Modal {...propsToModalSettings} />
+      <Modal {...propsToModalBulkLoad} />
+      <Confirmation {...propsToMsgAccountDocument} />
+      <Confirmation {...propsToMsgCancelDocument} />
     </>
   );
 }

@@ -4,40 +4,35 @@ import { Colxx } from '@Components/common/CustomBootstrap'
 import { IntlMessages } from '@Helpers/Utils'
 import ReactTable from '@Components/reactTable'
 
-const ModalViewTickets = ({setOpen}) => {
-
-  const fnViewTicket = (item)=>{}
+const ModalViewTickets = ({ data, setOpen }) => {
+  const { dataTickets, fnViewTicket } = data;
 
   const [table, setTable] = useState({
-    title: IntlMessages("page.ticketPurchase.modal.viewTickets.title"),
+    title: '',
     columns: [
-      {
-        text: IntlMessages("table.column.documentId"),
-        dataField: "documentId",
-        headerStyle: {width: "10%"}
-      },
       {
         text: IntlMessages("table.column.date"),
         dataField: "dateIn",
-        headerStyle: {width: "15%"}
+        headerStyle: { width: "15%" }
       },
       {
         text: IntlMessages("table.column.provider"),
         dataField: "provider",
-        headerStyle: {width: "50%"}
+        headerStyle: { width: "45%" }
       },
       {
         text: IntlMessages("table.column.numCai"),
-        dataField: "numCai",
-        headerStyle: {width: "15%"}
+        dataField: "numberCAI",
+        headerStyle: { width: "20%" }
       },
       {
-        text: IntlMessages("table.column.options"),
-        dataField: "options",
-        headerStyle:{'width' : '10%'}
+        text: IntlMessages("button.count"),
+        dataField: "accounted",
+        headerStyle: { width: "20%" },
+        style: { textAlign: 'center' }
       }
     ],
-    data: [],
+    data: dataTickets,
     options: {
       columnActions: "options"
     },
@@ -46,7 +41,7 @@ const ModalViewTickets = ({setOpen}) => {
         color: "primary",
         icon: "eye",
         toolTip: IntlMessages("button.view"),
-        onClick: fnViewTicket,
+        onClick: (item) => { fnViewTicket(item); setOpen(false); }
       }
     ]
   });
@@ -56,13 +51,13 @@ const ModalViewTickets = ({setOpen}) => {
       <ModalBody>
         <Row>
           <Colxx xxs="12">
-            <ReactTable {...table}/>
+            <ReactTable {...table} />
           </Colxx>
         </Row>
       </ModalBody>
       <ModalFooter>
-        <Button color="danger" onClick={()=>{setOpen(false)}} >
-          <i className="bi bi-box-arrow-right"/>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />
           {` ${IntlMessages('button.exit')}`}
         </Button>
       </ModalFooter>

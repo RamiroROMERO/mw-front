@@ -1,10 +1,10 @@
 import createNotification from "@Containers/ui/Notifications";
 import { request, buildUrl } from "@Helpers/core";
-import { validInt } from "@Helpers/Utils";
+import { formatDate, validInt } from "@Helpers/Utils";
 import { useForm } from "@Hooks"
 import { useEffect, useState } from "react";
 
-export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta }) => {
+export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, onResetFormDeta }) => {
 
   const [listDocuments, setListDocuments] = useState([]);
   const [listProviders, setListProviders] = useState([]);
@@ -12,12 +12,18 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
   const [listAccounts, setListAccounts] = useState([]);
   const [listStores, setListStores] = useState([]);
   const [dataOrders, setDataOrders] = useState([]);
+  const [dataTickets, setDataTickets] = useState([]);
   const [sendForm, setSendForm] = useState(false);
   const [openModalViewTicket, setOpenModalViewTickets] = useState(false);
   const [openModalViewOrders, setOpenModalViewOrders] = useState(false);
+  const [openMsgAccountDocument, setOpenMsgAccountDocument] = useState(false);
+  const [openMsgCancelDocument, setOpenMsgCancelDocument] = useState(false);
+  const [openModalSettings, setOpenModalSettings] = useState(false);
+  const [openModalBulkLoad, setOpenModalBulkLoad] = useState(false);
+  const [bulkLoadOptions, setBulkLoadOptions] = useState({ storeId: 0, accountId: 0, toInventory: false });
 
   const validTicket = {
-    documentId: [(val) => validInt(val) > 0, "msg.required.select.typeDocument"],
+    documentCode: [(val) => val !== "", "msg.required.select.typeDocument"],
     providerId: [(val) => validInt(val) > 0, "msg.required.select.provider"],
     date: [(val) => val !== "", "msg.required.input.date"],
     paymentTypeId: [(val) => validInt(val) > 0, "msg.required.select.paymentMethod"],
@@ -26,6 +32,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
     id: 0,
+    documentCode: '',
     documentId: 0,
     date: '',
     purchaseOrder: 0,
@@ -33,10 +40,12 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
     paymentTypeId: 0,
     valueTotal: 0,
     notes: '',
+    pdaNumber: 0,
+    numberCAI: '',
     status: true
   }, validTicket);
 
-  const { providerId } = formState;
+  const { id, documentCode, providerId, paymentTypeId, date, purchaseOrder, notes, pdaNumber } = formState;
 
   const fnNewDocument = () => {
     onResetForm();
@@ -45,8 +54,55 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
     setTicketDetail([]);
   }
 
+  const fnMapDetailFromServer = (rows) => {
+    return rows.map((item) => ({
+      id: item.id,
+      productCode: item.productCode,
+      nameProduct: item.name,
+      qty: item.quantity,
+      price: item.price,
+      total: item.valueTotal1,
+      accountId: item.contCta,
+      toInventory: validInt(item.sendInv) === 1,
+      storeId: item.storeId
+    }));
+  }
+
   const fnSearchDocument = () => {
-    setOpenModalViewTickets(true);
+    setLoading(true);
+    request.GET('inventory/process/ticketPurchase', (resp) => {
+      const tickets = resp.data.map((item) => ({
+        ...item,
+        provider: item.providerData?.name || '',
+        dateIn: formatDate(item.date),
+        accounted: validInt(item.pdaNumber) > 0 ? 'Sí' : 'No'
+      }));
+      setDataTickets(tickets);
+      setOpenModalViewTickets(true);
+      setLoading(false);
+    }, () => { setLoading(false); });
+  }
+
+  const fnViewTicket = (item) => {
+    setLoading(true);
+    request.GET(`inventory/process/ticketPurchase/${item.id}/detail`, (resp) => {
+      setTicketDetail(fnMapDetailFromServer(resp.data));
+      onBulkForm({
+        id: item.id,
+        documentCode: item.documentCode,
+        documentId: item.documentId,
+        date: item.date,
+        purchaseOrder: item.idOc,
+        providerId: item.providerId,
+        paymentTypeId: item.paymentTypeId,
+        notes: item.notes || '',
+        pdaNumber: item.pdaNumber,
+        numberCAI: item.numberCAI,
+        valueTotal: resp.data.reduce((sum, line) => sum + Number(line.valueTotal1 || 0), 0)
+      });
+      setOpenModalViewTickets(false);
+      setLoading(false);
+    }, () => { setLoading(false); });
   }
 
   const fnSaveDocument = () => {
@@ -54,69 +110,157 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
     if (!isFormValid) {
       return;
     }
+
+    if (validInt(pdaNumber) > 0) {
+      createNotification('error', 'msg.error.ticketPurchase.already.processed', 'alert.error.title');
+      return;
+    }
+
+    if (!ticketDetail || ticketDetail.length === 0) {
+      createNotification('warning', 'msg.required.addProducts', 'alert.warning.title');
+      return;
+    }
+
+    const detail = ticketDetail.map((line) => ({
+      productCode: line.productCode,
+      name: line.nameProduct,
+      quantity: line.qty,
+      price: line.price,
+      valueTotal1: line.total,
+      storeId: line.storeId || 0,
+      contCta: line.accountId,
+      sendInv: line.toInventory ? 1 : 0
+    }));
+
+    const payload = { date, providerId, paymentTypeId, documentCode, idOc: purchaseOrder || 0, notes, detail };
+
+    setLoading(true);
+    if (validInt(id) === 0) {
+      request.POST('inventory/process/ticketPurchase', payload, (resp) => {
+        onBulkForm({ id: resp.data.id });
+        setSendForm(false);
+        setLoading(false);
+      }, () => { setLoading(false); });
+    } else {
+      request.PUT(`inventory/process/ticketPurchase/${id}`, payload, () => {
+        setSendForm(false);
+        setLoading(false);
+      }, () => { setLoading(false); });
+    }
   }
 
   const fnPrintDocument = () => { }
 
-  const fnCancelDocument = () => { }
-
-  const fnGenerateAuxiliary = () => { }
-
-  const fnCount = () => { }
-
-  const fnViewPurchaseOrders = () => {
-    if (providerId === 0) {
-      createNotification('warning', 'msg.required.select.provider', 'alert.warning.title');
+  const fnAccountDocument = () => {
+    if (validInt(id) === 0) {
+      createNotification('warning', 'msg.required.saveDocument', 'alert.warning.title');
       return;
     }
-    setLoading(true);
-    request.GET(buildUrl('inventory/process/purchaseOrders', { providerId }), (resp) => {
-      const orders = resp.data.map((item) => {
-        item.provider = item.invProvider.name
-        item.address = item.invProvider.address
-        return item;
-      });
-      setDataOrders(orders);
-      setOpenModalViewOrders(true);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
+    if (validInt(pdaNumber) > 0) {
+      createNotification('error', 'msg.error.ticketPurchase.already.processed', 'alert.error.title');
+      return;
+    }
+    setOpenMsgAccountDocument(true);
   }
 
-  const fnViewOrder = (item) => {
-    item.purchaseOrder = item.id
+  const fnOkAccountDocument = () => {
     setLoading(true);
-    request.GET(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: item.id }), (resp) => {
-      const ordersDeta = resp.data.map((item) => {
-        item.nameProduct = item.invProduct.name
-        return item;
-      });
-      setTicketDetail(ordersDeta);
-      onBulkForm(item);
-      setOpenModalViewOrders(false);
+    request.POST(`inventory/process/ticketPurchase/${id}/accountDocument`, {}, (resp) => {
+      onBulkForm({ pdaNumber: resp.data.numberPDA });
+      createNotification('success', 'msg.success.accountDocument', 'alert.success.title');
+      setOpenMsgAccountDocument(false);
       setLoading(false);
-    }, (err) => {
-
+    }, (resp) => {
+      const messageKey = resp?.messages?.[0]?.message || 'msg.save.record.error';
+      createNotification('error', messageKey, 'alert.error.title');
+      setOpenMsgAccountDocument(false);
       setLoading(false);
-    });
+    }, false);
   }
 
-  const fnSettings = () => { }
+  const fnCancelDocument = () => {
+    if (validInt(id) === 0) return;
+    setOpenMsgCancelDocument(true);
+  }
+
+  const fnOkCancelDocument = () => {
+    setLoading(true);
+    request.POST(`inventory/process/ticketPurchase/${id}/cancel`, {}, () => {
+      createNotification('success', 'msg.success.cancelPurchase', 'alert.success.title');
+      setOpenMsgCancelDocument(false);
+      setLoading(false);
+      fnNewDocument();
+    }, (resp) => {
+      const messageKey = resp?.messages?.[0]?.message || 'msg.save.record.error';
+      createNotification('error', messageKey, 'alert.error.title');
+      setOpenMsgCancelDocument(false);
+      setLoading(false);
+    }, false);
+  }
+
+  const fnSettings = () => {
+    setOpenModalSettings(true);
+  }
 
   const fnReport = () => { }
 
   const fnExport = () => { }
 
-  const fnDocumentCai = () => { }
+  // Legacy Controlpanel21.OptPages.Page1.Controlpanelbtn1.Click (líneas 1849-1913): antes de
+  // traer las líneas de la Orden de Compra, pide Almacén+Cuenta Contable+"Aplica a Inventario"
+  // y los aplica uniformemente a TODAS las líneas importadas.
+  const fnViewPurchaseOrders = () => {
+    if (validInt(providerId) === 0) {
+      createNotification('warning', 'msg.error.ticketPurchase.selectProviderFirst', 'alert.warning.title');
+      return;
+    }
+    setOpenModalBulkLoad(true);
+  }
+
+  const fnConfirmBulkLoad = (options) => {
+    setBulkLoadOptions(options);
+    setOpenModalBulkLoad(false);
+    setLoading(true);
+    request.GET(buildUrl('inventory/process/purchaseOrders', { providerId }), (resp) => {
+      const orders = resp.data.map((item) => ({
+        ...item,
+        provider: item.providerData?.name || '',
+        address: item.providerData?.address || ''
+      }));
+      setDataOrders(orders);
+      setOpenModalViewOrders(true);
+      setLoading(false);
+    }, () => { setLoading(false); });
+  }
+
+  const fnViewOrder = (item) => {
+    setLoading(true);
+    request.GET(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: item.id }), (resp) => {
+      const ordersDeta = resp.data.map((line) => ({
+        id: line.id,
+        productCode: line.productCode,
+        nameProduct: line.productData?.name || '',
+        qty: line.qty,
+        price: line.price,
+        total: line.total,
+        storeId: bulkLoadOptions.storeId,
+        accountId: bulkLoadOptions.accountId,
+        toInventory: bulkLoadOptions.toInventory
+      }));
+      setTicketDetail(ordersDeta);
+      const valueTotal = ordersDeta.reduce((sum, line) => sum + Number(line.total || 0), 0);
+      onBulkForm({ purchaseOrder: item.id, valueTotal });
+      setOpenModalViewOrders(false);
+      setLoading(false);
+    }, () => { setLoading(false); });
+  }
 
   useEffect(() => {
     setLoading(true);
-    request.GET('admin/documents?status=1&useInv=1', (resp) => {
+    request.GET('admin/documents?status=1&useInv=1&useTaxDocument=1', (resp) => {
       const documents = resp.data.map((item) => {
         return {
-          value: item.id,
+          value: item.code,
           code: item.code,
           label: `${item.code} | ${item.name}`
         }
@@ -201,14 +345,9 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
     fnCancel: fnCancelDocument,
     buttonsHome: [
       {
-        title: "button.generateAuxiliary",
-        icon: "bi bi-bookmark-check",
-        onClick: fnGenerateAuxiliary
-      },
-      {
         title: "button.count",
         icon: "bi bi-journal-check",
-        onClick: fnCount
+        onClick: fnAccountDocument
       },
       {
         title: "button.viewPurchaseOrders",
@@ -231,11 +370,6 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
         title: "button.exportOrder",
         icon: "bi bi-file-earmark-excel",
         onClick: fnExport
-      },
-      {
-        title: "button.documentCai",
-        icon: "bi bi-file-earmark-check",
-        onClick: fnDocumentCai
       }
     ],
     buttonsAdmin: []
@@ -252,6 +386,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
       listAccounts,
       listStores,
       dataOrders,
+      dataTickets,
       onBulkForm,
       sendForm,
       formValidation,
@@ -259,7 +394,19 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, onResetFormDeta
       setOpenModalViewTickets,
       openModalViewOrders,
       setOpenModalViewOrders,
-      fnViewOrder
+      fnViewOrder,
+      fnViewTicket,
+      openMsgAccountDocument,
+      setOpenMsgAccountDocument,
+      fnOkAccountDocument,
+      openMsgCancelDocument,
+      setOpenMsgCancelDocument,
+      fnOkCancelDocument,
+      openModalSettings,
+      setOpenModalSettings,
+      openModalBulkLoad,
+      setOpenModalBulkLoad,
+      fnConfirmBulkLoad
     }
   )
 }

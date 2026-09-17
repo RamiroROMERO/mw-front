@@ -62,6 +62,7 @@ export const useTicketDetail = ({ setLoading }) => {
       formStateDeta,
       onInputChangeDeta,
       fnViewProducts,
+      fnSelectProduct,
       openModalProducts,
       setOpenModalProducts,
       dataProducts,

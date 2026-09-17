@@ -2873,6 +2873,15 @@ const enLang = {
   /* 73. Ticket purchase page in inventory */
   "page.ticketPurchase.check.toInventory": "To Inventory",
   "page.ticketPurchase.modal.viewTickets.title": "Purchase Tickets",
+  "page.ticketPurchase.modal.settings.title": "Purchase Ticket Settings",
+  "page.ticketPurchase.input.maxCompany": "Max Purchases per Company",
+  "page.ticketPurchase.input.maxProvider": "Max Purchases per Provider",
+  "page.ticketPurchase.modal.bulkLoad.title": "Load Purchase Order",
+  "page.ticketPurchase.modal.bulkLoad.text": "Select the Store, Account and whether it applies to inventory. These will be applied to every line imported from the Purchase Order.",
+  "page.ticketPurchase.check.applyToAllLines": "Applies to Inventory (all lines)",
+  "msg.error.ticketPurchase.selectProviderFirst": "Select a provider first!",
+  "msg.error.ticketPurchase.already.processed": "This document was already processed, it cannot be modified!",
+  "msg.required.addProducts": "Add products to the document to be able to save it!",
   /* 74. Stock page in inventory */
   "page.stock.tableDetail.title": "Stock Detail",
   "page.stock.table.column.qtyInput": "Qty. Input",

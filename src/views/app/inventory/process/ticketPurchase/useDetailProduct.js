@@ -37,7 +37,15 @@ export const useDetailProduct = ({ onBulkFormDeta, idProd, productCode, nameProd
     onBulkFormDeta({ toInventory: inventory });
   }
 
-  const fnApplyAccount = () => { }
+  // "Aplicar a todos los items": sobreescribe la cuenta contable seleccionada en TODAS las
+  // líneas ya agregadas al grid (bulk-edit en memoria, sin tocar el backend hasta Guardar).
+  const fnApplyAccount = () => {
+    if (validInt(accountId) === 0 || !ticketDetail || ticketDetail.length === 0) {
+      return;
+    }
+    const updated = ticketDetail.map((item) => ({ ...item, accountId }));
+    setTicketDetail(updated);
+  }
 
   const fnAddProduct = () => {
     setSendFormDeta(true);
