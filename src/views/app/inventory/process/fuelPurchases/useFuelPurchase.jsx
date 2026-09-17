@@ -1,5 +1,5 @@
 import createNotification from '@Containers/ui/Notifications';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
 import { formatNumber, validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks'
 import { useEffect, useState } from 'react'
@@ -21,6 +21,7 @@ export const useFuelPurchase = ({ setLoading }) => {
   const [openModalAdminDrivers, setOpenModalAdminDrivers] = useState(false);
   const [openModalFuelPurchases, setOpenModalFuelPurchases] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
+  const [openMsgAccountDocument, setOpenMsgAccountDocument] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
   const fuelPurchaseValid = {
@@ -30,7 +31,9 @@ export const useFuelPurchase = ({ setLoading }) => {
     concept: [(val) => val !== "", "msg.required.input.concept"],
     documentId: [(val) => validInt(val) > 0, "msg.required.select.typeDocument"],
     providerId: [(val) => validInt(val) > 0, "msg.required.select.provider"],
-    invoiceCode: [(val) => val.length > 0 && val.length < 20, "msg.required.input.numInvoice"],
+    // Legacy: Len(cNumFac) < 19 es error (exige exactamente 19, el largo del mask
+    // ***-***-**-********) y Rat('.',cNumFac) > 0 rechaza puntos.
+    invoiceCode: [(val) => val.length === 19 && !val.includes('.'), "msg.required.input.numInvoice"],
     paymentTypeId: [(val) => validInt(val) > 0, "msg.required.select.paymentMethod"],
     ctaExpenseId: [(val) => validInt(val) > 0, "msg.required.input.account"],
     valTotal: [(val) => validInt(val) > 0, "msg.required.input.totalInvoice"]
@@ -52,7 +55,7 @@ export const useFuelPurchase = ({ setLoading }) => {
     qtyGasOthers: 0,
     providerId: 0,
     storeId: 0,
-    productId: 0,
+    productId: '',
     invoiceCode: '',
     invoiceDate: '',
     invoiceExp: '',
@@ -62,7 +65,7 @@ export const useFuelPurchase = ({ setLoading }) => {
     valDiscount: 0,
     valTax: 0,
     valTotal: 0,
-    pdaNumber: '',
+    pdaNumber: 0,
     notes: ''
   }, fuelPurchaseValid);
 
@@ -92,6 +95,14 @@ export const useFuelPurchase = ({ setLoading }) => {
 
   const fnSaveFuelPurchase = () => {
     setSendForm(true);
+
+    // Legacy btnSaveDocument.Click: "Esta Orden ya fue Procesada y no se Puede Hacer
+    // Cambios en el Documento" — bloquea edición una vez contabilizado.
+    if (validInt(pdaNumber) > 0) {
+      createNotification('error', 'msg.error.purchase.alreadyAccounted', 'alert.error.title');
+      return;
+    }
+
     if (!isFormValid) {
       return;
     }
@@ -119,7 +130,7 @@ export const useFuelPurchase = ({ setLoading }) => {
       qtyGasOthers,
       providerId,
       storeId,
-      productId,
+      productCode: productId,
       invoiceCode,
       invoiceDate: invoiceDate !== "" ? invoiceDate : "1900-01-01",
       invoiceExp: invoiceExp !== "" ? invoiceExp : "1900-01-01",
@@ -133,25 +144,42 @@ export const useFuelPurchase = ({ setLoading }) => {
       notes
     }
 
-    if (id === 0) {
-      setLoading(true);
-      request.POST('inventory/process/purchaseGas', newData, (resp) => {
-        onInputChange({ target: { name: 'id', value: resp.data.id } });
-        setSendForm(false);
-        setLoading(false);
-      }, (err) => {
-        setLoading(false);
-      });
-    } else {
-      setLoading(true);
-      request.PUT(`inventory/process/purchaseGas/${id}`, newData, () => {
-        setSendForm(false);
-        setLoading(false);
-      }, (err) => {
-        setLoading(false);
-      });
+    const fnPersist = () => {
+      if (id === 0) {
+        setLoading(true);
+        request.POST('inventory/process/purchaseGas', newData, (resp) => {
+          onInputChange({ target: { name: 'id', value: resp.data.id } });
+          setSendForm(false);
+          setLoading(false);
+        }, (err) => {
+          setLoading(false);
+        });
+      } else {
+        setLoading(true);
+        request.PUT(`inventory/process/purchaseGas/${id}`, newData, () => {
+          setSendForm(false);
+          setLoading(false);
+        }, (err) => {
+          setLoading(false);
+        });
+      }
     }
 
+    // Legacy btnSaveDocument.Click: valida que la factura no esté ya registrada
+    // (WHERE CodProv = nCodProv AND NumFac = cNumFac sobre Cont_Combustible), solo al crear.
+    if (id === 0) {
+      setLoading(true);
+      request.GET(buildUrl('inventory/process/purchaseGas', { providerId, invoiceCode }), (resp) => {
+        setLoading(false);
+        if (Array.isArray(resp.data) && resp.data.length > 0) {
+          createNotification('error', 'msg.error.purchase.documentAlreadyRegistered', 'alert.error.title');
+          return;
+        }
+        fnPersist();
+      }, () => { setLoading(false); });
+    } else {
+      fnPersist();
+    }
   }
 
   const fnPrintFuelPurchase = () => {
@@ -175,17 +203,40 @@ export const useFuelPurchase = ({ setLoading }) => {
   const fnOkDeleteFuelPurchase = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
-    request.DELETE(`inventory/process/purchaseGas/${id}`, (resp) => {
+    request.POST(`inventory/process/purchaseGas/${id}/cancel`, {}, () => {
       onResetForm();
       setLoading(false);
-    }, (err) => {
+    }, (resp) => {
+      const messageKey = resp?.messages?.[0]?.message || 'msg.save.record.error';
+      createNotification('error', messageKey, 'alert.error.title');
       setLoading(false);
-    });
+    }, false);
   }
 
-  const fnCount = () => { }
+  // Legacy Controlpanel21.OptPages.Page1.btnContabDocument.Click: "ATENCIÓN!!! ¿Está Seguro
+  // que desea Procesar este Documento? Esta Acción no se puede Revertir" — crea el documento
+  // de compra vinculado, aplica kardex (si hay bodega+producto), la CxP y la partida contable.
+  const fnAccountDocument = () => {
+    if (validInt(id) === 0) {
+      createNotification('warning', 'msg.required.saveDocument', 'alert.warning.title');
+      return;
+    }
+    setOpenMsgAccountDocument(true);
+  }
 
-  const fnGenerateAuxiliary = () => { }
+  const fnOkAccountDocument = () => {
+    setOpenMsgAccountDocument(false);
+    setLoading(true);
+    request.POST(`inventory/process/purchaseGas/${id}/accountDocument`, {}, (resp) => {
+      onInputChange({ target: { name: 'pdaNumber', value: resp.data.numberPDA } });
+      createNotification('success', 'msg.success.accountDocument', 'alert.success.title');
+      setLoading(false);
+    }, (resp) => {
+      const messageKey = resp?.messages?.[0]?.message || 'msg.save.record.error';
+      createNotification('error', messageKey, 'alert.error.title');
+      setLoading(false);
+    }, false);
+  }
 
   const fnAdminCars = () => {
     setOpenModalAdminCars(true);
@@ -264,10 +315,14 @@ export const useFuelPurchase = ({ setLoading }) => {
 
     setLoading(true);
     request.GET(`inventory/process/stocks/getStocks`, (resp) => {
+      // Bug real: la vista invProcessViewStock no expone `id`/`name`, expone
+      // `productCode`/`productName` — el combo de producto quedaba con label y value
+      // vacíos (undefined) antes de este fix, y el backend nunca podía aplicar kardex
+      // porque `productCode` (la columna real, codprod1) nunca llegaba con valor.
       const products = resp.data.map((item) => {
         return {
-          label: item.name,
-          value: item.id,
+          label: item.productName,
+          value: item.productCode,
           storeId: item.storeId
         }
       });
@@ -351,14 +406,9 @@ export const useFuelPurchase = ({ setLoading }) => {
     fnDelete: fnDeleteFuelPurchase,
     buttonsHome: [
       {
-        title: "button.generateAuxiliary",
-        icon: "bi bi-bookmark-check",
-        onClick: fnGenerateAuxiliary
-      },
-      {
         title: "button.count",
         icon: "bi bi-journal-check",
-        onClick: fnCount
+        onClick: fnAccountDocument
       },
     ],
     buttonsOptions: [
@@ -416,6 +466,9 @@ export const useFuelPurchase = ({ setLoading }) => {
       openMsgQuestion,
       setOpenMsgQuestion,
       fnOkDeleteFuelPurchase,
+      openMsgAccountDocument,
+      setOpenMsgAccountDocument,
+      fnOkAccountDocument,
       onResetForm
     }
   )

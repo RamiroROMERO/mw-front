@@ -13,7 +13,7 @@ import ModalViewFuelPurchases from './ModalViewFuelPurchases';
 
 const FuelPurchases = ({ setLoading }) => {
 
-  const { propsToControlPanel, formState, listCars, listDrivers, listStores, listProducts, listDocuments, listProviders, listPaymentTypes, listAccounts, onInputChange, onBulkForm, formValidation, sendForm, openModalAdminCars, setOpenModalAdminCars, openModalAdminDrivers, setOpenModalAdminDrivers, fnGetDataCars, fnGetDataDrivers, dataCars, dataDrivers, dataFuelPurchases, openModalFuelPurchases, setOpenModalFuelPurchases, openMsgQuestion, setOpenMsgQuestion, fnOkDeleteFuelPurchase, onResetForm } = useFuelPurchase({ setLoading });
+  const { propsToControlPanel, formState, listCars, listDrivers, listStores, listProducts, listDocuments, listProviders, listPaymentTypes, listAccounts, onInputChange, onBulkForm, formValidation, sendForm, openModalAdminCars, setOpenModalAdminCars, openModalAdminDrivers, setOpenModalAdminDrivers, fnGetDataCars, fnGetDataDrivers, dataCars, dataDrivers, dataFuelPurchases, openModalFuelPurchases, setOpenModalFuelPurchases, openMsgQuestion, setOpenMsgQuestion, fnOkDeleteFuelPurchase, openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument, onResetForm } = useFuelPurchase({ setLoading });
 
   const propsToOrderDetail = {
     formState,
@@ -84,6 +84,13 @@ const FuelPurchases = ({ setLoading }) => {
     title: "alert.question.title"
   }
 
+  const propsToMsgAccountDocument = {
+    open: openMsgAccountDocument,
+    setOpen: setOpenMsgAccountDocument,
+    fnOnOk: fnOkAccountDocument,
+    title: "msg.question.accountDocument.title"
+  }
+
   return (
     <>
       <Row>
@@ -102,6 +109,7 @@ const FuelPurchases = ({ setLoading }) => {
       <Modal {...propsToModalAdminDrivers} />
       <Modal {...propsToModalViewFuelPurchases} />
       <Confirmation {...propsToMsgDelete} />
+      <Confirmation {...propsToMsgAccountDocument} />
     </>
   );
 }
