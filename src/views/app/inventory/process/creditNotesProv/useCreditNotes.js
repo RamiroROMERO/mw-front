@@ -53,7 +53,10 @@ export const useCreditNotes = ({ setLoading }) => {
     currenId: 1,
     invoCode: '',
     pdaNumber: 0,
-    status: 1
+    status: 1,
+    // La mayoría de notas reales de esta pantalla son "Mixtas" (is_mixed=1 en BD:
+    // 306 de 310 registros existentes) — se deja marcada por defecto.
+    isMixed: true
   }, creditNoteValid);
 
   const { id, documentCode, providerId, typeId, pdaNumber, status } = formState;
@@ -324,7 +327,8 @@ export const useCreditNotes = ({ setLoading }) => {
       currenId: item.currenId,
       invoCode: item.invoCode,
       pdaNumber: item.pdaNumber,
-      status: item.status
+      status: item.status,
+      isMixed: validInt(item.isMixed) === 1
     });
 
     if (validInt(item.typeId) === TYPE_RETURN) {
@@ -387,7 +391,7 @@ export const useCreditNotes = ({ setLoading }) => {
     setSendForm(true);
     if (!isFormValid) return;
 
-    const { date, typeOther, name, valueLps, docValueUSD, exchangeRate, accCode, currenId, cai, numberCAI } = formState;
+    const { date, typeOther, name, valueLps, docValueUSD, exchangeRate, accCode, currenId, cai, numberCAI, isMixed } = formState;
 
     if (validFloat(valueLps) <= 0) {
       notification('warning', 'msg.error.invalidValue', 'alert.warning.title');
@@ -424,7 +428,7 @@ export const useCreditNotes = ({ setLoading }) => {
       cai,
       numberCAI,
       invoCode: isReturn ? (originPurchase ? originPurchase.numCai : '') : '',
-      isMixed: 0
+      isMixed: isMixed ? 1 : 0
     }
 
     setLoading(true);

@@ -2943,6 +2943,7 @@ const esLang = {
   "page.creditNotesProv.input.numberCAI": "Número CAI",
   "page.creditNotesProv.title.type": "Tipo de Nota",
   "page.creditNotesProv.title.currency": "Moneda",
+  "page.creditNotesProv.check.isMixed": "Nota Mixta",
   "page.creditNotesProv.status.voided": "Documento Anulado",
   "page.creditNotesProv.status.processed": "Contabilizado, Partida No.",
   "page.creditNotesProv.title.invoicesDetail": "Compras Aplicadas",

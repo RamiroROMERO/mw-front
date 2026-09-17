@@ -4,6 +4,7 @@ import { RadioGroup } from '@Components/radioGroup';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { SimpleSelect } from '@Components/simpleSelect';
 import { InputField } from '@Components/inputFields';
+import { Checkbox } from '@Components/checkbox';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import DateCalendar from '@Components/dateCalendar';
 import { IntlMessages } from '@Helpers/Utils';
@@ -12,7 +13,7 @@ import { TYPE_OTHER } from './useCreditNotes';
 const FormCreditNotes = (props) => {
   const {
     documentCode, documentId, cai, numberCAI, date, providerId, providerRtn, providerName, typeId, typeOther, name,
-    valueLps, docValueUSD, exchangeRate, currenId, pdaNumber,
+    valueLps, docValueUSD, exchangeRate, currenId, pdaNumber, isMixed,
     listDocuments, listProviders,
     onInputChange, onProviderChange, onTypeChange,
     formValidation, sendForm, disabled, isVoided
@@ -148,6 +149,16 @@ const FormCreditNotes = (props) => {
                   { id: 1, label: 'page.invoicing.radio.lempira', disabled },
                   { id: 2, label: 'page.invoicing.radio.dollar', disabled }
                 ]}
+              />
+            </Colxx>
+            <Colxx xxs="12">
+              <Checkbox
+                onChange={onInputChange}
+                type="checkbox"
+                value={isMixed}
+                name="isMixed"
+                label="page.creditNotesProv.check.isMixed"
+                disabled={disabled}
               />
             </Colxx>
           </Row>

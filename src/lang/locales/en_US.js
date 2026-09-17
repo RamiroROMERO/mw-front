@@ -2927,6 +2927,7 @@ const enLang = {
   "page.creditNotesProv.input.numberCAI": "CAI Number",
   "page.creditNotesProv.title.type": "Note Type",
   "page.creditNotesProv.title.currency": "Currency",
+  "page.creditNotesProv.check.isMixed": "Mixed Note",
   "page.creditNotesProv.status.voided": "Voided Document",
   "page.creditNotesProv.status.processed": "Processed, Entry No.",
   "page.creditNotesProv.title.invoicesDetail": "Applied Purchases",
