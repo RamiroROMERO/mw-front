@@ -502,7 +502,7 @@ const data = [
           {
             icon: 'iconsminds-calculator',
             label: 'menu.inventoryAdjustment',
-            to: `${adminRoot}/inventory/process/inventoryAdjustment`,
+            to: `${adminRoot}/inventory/process/inventoryAdjustments`,
           },
           {
             icon: 'bi bi-123',

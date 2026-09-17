@@ -6,6 +6,7 @@ import { Separator } from '@Components/common/CustomBootstrap';
 import ControlPanel from '@Components/controlPanel';
 import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
+import ModalVoidInvoice from '@Views/app/billing/process/pointSales/ModalVoidInvoice';
 import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
 import { useTransfersDeta } from './useTransfersDeta';
 import FormTransfers from './FormTransfers';
@@ -17,11 +18,17 @@ import FooterTransfers from './FooterTransfers';
 const TransferToStores = ({ setLoading }) => {
   const [transferDetail, setTransferDetail] = useState([]);
 
-  const { formStateDeta, onInputChangeDeta, fnViewProducts, openModalProducts, setOpenModalProducts, dataProducts, setBulkFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTransfersDeta({ setLoading });
+  const { formStateDeta, onInputChangeDeta, fnViewProducts, fnSelectProduct, openModalProducts, setOpenModalProducts, dataProducts, setBulkFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTransfersDeta({ setLoading });
 
-  const { propsToControlPanel, formState, onInputChange, listDocuments, listStores, sendFormDeta, setSendFormDeta, formValidation, sendForm, setSendForm, isFormValid, dataTransfers, openModalViewTransfers, setOpenModalViewTransfers, onBulkForm, listAccounts, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument, fnOkDeleteDocument } = useTranfers({ setLoading, transferDetail, setTransferDetail, onResetFormDeta });
+  const {
+    propsToControlPanel, formState, onInputChange, listDocuments, listStores, sendFormDeta, setSendFormDeta,
+    formValidation, sendForm, setSendForm, isFormValid, dataTransfers, openModalViewTransfers, setOpenModalViewTransfers,
+    onBulkForm, listAccounts, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument, fnOkDeleteDocument,
+    disabled, isProcessed, isVoided, openMsgProcess, setOpenMsgProcess, fnProcessTransfer,
+    openModalVoid, setOpenModalVoid, fnVoidTransfer
+  } = useTranfers({ setLoading, transferDetail, setTransferDetail, onResetFormDeta });
 
-  const { notes, sourceStoreId, assignStoreId, noCtaOrigin, noCtaAssign } = formState;
+  const { notes, sourceStoreId, assignStoreId, noCtaOrigin, noCtaAssign, documentCode, documentId, pdaNumber } = formState;
 
   const propsToFormTransfers = {
     ...formState,
@@ -31,7 +38,11 @@ const TransferToStores = ({ setLoading }) => {
     formValidation,
     sendForm,
     listAccounts,
-    onBulkForm
+    onBulkForm,
+    disabled,
+    isProcessed,
+    isVoided,
+    pdaNumber
   }
 
   const propsToDetailProduct = {
@@ -50,18 +61,21 @@ const TransferToStores = ({ setLoading }) => {
     isFormValidDeta,
     formValidationDeta,
     setSendForm,
-    isFormValid
+    isFormValid,
+    disabled
   }
 
   const propsToDetailTable = {
     transferDetail,
     setTransferDetail,
-    setBulkFormDeta
+    setBulkFormDeta,
+    disabled
   }
 
   const propsToFooter = {
     notes,
-    onInputChange
+    onInputChange,
+    disabled
   }
 
   const propsToModalViewProd = {
@@ -71,7 +85,8 @@ const TransferToStores = ({ setLoading }) => {
     setOpen: setOpenModalProducts,
     maxWidth: 'lg',
     data: {
-      dataProducts
+      dataProducts,
+      fnSelectItem: fnSelectProduct
     }
   }
 
@@ -95,6 +110,25 @@ const TransferToStores = ({ setLoading }) => {
     title: "alert.question.title"
   }
 
+  const propsToModalVoid = {
+    ModalContent: ModalVoidInvoice,
+    title: "button.cancel2",
+    open: openModalVoid,
+    setOpen: setOpenModalVoid,
+    maxWidth: 'md',
+    data: {
+      invoiceNumber: `${documentCode}-${documentId}`,
+      fnConfirm: fnVoidTransfer
+    }
+  }
+
+  const propsToMsgProcess = {
+    open: openMsgProcess,
+    setOpen: setOpenMsgProcess,
+    fnOnOk: fnProcessTransfer,
+    title: "msg.question.processTransfer.title"
+  }
+
   return (
     <>
       <Row>
@@ -113,7 +147,9 @@ const TransferToStores = ({ setLoading }) => {
       </Row>
       <Modal {...propsToModalViewProd} />
       <Modal {...propsToModalViewTransfers} />
+      <Modal {...propsToModalVoid} />
       <Confirmation {...propsToMsgDeleteDocument} />
+      <Confirmation {...propsToMsgProcess} />
     </>
   );
 }

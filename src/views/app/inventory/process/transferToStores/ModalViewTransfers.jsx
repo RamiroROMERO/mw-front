@@ -3,14 +3,19 @@ import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { IntlMessages } from '@Helpers/Utils'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import ReactTable from '@Components/reactTable'
+import { ACCOUNT_BY_APPLY_TO } from './useFormTransfers'
 
 const ModalViewTransfers = ({setOpen, data}) => {
 
   const {dataTransfers, onBulkForm, fnGetDataDetail} = data;
 
   const fnViewTransfers = (item)=>{
-    item.noCtaOrigin = item.invStore?item.invStore.idCtaInventory:''
-    item.noCtaAssign = item.invAssign?item.invAssign.idCtaInventory:''
+    const accountField = ACCOUNT_BY_APPLY_TO[item.applyTo] || 'idCtaInventory';
+
+    item.noCtaOrigin = item.invStore ? item.invStore.idCtaInventory : ''
+    // Reintegro tipo Compra no tiene invAssign (Centro de Destino) — la contra-cuenta es la
+    // de Cuentas por Pagar del proveedor (providerData.idCtaCxp).
+    item.noCtaAssign = item.invAssign ? item.invAssign[accountField] : (item.providerData ? item.providerData.idCtaCxp : '')
 
     onBulkForm(item);
     fnGetDataDetail(item.id, item.reintType);

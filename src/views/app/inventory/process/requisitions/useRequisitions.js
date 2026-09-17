@@ -17,6 +17,8 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
   const [sendForm, setSendForm] = useState(false);
   const [openModalViewRequisitions, setOpenModalViewRequisitions] = useState(false);
   const [openMsgDeleteDocument, setOpenMsgDeleteDocument] = useState(false);
+  const [openModalVoid, setOpenModalVoid] = useState(false);
+  const [openMsgProcess, setOpenMsgProcess] = useState(false);
   const [showWorkOrder, setShowWorkOrder] = useState("none");
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
@@ -24,7 +26,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
     documentCode: [(val) => val !== "", "msg.required.select.typeDocument"],
     sourceStoreId: [(val) => validInt(val) > 0, "msg.required.select.warehouse"],
     assignStoreId: [(val) => validInt(val) > 0, "msg.required.select.destinationId"],
-    applyId: [(val) => val !== "", "msg.required.select.applyTo"]
+    applyTo: [(val) => val !== "", "msg.required.select.applyTo"]
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
@@ -40,15 +42,19 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
     notes: '',
     userId: userData ? userData.id : 0,
     applicated: 0,
-    pdaNumber: '',
+    pdaNumber: 0,
     noCtaOrigin: '',
     noCtaAssign: '',
-    applyId: '',
-    reportId: 0,
+    applyTo: 'Inventario',
     status: true
   }, validRequisitions);
 
-  const { id, documentCode, documentId, date, code, sourceStoreId, assignStoreId, isWorkOrder, workOrderId, notes, userId, applicated, pdaNumber, applyId, status } = formState;
+  const { id, documentCode, documentId, date, code, sourceStoreId, assignStoreId, isWorkOrder, workOrderId, notes, userId, pdaNumber, applyTo, status } = formState;
+
+  const isProcessed = validInt(pdaNumber) > 0;
+  const isVoided = id > 0 && !status;
+  const isSaved = validInt(id) > 0;
+  const disabled = isProcessed || isVoided;
 
   const fnNewDocument = () => {
     onResetForm();
@@ -117,8 +123,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       workOrderId,
       notes,
       userId,
-      applicated,
-      applyId,
+      applyTo,
       status
     }
 
@@ -214,8 +219,10 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
     }
   }
 
+  // Eliminación física — solo antes de Contabilizar (fiel al legacy). Una vez aplicado,
+  // usar Anular (fnAskVoid) en su lugar.
   const fnDeleteDocument = () => {
-    if (id > 0) {
+    if (id > 0 && !disabled) {
       setOpenMsgDeleteDocument(true);
     }
   }
@@ -241,7 +248,49 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
     });
   }
 
-  const fnCount = () => { }
+  const fnAskProcess = () => {
+    if (id === 0) return;
+    setOpenMsgProcess(true);
+  }
+
+  const fnProcessRequisition = () => {
+    setOpenMsgProcess(false);
+    setLoading(true);
+    request.POST(`inventory/process/inventoryTransactions/processRequisition/${id}`, {}, (resp) => {
+      onBulkForm({ pdaNumber: resp.data.numberPDA });
+      createNotification('success', 'msg.success.processDocument', 'alert.success.title');
+      setLoading(false);
+    }, (err) => {
+      const errorCode = err?.messages?.[0]?.description?.name;
+      if (errorCode) {
+        createNotification('error', `msg.error.transfer.${errorCode}`, 'alert.error.title');
+      } else {
+        createNotification('error', 'msg.error.processDocument', 'alert.error.title');
+      }
+      setLoading(false);
+    });
+  }
+
+  const fnAskVoid = () => {
+    if (id === 0 || !isProcessed) return;
+    setOpenModalVoid(true);
+  }
+
+  const fnVoidRequisition = (reason) => {
+    setLoading(true);
+    request.DELETE(buildUrl(`inventory/process/inventoryTransactions/voidRequisition/${id}`, { reason }), () => {
+      setOpenModalVoid(false);
+      onResetForm();
+      onResetFormDeta();
+      setRequisitionDetail([]);
+      setShowWorkOrder("none");
+      createNotification('success', 'msg.success.voidDocument', 'alert.success.title');
+      setLoading(false);
+    }, () => {
+      createNotification('error', 'msg.delete.record.error', 'alert.error.title');
+      setLoading(false);
+    }, false);
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -269,7 +318,9 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
           label: item.name,
           value: item.id,
           type: item.type,
-          idCtaInventory: item.idCtaInventory
+          idCtaInventory: item.idCtaInventory,
+          idCtaCost: item.idCtaCost,
+          idCtaExpense: item.idCtaExpense
         }
       });
       const filter1 = stores.filter(item => { return item.type === 1 });
@@ -326,14 +377,15 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
   const propsToControlPanel = {
     fnNew: fnNewDocument,
     fnSearch: fnSearchDocument,
-    fnSave: fnSaveDocument,
+    fnSave: !disabled ? fnSaveDocument : null,
     fnPrint: fnPrintDocument,
-    fnDelete: fnDeleteDocument,
+    fnDelete: !disabled ? fnDeleteDocument : null,
+    fnCancel: isProcessed && !isVoided ? fnAskVoid : null,
     buttonsHome: [
       {
         title: "button.count",
         icon: "bi bi-journal-check",
-        onClick: fnCount
+        onClick: isSaved && !isProcessed ? fnAskProcess : () => { }
       }
     ],
     buttonsOptions: [],
@@ -366,7 +418,17 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       fnGetDataDetail,
       openMsgDeleteDocument,
       setOpenMsgDeleteDocument,
-      fnOkDeleteDocument
+      fnOkDeleteDocument,
+      disabled,
+      isProcessed,
+      isVoided,
+      isSaved,
+      openMsgProcess,
+      setOpenMsgProcess,
+      fnProcessRequisition,
+      openModalVoid,
+      setOpenModalVoid,
+      fnVoidRequisition
     }
   )
 }

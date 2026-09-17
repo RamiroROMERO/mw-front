@@ -11,9 +11,9 @@ import Modal from "@Components/modal";
 import { useFormRefund } from './useFormRefund'
 import ModalApplyAccount from '../requisitions/ModalApplyAccount'
 
-const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assignStoreId, noCtaAssign, providerId, date, code, applyId, expirationDate, reintType, listDocuments, listStores, listDestinations, listAccounts, listProviders, listTypeApply, onInputChange, showType1, showType2, setShowType1, setShowType2, onBulkForm, refundDetail, idProd, onResetFormDeta, sendForm, formValidation}) => {
+const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assignStoreId, noCtaAssign, providerId, date, code, applyTo, expirationDate, reintType, listDocuments, listStores, listDestinations, listAccounts, listProviders, listTypeApply, onInputChange, showType1, showType2, setShowType1, setShowType2, onBulkForm, refundDetail, setRefundDetail, idProd, onResetFormDeta, sendForm, formValidation, disabled, isProcessed, isVoided, pdaNumber}) => {
 
-  const {onStoreChange, onDestinationChange, onTypeChange, fnApplyDestinyAccount, openModalApplyAccount, setOpenModalApplyAccount, fnApplyAll, fnApplyCurrent} = useFormRefund({onBulkForm, listStores, listDestinations, refundDetail, noCtaAssign, idProd, onResetFormDeta, setShowType1, setShowType2});
+  const {onStoreChange, onDestinationChange, onApplyToChange, onProviderChange, onTypeChange, fnApplyDestinyAccount, openModalApplyAccount, setOpenModalApplyAccount, fnApplyAll, fnApplyCurrent} = useFormRefund({onBulkForm, listStores, listDestinations, listProviders, refundDetail, setRefundDetail, noCtaAssign, idProd, onResetFormDeta, setShowType1, setShowType2});
 
   const {documentCodeValid, sourceStoreIdValid} = formValidation;
 
@@ -41,6 +41,7 @@ const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assi
               inputValue={documentCode}
               options={listDocuments}
               onChange={onInputChange}
+              isDisabled={disabled}
               invalid={sendForm && !!documentCodeValid}
               feedbackText={sendForm && (documentCodeValid || null)}
             />
@@ -63,6 +64,7 @@ const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assi
                     inputValue={sourceStoreId}
                     options={listStores}
                     onChange={onStoreChange}
+                    isDisabled={disabled}
                     invalid={sendForm && !!sourceStoreIdValid}
                     feedbackText={sendForm && (sourceStoreIdValid || null)}
                   />
@@ -89,9 +91,8 @@ const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assi
                     name="assignStoreId"
                     inputValue={assignStoreId}
                     options={listDestinations}
-                    onChange={onDestinationChange}
-                    // invalid={sendForm && !!destinationIdValid}
-                    // feedbackText={sendForm && (destinationIdValid || null)}
+                    onChange={(e) => onDestinationChange(e, applyTo)}
+                    isDisabled={disabled}
                   />
                 </Colxx>
                 <Colxx xxs="12" lg="7" style={{display: showType2}}>
@@ -101,6 +102,7 @@ const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assi
                     inputValue={noCtaAssign}
                     options={listAccounts}
                     onChange={onInputChange}
+                    isDisabled={disabled}
                   />
                 </Colxx>
                 <Colxx xxs="12" style={{display: showType1}}>
@@ -109,11 +111,12 @@ const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assi
                     name="providerId"
                     inputValue={providerId}
                     options={listProviders}
-                    onChange={onInputChange}
+                    onChange={onProviderChange}
+                    isDisabled={disabled}
                   />
                 </Colxx>
                 <Colxx xxs="12" align="right">
-                  <Button color="secondary" onClick={() => {fnApplyDestinyAccount()}}>
+                  <Button color="secondary" onClick={() => {fnApplyDestinyAccount()}} disabled={disabled}>
                     <i className='bi bi-check' /> {IntlMessages("button.apply")}
                   </Button>
                 </Colxx>
@@ -132,6 +135,7 @@ const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assi
                   label='select.date'
                   value={date}
                   onChange={onInputChange}
+                  disabled={disabled}
                 />
               </Colxx>
               <Colxx xxs="12">
@@ -141,15 +145,17 @@ const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assi
                   value={code}
                   onChange={onInputChange}
                   type="text"
+                  disabled={disabled}
                 />
               </Colxx>
               <Colxx xxs="12" style={{display: showType2}}>
                 <SimpleSelect
-                  value={applyId}
-                  name="applyId"
-                  onChange={onInputChange}
+                  value={applyTo}
+                  name="applyTo"
+                  onChange={(e) => onApplyToChange(e, assignStoreId)}
                   label="page.requisitions.select.applyId"
                   options={listTypeApply}
+                  disabled={disabled}
                 />
               </Colxx>
               <Colxx xxs="12" style={{display: showType1}}>
@@ -158,6 +164,7 @@ const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assi
                   label='select.dateExpiration'
                   value={expirationDate}
                   onChange={onInputChange}
+                  disabled={disabled}
                 />
               </Colxx>
             </Row>
@@ -172,12 +179,26 @@ const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assi
                   onChange={onTypeChange}
                   options={
                     [
-                      {id:1, label:"page.refund.radio.purchase"},
-                      {id:2, label:"page.refund.radio.refund"}
+                      {id:1, label:"page.refund.radio.purchase", disabled},
+                      {id:2, label:"page.refund.radio.refund", disabled}
                     ]
                   }
                 />
               </Colxx>
+              {isVoided && (
+                <Colxx xxs="12">
+                  <span className="text-danger fw-bold">
+                    <i className="bi bi-x-octagon-fill" /> {IntlMessages("page.creditNotesProv.status.voided")}
+                  </span>
+                </Colxx>
+              )}
+              {!isVoided && isProcessed && (
+                <Colxx xxs="12">
+                  <span className="text-success">
+                    <i className="bi bi-check-circle-fill" /> {IntlMessages("page.creditNotesProv.status.processed")} #{pdaNumber}
+                  </span>
+                </Colxx>
+              )}
             </Row>
           </Colxx>
         </Row>

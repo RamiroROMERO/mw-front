@@ -5,6 +5,7 @@ import { Separator } from '@Components/common/CustomBootstrap';
 import ControlPanel from '@Components/controlPanel';
 import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
+import ModalVoidInvoice from '@Views/app/billing/process/pointSales/ModalVoidInvoice';
 import { useTransfersDeta } from '../transferToStores/useTransfersDeta';
 import { useRefunds } from './useRefunds';
 import DetailProduct from '../transferToStores/DetailProduct';
@@ -17,11 +18,18 @@ import FormRefunds from './FormRefunds';
 const Refunds = ({ setLoading }) => {
   const [refundDetail, setRefundDetail] = useState([]);
 
-  const { formStateDeta, onInputChangeDeta, fnViewProducts, openModalProducts, setOpenModalProducts, dataProducts, setBulkFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTransfersDeta({ setLoading });
+  const { formStateDeta, onInputChangeDeta, fnViewProducts, fnSelectProduct, openModalProducts, setOpenModalProducts, dataProducts, setBulkFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTransfersDeta({ setLoading });
 
-  const { propsToControlPanel, formState, onInputChange, listDocuments, listStores, listDestinations, listAccounts, listProviders, listTypeApply, showType1, showType2, setShowType1, setShowType2, onBulkForm, sendFormDeta, setSendFormDeta, sendForm, setSendForm, isFormValid, formValidation, openModalViewRefunds, setOpenModalViewRefunds, dataRefunds, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument, fnOkDeleteDocument } = useRefunds({ refundDetail, onResetFormDeta, setRefundDetail, setLoading });
+  const {
+    propsToControlPanel, formState, onInputChange, listDocuments, listStores, listDestinations, listAccounts,
+    listProviders, listTypeApply, showType1, showType2, setShowType1, setShowType2, onBulkForm, sendFormDeta,
+    setSendFormDeta, sendForm, setSendForm, isFormValid, formValidation, openModalViewRefunds, setOpenModalViewRefunds,
+    dataRefunds, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument, fnOkDeleteDocument,
+    disabled, isProcessed, isVoided, openMsgProcess, setOpenMsgProcess, fnProcessRefund,
+    openModalVoid, setOpenModalVoid, fnVoidRefund
+  } = useRefunds({ refundDetail, onResetFormDeta, setRefundDetail, setLoading });
 
-  const { notes, sourceStoreId, assignStoreId, noCtaOrigin, noCtaAssign } = formState;
+  const { notes, sourceStoreId, assignStoreId, noCtaOrigin, noCtaAssign, documentCode, documentId, pdaNumber } = formState;
 
   const { idProd } = formStateDeta;
 
@@ -40,10 +48,15 @@ const Refunds = ({ setLoading }) => {
     setShowType2,
     onBulkForm,
     refundDetail,
+    setRefundDetail,
     idProd,
     onResetFormDeta,
     sendForm,
-    formValidation
+    formValidation,
+    disabled,
+    isProcessed,
+    isVoided,
+    pdaNumber
   }
 
   const propsToDetailProduct = {
@@ -62,18 +75,21 @@ const Refunds = ({ setLoading }) => {
     isFormValidDeta,
     formValidationDeta,
     setSendForm,
-    isFormValid
+    isFormValid,
+    disabled
   }
 
   const propsToDetailTable = {
     transferDetail: refundDetail,
     setTransferDetail: setRefundDetail,
-    setBulkFormDeta
+    setBulkFormDeta,
+    disabled
   }
 
   const propsToFooter = {
     notes,
-    onInputChange
+    onInputChange,
+    disabled
   }
 
   const propsToModalViewProd = {
@@ -83,7 +99,8 @@ const Refunds = ({ setLoading }) => {
     setOpen: setOpenModalProducts,
     maxWidth: 'lg',
     data: {
-      dataProducts
+      dataProducts,
+      fnSelectItem: fnSelectProduct
     }
   }
 
@@ -107,6 +124,25 @@ const Refunds = ({ setLoading }) => {
     title: "alert.question.title"
   }
 
+  const propsToModalVoid = {
+    ModalContent: ModalVoidInvoice,
+    title: "button.cancel2",
+    open: openModalVoid,
+    setOpen: setOpenModalVoid,
+    maxWidth: 'md',
+    data: {
+      invoiceNumber: `${documentCode}-${documentId}`,
+      fnConfirm: fnVoidRefund
+    }
+  }
+
+  const propsToMsgProcess = {
+    open: openMsgProcess,
+    setOpen: setOpenMsgProcess,
+    fnOnOk: fnProcessRefund,
+    title: "msg.question.processRefund.title"
+  }
+
   return (
     <>
       <Row>
@@ -125,7 +161,9 @@ const Refunds = ({ setLoading }) => {
       </Row>
       <Modal {...propsToModalViewProd} />
       <Modal {...propsToModalViewRefunds} />
+      <Modal {...propsToModalVoid} />
       <Confirmation {...propsToMsgDeleteDocument} />
+      <Confirmation {...propsToMsgProcess} />
     </>
   );
 }

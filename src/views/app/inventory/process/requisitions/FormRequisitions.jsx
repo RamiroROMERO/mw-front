@@ -10,11 +10,11 @@ import { IntlMessages } from '@Helpers/Utils'
 import { useFormRequisition } from './useFormRequisition'
 import ModalApplyAccount from './ModalApplyAccount'
 
-const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, noCtaOrigin, assignStoreId, noCtaAssign, date, code, applyId, onInputChange, listDocuments, listStores, listDestinations, listTypeApply, formValidation, sendForm, listAccounts, onBulkForm, requisitionDetail, onResetFormDeta}) => {
+const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, noCtaOrigin, assignStoreId, noCtaAssign, date, code, applyTo, onInputChange, listDocuments, listStores, listDestinations, listTypeApply, formValidation, sendForm, listAccounts, onBulkForm, requisitionDetail, setRequisitionDetail, onResetFormDeta, disabled, isProcessed, isVoided, pdaNumber}) => {
 
-  const {documentCodeValid, sourceStoreIdValid, assignStoreIdValid, applyIdValid} = formValidation;
+  const {documentCodeValid, sourceStoreIdValid, assignStoreIdValid, applyToValid} = formValidation;
 
-  const {fnApplyDestinyAccount, onStoreChange, onDestinationChange, openModalApplyAccount, setOpenModalApplyAccount, fnApplyAll, fnApplyCurrent} = useFormRequisition({onBulkForm, listStores, listDestinations, requisitionDetail, noCtaAssign, idProd, onResetFormDeta});
+  const {fnApplyDestinyAccount, onStoreChange, onDestinationChange, onApplyToChange, openModalApplyAccount, setOpenModalApplyAccount, fnApplyAll, fnApplyCurrent} = useFormRequisition({onBulkForm, listStores, listDestinations, requisitionDetail, setRequisitionDetail, noCtaAssign, idProd, onResetFormDeta});
 
   const propsToModalApplyAccount = {
     ModalContent: ModalApplyAccount,
@@ -40,6 +40,7 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, noCt
               inputValue={documentCode}
               options={listDocuments}
               onChange={onInputChange}
+              isDisabled={disabled}
               invalid={sendForm && !!documentCodeValid}
               feedbackText={sendForm && (documentCodeValid || null)}
             />
@@ -62,6 +63,7 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, noCt
                     inputValue={sourceStoreId}
                     options={listStores}
                     onChange={onStoreChange}
+                    isDisabled={disabled}
                     invalid={sendForm && !!sourceStoreIdValid}
                     feedbackText={sendForm && (sourceStoreIdValid || null)}
                   />
@@ -88,7 +90,8 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, noCt
                     name="assignStoreId"
                     inputValue={assignStoreId}
                     options={listDestinations}
-                    onChange={onDestinationChange}
+                    onChange={(e) => onDestinationChange(e, applyTo)}
+                    isDisabled={disabled}
                     invalid={sendForm && !!assignStoreIdValid}
                     feedbackText={sendForm && (assignStoreIdValid || null)}
                   />
@@ -100,10 +103,11 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, noCt
                     inputValue={noCtaAssign}
                     options={listAccounts}
                     onChange={onInputChange}
+                    isDisabled={disabled}
                   />
                 </Colxx>
                 <Colxx xxs="12" align="right">
-                  <Button color="secondary" onClick={() => {fnApplyDestinyAccount()}}>
+                  <Button color="secondary" onClick={() => {fnApplyDestinyAccount()}} disabled={disabled}>
                     <i className='bi bi-check' /> {IntlMessages("button.apply")}
                   </Button>
                 </Colxx>
@@ -120,6 +124,7 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, noCt
               label='select.date'
               value={date}
               onChange={onInputChange}
+              disabled={disabled}
             />
           </Colxx>
           <Colxx xxs="12" xs="6" sm="12">
@@ -129,19 +134,35 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, noCt
               value={code}
               onChange={onInputChange}
               type="text"
+              disabled={disabled}
             />
           </Colxx>
           <Colxx xxs="12" xs="6" sm="12">
             <SimpleSelect
-              value={applyId}
-              name="applyId"
-              onChange={onInputChange}
+              value={applyTo}
+              name="applyTo"
+              onChange={(e) => onApplyToChange(e, assignStoreId)}
               label="page.requisitions.select.applyId"
               options={listTypeApply}
-              invalid={sendForm && !!applyIdValid}
-              feedbackText={sendForm && (applyIdValid || null)}
+              disabled={disabled}
+              invalid={sendForm && !!applyToValid}
+              feedbackText={sendForm && (applyToValid || null)}
             />
           </Colxx>
+          {isVoided && (
+            <Colxx xxs="12">
+              <span className="text-danger fw-bold">
+                <i className="bi bi-x-octagon-fill" /> {IntlMessages("page.creditNotesProv.status.voided")}
+              </span>
+            </Colxx>
+          )}
+          {!isVoided && isProcessed && (
+            <Colxx xxs="12">
+              <span className="text-success">
+                <i className="bi bi-check-circle-fill" /> {IntlMessages("page.creditNotesProv.status.processed")} #{pdaNumber}
+              </span>
+            </Colxx>
+          )}
         </Row>
       </Colxx>
     </Row>

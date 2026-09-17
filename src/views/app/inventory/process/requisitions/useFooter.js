@@ -1,16 +1,14 @@
 
 export const useFooter = ({onBulkForm, setShowWorkOrder}) => {
 
-  const onAssignOTChange = e =>{
-    const assign = !e.target.checked;
+  const onAssignOTChange = e => {
+    // Bug real corregido: negaba e.target.checked, así que marcar el checkbox
+    // desmarcaba isWorkOrder y ocultaba el selector de Orden de Trabajo (al revés).
+    const assign = e.target.checked;
 
-    if(assign !== true){
-      setShowWorkOrder("block");
-    }else{
-      setShowWorkOrder("none");
-    }
+    setShowWorkOrder(assign ? "block" : "none");
 
-    onBulkForm({isWorkOrder: assign, workOrderId: 0});
+    onBulkForm({ isWorkOrder: assign ? 1 : 0, workOrderId: 0 });
   }
 
   return (

@@ -1,4 +1,3 @@
-import TableButtons from '@Components/tableButtons';
 import { validFloat } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks'
@@ -38,15 +37,17 @@ export const useTransfersDeta = ({ setLoading }) => {
       const data = resp.data.map((item) => {
         item.qty = 1
         item.code = item.productCode
-        item.nameProduct = item.name
+        // Campos reales de invProcessViewStock (findStocks): productName/qtyStock/undinName,
+        // no name/stockQty/inputUnit — antes quedaban en blanco en silencio. `name`/
+        // `inputUnit` son los dataField que espera la tabla de ModalViewProd; `nameProduct`
+        // es el que se usa al poblar el detalle tras seleccionar.
+        item.name = item.productName
+        item.nameProduct = item.productName
         item.total = validFloat(item.costValue)
-        item.nameUM = item.inputUnit
+        item.inputUnit = item.undinName
         item.cost = item.costValue
-        item.currentExistence = item.stockQty
-        item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
-          <i className="medium-icon bi bi-square" />
-        item.presentation = item.inputUnit
-        item.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
+        item.currentExistence = item.qtyStock
+        item.presentation = item.undinName
         return item;
       });
       setDataProducts(data);
@@ -63,6 +64,7 @@ export const useTransfersDeta = ({ setLoading }) => {
       formStateDeta,
       onInputChangeDeta,
       fnViewProducts,
+      fnSelectProduct,
       openModalProducts,
       setOpenModalProducts,
       dataProducts,

@@ -14,6 +14,8 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
   const [sendForm, setSendForm] = useState(false);
   const [openModalViewTransfers, setOpenModalViewTransfers] = useState(false);
   const [openMsgDeleteDocument, setOpenMsgDeleteDocument] = useState(false);
+  const [openModalVoid, setOpenModalVoid] = useState(false);
+  const [openMsgProcess, setOpenMsgProcess] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
   const validTransfers = {
@@ -32,15 +34,19 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
     assignStoreId: 0,
     notes: '',
     userId: userData ? userData.id : 0,
-    applicated: 0,
-    pdaNumber: '',
+    applyTo: 'Inventario',
+    pdaNumber: 0,
     noCtaOrigin: '',
     noCtaAssign: '',
-    reportId: 0,
     status: true
   }, validTransfers);
 
-  const { id, documentId, documentCode, date, code, sourceStoreId, assignStoreId, notes, userId, applicated, pdaNumber, noCtaAssign, noCtaOrigin, reportId, status } = formState;
+  const { id, documentId, documentCode, date, code, sourceStoreId, assignStoreId, notes, userId, applyTo, pdaNumber, noCtaAssign, noCtaOrigin, status } = formState;
+
+  const isProcessed = validInt(pdaNumber) > 0;
+  const isVoided = id > 0 && !status;
+  const isSaved = validInt(id) > 0;
+  const disabled = isProcessed || isVoided;
 
   const fnNewDocument = () => {
     onResetForm();
@@ -104,9 +110,9 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       sourceStoreId,
       assignStoreId,
       typeName,
+      applyTo,
       notes,
       userId,
-      applicated,
       status
     }
 
@@ -202,8 +208,10 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
     }
   }
 
+  // Eliminación física — solo antes de Contabilizar (fiel al legacy, que no permite tocar
+  // el documento una vez aplicado). Una vez aplicado, usar Anular (fnAskVoid) en su lugar.
   const fnDeleteDocument = () => {
-    if (id > 0) {
+    if (id > 0 && !disabled) {
       setOpenMsgDeleteDocument(true);
     }
   }
@@ -229,7 +237,48 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
     });
   }
 
-  const fnCount = () => { }
+  const fnAskProcess = () => {
+    if (id === 0) return;
+    setOpenMsgProcess(true);
+  }
+
+  const fnProcessTransfer = () => {
+    setOpenMsgProcess(false);
+    setLoading(true);
+    request.POST(`inventory/process/inventoryTransactions/process/${id}`, {}, (resp) => {
+      onBulkForm({ pdaNumber: resp.data.numberPDA });
+      createNotification('success', 'msg.success.processDocument', 'alert.success.title');
+      setLoading(false);
+    }, (err) => {
+      const errorCode = err?.messages?.[0]?.description?.name;
+      if (errorCode) {
+        createNotification('error', `msg.error.transfer.${errorCode}`, 'alert.error.title');
+      } else {
+        createNotification('error', 'msg.error.processDocument', 'alert.error.title');
+      }
+      setLoading(false);
+    });
+  }
+
+  const fnAskVoid = () => {
+    if (id === 0 || !isProcessed) return;
+    setOpenModalVoid(true);
+  }
+
+  const fnVoidTransfer = (reason) => {
+    setLoading(true);
+    request.DELETE(buildUrl(`inventory/process/inventoryTransactions/void/${id}`, { reason }), () => {
+      setOpenModalVoid(false);
+      onResetForm();
+      onResetFormDeta();
+      setTransferDetail([]);
+      createNotification('success', 'msg.success.voidDocument', 'alert.success.title');
+      setLoading(false);
+    }, () => {
+      createNotification('error', 'msg.delete.record.error', 'alert.error.title');
+      setLoading(false);
+    }, false);
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -254,7 +303,9 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
         return {
           label: item.name,
           value: item.id,
-          idCtaInventory: item.idCtaInventory
+          idCtaInventory: item.idCtaInventory,
+          idCtaCost: item.idCtaCost,
+          idCtaExpense: item.idCtaExpense
         }
       });
       setListStores(stores);
@@ -283,14 +334,15 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
   const propsToControlPanel = {
     fnNew: fnNewDocument,
     fnSearch: fnSearchDocument,
-    fnSave: fnSaveDocument,
+    fnSave: !disabled ? fnSaveDocument : null,
     fnPrint: fnPrintDocument,
-    fnDelete: fnDeleteDocument,
+    fnDelete: !disabled ? fnDeleteDocument : null,
+    fnCancel: isProcessed && !isVoided ? fnAskVoid : null,
     buttonsHome: [
       {
         title: "button.count",
         icon: "bi bi-journal-check",
-        onClick: fnCount
+        onClick: isSaved && !isProcessed ? fnAskProcess : () => { }
       }
     ],
     buttonsOptions: [],
@@ -318,7 +370,17 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       fnGetDataDetail,
       openMsgDeleteDocument,
       setOpenMsgDeleteDocument,
-      fnOkDeleteDocument
+      fnOkDeleteDocument,
+      disabled,
+      isProcessed,
+      isVoided,
+      isSaved,
+      openMsgProcess,
+      setOpenMsgProcess,
+      fnProcessTransfer,
+      openModalVoid,
+      setOpenModalVoid,
+      fnVoidTransfer
     }
   )
 }

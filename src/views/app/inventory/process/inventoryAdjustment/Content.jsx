@@ -6,9 +6,10 @@ import { Separator } from '@Components/common/CustomBootstrap';
 import ControlPanel from '@Components/controlPanel';
 import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
+import ModalVoidInvoice from '@Views/app/billing/process/pointSales/ModalVoidInvoice';
 import { useTransfersDeta } from '../transferToStores/useTransfersDeta';
 import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
-import DetailProduct from '../transferToStores/DetailProduct';
+import DetailProduct from './DetailProduct';
 import FormInventory from './FormInventory';
 import DetailTable from '../transferToStores/DetailTable';
 import ModalViewTransfers from '../transferToStores/ModalViewTransfers';
@@ -16,28 +17,36 @@ import ModalViewTransfers from '../transferToStores/ModalViewTransfers';
 const InventoryAdjustment = ({ setLoading }) => {
   const [inventoryDetail, setInventoryDetail] = useState([]);
 
-  const { formStateDeta, onInputChangeDeta, fnViewProducts, openModalProducts, setOpenModalProducts, dataProducts, setBulkFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTransfersDeta({ setLoading });
+  const { formStateDeta, onInputChangeDeta, fnViewProducts, fnSelectProduct, openModalProducts, setOpenModalProducts, dataProducts, setBulkFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTransfersDeta({ setLoading });
 
-  const { propsToControlPanel, formState, onInputChange, listDocuments, listStores, listTypeApply, sendForm, setSendForm, sendFormDeta, setSendFormDeta, isFormValid, formValidation, dataInventory, openModalViewInventoryAd, setOpenModalViewInventoryAd, onBulkForm, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument, fnOkDeleteDocument } = useInventory({ inventoryDetail, setInventoryDetail, onResetFormDeta, setLoading });
+  const {
+    propsToControlPanel, formState, onInputChange, listDocuments, listStores, sendForm, setSendForm,
+    sendFormDeta, setSendFormDeta, isFormValid, formValidation, dataInventory, openModalViewInventoryAd,
+    setOpenModalViewInventoryAd, onBulkForm, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument,
+    fnOkDeleteDocument, disabled, isProcessed, isVoided, openMsgProcess, setOpenMsgProcess, fnProcessAdjustment,
+    openModalVoid, setOpenModalVoid, fnVoidAdjustment, openMsgAddRemaining, setOpenMsgAddRemaining, fnAddRemaining
+  } = useInventory({ inventoryDetail, setInventoryDetail, onResetFormDeta, setLoading });
 
-  const { sourceStoreId } = formState;
+  const { sourceStoreId, documentCode, documentId, pdaNumber } = formState;
+
+  const { idProd } = formStateDeta;
 
   const propsToFormInventory = {
     ...formState,
     onInputChange,
     listDocuments,
     listStores,
-    listTypeApply,
     sendForm,
-    formValidation
+    formValidation,
+    disabled,
+    isProcessed,
+    isVoided,
+    pdaNumber
   }
 
   const propsToDetailProduct = {
     ...formStateDeta,
     sourceStoreId,
-    assignStoreId: 0,
-    noCtaOrigin: '',
-    noCtaAssign: '',
     onInputChangeDeta,
     fnViewProducts,
     setBulkFormDeta,
@@ -48,13 +57,16 @@ const InventoryAdjustment = ({ setLoading }) => {
     isFormValidDeta,
     formValidationDeta,
     setSendForm,
-    isFormValid
+    isFormValid,
+    idProd,
+    disabled
   }
 
   const propsToDetailTable = {
     transferDetail: inventoryDetail,
     setTransferDetail: setInventoryDetail,
-    setBulkFormDeta
+    setBulkFormDeta,
+    disabled
   }
 
   const propsToModalViewProd = {
@@ -64,7 +76,8 @@ const InventoryAdjustment = ({ setLoading }) => {
     setOpen: setOpenModalProducts,
     maxWidth: 'lg',
     data: {
-      dataProducts
+      dataProducts,
+      fnSelectItem: fnSelectProduct
     }
   }
 
@@ -88,6 +101,32 @@ const InventoryAdjustment = ({ setLoading }) => {
     title: "alert.question.title"
   }
 
+  const propsToModalVoid = {
+    ModalContent: ModalVoidInvoice,
+    title: "button.cancel2",
+    open: openModalVoid,
+    setOpen: setOpenModalVoid,
+    maxWidth: 'md',
+    data: {
+      invoiceNumber: `${documentCode}-${documentId}`,
+      fnConfirm: fnVoidAdjustment
+    }
+  }
+
+  const propsToMsgProcess = {
+    open: openMsgProcess,
+    setOpen: setOpenMsgProcess,
+    fnOnOk: fnProcessAdjustment,
+    title: "msg.question.processAdjustment.title"
+  }
+
+  const propsToMsgAddRemaining = {
+    open: openMsgAddRemaining,
+    setOpen: setOpenMsgAddRemaining,
+    fnOnOk: fnAddRemaining,
+    title: "msg.question.addRemaining.title"
+  }
+
   return (
     <>
       <Row>
@@ -105,7 +144,10 @@ const InventoryAdjustment = ({ setLoading }) => {
       </Row>
       <Modal {...propsToModalViewProd} />
       <Modal {...propsToModalViewInventoryAd} />
+      <Modal {...propsToModalVoid} />
       <Confirmation {...propsToMsgDeleteDocument} />
+      <Confirmation {...propsToMsgProcess} />
+      <Confirmation {...propsToMsgAddRemaining} />
     </>
   );
 }

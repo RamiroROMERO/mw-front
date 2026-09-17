@@ -5,7 +5,7 @@ import { Checkbox } from '@Components/checkbox'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { useFooter } from './useFooter'
 
-const FooterRequisitions = ({notes, isWorkOrder, workOrderId, onInputChange, listWorkOrders, onBulkForm, showWorkOrder, setShowWorkOrder}) => {
+const FooterRequisitions = ({notes, isWorkOrder, workOrderId, onInputChange, listWorkOrders, onBulkForm, showWorkOrder, setShowWorkOrder, disabled}) => {
 
   const {onAssignOTChange} = useFooter({onBulkForm, setShowWorkOrder});
 
@@ -19,14 +19,16 @@ const FooterRequisitions = ({notes, isWorkOrder, workOrderId, onInputChange, lis
           value={notes}
           onChange={onInputChange}
           type="textarea"
+          disabled={disabled}
         />
       </Colxx>
       <Colxx xxs="12" sm="3" lg="2">
         <Checkbox
           onChange={onAssignOTChange}
           name="isWorkOrder"
-          value={isWorkOrder}
+          value={!!isWorkOrder}
           label="page.requisitions.check.assignOT"
+          disabled={disabled}
         />
       </Colxx>
       <Colxx xxs="12" sm="9" lg="7" xl="5" style={{display: showWorkOrder}}>
@@ -36,6 +38,7 @@ const FooterRequisitions = ({notes, isWorkOrder, workOrderId, onInputChange, lis
           inputValue={workOrderId}
           options={listWorkOrders}
           onChange={onInputChange}
+          isDisabled={disabled}
         />
       </Colxx>
     </Row>

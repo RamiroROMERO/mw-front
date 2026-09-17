@@ -2,7 +2,7 @@ import { Row } from 'reactstrap'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { InputField } from '@Components/inputFields'
 
-const FooterTransfers = ({notes, onInputChange}) => {
+const FooterTransfers = ({notes, onInputChange, disabled}) => {
   return (
     <Row>
       <Colxx xxs="12">
@@ -12,6 +12,7 @@ const FooterTransfers = ({notes, onInputChange}) => {
           value={notes}
           onChange={onInputChange}
           type="textarea"
+          disabled={disabled}
         />
       </Colxx>
     </Row>

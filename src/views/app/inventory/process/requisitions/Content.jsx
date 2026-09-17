@@ -5,6 +5,7 @@ import { Separator } from '@Components/common/CustomBootstrap';
 import ControlPanel from '@Components/controlPanel';
 import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
+import ModalVoidInvoice from '@Views/app/billing/process/pointSales/ModalVoidInvoice';
 import { useTransfersDeta } from '../transferToStores/useTransfersDeta';
 import { useRequisitions } from './useRequisitions';
 import DetailProduct from '../transferToStores/DetailProduct';
@@ -17,11 +18,18 @@ import FooterRequisitions from './FooterRequisitions';
 const Requisitions = ({ setLoading }) => {
   const [requisitionDetail, setRequisitionDetail] = useState([]);
 
-  const { formStateDeta, onInputChangeDeta, fnViewProducts, openModalProducts, setOpenModalProducts, dataProducts, setBulkFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTransfersDeta({ setLoading });
+  const { formStateDeta, onInputChangeDeta, fnViewProducts, fnSelectProduct, openModalProducts, setOpenModalProducts, dataProducts, setBulkFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTransfersDeta({ setLoading });
 
-  const { propsToControlPanel, formState, onInputChange, listDocuments, listStores, listDestinations, listTypeApply, sendFormDeta, setSendFormDeta, sendForm, setSendForm, formValidation, isFormValid, listWorkOrders, onBulkForm, showWorkOrder, setShowWorkOrder, openModalViewRequisitions, setOpenModalViewRequisitions, dataRequisitions, listAccounts, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument, fnOkDeleteDocument } = useRequisitions({ requisitionDetail, onResetFormDeta, setRequisitionDetail, setLoading });
+  const {
+    propsToControlPanel, formState, onInputChange, listDocuments, listStores, listDestinations, listTypeApply,
+    sendFormDeta, setSendFormDeta, sendForm, setSendForm, formValidation, isFormValid, listWorkOrders, onBulkForm,
+    showWorkOrder, setShowWorkOrder, openModalViewRequisitions, setOpenModalViewRequisitions, dataRequisitions,
+    listAccounts, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument, fnOkDeleteDocument,
+    disabled, isProcessed, isVoided, openMsgProcess, setOpenMsgProcess, fnProcessRequisition,
+    openModalVoid, setOpenModalVoid, fnVoidRequisition
+  } = useRequisitions({ requisitionDetail, onResetFormDeta, setRequisitionDetail, setLoading });
 
-  const { notes, sourceStoreId, assignStoreId, assignOT, workOrderId, noCtaOrigin, noCtaAssign } = formState;
+  const { notes, sourceStoreId, assignStoreId, isWorkOrder, workOrderId, noCtaOrigin, noCtaAssign, documentCode, documentId, pdaNumber } = formState;
 
   const { idProd } = formStateDeta;
 
@@ -37,8 +45,13 @@ const Requisitions = ({ setLoading }) => {
     listAccounts,
     onBulkForm,
     requisitionDetail,
+    setRequisitionDetail,
     idProd,
-    onResetFormDeta
+    onResetFormDeta,
+    disabled,
+    isProcessed,
+    isVoided,
+    pdaNumber
   }
 
   const propsToDetailProduct = {
@@ -57,24 +70,27 @@ const Requisitions = ({ setLoading }) => {
     isFormValidDeta,
     formValidationDeta,
     setSendForm,
-    isFormValid
+    isFormValid,
+    disabled
   }
 
   const propsToDetailTable = {
     transferDetail: requisitionDetail,
     setTransferDetail: setRequisitionDetail,
-    setBulkFormDeta
+    setBulkFormDeta,
+    disabled
   }
 
   const propsToFooter = {
     notes,
-    assignOT,
+    isWorkOrder,
     workOrderId,
     onInputChange,
     listWorkOrders,
     onBulkForm,
     showWorkOrder,
-    setShowWorkOrder
+    setShowWorkOrder,
+    disabled
   }
 
   const propsToModalViewProd = {
@@ -84,7 +100,8 @@ const Requisitions = ({ setLoading }) => {
     setOpen: setOpenModalProducts,
     maxWidth: 'lg',
     data: {
-      dataProducts
+      dataProducts,
+      fnSelectItem: fnSelectProduct
     }
   }
 
@@ -108,6 +125,25 @@ const Requisitions = ({ setLoading }) => {
     title: "alert.question.title"
   }
 
+  const propsToModalVoid = {
+    ModalContent: ModalVoidInvoice,
+    title: "button.cancel2",
+    open: openModalVoid,
+    setOpen: setOpenModalVoid,
+    maxWidth: 'md',
+    data: {
+      invoiceNumber: `${documentCode}-${documentId}`,
+      fnConfirm: fnVoidRequisition
+    }
+  }
+
+  const propsToMsgProcess = {
+    open: openMsgProcess,
+    setOpen: setOpenMsgProcess,
+    fnOnOk: fnProcessRequisition,
+    title: "msg.question.processRequisition.title"
+  }
+
   return (
     <>
       <Row>
@@ -126,7 +162,9 @@ const Requisitions = ({ setLoading }) => {
       </Row>
       <Modal {...propsToModalViewProd} />
       <Modal {...propsToModalViewRequisitions} />
+      <Modal {...propsToModalVoid} />
       <Confirmation {...propsToMsgDeleteDocument} />
+      <Confirmation {...propsToMsgProcess} />
     </>
   );
 }

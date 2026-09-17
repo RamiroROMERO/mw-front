@@ -4,7 +4,7 @@ import { IntlMessages, formatNumber } from '@Helpers/Utils'
 import Confirmation from '@Containers/ui/confirmationMsg';
 import { useDetailTable } from './useDetailTable'
 
-const DetailTable = ({transferDetail, setTransferDetail, setBulkFormDeta}) => {
+const DetailTable = ({transferDetail, setTransferDetail, setBulkFormDeta, disabled}) => {
 
   const {openMsgDelete, setOpenMsgDelete, fnEditProduct, fnDeleteProduct, fnDeleteOkProduct} = useDetailTable({setBulkFormDeta, transferDetail, setTransferDetail});
 
@@ -27,7 +27,7 @@ const DetailTable = ({transferDetail, setTransferDetail, setBulkFormDeta}) => {
               <th className = 'd-xs-none-table-cell'>{IntlMessages("table.column.cost")}</th>
               <th className = 'd-xxs-none-table-cell'>{IntlMessages("table.column.qty")}</th>
               <th>{IntlMessages("table.column.total")}</th>
-              <th>{IntlMessages("table.column.options")}</th>
+              {!disabled && <th>{IntlMessages("table.column.options")}</th>}
             </tr>
           </thead>
           <tbody>
@@ -39,16 +39,18 @@ const DetailTable = ({transferDetail, setTransferDetail, setBulkFormDeta}) => {
                   <td className = 'd-xs-none-table-cell' align='right'>{formatNumber(item.cost)}</td>
                   <td className = 'd-xxs-none-table-cell' align='right'>{formatNumber(item.qty)}</td>
                   <td align='right'>{formatNumber(item.total)}</td>
-                  <td align='right'>
-                    <Button type="button" className="btn-circle-table" color="outline-warning" title="Editar"
-                      onClick={() => {fnEditProduct(item)}} key={`button1-${idx}`}>
-                      <i className='bi bi-pencil' />
-                    </Button>
-                    <Button type="button" className="btn-circle-table" color="outline-danger" title="Eliminar"
-                      onClick={() => {fnDeleteProduct(item)}} key={`button2-${idx}`}>
-                      <i className='bi bi-trash' />
-                    </Button>
-                  </td>
+                  {!disabled && (
+                    <td align='right'>
+                      <Button type="button" className="btn-circle-table" color="outline-warning" title="Editar"
+                        onClick={() => {fnEditProduct(item)}} key={`button1-${idx}`}>
+                        <i className='bi bi-pencil' />
+                      </Button>
+                      <Button type="button" className="btn-circle-table" color="outline-danger" title="Eliminar"
+                        onClick={() => {fnDeleteProduct(item)}} key={`button2-${idx}`}>
+                        <i className='bi bi-trash' />
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               );
             })}

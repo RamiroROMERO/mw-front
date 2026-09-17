@@ -19,6 +19,8 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
   const [sendForm, setSendForm] = useState(false);
   const [openModalViewRefunds, setOpenModalViewRefunds] = useState(false);
   const [openMsgDeleteDocument, setOpenMsgDeleteDocument] = useState(false);
+  const [openModalVoid, setOpenModalVoid] = useState(false);
+  const [openMsgProcess, setOpenMsgProcess] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
   const validRefunds = {
@@ -36,17 +38,23 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
     assignStoreId: 0,
     notes: '',
     userId: userData ? userData.id : 0,
-    applicated: 0,
-    pdaNumber: '',
+    pdaNumber: 0,
     noCtaOrigin: '',
     noCtaAssign: '',
-    applyId: 0,
+    applyTo: '',
     providerId: 0,
     reintType: 1,
-    expirationDate: ''
+    expirationDate: '',
+    status: true
   }, validRefunds);
 
-  const { id, documentCode, documentId, date, code, sourceStoreId, assignStoreId, notes, userId, applicated, applyId, providerId, reintType, expirationDate } = formState;
+  const { id, documentCode, documentId, date, code, sourceStoreId, assignStoreId, notes, userId, applyTo, providerId, reintType, expirationDate, pdaNumber, status } = formState;
+
+  const isProcessed = validInt(pdaNumber) > 0;
+  const isVoided = id > 0 && !status;
+  const isSaved = validInt(id) > 0;
+  const disabled = isProcessed || isVoided;
+  const isPurchaseType = validInt(reintType) === 1;
 
   const fnNewDocument = () => {
     onResetForm();
@@ -63,7 +71,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
     request.GET(buildUrl('inventory/process/inventoryTransactions', { typeName: 'Reint' }), (resp) => {
       const refunds = resp.data.map((item) => {
         item.store = item.invStore ? item.invStore.name : ''
-        item.destination = item.invAssign ? item.invAssign.name : (item.invProvider ? item.invProvider.name : '')
+        item.destination = item.invAssign ? item.invAssign.name : (item.providerData ? item.providerData.name : '')
         item.noPhysical = item.code
         return item;
       });
@@ -83,12 +91,12 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
         item.nameProduct = item.invProduct ? item.invProduct.name : ''
         return item;
       });
-      if (validInt(type) === 2) {
-        setShowType1("none");
-        setShowType2("block");
-      } else {
+      if (validInt(type) === 1) {
         setShowType1("block");
         setShowType2("none");
+      } else {
+        setShowType1("none");
+        setShowType2("block");
       }
       setRefundDetail(refundDeta);
       setLoading(false);
@@ -121,11 +129,11 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       typeName,
       notes,
       userId,
-      applicated,
-      applyId,
+      applyTo,
       providerId,
       reintType,
-      expirationDate: expirationDate === "" ? '1900-01-01' : expirationDate
+      expirationDate: expirationDate === "" ? '1900-01-01' : expirationDate,
+      status
     }
 
     refundDetail.map((item) => {
@@ -220,8 +228,10 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
     }
   }
 
+  // Eliminación física — solo antes de Aplic. Inv. (fiel al legacy). Una vez aplicado,
+  // usar Anular (fnAskVoid) en su lugar.
   const fnDeleteDocument = () => {
-    if (id > 0) {
+    if (id > 0 && !disabled) {
       setOpenMsgDeleteDocument(true);
     }
   }
@@ -233,6 +243,8 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       onResetForm();
       onResetFormDeta();
       setRefundDetail([]);
+      setShowType1("block");
+      setShowType2("none");
 
       // eliminar detalle
       request.DELETE(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: id }), () => {
@@ -247,7 +259,57 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
     });
   }
 
-  const fnCount = () => { }
+  // "Aplic. Inv." (btnContabDocument del legacy) es la única acción real de contabilizar
+  // en esta pantalla — btnGenAuxiliar existe en el legacy pero está deshabilitado
+  // (Enabled=.F.), nunca fue un botón funcional.
+  const fnAskProcess = () => {
+    if (id === 0) return;
+    if (isPurchaseType && validInt(providerId) === 0) {
+      createNotification('warning', 'msg.required.select.provider', 'alert.warning.title');
+      return;
+    }
+    setOpenMsgProcess(true);
+  }
+
+  const fnProcessRefund = () => {
+    setOpenMsgProcess(false);
+    setLoading(true);
+    request.POST(`inventory/process/inventoryTransactions/processRefund/${id}`, {}, (resp) => {
+      onBulkForm({ pdaNumber: resp.data.numberPDA });
+      createNotification('success', 'msg.success.processDocument', 'alert.success.title');
+      setLoading(false);
+    }, (err) => {
+      createNotification('error', 'msg.error.processDocument', 'alert.error.title');
+      setLoading(false);
+    });
+  }
+
+  const fnAskVoid = () => {
+    if (id === 0 || !isProcessed) return;
+    setOpenModalVoid(true);
+  }
+
+  const fnVoidRefund = (reason) => {
+    setLoading(true);
+    request.DELETE(buildUrl(`inventory/process/inventoryTransactions/voidRefund/${id}`, { reason }), () => {
+      setOpenModalVoid(false);
+      onResetForm();
+      onResetFormDeta();
+      setRefundDetail([]);
+      setShowType1("block");
+      setShowType2("none");
+      createNotification('success', 'msg.success.voidDocument', 'alert.success.title');
+      setLoading(false);
+    }, (err) => {
+      const errorCode = err?.messages?.[0]?.description?.name;
+      if (errorCode === 'refund.cxp.has.payments') {
+        createNotification('error', 'msg.error.refund.cxpHasPayments', 'alert.error.title');
+      } else {
+        createNotification('error', 'msg.delete.record.error', 'alert.error.title');
+      }
+      setLoading(false);
+    }, false);
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -273,7 +335,9 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
           label: item.name,
           value: item.id,
           type: item.type,
-          idCtaInventory: item.idCtaInventory
+          idCtaInventory: item.idCtaInventory,
+          idCtaCost: item.idCtaCost,
+          idCtaExpense: item.idCtaExpense
         }
       });
       const filter1 = stores.filter(item => { return item.type === 1 });
@@ -292,7 +356,8 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       const providers = resp.data.map((item) => {
         return {
           label: item.name,
-          value: item.id
+          value: item.id,
+          idCtaCxp: item.idCtaCxp
         }
       });
       setListProviders(providers);
@@ -329,14 +394,15 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
   const propsToControlPanel = {
     fnNew: fnNewDocument,
     fnSearch: fnSearchDocument,
-    fnSave: fnSaveDocument,
+    fnSave: !disabled ? fnSaveDocument : null,
     fnPrint: fnPrintDocument,
-    fnDelete: fnDeleteDocument,
+    fnDelete: !disabled ? fnDeleteDocument : null,
+    fnCancel: isProcessed && !isVoided ? fnAskVoid : null,
     buttonsHome: [
       {
         title: "button.count",
         icon: "bi bi-journal-check",
-        onClick: fnCount
+        onClick: isSaved && !isProcessed ? fnAskProcess : () => { }
       }
     ],
     buttonsOptions: [],
@@ -371,7 +437,17 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       fnGetDataDetail,
       openMsgDeleteDocument,
       setOpenMsgDeleteDocument,
-      fnOkDeleteDocument
+      fnOkDeleteDocument,
+      disabled,
+      isProcessed,
+      isVoided,
+      isSaved,
+      openMsgProcess,
+      setOpenMsgProcess,
+      fnProcessRefund,
+      openModalVoid,
+      setOpenModalVoid,
+      fnVoidRefund
     }
   )
 }

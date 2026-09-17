@@ -1,9 +1,13 @@
 import { validInt } from '@Helpers/Utils';
 import { useState } from 'react';
+import { ACCOUNT_BY_APPLY_TO } from '../transferToStores/useFormTransfers';
 
-export const useFormRefund = ({ onBulkForm, listStores, listDestinations, refundDetail, noCtaAssign, idProd, onResetFormDeta, setShowType1, setShowType2 }) => {
+export const useFormRefund = ({ onBulkForm, listStores, listDestinations, listProviders, refundDetail, setRefundDetail, noCtaAssign, idProd, onResetFormDeta, setShowType1, setShowType2 }) => {
   const [openModalApplyAccount, setOpenModalApplyAccount] = useState(false);
 
+  // CTAOrigen: siempre la cuenta de Inventario del almacén origen (el combobox "Aplica" del
+  // legacy que recalculaba esta cuenta usaba inv_bodegascd, tabla confirmada vacía en
+  // producción — ver [[project_inventory_movements_family]]).
   const onStoreChange = e => {
     const store = e.target.value;
 
@@ -12,12 +16,32 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, refund
     onBulkForm({ sourceStoreId: store, noCtaOrigin: filter ? filter.idCtaInventory : '' });
   }
 
-  const onDestinationChange = e => {
+  // CTADestino (reintType=2/Reintegro): cuenta del Centro de Destino según "Aplica".
+  const onDestinationChange = (e, applyTo) => {
     const destination = e.target.value;
 
     const filter = listDestinations.find(item => item.value === validInt(destination));
+    const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'idCtaInventory';
 
-    onBulkForm({ assignStoreId: destination, noCtaAssign: filter ? filter.idCtaInventory : '' });
+    onBulkForm({ assignStoreId: destination, noCtaAssign: filter ? filter[accountField] : '' });
+  }
+
+  const onApplyToChange = (e, assignStoreId) => {
+    const applyTo = e.target.value;
+
+    const filter = listDestinations.find(item => item.value === validInt(assignStoreId));
+    const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'idCtaInventory';
+
+    onBulkForm({ applyTo, noCtaAssign: filter ? filter[accountField] : '' });
+  }
+
+  // CTADestino (reintType=1/Compra): cuenta de Cuentas por Pagar del proveedor seleccionado.
+  const onProviderChange = e => {
+    const provider = e.target.value;
+
+    const filter = listProviders.find(item => item.value === validInt(provider));
+
+    onBulkForm({ providerId: provider, noCtaAssign: filter ? filter.idCtaCxp : '' });
   }
 
   const onTypeChange = e => {
@@ -27,11 +51,11 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, refund
       setShowType1("none");
       setShowType2("block");
 
-      onBulkForm({ reintType: type, providerId: 0, expirationDate: '' });
+      onBulkForm({ reintType: type, providerId: 0, expirationDate: '', noCtaAssign: '' });
     } else {
       setShowType1("block");
       setShowType2("none");
-      onBulkForm({ reintType: type, assignStoreId: 0, noCtaAssign: '', applyId: 0 });
+      onBulkForm({ reintType: type, assignStoreId: 0, applyTo: '', noCtaAssign: '' });
     }
   }
 
@@ -43,21 +67,15 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, refund
   }
 
   const fnApplyAll = () => {
-    refundDetail.map(item => {
-      item.noCtaAssign = noCtaAssign
-      return item;
-    });
+    const updated = refundDetail.map(item => ({ ...item, noCtaAssign }));
+    setRefundDetail(updated);
     onResetFormDeta();
     setOpenModalApplyAccount(false);
   }
 
   const fnApplyCurrent = () => {
-    refundDetail.map(item => {
-      if (item.idProd === idProd) {
-        item.noCtaAssign = noCtaAssign
-      }
-      return item;
-    });
+    const updated = refundDetail.map(item => item.idProd === idProd ? { ...item, noCtaAssign } : item);
+    setRefundDetail(updated);
     onResetFormDeta();
     setOpenModalApplyAccount(false);
   }
@@ -66,6 +84,8 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, refund
     {
       onStoreChange,
       onDestinationChange,
+      onApplyToChange,
+      onProviderChange,
       onTypeChange,
       fnApplyDestinyAccount,
       openModalApplyAccount,

@@ -1,25 +1,27 @@
 import { useEffect, useState } from 'react'
 import { useForm } from '@Hooks'
 import { request, buildUrl } from '@Helpers/core';
-import { validInt } from '@Helpers/Utils';
+import { validInt, validFloat } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import createNotification from '@Containers/ui/Notifications';
 
 export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormDeta, setLoading }) => {
   const [listDocuments, setListDocuments] = useState([]);
   const [listStores, setListStores] = useState([]);
-  const [listTypeApply, setListTypeApply] = useState([]);
   const [dataInventory, setDataInventory] = useState([]);
   const [sendFormDeta, setSendFormDeta] = useState(false);
   const [sendForm, setSendForm] = useState(false);
   const [openModalViewInventoryAd, setOpenModalViewInventoryAd] = useState(false);
   const [openMsgDeleteDocument, setOpenMsgDeleteDocument] = useState(false);
+  const [openModalVoid, setOpenModalVoid] = useState(false);
+  const [openMsgProcess, setOpenMsgProcess] = useState(false);
+  const [openMsgAddRemaining, setOpenMsgAddRemaining] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
   const validInventory = {
     documentCode: [(val) => val !== "", "msg.required.select.typeDocument"],
     sourceStoreId: [(val) => validInt(val) > 0, "msg.required.select.warehouse"],
-    applyId: [(val) => val !== "", "msg.required.select.applyTo"]
+    applyTo: [(val) => val !== "", "msg.required.select.applyTo"]
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
@@ -28,11 +30,18 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
     documentId: 0,
     date: DateHelper.format(new Date()),
     sourceStoreId: 0,
-    applyId: 0,
-    userId: userData ? userData.id : 0
+    applyTo: 'Inventario',
+    userId: userData ? userData.id : 0,
+    pdaNumber: 0,
+    status: true
   }, validInventory);
 
-  const { id, documentCode, documentId, date, sourceStoreId, applyId, userId } = formState;
+  const { id, documentCode, documentId, date, sourceStoreId, applyTo, userId, pdaNumber, status } = formState;
+
+  const isProcessed = validInt(pdaNumber) > 0;
+  const isVoided = id > 0 && !status;
+  const isSaved = validInt(id) > 0;
+  const disabled = isProcessed || isVoided;
 
   const fnNewDocument = () => {
     onResetForm();
@@ -45,13 +54,13 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
   const fnSearchDocument = () => {
     setLoading(true);
     request.GET(buildUrl('inventory/process/inventoryTransactions', { typeName: 'Ajuste' }), (resp) => {
-      const refunds = resp.data.map((item) => {
+      const adjustments = resp.data.map((item) => {
         item.store = item.invStore ? item.invStore.name : ''
-        item.destination = item.invAssign ? item.invAssign.name : ''
-        item.noPhysical = item.code
+        item.destination = ''
+        item.noPhysical = ''
         return item;
       });
-      setDataInventory(refunds);
+      setDataInventory(adjustments);
       setOpenModalViewInventoryAd(true);
       setLoading(false);
     }, (err) => {
@@ -94,8 +103,9 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
       date,
       sourceStoreId,
       typeName,
-      applyId,
-      userId
+      applyTo,
+      userId,
+      status
     }
 
     inventoryDetail.map((item) => {
@@ -175,7 +185,6 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
         setLoading(false);
       });
     }
-
   }
 
   const fnPrintDocument = () => {
@@ -184,15 +193,16 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
         id,
         userName: userData.name
       }
-      request.GETPdf('inventory/process/inventoryTransactions/exportPDFRequisition', dataPrint, 'Inventario Físico.pdf', (err) => {
+      request.GETPdf('inventory/process/inventoryTransactions/exportPDFRequisition', dataPrint, 'Ajuste de Inventario.pdf', (err) => {
 
         setLoading(false);
       });
     }
   }
 
+  // Eliminación física — solo antes de Aplicar Ajuste. Una vez aplicado, usar Anular.
   const fnDeleteDocument = () => {
-    if (id > 0) {
+    if (id > 0 && !disabled) {
       setOpenMsgDeleteDocument(true);
     }
   }
@@ -218,13 +228,86 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
     });
   }
 
-  const fnCount = () => { }
+  // "Aplicar Ajuste" (btnGenAuxiliar del legacy) — es la ÚNICA acción real: calcula la
+  // diferencia contra el saldo real de kardex y contabiliza. No existe un botón separado
+  // de "Contabilizar" genérico (el legacy lo tenía pero solo tiene sentido llamado desde
+  // acá, nunca de forma independiente).
+  const fnAskProcess = () => {
+    if (id === 0) return;
+    setOpenMsgProcess(true);
+  }
 
-  const fnApplyAdjustment = () => { }
+  const fnProcessAdjustment = () => {
+    setOpenMsgProcess(false);
+    setLoading(true);
+    request.POST(`inventory/process/inventoryTransactions/processAdjustment/${id}`, {}, (resp) => {
+      onBulkForm({ pdaNumber: resp.data.numberPDA });
+      createNotification('success', 'msg.success.processDocument', 'alert.success.title');
+      setLoading(false);
+    }, (err) => {
+      const errorCode = err?.messages?.[0]?.description?.name;
+      if (errorCode === 'adjustment.noChanges') {
+        createNotification('warning', 'msg.warning.noChangesAdjustment', 'alert.warning.title');
+      } else {
+        createNotification('error', 'msg.error.processDocument', 'alert.error.title');
+      }
+      setLoading(false);
+    });
+  }
 
-  const fnAddRemaining = () => { }
+  const fnAskVoid = () => {
+    if (id === 0 || !isProcessed) return;
+    setOpenModalVoid(true);
+  }
 
-  const fnPrintAdjustment = () => { }
+  const fnVoidAdjustment = (reason) => {
+    setLoading(true);
+    request.DELETE(buildUrl(`inventory/process/inventoryTransactions/voidAdjustment/${id}`, { reason }), () => {
+      setOpenModalVoid(false);
+      onResetForm();
+      onResetFormDeta();
+      setInventoryDetail([]);
+      createNotification('success', 'msg.success.voidDocument', 'alert.success.title');
+      setLoading(false);
+    }, () => {
+      createNotification('error', 'msg.delete.record.error', 'alert.error.title');
+      setLoading(false);
+    }, false);
+  }
+
+  // "Agregar Rest." — agrega con cantidad 0 todos los productos del almacén que todavía no
+  // están en el detalle, para poder hacer un conteo físico completo de la bodega.
+  const fnAskAddRemaining = () => {
+    if (disabled) return;
+    if (validInt(sourceStoreId) === 0) {
+      createNotification('warning', 'msg.required.select.warehouse', 'alert.warning.title');
+      return;
+    }
+    setOpenMsgAddRemaining(true);
+  }
+
+  const fnAddRemaining = () => {
+    setOpenMsgAddRemaining(false);
+    setLoading(true);
+    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId: sourceStoreId }), (resp) => {
+      const existingCodes = inventoryDetail.map((item) => item.productCode);
+      const missing = resp.data
+        .filter((item) => !existingCodes.includes(item.productCode))
+        .map((item) => ({
+          idTemp: new Date().getTime() + Math.random(),
+          originStoreId: sourceStoreId,
+          productCode: item.productCode,
+          nameProduct: item.productName,
+          cost: validFloat(item.costValue),
+          qty: 0,
+          total: 0,
+          lotCode: '',
+          dateOut: '1900-01-01'
+        }));
+      setInventoryDetail([...inventoryDetail, ...missing]);
+      setLoading(false);
+    }, () => { setLoading(false); });
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -249,7 +332,9 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
         return {
           label: item.name,
           value: item.id,
-          idCtaInventory: item.idCtaInventory
+          idCtaInventory: item.idCtaInventory,
+          idCtaCost: item.idCtaCost,
+          idCtaExpense: item.idCtaExpense
         }
       });
       setListStores(stores);
@@ -258,42 +343,25 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
 
       setLoading(false);
     });
-
-    setListTypeApply(
-      [
-        { id: "Inventario", name: "Inventario" },
-        { id: "Costo", name: "Costo" },
-        { id: "Gasto", name: "Gasto" }
-      ]
-    );
   }, []);
 
   const propsToControlPanel = {
     fnNew: fnNewDocument,
     fnSearch: fnSearchDocument,
-    fnSave: fnSaveDocument,
+    fnSave: !disabled ? fnSaveDocument : null,
     fnPrint: fnPrintDocument,
-    fnDelete: fnDeleteDocument,
+    fnDelete: !disabled ? fnDeleteDocument : null,
+    fnCancel: isProcessed && !isVoided ? fnAskVoid : null,
     buttonsHome: [
       {
         title: "button.applyAdjustment",
         icon: "bi bi-check-lg",
-        onClick: fnApplyAdjustment
-      },
-      {
-        title: "button.count",
-        icon: "bi bi-journal-check",
-        onClick: fnCount
+        onClick: isSaved && !isProcessed ? fnAskProcess : () => { }
       },
       {
         title: "button.addRemaining",
         icon: "bi bi-plus-circle",
-        onClick: fnAddRemaining
-      },
-      {
-        title: "button.printAdjustment",
-        icon: "bi bi-printer",
-        onClick: fnPrintAdjustment
+        onClick: !disabled ? fnAskAddRemaining : () => { }
       }
     ],
     buttonsOptions: [],
@@ -307,7 +375,6 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
       onInputChange,
       listDocuments,
       listStores,
-      listTypeApply,
       sendForm,
       setSendForm,
       sendFormDeta,
@@ -321,7 +388,20 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
       fnGetDataDetail,
       openMsgDeleteDocument,
       setOpenMsgDeleteDocument,
-      fnOkDeleteDocument
+      fnOkDeleteDocument,
+      disabled,
+      isProcessed,
+      isVoided,
+      isSaved,
+      openMsgProcess,
+      setOpenMsgProcess,
+      fnProcessAdjustment,
+      openModalVoid,
+      setOpenModalVoid,
+      fnVoidAdjustment,
+      openMsgAddRemaining,
+      setOpenMsgAddRemaining,
+      fnAddRemaining
     }
   )
 }

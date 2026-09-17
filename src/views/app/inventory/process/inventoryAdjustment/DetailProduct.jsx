@@ -6,11 +6,11 @@ import { IntlMessages, formatNumber } from '@Helpers/Utils'
 import DateCalendar from '@Components/dateCalendar'
 import { useDetailProduct } from './useDetailProduct'
 
-const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, dateOut, sourceStoreId, assignStoreId, total, onInputChangeDeta, fnViewProducts, setBulkFormDeta, transferDetail, setTransferDetail, sendFormDeta,setSendFormDeta, isFormValidDeta, formValidationDeta, setSendForm, isFormValid, noCtaOrigin, noCtaAssign, disabled}) => {
+const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, dateOut, sourceStoreId, total, onInputChangeDeta, fnViewProducts, setBulkFormDeta, transferDetail, setTransferDetail, sendFormDeta, setSendFormDeta, isFormValidDeta, formValidationDeta, setSendForm, isFormValid, disabled}) => {
 
-  const {onQtyChange, fnAddProduct} = useDetailProduct({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, dateOut, sourceStoreId, assignStoreId, total, setBulkFormDeta, transferDetail, setTransferDetail, isFormValidDeta, setSendFormDeta, setSendForm, isFormValid, noCtaOrigin, noCtaAssign});
+  const {onQtyChange, fnAddProduct} = useDetailProduct({idProd, productCode, nameProduct, qty, cost, total, lotCode, dateOut, sourceStoreId, setBulkFormDeta, transferDetail, setTransferDetail, isFormValidDeta, setSendFormDeta, setSendForm, isFormValid});
 
-  const {productCodeValid, qtyValid, costValid} = formValidationDeta;
+  const {productCodeValid, costValid} = formValidationDeta;
 
   if (disabled) return null;
 
@@ -32,7 +32,7 @@ const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost
                 feedbackText={sendFormDeta && (productCodeValid || null)}
               />
             </Colxx>
-            <Colxx xxs="12" xs="12" sm="8" lg="6" xl="6">
+            <Colxx xxs="12" xs="12" sm="8" lg="4" xl="4">
               <InputField
                 name="nameProduct"
                 label='input.name'
@@ -42,17 +42,7 @@ const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost
                 disabled
               />
             </Colxx>
-            <Colxx xxs="12" xs="6" sm="4" lg="3" xl="2">
-              <InputField
-                name="currentExistence"
-                label='input.currentExistence'
-                value={formatNumber(currentExistence)}
-                onChange={onInputChangeDeta}
-                type="text"
-                disabled
-              />
-            </Colxx>
-            <Colxx xxs="12" xs="6" sm="4" lg="3" xl="2">
+            <Colxx xxs="12" xs="6" sm="4" lg="2" xl="2">
               <InputField
                 name="cost"
                 label='input.cost'
@@ -64,15 +54,22 @@ const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost
                 feedbackText={sendFormDeta && (costValid || null)}
               />
             </Colxx>
-            <Colxx xxs="12" xs="6" sm="4" lg="3" xl="2">
+            <Colxx xxs="12" xs="6" sm="4" lg="2" xl="2">
+              <InputField
+                name="currentExistence"
+                label='page.inventoryAdjustment.input.systemQty'
+                value={formatNumber(currentExistence)}
+                type="text"
+                disabled
+              />
+            </Colxx>
+            <Colxx xxs="12" xs="6" sm="4" lg="2" xl="2">
               <InputField
                 name="qty"
-                label='input.qty'
+                label='page.inventoryAdjustment.input.physicalQty'
                 value={qty}
                 onChange={onQtyChange}
                 type="text"
-                invalid={sendFormDeta && !!qtyValid}
-                feedbackText={sendFormDeta && (qtyValid || null)}
               />
             </Colxx>
             <Colxx xxs="12" xs="6" sm="4" lg="3" xl="2">
@@ -84,7 +81,7 @@ const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost
                 type="text"
               />
             </Colxx>
-            <Colxx xxs="12" xs="7" sm="5" lg="3" xl="4">
+            <Colxx xxs="12" xs="7" sm="5" lg="4" xl="4">
               <DateCalendar
                 name="dateOut"
                 label="input.dateOutProd"
@@ -92,7 +89,7 @@ const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost
                 onChange={onInputChangeDeta}
               />
             </Colxx>
-            <Colxx xxs="12" xs="5" sm="3" lg="12" xl="4" align="right">
+            <Colxx xxs="12" xs="5" sm="3" lg="12" xl="2" align="right">
               <Button color="primary" onClick={() => {fnAddProduct()}}>
                 <i className='bi bi-plus' /> {IntlMessages("button.add")}
               </Button>

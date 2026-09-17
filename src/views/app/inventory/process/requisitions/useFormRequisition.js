@@ -1,7 +1,8 @@
 import { validInt } from '@Helpers/Utils';
 import { useState } from 'react';
+import { ACCOUNT_BY_APPLY_TO } from '../transferToStores/useFormTransfers';
 
-export const useFormRequisition = ({ onBulkForm, listStores, listDestinations, requisitionDetail, noCtaAssign, idProd, onResetFormDeta }) => {
+export const useFormRequisition = ({ onBulkForm, listStores, listDestinations, requisitionDetail, setRequisitionDetail, noCtaAssign, idProd, onResetFormDeta }) => {
   const [openModalApplyAccount, setOpenModalApplyAccount] = useState(false);
 
   const onStoreChange = e => {
@@ -12,12 +13,22 @@ export const useFormRequisition = ({ onBulkForm, listStores, listDestinations, r
     onBulkForm({ sourceStoreId: store, noCtaOrigin: filter ? filter.idCtaInventory : '' });
   }
 
-  const onDestinationChange = e => {
+  const onDestinationChange = (e, applyTo) => {
     const destination = e.target.value;
 
     const filter = listDestinations.find(item => item.value === validInt(destination));
+    const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'idCtaInventory';
 
-    onBulkForm({ assignStoreId: destination, noCtaAssign: filter ? filter.idCtaInventory : '' });
+    onBulkForm({ assignStoreId: destination, noCtaAssign: filter ? filter[accountField] : '' });
+  }
+
+  const onApplyToChange = (e, assignStoreId) => {
+    const applyTo = e.target.value;
+
+    const filter = listDestinations.find(item => item.value === validInt(assignStoreId));
+    const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'idCtaInventory';
+
+    onBulkForm({ applyTo, noCtaAssign: filter ? filter[accountField] : '' });
   }
 
   const fnApplyDestinyAccount = () => {
@@ -28,21 +39,15 @@ export const useFormRequisition = ({ onBulkForm, listStores, listDestinations, r
   }
 
   const fnApplyAll = () => {
-    requisitionDetail.map(item => {
-      item.noCtaAssign = noCtaAssign
-      return item;
-    });
+    const updated = requisitionDetail.map(item => ({ ...item, noCtaAssign }));
+    setRequisitionDetail(updated);
     onResetFormDeta();
     setOpenModalApplyAccount(false);
   }
 
   const fnApplyCurrent = () => {
-    requisitionDetail.map(item => {
-      if (item.idProd === idProd) {
-        item.noCtaAssign = noCtaAssign
-      }
-      return item;
-    });
+    const updated = requisitionDetail.map(item => item.idProd === idProd ? { ...item, noCtaAssign } : item);
+    setRequisitionDetail(updated);
     onResetFormDeta();
     setOpenModalApplyAccount(false);
   }
@@ -52,6 +57,7 @@ export const useFormRequisition = ({ onBulkForm, listStores, listDestinations, r
       fnApplyDestinyAccount,
       onStoreChange,
       onDestinationChange,
+      onApplyToChange,
       openModalApplyAccount,
       setOpenModalApplyAccount,
       fnApplyAll,
