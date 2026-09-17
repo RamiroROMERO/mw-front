@@ -442,44 +442,51 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
 
     setLoading(true);
     const afterSaveHeader = (noteId) => {
+      // El DELETE previo (limpiar detalle viejo antes de reinsertar) devuelve 404
+      // "delete.not.found" cuando no había filas que borrar — el caso normal en el primer
+      // Guardar de una nota nueva. No es un error real: se continúa igual hacia el insert
+      // tanto si el DELETE tuvo éxito como si no encontró nada que borrar.
+      const insertDetail = () => {
+        if (isReturn) {
+          const rows = detail2.filter((item) => validFloat(item.quantity) > 0).map((item) => ({
+            fatherId: noteId,
+            invoiceId: item.invoiceId,
+            productCode: item.productCode,
+            quantity: item.quantity,
+            subtotal: item.subtotal,
+            discountValue: item.discountValue,
+            taxValue: item.taxValue,
+            valueTotal1: item.valueTotal1,
+            cost: item.cost
+          }));
+          request.POST('billing/process/creditNoteProducts/createMany', rows, () => {
+            notification('success', 'msg.success.save', 'alert.success.title');
+            setLoading(false);
+          }, () => { setLoading(false); });
+        } else {
+          const rows = detail1.map((item) => ({
+            fatherId: noteId,
+            date: item.dateDocument,
+            dateDocument: item.dateDocument,
+            customerId: clientId,
+            invoiceCode: item.invoiceCode,
+            invoiceVal: item.invoiceVal,
+            percent: item.percent,
+            valuePayment: item.valuePayment,
+            docValueUSD: item.docValueUSD,
+            docValuePaymentUSD: item.docValuePaymentUSD
+          }));
+          request.POST('billing/process/creditNoteInvoices/createMany', rows, () => {
+            notification('success', 'msg.success.save', 'alert.success.title');
+            setLoading(false);
+          }, () => { setLoading(false); });
+        }
+      }
       request.DELETE(buildUrl('billing/process/creditNoteInvoices', { fatherId: noteId }), () => {
-        request.DELETE(buildUrl('billing/process/creditNoteProducts', { fatherId: noteId }), () => {
-          if (isReturn) {
-            const rows = detail2.filter((item) => validFloat(item.quantity) > 0).map((item) => ({
-              fatherId: noteId,
-              invoiceId: item.invoiceId,
-              productCode: item.productCode,
-              quantity: item.quantity,
-              subtotal: item.subtotal,
-              discountValue: item.discountValue,
-              taxValue: item.taxValue,
-              valueTotal1: item.valueTotal1,
-              cost: item.cost
-            }));
-            request.POST('billing/process/creditNoteProducts/createMany', rows, () => {
-              notification('success', 'msg.success.save', 'alert.success.title');
-              setLoading(false);
-            }, () => { setLoading(false); });
-          } else {
-            const rows = detail1.map((item) => ({
-              fatherId: noteId,
-              date: item.dateDocument,
-              dateDocument: item.dateDocument,
-              customerId: clientId,
-              invoiceCode: item.invoiceCode,
-              invoiceVal: item.invoiceVal,
-              percent: item.percent,
-              valuePayment: item.valuePayment,
-              docValueUSD: item.docValueUSD,
-              docValuePaymentUSD: item.docValuePaymentUSD
-            }));
-            request.POST('billing/process/creditNoteInvoices/createMany', rows, () => {
-              notification('success', 'msg.success.save', 'alert.success.title');
-              setLoading(false);
-            }, () => { setLoading(false); });
-          }
-        }, () => { setLoading(false); });
-      }, () => { setLoading(false); });
+        request.DELETE(buildUrl('billing/process/creditNoteProducts', { fatherId: noteId }), insertDetail, insertDetail, false);
+      }, () => {
+        request.DELETE(buildUrl('billing/process/creditNoteProducts', { fatherId: noteId }), insertDetail, insertDetail, false);
+      }, false);
     }
 
     if (id > 0) {

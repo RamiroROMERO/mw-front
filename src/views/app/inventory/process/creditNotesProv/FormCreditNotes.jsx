@@ -1,166 +1,215 @@
-import { Row } from 'reactstrap'
-import { Colxx } from '@Components/common/CustomBootstrap'
-import SearchSelect from '@Components/SearchSelect/SearchSelect'
-import { ContainerWithLabel } from '@Components/containerWithLabel'
-import { InputField } from '@Components/inputFields'
-import { RadioGroup } from '@Components/radioGroup'
-import DateCalendar from '@Components/dateCalendar'
-import { useFormCredit } from './useFormCredit'
+import { Row, Form } from 'reactstrap';
+import { Colxx } from '@Components/common/CustomBootstrap';
+import { RadioGroup } from '@Components/radioGroup';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
+import { SimpleSelect } from '@Components/simpleSelect';
+import { InputField } from '@Components/inputFields';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import DateCalendar from '@Components/dateCalendar';
+import { IntlMessages } from '@Helpers/Utils';
+import { TYPE_OTHER } from './useCreditNotes';
 
-const FormCreditNotes = ({documentId, providerId, providerCode, providerRtn, providerName, concept, specifyOther, notes, date, valueLps, valueUsd, exchangeRate, listDocuments, listProviders, onInputChange, onBulkForm, setShowDetail1, setShowDetail2,     setCreditNotesDetail, setCreditNotesDetail2, showspecify, setShowSpecify, sendForm, formValidation}) => {
+const FormCreditNotes = (props) => {
+  const {
+    documentCode, documentId, cai, numberCAI, date, providerId, providerRtn, providerName, typeId, typeOther, name,
+    valueLps, docValueUSD, exchangeRate, currenId, pdaNumber,
+    listDocuments, listProviders,
+    onInputChange, onProviderChange, onTypeChange,
+    formValidation, sendForm, disabled, isVoided
+  } = props;
 
-  const {onConceptChange, onProviderChange} = useFormCredit({onBulkForm, setShowDetail1, setShowDetail2, setCreditNotesDetail, setCreditNotesDetail2, listProviders, setShowSpecify});
-
-  const {documentIdValid, valueLpsValid, providerIdValid} = formValidation;
+  const { documentCodeValid, providerIdValid, caiValid, numberCAIValid } = formValidation;
 
   return (
-    <Row>
-      <Colxx className="order-xs-2 order-sm-1" xxs="12" sm="8" lg="9">
-        <Row>
-          <Colxx className="order-xs-2 order-lg-1" xxs="12" lg="5">
-            <Row>
-              <Colxx xxs="12">
+    <Form>
+      <Row>
+        <Colxx xxs="12" xs="12" sm="8" md="8" lg="5">
+          <Row>
+            <Colxx xxs="12">
+              <SimpleSelect
+                name="documentCode"
+                label="page.creditNotesProv.select.typeDocument"
+                value={documentCode}
+                onChange={onInputChange}
+                options={listDocuments}
+                disabled={disabled}
+                invalid={sendForm && !!documentCodeValid}
+                feedbackText={sendForm && (documentCodeValid || null)}
+              />
+            </Colxx>
+          </Row>
+          <Row>
+            <Colxx xxs="4">
+              <InputField
+                value={documentId || ''}
+                name="documentId"
+                type="text"
+                disabled
+                label="page.creditNotesProv.input.internalNumber"
+              />
+            </Colxx>
+            <Colxx xxs="4">
+              <InputField
+                value={cai}
+                name="cai"
+                type="text"
+                onChange={onInputChange}
+                disabled={disabled}
+                label="page.creditNotesProv.input.fiscalNumber"
+                invalid={sendForm && !!caiValid}
+                feedbackText={sendForm && (caiValid || null)}
+              />
+            </Colxx>
+            <Colxx xxs="4">
+              <InputField
+                value={numberCAI}
+                name="numberCAI"
+                type="text"
+                onChange={onInputChange}
+                disabled={disabled}
+                label="page.creditNotesProv.input.numberCAI"
+                invalid={sendForm && !!numberCAIValid}
+                feedbackText={sendForm && (numberCAIValid || null)}
+              />
+            </Colxx>
+          </Row>
+          <Row>
+            <Colxx xxs="12">
+              <ContainerWithLabel label="label.title.provider">
                 <SearchSelect
-                  label='select.documentId'
-                  name='documentId'
-                  inputValue={documentId}
-                  options={listDocuments}
-                  onChange={onInputChange}
-                  invalid={sendForm && !!documentIdValid}
-                  feedbackText={sendForm && (documentIdValid || null)}
+                  label="select.providerId"
+                  name="providerId"
+                  inputValue={providerId}
+                  onChange={onProviderChange}
+                  options={listProviders}
+                  isDisabled={disabled}
+                  invalid={sendForm && !!providerIdValid}
+                  feedbackText={sendForm && (providerIdValid || null)}
                 />
-              </Colxx>
+                <Row>
+                  <Colxx xxs="5">
+                    <InputField value={providerRtn} name="providerRtn" type="text" disabled label="input.rtn" />
+                  </Colxx>
+                  <Colxx xxs="7">
+                    <InputField value={providerName} name="providerName" type="text" disabled label="input.name" />
+                  </Colxx>
+                </Row>
+              </ContainerWithLabel>
+            </Colxx>
+          </Row>
+          <Row>
+            <Colxx xxs="12">
+              <InputField
+                value={name}
+                name="name"
+                onChange={onInputChange}
+                type="textarea"
+                label="input.observations"
+                disabled={disabled}
+              />
+            </Colxx>
+          </Row>
+        </Colxx>
+        <Colxx xxs="12" xs="12" sm="4" md="4" lg="3">
+          <Row>
+            <Colxx xxs="12">
+              <RadioGroup
+                label="page.creditNotesProv.title.type"
+                name="typeId"
+                value={typeId}
+                onChange={onTypeChange}
+                options={[
+                  { id: 1, label: 'page.creditNotesProv.radio.discount', disabled },
+                  { id: 2, label: 'page.creditNotesProv.radio.cancellation', disabled },
+                  { id: 3, label: 'page.creditNotesProv.radio.devolution', disabled },
+                  { id: 4, label: 'page.creditNotesProv.radio.others', disabled }
+                ]}
+              />
+            </Colxx>
+            {typeId === TYPE_OTHER && (
               <Colxx xxs="12">
-                <RadioGroup
-                  label="page.creditNotesProv.radio.concept"
-                  name="concept"
-                  value={concept}
-                  onChange={onConceptChange}
-                  options={[
-                    {id:1, label: 'page.creditNotesProv.radio.discount'},
-                    {id:2, label: 'page.creditNotesProv.radio.cancellation'},
-                    {id:3, label: 'page.creditNotesProv.radio.devolution'},
-                    {id:4, label: 'page.creditNotesProv.radio.others'}
-                  ]}
-                  display="flex"
-                />
-              </Colxx>
-              <Colxx xxs="12" style={{display: showspecify}}>
                 <InputField
-                  name="specifyOther"
-                  label='page.creditNotesProv.input.specifyOther'
-                  value={specifyOther}
+                  name="typeOther"
+                  label="page.creditNotesProv.input.specifyOther"
+                  value={typeOther}
                   onChange={onInputChange}
                   type="text"
+                  disabled={disabled}
                 />
               </Colxx>
-            </Row>
-          </Colxx>
-          <Colxx className="order-xs-1 order-lg-2" xxs="12" lg="7">
-            <Row>
+            )}
+            <Colxx xxs="12">
+              <RadioGroup
+                label="page.creditNotesProv.title.currency"
+                name="currenId"
+                value={currenId}
+                onChange={onInputChange}
+                options={[
+                  { id: 1, label: 'page.invoicing.radio.lempira', disabled },
+                  { id: 2, label: 'page.invoicing.radio.dollar', disabled }
+                ]}
+              />
+            </Colxx>
+          </Row>
+        </Colxx>
+        <Colxx xxs="12" xs="12" sm="12" md="12" lg="4">
+          <Row>
+            <Colxx xxs="12" sm="6" md="6" lg="12">
+              <DateCalendar
+                value={date}
+                disabled={disabled}
+                name="date"
+                label="select.date"
+                onChange={onInputChange}
+              />
+            </Colxx>
+            <Colxx xxs="12" sm="6" md="6" lg="6">
+              <InputField
+                value={valueLps}
+                name="valueLps"
+                type="text"
+                disabled
+                label="page.creditNotesProv.input.valueLps"
+              />
+            </Colxx>
+            <Colxx xxs="12" sm="6" md="6" lg="6">
+              <InputField
+                value={docValueUSD}
+                name="docValueUSD"
+                onChange={onInputChange}
+                type="text"
+                disabled={disabled}
+                label="page.creditNotesProv.input.valueUsd"
+              />
+            </Colxx>
+            <Colxx xxs="12" sm="6" md="6" lg="12">
+              <InputField
+                value={exchangeRate}
+                name="exchangeRate"
+                onChange={onInputChange}
+                type="text"
+                disabled={disabled}
+                label="page.creditNotesProv.input.exchangeRate"
+              />
+            </Colxx>
+            {isVoided && (
               <Colxx xxs="12">
-                <ContainerWithLabel label="label.title.provider">
-                  <Row>
-                    <Colxx xxs="12">
-                      <SearchSelect
-                        label='select.providerId'
-                        name='providerId'
-                        inputValue={providerId}
-                        options={listProviders}
-                        onChange={onProviderChange}
-                        invalid={sendForm && !!providerIdValid}
-                        feedbackText={sendForm && (providerIdValid || null)}
-                      />
-                    </Colxx>
-                    <Colxx xxs="12" xs="4" lg="12" xl="5">
-                      <InputField
-                        name="providerCode"
-                        label='input.code'
-                        value={providerCode}
-                        onChange={onInputChange}
-                        type="text"
-                        disabled
-                      />
-                    </Colxx>
-                    <Colxx xxs="12" xs="8" lg="12" xl="7">
-                      <InputField
-                        name="providerRtn"
-                        label='input.rtn'
-                        value={providerRtn}
-                        onChange={onInputChange}
-                        type="text"
-                      />
-                    </Colxx>
-                    <Colxx xxs="12" lg="12">
-                      <InputField
-                        name="providerName"
-                        label='input.name'
-                        value={providerName}
-                        onChange={onInputChange}
-                        type="text"
-                      />
-                    </Colxx>
-                  </Row>
-                </ContainerWithLabel>
+                <span className="text-danger fw-bold">
+                  <i className="bi bi-x-octagon-fill" /> {IntlMessages("page.creditNotesProv.status.voided")}
+                </span>
               </Colxx>
-            </Row>
-          </Colxx>
-        </Row>
-        <Row>
-          <Colxx xxs="12">
-            <InputField
-              name="notes"
-              label='input.observations'
-              value={notes}
-              onChange={onInputChange}
-              type="textarea"
-            />
-          </Colxx>
-        </Row>
-      </Colxx>
-      <Colxx className="order-xs-1 order-sm-2" xxs="12" sm="4" lg="3">
-        <Row>
-          <Colxx xxs="12" xs="6" sm="12">
-            <DateCalendar
-              name="date"
-              label='select.date'
-              value={date}
-              onChange={onInputChange}
-            />
-          </Colxx>
-          <Colxx xxs="12" xs="6" sm="12">
-            <InputField
-              name="valueLps"
-              label='page.creditNotesProv.input.valueLps'
-              value={valueLps}
-              onChange={onInputChange}
-              type="text"
-              invalid={sendForm && !!valueLpsValid}
-              feedbackText={sendForm && (valueLpsValid || null)}
-            />
-          </Colxx>
-          <Colxx xxs="12" xs="6" sm="12">
-            <InputField
-              name="valueUsd"
-              label='page.creditNotesProv.input.valueUsd'
-              value={valueUsd}
-              onChange={onInputChange}
-              type="text"
-            />
-          </Colxx>
-          <Colxx xxs="12" xs="6" sm="12">
-            <InputField
-              name="exchangeRate"
-              label='page.creditNotesProv.input.exchangeRate'
-              value={exchangeRate}
-              onChange={onInputChange}
-              type="text"
-            />
-          </Colxx>
-        </Row>
-      </Colxx>
-    </Row>
+            )}
+            {!isVoided && pdaNumber > 0 && (
+              <Colxx xxs="12">
+                <span className="text-success">
+                  <i className="bi bi-check-circle-fill" /> {IntlMessages("page.creditNotesProv.status.processed")} #{pdaNumber}
+                </span>
+              </Colxx>
+            )}
+          </Row>
+        </Colxx>
+      </Row>
+    </Form>
   )
 }
-
-export default FormCreditNotes
+export default FormCreditNotes;
