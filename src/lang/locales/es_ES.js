@@ -3041,6 +3041,8 @@ const esLang = {
   "page.purchaseReport.modal.otherReports.radio.byExpenses": "Impuestos por Gastos Administrativos",
   "page.purchaseReport.modal.otherReports.radio.byProdQty": "Compras por Producto y Cantidad",
   "page.purchaseReport.modal.otherReports.radio.detailServices": "Detalle de Compras de Servicios",
+  "page.purchaseReport.table.column.taxCategory": "Categoría Fiscal",
+  "msg.purchaseReport.otherReports.notImplemented": "Este reporte todavía no está disponible",
   // 82. Inventory Report Page in Inventory
   "page.inventoryReport.modal.otherReports.title": "Reportes de Inventario",
   "page.inventoryReport.modal.otherReports.radio.detailByDestination": "Reporte Detallado por Centro de Destino",

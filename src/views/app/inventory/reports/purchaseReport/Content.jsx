@@ -20,11 +20,12 @@ const PurchaseReport = ({ setLoading }) => {
     title: "page.purchaseReport.modal.otherReports.title",
     open: openModalOtherReport,
     setOpen: setOpenModalOtherReport,
-    maxWidth: 'md',
+    maxWidth: 'xl',
     data: {
       listProviders,
       listStores,
-      listProducts
+      listProducts,
+      setLoading
     }
   }
 

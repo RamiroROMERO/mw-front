@@ -5,7 +5,7 @@ import DateCalendar from '@Components/dateCalendar'
 import { IntlMessages } from '@Helpers/Utils'
 import { Checkbox } from '@Components/checkbox'
 
-const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, isBonus, listProviders, listStores, listProducts, onInputChange, fnSearchReport}) => {
+const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, isBonus, listProviders, listStores, listProducts, onInputChange, fnSearchReport, fnOpenOtherReports}) => {
 
   return (
     <>
@@ -64,6 +64,9 @@ const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, isBon
     </Row>
     <Row>
       <Colxx xxs="12" className="div-action-button-container">
+        <Button color="secondary" onClick={() => {fnOpenOtherReports()}}>
+          <i className='bi bi-file-earmark-bar-graph' /> {IntlMessages("page.purchaseReport.modal.otherReports.title")}
+        </Button>
         <Button color="primary" onClick={() => {fnSearchReport()}}>
           <i className='bi bi-search' /> {IntlMessages("button.search")}
         </Button>

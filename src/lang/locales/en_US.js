@@ -3025,6 +3025,8 @@ const enLang = {
   "page.purchaseReport.modal.otherReports.radio.byExpenses": "Taxes for Administrative Expenses",
   "page.purchaseReport.modal.otherReports.radio.byProdQty": "Purchases by Product and Quantity",
   "page.purchaseReport.modal.otherReports.radio.detailServices": "Detail of Purchases of Services",
+  "page.purchaseReport.table.column.taxCategory": "Tax Category",
+  "msg.purchaseReport.otherReports.notImplemented": "This report isn't available yet",
   // 82. Inventory Report Page in Inventory
   "page.inventoryReport.modal.otherReports.title": "Inventory Reports",
   "page.inventoryReport.modal.otherReports.radio.detailByDestination": "Detailed Report by Destination Center",

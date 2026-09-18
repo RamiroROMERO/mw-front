@@ -218,7 +218,8 @@ export const usePurchaseReport = ({ setLoading }) => {
     listStores,
     listProducts,
     onInputChange,
-    fnSearchReport
+    fnSearchReport,
+    fnOpenOtherReports: () => setOpenModalOtherReport(true)
   }
 
   return (
