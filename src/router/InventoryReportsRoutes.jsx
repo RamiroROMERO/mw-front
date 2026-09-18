@@ -11,6 +11,7 @@ const ExpensesServices = React.lazy(() => import('@Views/app/inventory/reports/e
 const InventoryReport = React.lazy(() => import('@Views/app/inventory/reports/inventoryReport'));
 const PurchaseMemo = React.lazy(() => import('@Views/app/inventory/reports/purchaseMemo'));
 const InventoryMemo = React.lazy(() => import('@Views/app/inventory/reports/inventoryMemo'));
+const KardexReport = React.lazy(() => import('@Views/app/inventory/reports/kardexReport'));
 
 const InventoryReportsRoutes = (props) => {
   const { setLoading } = props;
@@ -47,6 +48,10 @@ const InventoryReportsRoutes = (props) => {
       index
       path="/inventoryMemo"
       element={<InventoryMemo setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/kardexReport"
+      element={<KardexReport setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }

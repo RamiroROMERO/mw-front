@@ -556,6 +556,11 @@ const data = [
             icon: 'bi bi-bar-chart',
             label: 'menu.inventoryMemo',
             to: `${adminRoot}/inventory/reports/inventoryMemo`,
+          },
+          {
+            icon: 'simple-icon-chart',
+            label: 'menu.kardexReport',
+            to: `${adminRoot}/inventory/reports/kardexReport`,
           }
         ],
       },
