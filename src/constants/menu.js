@@ -678,6 +678,11 @@ const data = [
             icon: 'iconsminds-line-chart-1',
             label: 'menu.accountingReports',
             to: `${adminRoot}/accounting/reports/accountingReports`,
+          },
+          {
+            icon: 'iconsminds-financial',
+            label: 'menu.otherReceivableReports',
+            to: `${adminRoot}/accounting/reports/otherReceivableReports`,
           }
         ],
       },

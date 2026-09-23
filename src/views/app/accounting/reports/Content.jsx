@@ -49,6 +49,17 @@ const Reports = (props) => {
         { replace: true }
       );
     }
+  },
+  {
+    id: 5,
+    icon: "large-icon iconsminds-financial",
+    title: "menu.otherReceivableReports",
+    fnOnclick: () => {
+      navigate(
+        `${adminRoot}/accounting/reports/otherReceivableReports`,
+        { replace: true }
+      );
+    }
   }
   ]
   return (
