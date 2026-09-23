@@ -8,7 +8,7 @@ import { Checkbox } from '@Components/checkbox'
 
 export const MailOptionsModal = ({ data, setOpen }) => {
 
-  const { formState, onInputChange, fnSaveIntOptions } = useMailOptionsModal({ setOpen, data });
+  const { formState, onInputChange, fnSaveIntOptions, fnTestMail, sendingTest } = useMailOptionsModal({ setOpen, data });
 
   const { mailServer, mailPort, mailSsl, mailEmail, mailUser, mailPass, mailCopy1, mailCopy2, mailCopy3, sendMailGenInvoice, sendMailGenOC, sendMailGenProvPayment } = formState;
 
@@ -71,6 +71,11 @@ export const MailOptionsModal = ({ data, setOpen }) => {
                     value={mailSsl}
                     onChange={onInputChange}
                   />
+                </Colxx>
+                <Colxx xxs={12} className="div-action-button-container">
+                  <Button onClick={fnTestMail} disabled={sendingTest} color="secondary">
+                    <i className="bi bi-envelope" /> {IntlMessages("button.testMail")}
+                  </Button>
                 </Colxx>
               </Row>
             </ContainerWithLabel>

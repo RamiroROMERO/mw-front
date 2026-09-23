@@ -7,7 +7,7 @@ import { SimpleSelect } from '@Components/simpleSelect'
 import { IntlMessages } from '@Helpers/Utils'
 import { Button, Card, CardBody, Row } from 'reactstrap'
 
-const Detail = ({formState, listComp, listTaxDoc, onInputChange, formValidation, fnSave, fnClearInputs, sendForm}) => {
+const Detail = ({formState, listComp, listTaxDoc, onInputChange, onColorChange, colorHex, formValidation, fnSave, fnClearInputs, sendForm}) => {
 
   const { code, name, type, title, codeInt, useTaxDocument, companyId, taxDocumentId, isReportBank, useBill, useAcc, useFixass, useInv, useTax, useBank, bankCheck, bankTransfer, bankDepo, bankNcd, bankExpense, status, notes1, notes2 } = formState;
 
@@ -225,6 +225,17 @@ const Detail = ({formState, listComp, listTaxDoc, onInputChange, formValidation,
                   label="check.status"
                 />
               </Colxx>
+              {isReportBank && (
+                <Colxx xxs="12" sm="6" lg="4">
+                  <InputField
+                    value={colorHex}
+                    name="colorHex"
+                    onChange={onColorChange}
+                    type="color"
+                    label="page.itemsCodes.input.colorInReportBank"
+                  />
+                </Colxx>
+              )}
             </Row>
           </Colxx>
         </Row>

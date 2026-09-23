@@ -2,13 +2,14 @@ import { Checkbox } from '@Components/checkbox';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { InputField } from '@Components/inputFields';
+import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { IntlMessages } from '@Helpers/Utils';
 import { Button, Card, CardBody, Row } from 'reactstrap';
 import DateCalendar from '@Components/dateCalendar';
 
-const Detail = ({formState, onInputChange, formValidation, fnSave, fnClearInputs, sendForm, checkActive, checkChange, onViewInternalOptions, onViewMailOptions}) => {
+const Detail = ({formState, onInputChange, formValidation, fnSave, fnClearInputs, sendForm, checkActive, listAccount, listProducts, checkChange, onViewInternalOptions, onViewMailOptions}) => {
 
-  const {dni, name, name2, address1, address2, address3, phone, email, webSite, accountantName, managerName, seatAccForSales,seatAccForSalesCost, seatAccForPurchase, seatAccForInventory, seatAccForBanks, seatAccForDebitNotes, seatAccForCreditNotes, hasStoreControl, hasStockControl, hasDateOutControl, hasProductOneManyControl, hasSellerControl, isDefault, lastCloseDate, status, hasDualCurrency } = formState;
+  const {dni, name, name2, address1, address2, address3, phone, email, webSite, accountantName, managerName, paymentAccountCode, defaultProductCode, seatAccForSales,seatAccForSalesCost, seatAccForPurchase, seatAccForInventory, seatAccForBanks, seatAccForDebitNotes, seatAccForCreditNotes, hasStoreControl, hasStockControl, hasDateOutControl, hasProductOneManyControl, hasSellerControl, isDefault, lastCloseDate, status, hasDualCurrency, declaresTaxes, salesIncludeTax, roundInPos, hasTipsInPos, auxContainerControl, farmsActivitiesControl } = formState;
 
   const { dniValid, nameValid, address1Valid, phoneValid, emailValid } = formValidation;
 
@@ -133,6 +134,24 @@ const Detail = ({formState, onInputChange, formValidation, fnSave, fnClearInputs
                   label="page.companyInformation.input.counter"
                 />
               </Colxx>
+              <Colxx xxs="12" xl="6">
+                <SearchSelect
+                  label="page.companyInformation.select.paymentAccountCode"
+                  name="paymentAccountCode"
+                  inputValue={paymentAccountCode}
+                  onChange={onInputChange}
+                  options={listAccount}
+                />
+              </Colxx>
+              <Colxx xxs="12" xl="6">
+                <SearchSelect
+                  label="page.companyInformation.select.defaultProductCode"
+                  name="defaultProductCode"
+                  inputValue={defaultProductCode}
+                  onChange={onInputChange}
+                  options={listProducts}
+                />
+              </Colxx>
             </Row>
           </Colxx>
           <Colxx xxs="12" sm="5" lg="7" xl="6">
@@ -250,6 +269,54 @@ const Detail = ({formState, onInputChange, formValidation, fnSave, fnClearInputs
                   name="hasDualCurrency"
                   value={hasDualCurrency}
                   label="page.companyInformation.check.hasDualCurrency"
+                />
+              </Colxx>
+              <Colxx xxs="12" lg="6">
+                <Checkbox
+                  onChange={onInputChange}
+                  name="declaresTaxes"
+                  value={declaresTaxes}
+                  label="page.companyInformation.check.declaresTaxes"
+                />
+              </Colxx>
+              <Colxx xxs="12" lg="6">
+                <Checkbox
+                  onChange={onInputChange}
+                  name="salesIncludeTax"
+                  value={salesIncludeTax}
+                  label="page.companyInformation.check.salesIncludeTax"
+                />
+              </Colxx>
+              <Colxx xxs="12" lg="6">
+                <Checkbox
+                  onChange={onInputChange}
+                  name="roundInPos"
+                  value={roundInPos}
+                  label="page.companyInformation.check.roundInPos"
+                />
+              </Colxx>
+              <Colxx xxs="12" lg="6">
+                <Checkbox
+                  onChange={onInputChange}
+                  name="hasTipsInPos"
+                  value={hasTipsInPos}
+                  label="page.companyInformation.check.hasTipsInPos"
+                />
+              </Colxx>
+              <Colxx xxs="12" lg="6">
+                <Checkbox
+                  onChange={onInputChange}
+                  name="auxContainerControl"
+                  value={auxContainerControl}
+                  label="page.companyInformation.check.auxContainerControl"
+                />
+              </Colxx>
+              <Colxx xxs="12" lg="6">
+                <Checkbox
+                  onChange={onInputChange}
+                  name="farmsActivitiesControl"
+                  value={farmsActivitiesControl}
+                  label="page.companyInformation.check.farmsActivitiesControl"
                 />
               </Colxx>
             </Row>

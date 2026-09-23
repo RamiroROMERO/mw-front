@@ -20,7 +20,7 @@ const TaxSettingsRoutes = (props) => {
       element={<FiscalPeriods setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
-      path="/typeTaxes"
+      path="/typesTaxes"
       element={<TypesTaxes setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index

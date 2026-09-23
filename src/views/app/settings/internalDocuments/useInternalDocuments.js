@@ -40,12 +40,35 @@ export const useInternalDocuments = ({ setLoading }) => {
     bankDepo: false,
     bankNcd: false,
     bankExpense: false,
+    colorInReportBank: 0,
     status: true,
     notes1: '',
     notes2: '',
   }, itemsCodesValid);
 
-  const { id, useBill, useAcc, useFixass, useInv, useTax, useBank } = formState;
+  const { id, useBill, useAcc, useFixass, useInv, useTax, useBank, useTaxDocument, taxDocumentId, isReportBank, colorInReportBank,
+    bankCheck, bankTransfer, bankDepo, bankNcd, bankExpense } = formState;
+
+  // Igual que el legacy: RGB() empaqueta el color como un entero r + g*256 + b*65536
+  // (la columna `color` en fac_doctos es INTEGER, no un string hex).
+  const rgbIntToHex = (value) => {
+    const num = validInt(value);
+    const r = num % 256;
+    const g = Math.floor(num / 256) % 256;
+    const b = Math.floor(num / 65536) % 256;
+    return `#${[r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('')}`;
+  }
+
+  const hexToRgbInt = (hex) => {
+    const r = Number.parseInt(hex.slice(1, 3), 16) || 0;
+    const g = Number.parseInt(hex.slice(3, 5), 16) || 0;
+    const b = Number.parseInt(hex.slice(5, 7), 16) || 0;
+    return r + g * 256 + b * 65536;
+  }
+
+  const onColorChange = (e) => {
+    onInputChange({ target: { name: 'colorInReportBank', value: hexToRgbInt(e.target.value) } });
+  }
 
   const fnClearInputs = () => {
     onResetForm();
@@ -89,6 +112,21 @@ export const useInternalDocuments = ({ setLoading }) => {
     if ((useBill === 0 || useBill === false) && (useInv === 0 || useInv === false) && (useAcc === 0 || useAcc === false)
       && (useTax === 0 || useTax === false) && (useFixass === 0 || useFixass === false) && (useBank === 0 || useBank === false)) {
       notification('warning', 'msg.required.check.useArea', 'alert.warning.title');
+      return;
+    }
+
+    if (useTaxDocument && validInt(taxDocumentId) === 0) {
+      notification('warning', 'msg.required.select.taxDocumentId', 'alert.warning.title');
+      return;
+    }
+
+    if (useBank && !bankCheck && !bankTransfer && !bankDepo && !bankNcd && !bankExpense) {
+      notification('warning', 'msg.required.check.bankArea', 'alert.warning.title');
+      return;
+    }
+
+    if (isReportBank && validInt(colorInReportBank) === 0) {
+      notification('warning', 'msg.required.input.colorInReportBank', 'alert.warning.title');
       return;
     }
 
@@ -157,6 +195,8 @@ export const useInternalDocuments = ({ setLoading }) => {
     listComp,
     listTaxDoc,
     onInputChange,
+    onColorChange,
+    colorHex: rgbIntToHex(colorInReportBank),
     fnSave,
     fnClearInputs
   };

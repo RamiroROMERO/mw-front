@@ -24,7 +24,15 @@ export const useInternalOptions = ({ companyId, setLoading, setOpen }) => {
     rrhhMenu: false,
     hospitalMenu: false,
     laboratoryMenu: false,
-    radiologyMenu: false
+    radiologyMenu: false,
+    exportControl: false,
+    comercialControl: false,
+    posControl: false,
+    payrollSeatControl: false,
+    hotelMenu: false,
+    percentSAR: '',
+    exchangeType: 0,
+    formatDate: 'DMY'
   });
 
   useEffect(() => {
@@ -55,7 +63,7 @@ export const useInternalOptions = ({ companyId, setLoading, setOpen }) => {
         setLoading(false);
       });
     } else {
-      request.PUT(`admin/companyInternalSettings/${id}`, formState, res => {
+      request.PUT(`admin/companyInternalSettings/${formState.id}`, formState, res => {
         setOpen(false)
         setLoading(false);
       }, err => {

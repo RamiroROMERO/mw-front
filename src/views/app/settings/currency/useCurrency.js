@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms';
+import { validInt } from '@Helpers/Utils';
+import notification from '@Containers/ui/Notifications';
 
 export const useCurrency = ({ setLoading }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -48,6 +50,14 @@ export const useCurrency = ({ setLoading }) => {
     setSendForm(true);
     if (!isFormValid) {
       return;
+    }
+
+    if (formState.national) {
+      const otherNational = tableData.find((item) => item.national && validInt(item.id) !== validInt(formState.id));
+      if (otherNational) {
+        notification('error', 'msg.currency.nationalAlreadyExists', 'alert.error.title');
+        return;
+      }
     }
 
     if (formState.id > 0) {

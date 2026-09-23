@@ -10,7 +10,8 @@ import { Button, Card, CardBody, Row } from 'reactstrap'
 
 const Detail = ({ formState, listCompany, onInputChange, formValidation, fnSave, fnClearInputs, sendForm }) => {
 
-  const { name, description, companyId, cai1, cai2, cai3, cai4, cai5, cai6, ndoc1, ndoc2, ndoc3, ndoc4, limitDate, noRange, minDoctos, status } = formState;
+  const { name, description, companyId, cai1, cai2, cai3, cai4, cai5, cai6, ndoc1, ndoc2, ndoc3, ndoc4, limitDate, noRange, minDoctos, status,
+    codeDepto, codeMunic, autoCorrelative, modifyInventory, internalCorrelative } = formState;
 
   const { nameValid, descriptionValid, companyIdValid, cai1Valid, cai2Valid, cai3Valid, cai4Valid, cai5Valid, cai6Valid,
     ndoc1Valid, ndoc2Valid, ndoc3Valid, ndoc4Valid, limitDateValid, noRangeValid } = formValidation;
@@ -203,6 +204,47 @@ const Detail = ({ formState, listCompany, onInputChange, formValidation, fnSave,
               mask="***-***-**-******** Al ***-***-**-********"
               maskChar=" "
             // tag={ReactInputMask}
+            />
+          </Colxx>
+          <Colxx xxs="12" xs="4" sm="3" lg="3">
+            <InputField
+              value={codeDepto}
+              name="codeDepto"
+              onChange={onInputChange}
+              type="text"
+              label="page.taxDocument.input.codeDepto"
+            />
+          </Colxx>
+          <Colxx xxs="12" xs="4" sm="3" lg="3">
+            <InputField
+              value={codeMunic}
+              name="codeMunic"
+              onChange={onInputChange}
+              type="text"
+              label="page.taxDocument.input.codeMunic"
+            />
+          </Colxx>
+          <Colxx xxs="12" xs="4" sm="3" lg="3">
+            <InputField
+              value={internalCorrelative}
+              name="internalCorrelative"
+              onChange={onInputChange}
+              type="text"
+              label="page.taxDocument.input.internalCorrelative"
+            />
+          </Colxx>
+          <Colxx xxs="12" xs="12" sm="6" lg="3">
+            <Checkbox
+              onChange={onInputChange}
+              name="autoCorrelative"
+              value={autoCorrelative}
+              label="page.taxDocument.check.autoCorrelative"
+            />
+            <Checkbox
+              onChange={onInputChange}
+              name="modifyInventory"
+              value={modifyInventory}
+              label="page.taxDocument.check.modifyInventory"
             />
           </Colxx>
           <Colxx xxs="12" className="div-content-right">

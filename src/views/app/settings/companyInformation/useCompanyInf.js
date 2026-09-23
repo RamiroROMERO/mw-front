@@ -11,6 +11,8 @@ export const useCompanyInf = ({ setLoading }) => {
   const [openInternalOptionsModal, setOpenInternalOptionsModal] = useState(false);
   const [openMailOptionsModal, setOpenMailOptionsModal] = useState(false);
   const [tableData, setTableData] = useState([]);
+  const [listAccount, setListAccount] = useState([]);
+  const [listProducts, setListProducts] = useState([]);
 
   const companyValid = {
     dni: [(val) => val.length > 12 && val.length <= 16, "msg.required.input.rtn"],
@@ -33,6 +35,8 @@ export const useCompanyInf = ({ setLoading }) => {
     webSite: '',
     accountantName: '',
     managerName: '',
+    paymentAccountCode: '',
+    defaultProductCode: '',
     seatAccForSales: false,
     seatAccForSalesCost: false,
     seatAccForPurchase: false,
@@ -46,6 +50,12 @@ export const useCompanyInf = ({ setLoading }) => {
     hasProductOneManyControl: false,
     hasSellerControl: false,
     hasDualCurrency: false,
+    declaresTaxes: false,
+    salesIncludeTax: false,
+    roundInPos: false,
+    hasTipsInPos: false,
+    auxContainerControl: false,
+    farmsActivitiesControl: false,
     isDefault: false,
     lastCloseDate: '',
     status: true
@@ -142,6 +152,26 @@ export const useCompanyInf = ({ setLoading }) => {
 
   useEffect(() => {
     fnGetData();
+
+    request.GET('accounting/settings/accountants/getSL', (resp) => {
+      const account = resp.data.map((item) => {
+        return {
+          label: `${item.cta} - ${item.nombre}`,
+          value: item.cta
+        }
+      });
+      setListAccount(account);
+    }, (err) => { });
+
+    request.GET('inventory/settings/products/getSL', (resp) => {
+      const products = resp.data.map((item) => {
+        return {
+          label: `${item.code} ${item.name}`,
+          value: item.code
+        }
+      });
+      setListProducts(products);
+    }, (err) => { });
   }, []);
 
   const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDisableDocument, title: "alert.question.title", onResetForm }
@@ -158,6 +188,8 @@ export const useCompanyInf = ({ setLoading }) => {
     isFormValid,
     sendForm,
     checkActive,
+    listAccount,
+    listProducts,
     onViewInternalOptions,
     onViewMailOptions,
     checkChange,

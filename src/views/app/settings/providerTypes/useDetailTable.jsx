@@ -1,7 +1,6 @@
 import { IntlMessages } from '@Helpers/Utils';
-import { useEffect, useState } from 'react'
 
-export const useDetailTable = ({onBulkForm, setOpenMsgQuestion, tableData}) => {
+export const useDetailTable = ({onBulkForm, setOpenMsgQuestion, tableData, listAccount = []}) => {
 
   const fnDeleteItem = (item) => {
     onBulkForm({id:item.id});
@@ -12,11 +11,17 @@ export const useDetailTable = ({onBulkForm, setOpenMsgQuestion, tableData}) => {
     onBulkForm(item)
   }
 
-  const [table, setTable] = useState({
+  const table = {
     title: IntlMessages("page.providerTypes.table.title"),
     columns: [
       { text: IntlMessages("page.providerTypes.table.name"), dataField: "name", headerStyle: { 'width': '50%' } },
-      { text: IntlMessages("page.providerTypes.table.idCtaCxp"), dataField: "idCtaCxp", headerStyle: { 'width': '30%' } },
+      {
+        text: IntlMessages("page.providerTypes.table.idCtaCxp"), dataField: "idCtaCxp", headerStyle: { 'width': '30%' },
+        cell: ({ row }) => {
+          const account = listAccount.find((item) => item.value === row.original.idCtaCxp);
+          return account ? account.label : row.original.idCtaCxp;
+        }
+      },
       {
         text: IntlMessages("check.status"), dataField: "status", headerStyle: { 'width': '20%' },
         classes: 'd-sm-none-table-cell', headerClasses: 'd-sm-none-table-cell',
@@ -25,7 +30,7 @@ export const useDetailTable = ({onBulkForm, setOpenMsgQuestion, tableData}) => {
           : <i className="medium-icon bi bi-square" />)
       }
     ],
-    data: [],
+    data: tableData,
     actions: [{
       color: 'warning',
       onClick: fnEditItem,
@@ -35,12 +40,7 @@ export const useDetailTable = ({onBulkForm, setOpenMsgQuestion, tableData}) => {
       onClick: fnDeleteItem,
       icon: 'trash'
     }],
-  });
-
-  useEffect(()=>{
-    const dataTable = {...table, data: tableData};
-    setTable(dataTable);
-  },[tableData]);
+  };
 
   return (
     {

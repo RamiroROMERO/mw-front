@@ -113,6 +113,7 @@ export const useProviderTypes = ({ setLoading }) => {
 
   const propsToDetailTable = {
     tableData,
+    listAccount,
     onBulkForm,
     setOpenMsgQuestion
   }

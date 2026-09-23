@@ -1,5 +1,6 @@
 import { request } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
+import DateHelper from '@Helpers/DateHelper';
 import { useForm } from '@Hooks/useForms';
 import { useEffect, useState } from 'react'
 
@@ -24,7 +25,7 @@ export const useTaxDocuments = ({ setLoading }) => {
     ndoc2: [(val) => val.length === 3, "msg.required.input.correlative"],
     ndoc3: [(val) => val.length === 2, "msg.required.input.correlative"],
     ndoc4: [(val) => val.length === 8, "msg.required.input.correlative"],
-    limitDate: [(val) => val !== "", "msg.required.input.limitDate"],
+    limitDate: [(val) => val !== "" && !DateHelper.isBefore(val, DateHelper.now(), 'day'), "msg.required.input.limitDate"],
     noRange: [(val) => val.length > 0 && val.length <= 42, "msg.required.input.noRange"]
   }
 
@@ -46,6 +47,11 @@ export const useTaxDocuments = ({ setLoading }) => {
     limitDate: '',
     noRange: '',
     minDoctos: '',
+    codeDepto: '',
+    codeMunic: '',
+    autoCorrelative: false,
+    modifyInventory: false,
+    internalCorrelative: '',
     status: true
   }, taxDocumentsValid);
 

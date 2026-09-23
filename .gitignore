@@ -33,3 +33,4 @@ vps.config.json
 .agents
 
 mw_legacy/
+.playwright-mcp/
