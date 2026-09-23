@@ -698,6 +698,11 @@ const data = [
             icon: 'iconsminds-magnifi-glass',
             label: 'menu.cxcInvoiceTrace',
             to: `${adminRoot}/accounting/reports/cxcInvoiceTrace`,
+          },
+          {
+            icon: 'iconsminds-statistic',
+            label: 'menu.cxcProjection',
+            to: `${adminRoot}/accounting/reports/cxcProjection`,
           }
         ],
       },

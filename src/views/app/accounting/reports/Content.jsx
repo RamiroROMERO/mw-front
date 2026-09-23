@@ -93,6 +93,17 @@ const Reports = (props) => {
         { replace: true }
       );
     }
+  },
+  {
+    id: 9,
+    icon: "large-icon iconsminds-statistic",
+    title: "menu.cxcProjection",
+    fnOnclick: () => {
+      navigate(
+        `${adminRoot}/accounting/reports/cxcProjection`,
+        { replace: true }
+      );
+    }
   }
   ]
   return (
