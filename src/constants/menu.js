@@ -688,6 +688,11 @@ const data = [
             icon: 'iconsminds-calendar-4',
             label: 'menu.cxcWeekly',
             to: `${adminRoot}/accounting/reports/cxcWeekly`,
+          },
+          {
+            icon: 'iconsminds-receipt-4',
+            label: 'menu.cxcPaymentHistory',
+            to: `${adminRoot}/accounting/reports/cxcPaymentHistory`,
           }
         ],
       },

@@ -71,6 +71,17 @@ const Reports = (props) => {
         { replace: true }
       );
     }
+  },
+  {
+    id: 7,
+    icon: "large-icon iconsminds-receipt-4",
+    title: "menu.cxcPaymentHistory",
+    fnOnclick: () => {
+      navigate(
+        `${adminRoot}/accounting/reports/cxcPaymentHistory`,
+        { replace: true }
+      );
+    }
   }
   ]
   return (
