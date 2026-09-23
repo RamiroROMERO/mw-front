@@ -115,6 +115,17 @@ const Reports = (props) => {
         { replace: true }
       );
     }
+  },
+  {
+    id: 11,
+    icon: "large-icon bi bi-search",
+    title: "menu.cxpInvoiceTrace",
+    fnOnclick: () => {
+      navigate(
+        `${adminRoot}/accounting/reports/cxpInvoiceTrace`,
+        { replace: true }
+      );
+    }
   }
   ]
   return (

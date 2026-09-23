@@ -708,6 +708,11 @@ const data = [
             icon: 'bi bi-hospital',
             label: 'menu.cxcByInsurer',
             to: `${adminRoot}/accounting/reports/cxcByInsurer`,
+          },
+          {
+            icon: 'bi bi-search',
+            label: 'menu.cxpInvoiceTrace',
+            to: `${adminRoot}/accounting/reports/cxpInvoiceTrace`,
           }
         ],
       },
