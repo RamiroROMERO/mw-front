@@ -2615,6 +2615,18 @@ const esLang = {
   "page.adminExpenses.msg.deleteError": "No se pudo eliminar el documento",
   "page.adminExpenses.msg.deleteLineConfirm": "¿Está Seguro que desea Eliminar este Item?",
   "page.adminExpenses.msg.deleteDocConfirm": "¿Está Seguro que Desea Eliminar este Documento de la Base de Datos?",
+  /* 39.1 Diary Book (Libro Diario) */
+  "page.diaryBook.table.title": "Libro Diario",
+  "page.diaryBook.table.numberPDA": "No. PDA",
+  "page.diaryBook.table.debit": "Debe",
+  "page.diaryBook.table.credit": "Haber",
+  "page.diaryBook.table.accountNumber": "Cuenta",
+  "page.diaryBook.table.accountName": "Nombre Cuenta",
+  "page.diaryBook.input.accountCode": "Cuenta",
+  "page.diaryBook.input.search": "Buscar",
+  "page.diaryBook.button.viewEntry": "Ver Partida",
+  "page.diaryBook.modal.viewEntry.title": "Detalle de la Partida",
+  "page.diaryBook.msg.invalidDateRange": "Rango de Fechas Inválido",
   /* 40. Purchases page in inventory module */
   "page.purchases.input.document": "Documento",
   "page.purchases.input.storeId": "Almacén",

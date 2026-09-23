@@ -2599,6 +2599,18 @@ const enLang = {
   "page.adminExpenses.msg.deleteError": "The document could not be deleted",
   "page.adminExpenses.msg.deleteLineConfirm": "Are you sure you want to delete this item?",
   "page.adminExpenses.msg.deleteDocConfirm": "Are you sure you want to delete this document from the database?",
+  /* 39.1 Diary Book */
+  "page.diaryBook.table.title": "Diary Book",
+  "page.diaryBook.table.numberPDA": "No. Entry",
+  "page.diaryBook.table.debit": "Debit",
+  "page.diaryBook.table.credit": "Credit",
+  "page.diaryBook.table.accountNumber": "Account",
+  "page.diaryBook.table.accountName": "Account Name",
+  "page.diaryBook.input.accountCode": "Account",
+  "page.diaryBook.input.search": "Search",
+  "page.diaryBook.button.viewEntry": "View Entry",
+  "page.diaryBook.modal.viewEntry.title": "Entry Detail",
+  "page.diaryBook.msg.invalidDateRange": "Invalid Date Range",
   /* 40. Purchases page in inventory module */
   "page.purchases.input.document": "Document",
   "page.purchases.input.storeId": "Store",
