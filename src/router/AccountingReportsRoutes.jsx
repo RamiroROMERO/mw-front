@@ -9,6 +9,7 @@ const ModuleOpeningClosing = React.lazy(() => import('@Views/app/accounting/repo
 const AccountingClosures = React.lazy(() => import('@Views/app/accounting/reports/accountingClosures'));
 const AccountingReport = React.lazy(() => import('@Views/app/accounting/reports/accountingReports'));
 const OtherReceivableReports = React.lazy(() => import('@Views/app/accounting/reports/otherReceivableReports'));
+const CxCWeekly = React.lazy(() => import('@Views/app/accounting/reports/cxcWeekly'));
 
 const AccountingReportsRoutes = (props) => {
   const { setLoading } = props;
@@ -37,6 +38,10 @@ const AccountingReportsRoutes = (props) => {
       index
       path="/otherReceivableReports"
       element={<OtherReceivableReports setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/cxcWeekly"
+      element={<CxCWeekly setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }

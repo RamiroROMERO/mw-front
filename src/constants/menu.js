@@ -683,6 +683,11 @@ const data = [
             icon: 'iconsminds-financial',
             label: 'menu.otherReceivableReports',
             to: `${adminRoot}/accounting/reports/otherReceivableReports`,
+          },
+          {
+            icon: 'iconsminds-calendar-4',
+            label: 'menu.cxcWeekly',
+            to: `${adminRoot}/accounting/reports/cxcWeekly`,
           }
         ],
       },

@@ -60,6 +60,17 @@ const Reports = (props) => {
         { replace: true }
       );
     }
+  },
+  {
+    id: 6,
+    icon: "large-icon iconsminds-calendar-4",
+    title: "menu.cxcWeekly",
+    fnOnclick: () => {
+      navigate(
+        `${adminRoot}/accounting/reports/cxcWeekly`,
+        { replace: true }
+      );
+    }
   }
   ]
   return (
