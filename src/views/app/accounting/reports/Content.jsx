@@ -104,6 +104,17 @@ const Reports = (props) => {
         { replace: true }
       );
     }
+  },
+  {
+    id: 10,
+    icon: "large-icon bi bi-hospital",
+    title: "menu.cxcByInsurer",
+    fnOnclick: () => {
+      navigate(
+        `${adminRoot}/accounting/reports/cxcByInsurer`,
+        { replace: true }
+      );
+    }
   }
   ]
   return (

@@ -703,6 +703,11 @@ const data = [
             icon: 'iconsminds-statistic',
             label: 'menu.cxcProjection',
             to: `${adminRoot}/accounting/reports/cxcProjection`,
+          },
+          {
+            icon: 'bi bi-hospital',
+            label: 'menu.cxcByInsurer',
+            to: `${adminRoot}/accounting/reports/cxcByInsurer`,
           }
         ],
       },
