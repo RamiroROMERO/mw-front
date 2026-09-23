@@ -2627,6 +2627,18 @@ const esLang = {
   "page.diaryBook.button.viewEntry": "Ver Partida",
   "page.diaryBook.modal.viewEntry.title": "Detalle de la Partida",
   "page.diaryBook.msg.invalidDateRange": "Rango de Fechas Inválido",
+  /* 39.2 Ledger (Libro Mayor) */
+  "page.ledger.table.title": "Libro Mayor",
+  "page.ledger.table.balance": "Saldo",
+  "page.ledger.table.doc": "DOC",
+  "page.ledger.input.accountCode": "Cuenta Contable",
+  "page.ledger.input.accountCodes": "Cuentas Contables",
+  "page.ledger.radio.currentAccount": "Cuenta Actual",
+  "page.ledger.radio.multipleAccounts": "Varias Cuentas",
+  "page.ledger.totals.openingBalance": "Saldo Anterior",
+  "page.ledger.totals.closingBalance": "Saldo Actual",
+  "page.ledger.msg.missingAccount": "Debe seleccionar una Cuenta Contable",
+  "page.ledger.msg.missingAccounts": "Debe seleccionar al menos una Cuenta Contable",
   /* 40. Purchases page in inventory module */
   "page.purchases.input.document": "Documento",
   "page.purchases.input.storeId": "Almacén",

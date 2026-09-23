@@ -2611,6 +2611,18 @@ const enLang = {
   "page.diaryBook.button.viewEntry": "View Entry",
   "page.diaryBook.modal.viewEntry.title": "Entry Detail",
   "page.diaryBook.msg.invalidDateRange": "Invalid Date Range",
+  /* 39.2 Ledger */
+  "page.ledger.table.title": "Ledger",
+  "page.ledger.table.balance": "Balance",
+  "page.ledger.table.doc": "DOC",
+  "page.ledger.input.accountCode": "Ledger Account",
+  "page.ledger.input.accountCodes": "Ledger Accounts",
+  "page.ledger.radio.currentAccount": "Current Account",
+  "page.ledger.radio.multipleAccounts": "Multiple Accounts",
+  "page.ledger.totals.openingBalance": "Opening Balance",
+  "page.ledger.totals.closingBalance": "Closing Balance",
+  "page.ledger.msg.missingAccount": "You must select a Ledger Account",
+  "page.ledger.msg.missingAccounts": "You must select at least one Ledger Account",
   /* 40. Purchases page in inventory module */
   "page.purchases.input.document": "Document",
   "page.purchases.input.storeId": "Store",
