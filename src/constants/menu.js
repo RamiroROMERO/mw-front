@@ -693,6 +693,11 @@ const data = [
             icon: 'iconsminds-receipt-4',
             label: 'menu.cxcPaymentHistory',
             to: `${adminRoot}/accounting/reports/cxcPaymentHistory`,
+          },
+          {
+            icon: 'iconsminds-magnifi-glass',
+            label: 'menu.cxcInvoiceTrace',
+            to: `${adminRoot}/accounting/reports/cxcInvoiceTrace`,
           }
         ],
       },

@@ -82,6 +82,17 @@ const Reports = (props) => {
         { replace: true }
       );
     }
+  },
+  {
+    id: 8,
+    icon: "large-icon iconsminds-magnifi-glass",
+    title: "menu.cxcInvoiceTrace",
+    fnOnclick: () => {
+      navigate(
+        `${adminRoot}/accounting/reports/cxcInvoiceTrace`,
+        { replace: true }
+      );
+    }
   }
   ]
   return (
