@@ -718,6 +718,11 @@ const data = [
             icon: 'iconsminds-receipt-4',
             label: 'menu.cxpProviderHistory',
             to: `${adminRoot}/accounting/reports/cxpProviderHistory`,
+          },
+          {
+            icon: 'iconsminds-money-bag',
+            label: 'menu.cxpCashInvoices',
+            to: `${adminRoot}/accounting/reports/cxpCashInvoices`,
           }
         ],
       },

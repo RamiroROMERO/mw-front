@@ -137,6 +137,17 @@ const Reports = (props) => {
         { replace: true }
       );
     }
+  },
+  {
+    id: 13,
+    icon: "large-icon iconsminds-money-bag",
+    title: "menu.cxpCashInvoices",
+    fnOnclick: () => {
+      navigate(
+        `${adminRoot}/accounting/reports/cxpCashInvoices`,
+        { replace: true }
+      );
+    }
   }
   ]
   return (
