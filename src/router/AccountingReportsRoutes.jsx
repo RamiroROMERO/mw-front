@@ -15,6 +15,7 @@ const CxCInvoiceTrace = React.lazy(() => import('@Views/app/accounting/reports/c
 const CxCProjection = React.lazy(() => import('@Views/app/accounting/reports/cxcProjection'));
 const CxCByInsurer = React.lazy(() => import('@Views/app/accounting/reports/cxcByInsurer'));
 const CxPInvoiceTrace = React.lazy(() => import('@Views/app/accounting/reports/cxpInvoiceTrace'));
+const CxPProviderHistory = React.lazy(() => import('@Views/app/accounting/reports/cxpProviderHistory'));
 
 const AccountingReportsRoutes = (props) => {
   const { setLoading } = props;
@@ -67,6 +68,10 @@ const AccountingReportsRoutes = (props) => {
       index
       path="/cxpInvoiceTrace"
       element={<CxPInvoiceTrace setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/cxpProviderHistory"
+      element={<CxPProviderHistory setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }

@@ -713,6 +713,11 @@ const data = [
             icon: 'bi bi-search',
             label: 'menu.cxpInvoiceTrace',
             to: `${adminRoot}/accounting/reports/cxpInvoiceTrace`,
+          },
+          {
+            icon: 'iconsminds-receipt-4',
+            label: 'menu.cxpProviderHistory',
+            to: `${adminRoot}/accounting/reports/cxpProviderHistory`,
           }
         ],
       },

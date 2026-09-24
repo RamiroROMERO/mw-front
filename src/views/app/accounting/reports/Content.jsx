@@ -126,6 +126,17 @@ const Reports = (props) => {
         { replace: true }
       );
     }
+  },
+  {
+    id: 12,
+    icon: "large-icon iconsminds-receipt-4",
+    title: "menu.cxpProviderHistory",
+    fnOnclick: () => {
+      navigate(
+        `${adminRoot}/accounting/reports/cxpProviderHistory`,
+        { replace: true }
+      );
+    }
   }
   ]
   return (
