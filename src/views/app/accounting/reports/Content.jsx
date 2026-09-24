@@ -148,6 +148,17 @@ const Reports = (props) => {
         { replace: true }
       );
     }
+  },
+  {
+    id: 14,
+    icon: "large-icon iconsminds-coins",
+    title: "menu.cxpPeriodSummary",
+    fnOnclick: () => {
+      navigate(
+        `${adminRoot}/accounting/reports/cxpPeriodSummary`,
+        { replace: true }
+      );
+    }
   }
   ]
   return (

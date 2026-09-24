@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { IntlMessages, formatNumber, formatDate } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import { useForm, useExportExcel } from '@Hooks';
@@ -21,9 +22,10 @@ const AGING_BUCKETS_LABEL_UNTIL_DUE = 'page.cxpProviderHistory.table.daysUntilDu
 const AGING_BUCKETS_LABEL_OVERDUE = 'page.cxpProviderHistory.table.daysOverdue';
 
 export const useCxPProviderHistory = ({ setLoading }) => {
+  const location = useLocation();
   const { fnExport } = useExportExcel(setLoading);
   const { formState, onInputChange } = useForm({
-    providerId: 0,
+    providerId: location.state?.providerId || 0,
     dateStart: DateHelper.format(DateHelper.startOf(DateHelper.now(), 'year')),
     dateEnd: DateHelper.format(DateHelper.now())
   });
@@ -66,6 +68,16 @@ export const useCxPProviderHistory = ({ setLoading }) => {
       setLoading(false);
     }, () => { setLoading(false); });
   }
+
+  // Soporta el drill-down desde "Saldos y Pagos" (cxpPeriodSummary), que navega acá con un
+  // providerId ya elegido (`navigate(..., { state: { providerId } })`) — carga la lista de
+  // proveedores (para que el SearchSelect muestre el nombre) y dispara la búsqueda de una vez.
+  useEffect(() => {
+    if (location.state?.providerId) {
+      fnLoadProviders();
+      fnSearch();
+    }
+  }, []);
 
   const fnOpenTrace = (row) => {
     setLoading(true);

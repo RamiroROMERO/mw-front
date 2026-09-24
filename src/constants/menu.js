@@ -723,6 +723,11 @@ const data = [
             icon: 'iconsminds-money-bag',
             label: 'menu.cxpCashInvoices',
             to: `${adminRoot}/accounting/reports/cxpCashInvoices`,
+          },
+          {
+            icon: 'iconsminds-coins',
+            label: 'menu.cxpPeriodSummary',
+            to: `${adminRoot}/accounting/reports/cxpPeriodSummary`,
           }
         ],
       },
