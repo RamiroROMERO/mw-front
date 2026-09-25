@@ -90,6 +90,44 @@ export const useScheduling = ({ setLoading }) => {
     setSendForm(false);
   }
 
+  const fnGenerateYear = () => {
+    const year = validInt(formState.period);
+    if (formState.period === "" || formState.period.trim().length < 4 || year <= 0) {
+      notification('warning', 'msg.required.input.generateYear', 'alert.warning.title');
+      return;
+    }
+
+    const existingMonths = dataCalendar.filter((item) => item.year === year).map((item) => item.month);
+    const monthsToCreate = [];
+    for (let m = 0; m < 12; m++) {
+      const dateIn = `${year}-${String(m + 1).padStart(2, '0')}-01`;
+      const month = getMonthLetter(dateIn);
+      if (!existingMonths.includes(month)) {
+        const daysInMonth = new Date(year, m + 1, 0).getDate();
+        const dateOut = `${year}-${String(m + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+        monthsToCreate.push({ month, dateIn, dateOut, status: true });
+      }
+    }
+
+    if (monthsToCreate.length === 0) {
+      notification('info', 'msg.info.yearAlreadyGenerated', 'alert.info.title');
+      return;
+    }
+
+    setLoading(true);
+    let pending = monthsToCreate.length;
+    const fnDone = () => {
+      pending -= 1;
+      if (pending === 0) {
+        fnGetData();
+        setLoading(false);
+      }
+    }
+    monthsToCreate.forEach((data) => {
+      request.POST('banks/settings/banksCalendar', data, fnDone, fnDone, false);
+    });
+  }
+
   const fnGetData = () => {
     setLoading(true);
     request.GET('banks/settings/banksCalendar', (resp) => {
@@ -177,6 +215,7 @@ export const useScheduling = ({ setLoading }) => {
       fnClearInputs,
       fnSave,
       fnFilterCalendar,
+      fnGenerateYear,
       onInputChange
     }
   )

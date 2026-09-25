@@ -8,20 +8,16 @@ export const ModalViewCheck = (props) => {
   const { data, setOpen } = props;
   const { dataChecks, fnViewCheck } = data;
 
-  const [table, setTable] = useState({
+  const [table] = useState({
     columns: [
       { text: IntlMessages("table.column.date"), dataField: "date", headerStyle: { 'width': '15%' } },
-      { text: IntlMessages("table.column.numCheck"), dataField: "code", headerStyle: { 'width': '10%' } },
+      { text: IntlMessages("table.column.numCheck"), dataField: "checkNumber", headerStyle: { 'width': '10%' } },
       {
-        text: IntlMessages("table.column.bank"), dataField: "bank", headerStyle: { 'width': '10%' },
+        text: IntlMessages("table.column.bank"), dataField: "bankCode", headerStyle: { 'width': '10%' },
         classes: 'd-xs-none-table-cell', headerClasses: 'd-xs-none-table-cell'
       },
-      { text: IntlMessages("table.column.beneficiary"), dataField: "proveedorId", headerStyle: { 'width': '20%' } },
-      { text: IntlMessages("table.column.value"), dataField: "total", headerStyle: { 'width': '10%' } },
-      { text: IntlMessages("table.column.account"), dataField: "accountId", headerStyle: { 'width': '10%' } },
-      { text: IntlMessages("page.checks.modalviewCheck.table.column.item"), dataField: "item", headerStyle: { 'width': '10%' } },
-      { text: IntlMessages("table.column.referency"), dataField: "items", headerStyle: { 'width': '10%' } },
-      // { text: IntlMessages("table.column.options"), dataField: "options", headerStyle: { 'width': '20%' } }
+      { text: IntlMessages("table.column.beneficiary"), dataField: "providerName", headerStyle: { 'width': '25%' } },
+      { text: IntlMessages("table.column.value"), dataField: "value", headerStyle: { 'width': '10%' } },
     ],
     data: dataChecks || [],
     actions: [{

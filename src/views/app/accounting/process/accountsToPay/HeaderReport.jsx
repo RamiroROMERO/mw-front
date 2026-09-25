@@ -4,7 +4,7 @@ import DateCalendar from '@Components/dateCalendar';
 import { InputField } from '@Components/inputFields';
 import { IntlMessages } from '@Helpers/Utils';
 
-const HeaderReport = ({ date, search, onInputChange, onSearchChange, fnSearch, fnPrint, fnExportXlsx }) => {
+const HeaderReport = ({ date, search, onInputChange, onSearchChange, fnSearch, fnPrint, fnExportXlsx, fnOpenReports }) => {
   return (
     <>
       <Row>
@@ -33,6 +33,9 @@ const HeaderReport = ({ date, search, onInputChange, onSearchChange, fnSearch, f
           </Button>
           <Button color="secondary" onClick={fnExportXlsx}>
             <i className="bi bi-file-earmark-excel" /> {IntlMessages('button.exportXls')}
+          </Button>
+          <Button color="secondary" onClick={fnOpenReports}>
+            <i className="bi bi-file-earmark-bar-graph" /> {IntlMessages('page.accountsToPay.button.reports')}
           </Button>
           <Button color="primary" onClick={fnSearch}>
             <i className="bi bi-arrow-repeat" /> {IntlMessages('button.update')}

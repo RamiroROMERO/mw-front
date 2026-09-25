@@ -11,7 +11,7 @@ import { useScheduling } from './useScheduling';
 const Scheduling = (props) => {
   const { setLoading } = props;
 
-  const {sendForm, table, propsToMsgDelete, formState, formValidation, fnClearInputs, fnSave, onInputChange, fnFilterCalendar} = useScheduling({setLoading});
+  const {sendForm, table, propsToMsgDelete, formState, formValidation, fnClearInputs, fnSave, onInputChange, fnFilterCalendar, fnGenerateYear} = useScheduling({setLoading});
 
   const { dateIn, dateOut, period, status } = formState;
 
@@ -66,6 +66,9 @@ const Scheduling = (props) => {
                 <Colxx xxs="12" className="div-action-button-container">
                   <Button
                     color="success" onClick={fnFilterCalendar}><i className="bi bi-funnel" /> {IntlMessages("button.filter")}
+                  </Button>
+                  <Button
+                    color="info" onClick={fnGenerateYear}><i className="bi bi-calendar-plus" /> {IntlMessages("page.scheduling.button.generateYear")}
                   </Button>
                   <Button
                     color="secondary" onClick={fnClearInputs}><i className="bi bi-stars" /> {IntlMessages("button.clear")}

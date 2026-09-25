@@ -12,9 +12,9 @@ import { useBankAccounts } from './useBankAccounts';
 const BanksAccounts = (props) => {
   const { setLoading } = props;
 
-  const {sendForm, table, propsToMsgDelete, formState, formValidation, listAccount, listCurrency, fnClearInputs, fnSave, onInputChange} = useBankAccounts({setLoading});
+  const {sendForm, table, propsToMsgDelete, formState, formValidation, listAccount, listCurrency, listCheckFormat, fnClearInputs, fnSave, onInputChange} = useBankAccounts({setLoading});
 
-  const { code, status, bankNumber, name, currentCheck, currencyName, ctaBank, ctaShortage, ctaMissing } = formState;
+  const { code, status, bankNumber, name, currentCheck, currencyName, ctaBank, ctaShortage, ctaMissing, checkFormat } = formState;
 
   const { codeValid, bankNumberValid, nameValid, currentCheckValid, ctaBankValid, ctaShortageValid, ctaMissingValid } = formValidation;
 
@@ -76,6 +76,15 @@ const BanksAccounts = (props) => {
                     value={currencyName}
                     onChange={onInputChange}
                     options={listCurrency}
+                  />
+                </Colxx>
+                <Colxx xxs="12" sm="6" lg="6">
+                  <SimpleSelect
+                    name="checkFormat"
+                    label="page.banksAccounts.select.checkFormat"
+                    value={checkFormat}
+                    onChange={onInputChange}
+                    options={listCheckFormat}
                   />
                 </Colxx>
                 <Colxx xxs="12" sm="6" lg="12">

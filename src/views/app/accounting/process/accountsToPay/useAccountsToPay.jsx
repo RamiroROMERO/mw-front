@@ -4,6 +4,7 @@ import DateHelper from '@Helpers/DateHelper';
 import { useForm, useExportExcel } from '@Hooks';
 import { request, buildUrl } from '@Helpers/core';
 import ModalDetail from './ModalDetail';
+import ModalReports from './ModalReports';
 
 const AGING_BUCKETS = [
   { field: 'current', label: 'page.accountsToPay.table.current', test: (d) => d <= 0 },
@@ -22,6 +23,9 @@ export const useAccountsToPay = ({ setLoading }) => {
   const [allRows, setAllRows] = useState([]);
   const [openDetail, setOpenDetail] = useState(false);
   const [detailData, setDetailData] = useState(null);
+  const [openReports, setOpenReports] = useState(false);
+  const { formState: reportForm, onInputChange: onReportInputChange } = useForm({ mode: '1', date: DateHelper.format(DateHelper.now()) });
+  const { mode: reportMode, date: reportDate } = reportForm;
 
   const fnSearch = () => {
     setLoading(true);
@@ -102,6 +106,21 @@ export const useAccountsToPay = ({ setLoading }) => {
     fnExport('accounting/process/accountsPayable/findPendingByProvider/exportXLSX', { providerId: detailData.providerId, providerName: detailData.providerName }, 'DetalleCuentaPorPagar.xlsx');
   }
 
+  // Botón "Reportes" (Controlpanelbtn5 de cont_cxp.sc2 -> Do form 'cont_cxp_print'): el
+  // legacy cierra el picker (Thisform.Release) antes de correr el reporte — se replica
+  // cerrando el modal al hacer clic en Imprimir/Exportar.
+  const fnOpenReports = () => setOpenReports(true);
+  const fnPrintReport = () => {
+    setOpenReports(false);
+    setLoading(true);
+    request.GETPdf('accounting/process/accountsPayable/detailReport/exportPDF', { mode: reportMode, date: reportDate }, 'DetalleCuentasPorPagar.pdf', () => setLoading(false));
+    setLoading(false);
+  }
+  const fnExportReportXlsx = () => {
+    setOpenReports(false);
+    fnExport('accounting/process/accountsPayable/detailReport/exportXLSX', { mode: reportMode, date: reportDate }, 'DetalleCuentasPorPagar.xlsx');
+  }
+
   useEffect(() => {
     fnSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -114,7 +133,8 @@ export const useAccountsToPay = ({ setLoading }) => {
     onSearchChange,
     fnSearch,
     fnPrint: fnPrintSummary,
-    fnExportXlsx: fnExportSummaryXlsx
+    fnExportXlsx: fnExportSummaryXlsx,
+    fnOpenReports
   }
 
   const propsToModalDetail = {
@@ -133,10 +153,26 @@ export const useAccountsToPay = ({ setLoading }) => {
     }
   }
 
+  const propsToModalReports = {
+    ModalContent: ModalReports,
+    title: 'page.accountsToPay.modal.reports.title',
+    open: openReports,
+    setOpen: setOpenReports,
+    maxWidth: 'sm',
+    data: {
+      mode: reportMode,
+      date: reportDate,
+      onInputChange: onReportInputChange,
+      fnPrint: fnPrintReport,
+      fnExportXlsx: fnExportReportXlsx
+    }
+  }
+
   return {
     table,
     propsToHeader,
     propsToModalDetail,
+    propsToModalReports,
     fnOpenDetail
   }
 }

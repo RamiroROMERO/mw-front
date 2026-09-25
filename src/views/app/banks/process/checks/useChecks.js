@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useForm } from '@Hooks'
-import { validInt } from '@Helpers/Utils';
-import { number } from 'prop-types';
+import { validFloat } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
+import notification from '@Containers/ui/Notifications';
 
-export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) => {
+export const useChecks = ({ setLoading, lines, setLines, setEditingLineIndex }) => {
   const [listDocto, setListDocto] = useState([]);
   const [listBanks, setListBanks] = useState([]);
   const [listProvider, setListProvider] = useState([]);
-  const [listCustomer, setListCustomer] = useState([]);
-  const listCurrencyName = [{ id: 1, name: "Lempiras" }, { id: 2, name: "Dolares" }];
-  const listCityName = [{ id: 1, name: "Tegucigalpa" }, { id: 2, name: "San Perdro Sula" }];
+  const listCurrencyName = [{ id: "Lempiras", name: "Lempiras" }, { id: "Dolares", name: "Dolares" }];
   const [openModalViewChecks, setOpenModalViewChecks] = useState(false);
   const [openModalPrintCheck, setOpenModalPrintCheck] = useState(false);
   const [openModalViewRequest, setOpenModalViewRequest] = useState(false);
@@ -18,60 +16,75 @@ export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) 
   const [openModalAnticiped, setOpenModalAnticiped] = useState(false);
   const [openModalCxp, setOpenModalCxp] = useState(false);
   const [openModalCxc, setOpenModalCxc] = useState(false)
+  const [openModalUnpaidBill, setOpenModalUnpaidBill] = useState(false);
+  const [openMsgVoid, setOpenMsgVoid] = useState(false);
   const [dataChecks, setDataChecks] = useState([]);
-  const [dataExpenses, setDataExpenses] = useState([]);
+  const [dataExpenses] = useState([]);
+  const [cxpPayments, setCxpPayments] = useState([]);
+  const [pendingCxp, setPendingCxp] = useState([]);
   const [sendForm, setSendForm] = useState(false);
 
-
   const validCheck = {
-    documentId: [(val) => validInt(val > 0), "msg.required.select.typeDocument"],
-    bankCode: [(val) => val != '', "msg.required.select.bank"],
-    provider: [(val) => validInt(val) > 0, "msg.required.select.provider"],
-    currencyName: [(val) => val != '', "msg.required.select.currency"],
-    type: [(val) => validInt(val) > 0, "msg.requiered.input.typeExchange"],
-    numberCheck: [(val) => validInt(val) > 0, "msg.requiered.input.numberCheck"],
-    valueUsd: [(val) => validInt(val) > 0, "msg.requiered.input.valueUsd"]
+    date: [(val) => val !== '', "msg.required.select.date"],
+    bankCode: [(val) => val !== '', "msg.required.select.bank"],
+    providerName: [(val) => val !== '', "msg.required.select.provider"]
   }
 
   const { formState: formStateIndex, onResetForm: onResetFormIndex, setBulkForm: setBulkFormIndex, onInputChange: onInputChangeIndex, isFormValid: isFormValidIndex, formValidation: formValidationIndex } = useForm({
     id: 0,
     documentId: 0,
-    document: 0,
+    document: '',
     bankCode: '',
-    NumberAccount: '',
+    bankAccountName: '',
     providerId: 0,
-    numberCheck: 0,
-    cantLetter: '',
+    providerName: '',
+    checkNumber: '',
     date: '',
     value: 0,
     valueUsd: 0,
-    type: 0,
-    currencyName: '',
-    cityId: 0,
+    exchangeRate: 1,
+    currencyName: 'Lempiras',
+    referenceCode: '',
     requestId: 0,
-    totalValue: 0,
-    total: 0,
-    diference: 0,
-    customerId: 0,
+    pdaNumber: 0,
+    pdaNumber2: 0,
     status: true
   }, validCheck)
 
-  const { id, documentId, bankCode, providerId, numberCheck, cantLetter, date, value, valueUsd, type, currencyName, cityId, requestId, status, customerId, document, total, totalValue, diference, NumberAccount } = formStateIndex;
+  const { id, bankCode, providerId, pdaNumber2 } = formStateIndex;
+  const isVoided = Number(pdaNumber2) > 0;
 
   const fnNewCheck = () => {
     setSendForm(false);
-    setSendFormDetail(false);
     onResetFormIndex();
-    onResetFormDetail();
+    setLines([]);
+    setEditingLineIndex(null);
   };
 
-  const fnViewCheck = (data) => {
-    setBulkFormIndex(data);
+  const fnLoadCheck = (id) => {
+    setLoading(true);
+    request.GET(`banks/process/checks/${id}`, (resp) => {
+      const { header, lines: lineData } = resp.data;
+      setBulkFormIndex(header);
+      setLines(lineData);
+      setEditingLineIndex(null);
+      setSendForm(false);
+      setLoading(false);
+    }, () => setLoading(false));
+  }
 
+  const fnViewCheck = (row) => {
+    setOpenModalViewChecks(false);
+    fnLoadCheck(row.id);
   }
 
   const fnSearchCheck = () => {
-    setOpenModalViewChecks(true);
+    setLoading(true);
+    request.GET('banks/process/checks/search', (resp) => {
+      setDataChecks(resp.data);
+      setOpenModalViewChecks(true);
+      setLoading(false);
+    }, () => setLoading(false));
   }
 
   const fnRequest = () => {
@@ -82,14 +95,29 @@ export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) 
     setOpenModalPrintCheck(true)
   }
 
-  const fnPreview = () => { }
-
   const fnSaveCheck = () => {
-    setSendForm(true)
-    if (!isFormValidIndex) {
+    setSendForm(true);
+    if (!isFormValidIndex) return;
+    if (!Array.isArray(lines) || lines.length === 0) {
+      notification('warning', 'msg.checks.lines.required', 'alert.warning.title');
       return;
     }
+
+    const payload = { header: formStateIndex, lines };
+    setLoading(true);
+    if (id > 0) {
+      request.PUT(`banks/process/checks/${id}`, payload, () => {
+        fnLoadCheck(id);
+        setLoading(false);
+      }, () => setLoading(false));
+    } else {
+      request.POST('banks/process/checks', payload, (resp) => {
+        fnLoadCheck(resp.data.header.id);
+        setLoading(false);
+      }, () => setLoading(false));
+    }
   }
+
   const fnExpenses = () => {
     setOpenModalExpenses(true);
   }
@@ -99,21 +127,79 @@ export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) 
   }
 
   const fnViewCxp = () => {
-    setOpenModalCxp(true)
+    if (!formStateIndex.providerId) {
+      notification('warning', 'msg.checks.selectProviderFirst', 'alert.warning.title');
+      return;
+    }
+    setLoading(true);
+    request.GET(`banks/process/checks/${id}/cxpPayments`, (resp) => {
+      setCxpPayments(resp.data);
+      setOpenModalCxp(true);
+      setLoading(false);
+    }, () => setLoading(false));
   }
+
+  const fnGetCxpPayments = () => {
+    request.GET(`banks/process/checks/${id}/cxpPayments`, (resp) => setCxpPayments(resp.data));
+  }
+
+  const fnGetPendingCxp = () => {
+    setLoading(true);
+    request.GET(`banks/process/checks/pendingCxp?providerId=${formStateIndex.providerId}`, (resp) => {
+      setPendingCxp(resp.data);
+      setOpenModalUnpaidBill(true);
+      setLoading(false);
+    }, () => setLoading(false));
+  }
+
+  const fnApplyCxpPayment = (cxp, amount) => {
+    if (!(id > 0)) {
+      notification('warning', 'msg.checks.saveFirst', 'alert.warning.title');
+      return;
+    }
+    setLoading(true);
+    request.POST(`banks/process/checks/${id}/cxpPayments`, {
+      cxpId: cxp.id, providerId: cxp.providerId, documentCode: cxp.documentCode, amount
+    }, () => {
+      fnGetCxpPayments();
+      setOpenModalUnpaidBill(false);
+      setLoading(false);
+    }, () => setLoading(false));
+  }
+
+  const fnRemoveCxpPayment = (payment) => {
+    setLoading(true);
+    request.DELETE(`banks/process/checks/${id}/cxpPayments/${payment.paymentId}`, () => {
+      fnGetCxpPayments();
+      setLoading(false);
+    }, () => setLoading(false));
+  }
+
   const fnViewCxc = () => {
     setOpenModalCxc(true)
   }
-  const fnSaveCheckRequest = () => { }
-  const fnPrintcheck = () => { }
-  const fnDeleteCheck = () => { }
+
+  const fnAskVoidCheck = () => {
+    if (!(id > 0)) return;
+    setOpenMsgVoid(true);
+  }
+
+  const fnVoidCheckOk = () => {
+    setOpenMsgVoid(false);
+    setLoading(true);
+    request.POST(`banks/process/checks/${id}/void`, {}, () => {
+      fnLoadCheck(id);
+      setLoading(false);
+    }, () => setLoading(false));
+  }
+
+  const propsToMsgVoid = { open: openMsgVoid, setOpen: setOpenMsgVoid, fnOnOk: fnVoidCheckOk, title: "page.checks.msg.voidConfirm" }
 
   const propsToControlPanel = {
     fnNew: fnNewCheck,
     fnSearch: fnSearchCheck,
     fnSave: fnSaveCheck,
-    fnPrint: fnPrintcheck,
-    fnDelete: fnDeleteCheck,
+    fnDelete: fnAskVoidCheck,
     buttonsHome: [
       {
         title: "button.checks",
@@ -150,51 +236,66 @@ export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) 
     buttonsAdmin: []
   }
 
+  // El valor del cheque es el total del grid contable (debe=haber una vez cuadrado, igual
+  // criterio que DailyItemService.saveEntry) — el input de Valor en el encabezado está
+  // deshabilitado a propósito, se calcula acá.
+  useEffect(() => {
+    const totalDebit = lines.reduce((sum, l) => sum + (validFloat(l.valueDebit) || 0), 0);
+    setBulkFormIndex({ value: totalDebit });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lines]);
+
+  // Sugerencia de número de cheque al elegir el banco (bco_ctas.correla) — solo para
+  // cheques nuevos, no pisa el número ya guardado al editar uno existente.
+  useEffect(() => {
+    if (!bankCode || id > 0) return;
+    request.GET(`banks/process/checks/suggestedCheckNumber?bankCode=${bankCode}`, (resp) => {
+      setBulkFormIndex({ checkNumber: resp.data.currentCheck });
+    });
+    const bank = listBanks.find((b) => b.value === bankCode);
+    if (bank) setBulkFormIndex({ bankAccountName: bank.bankAccountName });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bankCode]);
+
+  // SearchSelect solo entrega {name, value} (el id) en su onChange — el nombre del
+  // beneficiario se guarda como texto propio en bco_cheques.benefic (igual que el legacy),
+  // así que se sincroniza acá cada vez que cambia el proveedor elegido.
+  useEffect(() => {
+    if (!providerId) return;
+    const provider = listProvider.find((p) => p.value === providerId);
+    if (provider) setBulkFormIndex({ providerName: provider.name });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [providerId]);
+
   useEffect(() => {
     setLoading(true);
-    request.GET('admin/documents?status=1', (resp) => {
-      const docto = resp.data.map((item) => {
-        return {
-          label: ` ${item.code} | ${item.name} `,
-          value: item.id,
-          documentId: item.codeInt,
-          setTaxDocument: item.setTaxDocument
-        }
-      });
+    request.GET('banks/process/checks/documentTypes', (resp) => {
+      const docto = resp.data.map((item) => ({ label: `${item.code} | ${item.name}`, value: item.code, documentId: item.id }));
       setListDocto(docto);
+      if (docto.length === 1) {
+        setBulkFormIndex({ documentId: docto[0].value, document: docto[0].label });
+      }
       setLoading(false);
-    }, (err) => {
+    }, () => setLoading(false));
 
-      setLoading(false);
-    });
-    setLoading(true);
-    request.GET('admin/bankList', (resp) => {
-      const banks = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.name
-        }
-      })
+    request.GET('banks/settings/banksAccounts/getSL', (resp) => {
+      const banks = resp.data.map((item) => ({
+        label: `${item.code} - ${item.name}`,
+        value: item.code,
+        bankAccountName: item.name
+      }))
       setListBanks(banks);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
     });
-    setLoading(true);
+
     request.GET(buildUrl('inventory/process/providers', { status: 1 }), (resp) => {
-      const providerValue = resp.data.map((item) => {
-        return {
-          value: item.id,
-          label: ` ${item.dni} | ${item.name}`,
-        }
-      });
+      const providerValue = resp.data.map((item) => ({
+        value: item.id,
+        label: ` ${item.dni} | ${item.name}`,
+        name: item.name
+      }));
       setListProvider(providerValue);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -208,8 +309,6 @@ export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) 
       listBanks,
       listProvider,
       listCurrencyName,
-      listCityName,
-      listCustomer,
       openModalViewChecks,
       setOpenModalViewChecks,
       dataChecks,
@@ -229,6 +328,16 @@ export const useChecks = ({ setLoading, setSendFormDetail, onResetFormDetail }) 
       setOpenModalCxc,
       openModalCxp,
       setOpenModalCxp,
+      openModalUnpaidBill,
+      setOpenModalUnpaidBill,
+      propsToMsgVoid,
+      isVoided,
+      cxpPayments,
+      fnGetCxpPayments,
+      fnRemoveCxpPayment,
+      pendingCxp,
+      fnGetPendingCxp,
+      fnApplyCxpPayment,
     }
   )
 }

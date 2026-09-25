@@ -1,60 +1,58 @@
-import { useState } from "react";
-import { Button, ModalBody, ModalFooter, Row, Table } from "reactstrap";
+import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
 import { Colxx } from '@Components/common/CustomBootstrap';
-import { IntlMessages } from "@Helpers/Utils";
+import { IntlMessages, validFloat } from "@Helpers/Utils";
 import { InputField } from "@Components/inputFields";
-import { useForm } from "@Hooks";
+import ReactTable from "@Components/reactTable";
 import Modal from "@Components/modal";
 import { ModalViewCxp } from "./ModalViewCxp";
 
 export const ModalCxp = (props) => {
-  const { setOpen } = props;
-  const [openModalUnpaidBill, setOpenModalUnpaidBill] = useState(false);
+  const { setOpen, data } = props;
+  const {
+    cxpPayments = [], fnRemoveCxpPayment, openModalUnpaidBill, setOpenModalUnpaidBill,
+    pendingCxp, fnGetPendingCxp, fnApplyCxpPayment
+  } = data;
 
-  const { onInputChange, formState } = useForm({
-    id: 0,
-    total: 0
-  })
+  const total = cxpPayments.reduce((sum, p) => sum + (validFloat(p.paidValue) || 0), 0);
 
-  const { id, total } = formState;
+  const table = {
+    columns: [
+      { text: IntlMessages("table.column.date"), dataField: "date", headerStyle: { 'width': '15%' } },
+      { text: IntlMessages("table.column.nInvoice"), dataField: "documentCode", headerStyle: { 'width': '25%' } },
+      { text: IntlMessages("table.column.provider"), dataField: "providerName", headerStyle: { 'width': '30%' } },
+      { text: IntlMessages("table.column.value"), dataField: "paidValue", headerStyle: { 'width': '15%' } },
+    ],
+    data: cxpPayments,
+    actions: [{
+      color: 'danger',
+      icon: 'trash',
+      toolTip: 'button.delete',
+      onClick: fnRemoveCxpPayment
+    }]
+  };
 
-  const fnAddItem = () => {
-    setOpenModalUnpaidBill(true);
-  }
-
-  const propsToModalBillUnpaid = {
+  const propsToModalUnpaidBill = {
     ModalContent: ModalViewCxp,
     title: "page.checks.modalBillUnpaid.title",
     open: openModalUnpaidBill,
     setOpen: setOpenModalUnpaidBill,
     maxWidth: 'lg',
-    data: {
-    }
+    data: { pendingCxp, fnApplyCxpPayment }
   }
 
   return (
     <>
       <ModalBody>
-        <Row className="mb-5">
+        <Row className="mb-3">
           <Colxx align="right">
-            <Button color="primary" title={IntlMessages("button.add")}
-              onClick={() => { fnAddItem() }}>
+            <Button color="primary" title={IntlMessages("button.add")} onClick={fnGetPendingCxp}>
               <i className='bi bi-plus' /> {IntlMessages("button.add")}
             </Button>
           </Colxx>
         </Row>
         <Row>
           <Colxx xxs="12">
-            <Table bordered hover>
-              <thead>
-                <tr>
-                  <th >{IntlMessages("table.column.nInvoice")}</th>
-                  <th>{IntlMessages("table.column.provider")}</th>
-                  <th >{IntlMessages("table.column.value")}</th>
-                  <th>{IntlMessages("table.column.options")}</th>
-                </tr>
-              </thead>
-            </Table>
+            <ReactTable {...table} />
           </Colxx>
         </Row>
         <Row>
@@ -62,10 +60,11 @@ export const ModalCxp = (props) => {
           <Colxx xss="6" xs="4" sm="4" md="4" lg="3">
             <InputField
               name="total"
-              value={total}
-              onChange={onInputChange}
+              value={total.toFixed(2)}
+              onChange={() => { }}
               type="text"
               label="input.total"
+              disabled
             />
           </Colxx>
         </Row>
@@ -75,7 +74,7 @@ export const ModalCxp = (props) => {
           <i className="bi bi-box-arrow-right" />{` ${IntlMessages('button.exit')}`}
         </Button>
       </ModalFooter>
-      <Modal {...propsToModalBillUnpaid} />
+      <Modal {...propsToModalUnpaidBill} />
     </>
   )
 }

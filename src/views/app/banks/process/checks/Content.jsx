@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
 import ControlPanel from '@Components/controlPanel';
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
+import Confirmation from '@Containers/ui/confirmationMsg';
 import { useChecks } from './useChecks';
 import { UseChecksForm } from './UseChecksForm';
 import { useChecksDetail } from './useChecksDetail';
@@ -18,23 +19,35 @@ import { ModalCxc } from './ModalCxc';
 
 const Checks = (props) => {
   const { setLoading } = props;
-  const { formStateDetail, onInputChangeDetail, onResetFormDetail, setBulkFormDetail, listAccount, formValidationDetail, sendFormDetail, setSendFormDetail, isFormValidDetail } = useChecksDetail({ setLoading });
+  const [lines, setLines] = useState([]);
+  const [editingLineIndex, setEditingLineIndex] = useState(null);
 
-  const { propsToControlPanel, formStateIndex, setBulkFormIndex, onInputChangeIndex, onResetFormIndex, listDocto, listBanks, listProvider, listCurrencyName, listCityName, listCustomer, openModalViewChecks, setOpenModalViewChecks, dataChecks, fnViewCheck, openModalPrintCheck, setOpenModalPrintCheck, openModalViewRequest, setOpenModalViewRequest, formValidationIndex, sendForm, openModalExpenses, setOpenModalExpenses, dataExpenses, openModalAnticiped, setOpenModalAnticiped, openModalCxc, setOpenModalCxc, openModalCxp, setOpenModalCxp, } = useChecks({ setSendFormDetail, onResetFormDetail, setLoading });
+  const {
+    propsToControlPanel, formStateIndex, onInputChangeIndex, listDocto, listBanks,
+    listProvider, listCurrencyName, formValidationIndex, sendForm, openModalViewChecks, setOpenModalViewChecks,
+    dataChecks, fnViewCheck, openModalPrintCheck, setOpenModalPrintCheck, openModalViewRequest, setOpenModalViewRequest,
+    openModalExpenses, setOpenModalExpenses, dataExpenses, openModalAnticiped, setOpenModalAnticiped,
+    openModalCxc, setOpenModalCxc, openModalCxp, setOpenModalCxp, propsToMsgVoid,
+    cxpPayments, fnRemoveCxpPayment, pendingCxp, fnGetPendingCxp, fnApplyCxpPayment,
+    openModalUnpaidBill, setOpenModalUnpaidBill
+  } = useChecks({ setLoading, lines, setLines, setEditingLineIndex });
+
+  const {
+    formStateDetail, onInputChangeDetail, listAccount, formValidationDetail, sendFormDetail,
+    fnAddItem, fnEditLine, fnRemoveLine
+  } = useChecksDetail({ setLoading, lines, setLines, editingLineIndex, setEditingLineIndex });
 
   const propsToChecksForm = {
-    formStateIndex, onInputChangeIndex, listDocto, listBanks, listProvider, listCurrencyName, listCityName, formValidationIndex, sendForm, setBulkFormDetail
+    formStateIndex, onInputChangeIndex, listDocto, listBanks, listProvider, listCurrencyName, formValidationIndex, sendForm
   }
 
   const propsToDetailForm = {
-    formStateDetail, onInputChangeDetail, listAccount, formValidationDetail, isFormValidDetail, sendFormDetail, setSendFormDetail, onResetFormDetail
+    formStateDetail, onInputChangeDetail, listAccount, formValidationDetail, sendFormDetail, fnAddItem,
+    lines, fnEditLine, fnRemoveLine, editingLineIndex
   }
 
   const propsToFoterForm = {
-    formStateIndex,
-    onInputChangeIndex,
-    listProvider,
-    listCustomer
+    lines
   }
 
   const propsToModalViewChecks = {
@@ -98,6 +111,8 @@ const Checks = (props) => {
     setOpen: setOpenModalCxp,
     maxWidth: 'lg',
     data: {
+      cxpPayments, fnRemoveCxpPayment, openModalUnpaidBill, setOpenModalUnpaidBill,
+      pendingCxp, fnGetPendingCxp, fnApplyCxpPayment, providerId: formStateIndex.providerId
     }
   }
 
@@ -133,6 +148,7 @@ const Checks = (props) => {
       <Modal {...propsToModalAnticiped} />
       <Modal {...propsToModalCxp} />
       <Modal {...propsToModalCxc} />
+      <Confirmation {...propsToMsgVoid} />
     </>
   );
 }

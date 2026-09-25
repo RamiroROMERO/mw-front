@@ -31,7 +31,7 @@ const AccountingSettingsRoutes = (props) => {
       element={<BudgetStructure setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
-      path="/incomeStatements"
+      path="/incomeStatement"
       element={<IncomeStatement setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index

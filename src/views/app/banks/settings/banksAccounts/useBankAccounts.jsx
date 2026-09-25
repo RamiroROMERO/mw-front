@@ -6,6 +6,7 @@ import { useForm } from '@Hooks';
 export const useBankAccounts = ({ setLoading }) => {
   const listCurrency = [{ id: "Dolares", name: "Dolares" }, { id: "Lempiras", name: "Lempiras" }];
   const [listAccount, setListAccount] = useState([]);
+  const [listCheckFormat, setListCheckFormat] = useState([]);
   const [currentItem, setCurrentItem] = useState({});
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
@@ -30,7 +31,8 @@ export const useBankAccounts = ({ setLoading }) => {
     ctaBank: '',
     currencyName: '',
     ctaShortage: '',
-    ctaMissing: ''
+    ctaMissing: '',
+    checkFormat: ''
   }, bankAccountsValid);
 
   const fnEditItem = (item) => {
@@ -161,6 +163,9 @@ export const useBankAccounts = ({ setLoading }) => {
 
       setLoading(false);
     });
+    request.GET('banks/settings/checkFormats/getSL', (resp) => {
+      setListCheckFormat(resp.data);
+    }, (err) => { });
     fnGetData();
   }, [])
 
@@ -175,6 +180,7 @@ export const useBankAccounts = ({ setLoading }) => {
       formValidation,
       listAccount,
       listCurrency,
+      listCheckFormat,
       fnClearInputs,
       fnSave,
       onInputChange

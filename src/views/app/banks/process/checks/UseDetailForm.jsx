@@ -3,18 +3,14 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { InputField } from '@Components/inputFields'
 import { ContainerWithLabel } from '@Components/containerWithLabel';
-import { IntlMessages } from "@Helpers/Utils";
+import { IntlMessages, validFloat } from "@Helpers/Utils";
 
-export const UseDetailForm = ({ formStateDetail, onInputChangeDetail, listAccount, formValidationDetail, sendFormDetail, isFormValidDetail, setSendFormDetail }) => {
-  const { idCtaCont, valueDebe, valueHaber, numberLine, referenceCode, customerId, providerId, overView } = formStateDetail;
+export const UseDetailForm = ({
+  formStateDetail, onInputChangeDetail, listAccount, formValidationDetail, sendFormDetail, fnAddItem,
+  lines, fnEditLine, fnRemoveLine, editingLineIndex
+}) => {
+  const { idCtaCont, valueDebit, valueCredit, description, referenceCode } = formStateDetail;
   const { idCtaContValid } = formValidationDetail;
-
-  const fnAddItem = () => {
-    setSendFormDetail(true)
-    if (!isFormValidDetail) {
-      return;
-    }
-  }
 
   return (
     <>
@@ -36,27 +32,27 @@ export const UseDetailForm = ({ formStateDetail, onInputChangeDetail, listAccoun
               </Colxx>
               <Colxx xxs="6" xs="6" sm="3" lg="3">
                 <InputField
-                  name="valueDebe"
+                  name="valueDebit"
                   onChange={onInputChangeDetail}
-                  value={valueDebe}
+                  value={valueDebit}
                   type="text"
                   label="page.checks.input.valueDebe"
                 />
               </Colxx>
               <Colxx xxs="6" xs="6" sm="3" lg="3">
                 <InputField
-                  name="valueHaber"
+                  name="valueCredit"
                   onChange={onInputChangeDetail}
-                  value={valueHaber}
+                  value={valueCredit}
                   type="text"
                   label="page.checks.input.valueHaber"
                 />
               </Colxx>
               <Colxx xxs="12" md="6">
                 <InputField
-                  name="overView"
+                  name="description"
                   onChange={onInputChangeDetail}
-                  value={overView}
+                  value={description}
                   type="textarea"
                   label="page.checks.input.overView"
                 />
@@ -73,7 +69,8 @@ export const UseDetailForm = ({ formStateDetail, onInputChangeDetail, listAccoun
               <Colxx align="right">
                 <Button color="primary" title={IntlMessages("button.add")}
                   onClick={() => { fnAddItem() }}>
-                  <i className='bi bi-plus' /> {IntlMessages("button.add")}
+                  <i className={editingLineIndex !== null ? 'bi bi-check-lg' : 'bi bi-plus'} />
+                  {IntlMessages(editingLineIndex !== null ? "button.update" : "button.add")}
                 </Button>
               </Colxx>
             </Row>
@@ -85,7 +82,6 @@ export const UseDetailForm = ({ formStateDetail, onInputChangeDetail, listAccoun
           <Table bordered hover>
             <thead>
               <tr>
-                <th className='d-xs-none-table-cell'>{IntlMessages("page.checks.table.Check")}</th>
                 <th>{IntlMessages("page.checks.table.account")}</th>
                 <th>{IntlMessages("page.checks.input.description")}</th>
                 <th className='d-sm-none-table-cell'>{IntlMessages("page.checks.input.debito")}</th>
@@ -93,6 +89,24 @@ export const UseDetailForm = ({ formStateDetail, onInputChangeDetail, listAccoun
                 <th>{IntlMessages("table.column.options")}</th>
               </tr>
             </thead>
+            <tbody>
+              {(lines || []).map((line, index) => (
+                <tr key={index}>
+                  <td>{line.accountName || line.idCtaCont}</td>
+                  <td>{line.description}</td>
+                  <td className='d-sm-none-table-cell'>{validFloat(line.valueDebit).toFixed(2)}</td>
+                  <td className='d-sm-none-table-cell'>{validFloat(line.valueCredit).toFixed(2)}</td>
+                  <td>
+                    <Button color="warning" size="sm" className="me-1" onClick={() => fnEditLine(index)}>
+                      <i className="bi bi-pencil" />
+                    </Button>
+                    <Button color="danger" size="sm" onClick={() => fnRemoveLine(index)}>
+                      <i className="bi bi-trash" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </Table>
         </Colxx>
       </Row>

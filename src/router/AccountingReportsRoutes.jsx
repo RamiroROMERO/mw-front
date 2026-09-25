@@ -18,6 +18,12 @@ const CxPInvoiceTrace = React.lazy(() => import('@Views/app/accounting/reports/c
 const CxPProviderHistory = React.lazy(() => import('@Views/app/accounting/reports/cxpProviderHistory'));
 const CxPCashInvoices = React.lazy(() => import('@Views/app/accounting/reports/cxpCashInvoices'));
 const CxPPeriodSummary = React.lazy(() => import('@Views/app/accounting/reports/cxpPeriodSummary'));
+const CxPProjection = React.lazy(() => import('@Views/app/accounting/reports/cxpProjection'));
+const IncomeStatementReport = React.lazy(() => import('@Views/app/accounting/reports/incomeStatementReport'));
+const BalanceGeneral = React.lazy(() => import('@Views/app/accounting/reports/balanceGeneral'));
+const TrialBalance = React.lazy(() => import('@Views/app/accounting/reports/trialBalance'));
+const BudgetExecution = React.lazy(() => import('@Views/app/accounting/reports/budgetExecution'));
+const CxPPaymentHistory = React.lazy(() => import('@Views/app/accounting/reports/cxpPaymentHistory'));
 
 const AccountingReportsRoutes = (props) => {
   const { setLoading } = props;
@@ -32,7 +38,7 @@ const AccountingReportsRoutes = (props) => {
       element={<ModuleAudit setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
-      path="/moduleIO"
+      path="/moduleOpeningClosing"
       element={<ModuleOpeningClosing setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
@@ -82,6 +88,30 @@ const AccountingReportsRoutes = (props) => {
       index
       path="/cxpPeriodSummary"
       element={<CxPPeriodSummary setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/cxpProjection"
+      element={<CxPProjection setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/incomeStatementReport"
+      element={<IncomeStatementReport setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/balanceGeneral"
+      element={<BalanceGeneral setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/trialBalance"
+      element={<TrialBalance setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/budgetExecution"
+      element={<BudgetExecution setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/cxpPaymentHistory"
+      element={<CxPPaymentHistory setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }

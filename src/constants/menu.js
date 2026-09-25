@@ -728,6 +728,36 @@ const data = [
             icon: 'iconsminds-coins',
             label: 'menu.cxpPeriodSummary',
             to: `${adminRoot}/accounting/reports/cxpPeriodSummary`,
+          },
+          {
+            icon: 'iconsminds-statistic',
+            label: 'menu.cxpProjection',
+            to: `${adminRoot}/accounting/reports/cxpProjection`,
+          },
+          {
+            icon: 'iconsminds-bar-chart-4',
+            label: 'menu.incomeStatementReport',
+            to: `${adminRoot}/accounting/reports/incomeStatementReport`,
+          },
+          {
+            icon: 'iconsminds-financial',
+            label: 'menu.balanceGeneral',
+            to: `${adminRoot}/accounting/reports/balanceGeneral`,
+          },
+          {
+            icon: 'iconsminds-scale',
+            label: 'menu.trialBalance',
+            to: `${adminRoot}/accounting/reports/trialBalance`,
+          },
+          {
+            icon: 'iconsminds-target',
+            label: 'menu.budgetExecution',
+            to: `${adminRoot}/accounting/reports/budgetExecution`,
+          },
+          {
+            icon: 'iconsminds-receipt-4',
+            label: 'menu.cxpPaymentHistory',
+            to: `${adminRoot}/accounting/reports/cxpPaymentHistory`,
           }
         ],
       },

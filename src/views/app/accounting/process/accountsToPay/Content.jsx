@@ -6,7 +6,7 @@ import HeaderReport from './HeaderReport';
 import { useAccountsToPay } from './useAccountsToPay';
 
 const AccountsToPay = ({ setLoading }) => {
-  const { table, propsToHeader, propsToModalDetail } = useAccountsToPay({ setLoading });
+  const { table, propsToHeader, propsToModalDetail, propsToModalReports } = useAccountsToPay({ setLoading });
 
   return (
     <>
@@ -25,6 +25,7 @@ const AccountsToPay = ({ setLoading }) => {
         </Colxx>
       </Row>
       <Modal {...propsToModalDetail} />
+      <Modal {...propsToModalReports} />
     </>
   );
 }

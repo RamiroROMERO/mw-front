@@ -4,42 +4,19 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { SimpleSelect } from '@Components/simpleSelect';
 import { InputField } from '@Components/inputFields';
 import DateCalendar from '@Components/dateCalendar';
-import { Checkbox } from '@Components/checkbox';
-import { CardTitle } from 'reactstrap';
 
 export const UseChecksForm = (props) => {
-  const { formStateIndex, onInputChangeIndex, listDocto, listBanks, listProvider, listCurrencyName, listCityName, formValidationIndex, sendForm } = props;
+  const { formStateIndex, onInputChangeIndex, listBanks, listProvider, listCurrencyName, formValidationIndex, sendForm } = props;
 
-  const { id, documentId, bankCode, providerId, cantLetter, date, value, valueUsd, type, currencyName, cityId, requestId, status, numberCheck, document, numberAccount } = formStateIndex;
+  const { document, bankCode, bankAccountName, providerId, providerName, date, value, valueUsd, exchangeRate, currencyName, checkNumber, referenceCode } = formStateIndex;
 
-  const { documentIdValid, bankCodeValid, providerValid, currencyNameValid, typeValid, numberCheckValid, valueUsdValid } = formValidationIndex;
+  const { dateValid, bankCodeValid, providerNameValid } = formValidationIndex;
 
   return (
     <>
       <Row className='mb-3'>
         <Colxx xxs="12" sm="12" md="12" lg="8">
           <Row>
-            <Colxx xss="12" xs="7" md="8">
-              <SearchSelect
-                name="documentId"
-                inputValue={documentId}
-                onChange={onInputChangeIndex}
-                label="select.documentId"
-                options={listDocto}
-                invalid={sendForm && !!documentIdValid}
-                feedbackText={sendForm && documentIdValid || null}
-              />
-            </Colxx>
-            <Colxx xxs="12" xs="5" md="4">
-              <InputField
-                name="document"
-                value={document}
-                onChange={onInputChangeIndex}
-                label="input.document"
-                type="text"
-                disabled
-              />
-            </Colxx>
             <Colxx xxs="12" xs="7" md="8">
               <SearchSelect
                 name="bankCode"
@@ -53,8 +30,8 @@ export const UseChecksForm = (props) => {
             </Colxx>
             <Colxx xxs="12" xs="5" md="4">
               <InputField
-                name="numberAccount"
-                value={numberAccount}
+                name="bankAccountName"
+                value={bankAccountName}
                 onChange={onInputChangeIndex}
                 label="input.numberAccount"
                 type="text"
@@ -68,11 +45,38 @@ export const UseChecksForm = (props) => {
                 onChange={onInputChangeIndex}
                 label="page.checks.select.payOrder"
                 options={listProvider}
-                invalid={sendForm && !!providerValid}
-                feedbackText={sendForm && providerValid || null}
               />
             </Colxx>
             <Colxx xxs="12" xs="5" md="4">
+              <InputField
+                name="checkNumber"
+                value={checkNumber}
+                onChange={onInputChangeIndex}
+                label="input.numberCheck"
+                type="text"
+              />
+            </Colxx>
+            <Colxx xxs="12" xs="12" md="12">
+              <InputField
+                name="providerName"
+                value={providerName}
+                onChange={onInputChangeIndex}
+                label="page.checks.input.beneficiary"
+                type="text"
+                invalid={sendForm && !!providerNameValid}
+                feedbackText={sendForm && providerNameValid || null}
+              />
+            </Colxx>
+            <Colxx xxs="12" xs="12" md="12">
+              <InputField
+                name="referenceCode"
+                value={referenceCode}
+                onChange={onInputChangeIndex}
+                label="page.checks.input.referenceCode"
+                type="text"
+              />
+            </Colxx>
+            <Colxx xxs="6" xs="6" md="6">
               <InputField
                 name="value"
                 value={value}
@@ -82,47 +86,13 @@ export const UseChecksForm = (props) => {
                 disabled
               />
             </Colxx>
-            <Colxx xxs="12" xs="7" md="8" >
-              <InputField
-                name="cantLetter"
-                value={cantLetter}
-                onChange={onInputChangeIndex}
-                label="input.valueLetter"
-                type="text"
-                disabled
-              />
-            </Colxx>
-            <Colxx xxs="6" xs="5" md="4">
+            <Colxx xxs="6" xs="6" md="6">
               <InputField
                 name="valueUsd"
                 value={valueUsd}
                 onChange={onInputChangeIndex}
                 label="input.valueUsd"
                 type="text"
-                invalid={sendForm && !!valueUsdValid}
-                feedbackText={sendForm && valueUsdValid || null}
-              />
-            </Colxx>
-            <Colxx xxs="6" xs="7" md="8">
-              <InputField
-                name="type"
-                value={type}
-                onChange={onInputChangeIndex}
-                label="input.rateExchange"
-                type="text"
-                invalid={sendForm && !!typeValid}
-                feedbackText={sendForm && typeValid || null}
-              />
-            </Colxx>
-            <Colxx xxs="12" xs="5" md="4">
-              <InputField
-                name="numberCheck"
-                value={numberCheck}
-                onChange={onInputChangeIndex}
-                label="input.numberCheck"
-                type="text"
-                invalid={sendForm && !!numberCheckValid}
-                feedbackText={sendForm && numberCheckValid || null}
               />
             </Colxx>
           </Row>
@@ -135,6 +105,8 @@ export const UseChecksForm = (props) => {
                 value={date}
                 onChange={onInputChangeIndex}
                 label="select.date"
+                invalid={sendForm && !!dateValid}
+                feedbackText={sendForm && dateValid || null}
               />
             </Colxx>
             <Colxx xxs="6" xs="6" sm="6" md="6" lg="12">
@@ -144,33 +116,26 @@ export const UseChecksForm = (props) => {
                 label="page.checks.select.typeCurrency"
                 onChange={onInputChangeIndex}
                 options={listCurrencyName}
-                invalid={sendForm && !!currencyNameValid}
-                feedbackText={sendForm && currencyNameValid || null} />
-            </Colxx>
-            <Colxx xxs="6" xs="6" sm="6" md="6" lg="12">
-              <SimpleSelect
-                name="cityId"
-                value={cityId}
-                label="page.checks.select.cityId"
-                onChange={onInputChangeIndex}
-                options={listCityName} />
-            </Colxx>
-            <Colxx xxs="6" xs="6" sm="6" md="6" lg="12">
-              <InputField
-                name="requestId"
-                value={requestId}
-                onChange={onInputChangeIndex}
-                label="page.checks.imput.recuestId"
-                type="text"
-                disabled
               />
             </Colxx>
             <Colxx xxs="6" xs="6" sm="6" md="6" lg="12">
-              <Checkbox
-                name="status"
-                value={status}
+              <InputField
+                name="exchangeRate"
+                value={exchangeRate}
                 onChange={onInputChangeIndex}
-                label="check.status" />
+                label="input.rateExchange"
+                type="text"
+              />
+            </Colxx>
+            <Colxx xxs="6" xs="6" sm="6" md="6" lg="12">
+              <InputField
+                name="document"
+                value={document}
+                onChange={onInputChangeIndex}
+                label="input.document"
+                type="text"
+                disabled
+              />
             </Colxx>
           </Row>
         </Colxx>
