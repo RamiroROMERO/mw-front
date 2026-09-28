@@ -4,171 +4,167 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { SimpleSelect } from '@Components/simpleSelect';
 import DateCalendar from '@Components/dateCalendar';
 import { InputField } from '@Components/inputFields';
-import { IntlMessages, formatNumber, validFloat } from "@Helpers/Utils";
 import { RadioGroup } from '@Components/radioGroup';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 
-export const RequestForm = (props) => {
+const ACCOUNT_TYPES = [
+  { value: '', label: '' },
+  { value: 'Cuenta de Ahorro', label: 'Cuenta de Ahorro' },
+  { value: 'Cuenta de Cheques', label: 'Cuenta de Cheques' },
+  { value: 'Cuenta de Ahorro en Dolares', label: 'Cuenta de Ahorro en Dolares' },
+  { value: 'Cuenta de Cheques en Dolares', label: 'Cuenta de Cheques en Dolares' }
+];
 
-  const { formStateIndex, onInputChangeIndex, listBeneficiary, listAccountType, formValidationIndex, sendForm } = props;
+export const RequestForm = ({ formStateIndex, onInputChangeIndex, listProvider, formValidationIndex, sendForm, isTransfer }) => {
+  const {
+    date, value, typeId, providerId, providerName, concept, bankName, bankAccount, accountType,
+    beneficiaryAccountName, beneficiaryRtn, beneficiaryEmail
+  } = formStateIndex;
 
-  const { id, date, valueCurrency, typeRequest, letterValue, beneficiaryId, conceptPayment, accountType, nameBank, numberAccount, nameBeneficiary, rtn, email } = formStateIndex;
+  const {
+    dateValid, valueValid, typeIdValid, providerNameValid, conceptValid
+  } = formValidationIndex;
 
-  const { dateValid, valueCurrencyValid,
-    typeRequestValid,
-    beneficiaryIdValid,
-    conceptPaymentValid } = formValidationIndex;
   return (
     <Row>
-      <Colxx xss="12">
+      <Colxx xxs="12">
         <Row>
-          <Colxx xss="12" xs="6" lg="6">
-            <Row>
-              <Colxx xss="12" xs="12" lg="12">
-                <DateCalendar
-                  name="date"
-                  value={date}
-                  label="select.date"
-                  onChange={onInputChangeIndex}
-                  invalid={sendForm && !!dateValid}
-                  feedbackText={sendForm && dateValid || null}
-                />
-              </Colxx>
-              <Colxx xss="12" xs="12" lg="12">
-                <InputField
-                  name="valueCurrency"
-                  value={valueCurrency}
-                  label="page.checkRequest.input.valueCurrency"
-                  onChange={onInputChangeIndex}
-                  invalid={sendForm && !!valueCurrencyValid}
-                  feedbackText={sendForm && valueCurrencyValid || null}
-                />
-              </Colxx>
-            </Row>
+          <Colxx xxs="12" sm="6" lg="3">
+            <DateCalendar
+              name="date"
+              value={date}
+              label="select.date"
+              onChange={onInputChangeIndex}
+              invalid={sendForm && !!dateValid}
+              feedbackText={sendForm && dateValid || null}
+            />
           </Colxx>
-          <Colxx xss="12" xs="6" lg="6">
-            <Row className="mb-2" >
-              <Colxx xxs="12">
-                <RadioGroup
-                  label="page.checkRequest.title.typeRequest"
-                  name="typeRequest"
-                  value={typeRequest}
-                  onChange={onInputChangeIndex}
-                  display="flex"
-                  invalid={sendForm && !!typeRequestValid}
-                  feedbackText={sendForm && typeRequestValid || null}
-                  options={
-                    [
-                      { id: 1, label: 'page.checkRequest.radio.typeRequest.checkLps' },
-                      { id: 2, label: 'page.checkRequest.radio.typeRequest.transferLps' },
-                      { id: 3, label: 'page.checkRequest.radio.typeRequest.checkUsd' },
-                      { id: 4, label: 'page.checkRequest.radio.typeRequest.transferUsd' }
-                    ]
-                  }
-                />
-              </Colxx>
-            </Row>
-          </Colxx>
-        </Row>
-        <Row className='mb-3'>
-          <Colxx xss="12" xs="6" lg="6">
+          <Colxx xxs="12" sm="6" lg="3">
             <InputField
-              name="letterValue"
-              value={letterValue}
-              label="page.checkRequest.input.letterValue"
+              name="value"
+              value={value}
+              label="page.checkRequest.input.value"
               onChange={onInputChangeIndex}
               type="text"
-              disabled
+              invalid={sendForm && !!valueValid}
+              feedbackText={sendForm && valueValid || null}
             />
           </Colxx>
-          <Colxx xss="12" xs="6" lg="6">
+          <Colxx xxs="12" lg="6">
+            <RadioGroup
+              label="page.checkRequest.title.typeRequest"
+              name="typeId"
+              value={typeId}
+              onChange={onInputChangeIndex}
+              display="flex"
+              feedbackText={sendForm && typeIdValid || null}
+              options={[
+                { id: 1, label: 'page.checkRequest.radio.typeRequest.checkLps' },
+                { id: 2, label: 'page.checkRequest.radio.typeRequest.checkUsd' },
+                { id: 3, label: 'page.checkRequest.radio.typeRequest.transferLps' },
+                { id: 4, label: 'page.checkRequest.radio.typeRequest.transferUsd' }
+              ]}
+            />
+          </Colxx>
+        </Row>
+        <Row className="mb-3">
+          <Colxx xxs="12" sm="6">
             <SearchSelect
-              name="benefiiaryId"
-              inputValue={beneficiaryId}
+              name="providerId"
+              inputValue={providerId}
               onChange={onInputChangeIndex}
-              label="select.beneficiary"
-              options={listBeneficiary}
-              invalid={sendForm && !!beneficiaryIdValid}
-              feedbackText={sendForm && beneficiaryIdValid || null}
+              label="page.checkRequest.select.provider"
+              options={listProvider}
             />
           </Colxx>
-          <Colxx xss="12" xs="12" lg="12">
+          <Colxx xxs="12" sm="6">
             <InputField
-              name="conceptPayment"
-              value={conceptPayment}
-              label="input.conceptPayment"
+              name="providerName"
+              value={providerName}
               onChange={onInputChangeIndex}
+              label="page.checkRequest.input.beneficiary"
+              type="text"
+              invalid={sendForm && !!providerNameValid}
+              feedbackText={sendForm && providerNameValid || null}
+            />
+          </Colxx>
+          <Colxx xxs="12">
+            <InputField
+              name="concept"
+              value={concept}
+              onChange={onInputChangeIndex}
+              label="page.checkRequest.input.concept"
               type="textarea"
-              invalid={sendForm && !!conceptPaymentValid}
-              feedbackText={sendForm && conceptPaymentValid || null}
+              invalid={sendForm && !!conceptValid}
+              feedbackText={sendForm && conceptValid || null}
             />
           </Colxx>
         </Row>
-        <Row className='mb-2'>
-          <Colxx>
-            <ContainerWithLabel label="page.checkRequest.title.request">
-              <Row>
-                <Colxx xss="12" xs="6" sm="6" lg="4">
-                  <SimpleSelect
-                    name="accountType"
-                    value={accountType}
-                    onChange={onInputChangeIndex}
-                    label="select.accountType"
-                    options={listAccountType}
-
-                  />
-                </Colxx>
-                <Colxx xss="12" xs="6" sm="6" lg="4">
-                  <InputField
-                    name="nameBank"
-                    value={nameBank}
-                    onChange={onInputChangeIndex}
-                    label="input.checkRequest.input.nameBank"
-                    type="text"
-                  />
-                </Colxx>
-                <Colxx xss="12" xs="6" sm="6" lg="4">
-                  <InputField
-                    name="numberAccount"
-                    value={numberAccount}
-                    onChange={onInputChangeIndex}
-                    label="input.checkRequest.input.numberAccount"
-                    type="text"
-                  />
-                </Colxx>
-                <Colxx xss="12" xs="6" sm="6" lg="4">
-                  <InputField
-                    name="nameBeneficiary"
-                    value={nameBeneficiary}
-                    onChange={onInputChangeIndex}
-                    label="input.beneficiary"
-                    type="text"
-                  />
-                </Colxx>
-                <Colxx xss="12" xs="6" sm="6" lg="4">
-                  <InputField
-                    name="rtn"
-                    value={rtn}
-                    onChange={onInputChangeIndex}
-                    label="input.checkRequest.input.rtnBeneficiary"
-                    type="text"
-                  />
-                </Colxx>
-                <Colxx xss="12" xs="6" sm="6" lg="4">
-                  <InputField
-                    name="email"
-                    value={email}
-                    onChange={onInputChangeIndex}
-                    label="input.email"
-                    type="text"
-                  />
-                </Colxx>
-              </Row>
-            </ContainerWithLabel>
-          </Colxx>
-        </Row>
+        {isTransfer && (
+          <Row className="mb-2">
+            <Colxx xxs="12">
+              <ContainerWithLabel label="page.checkRequest.title.transferData">
+                <Row>
+                  <Colxx xxs="12" sm="6" lg="4">
+                    <InputField
+                      name="bankName"
+                      value={bankName}
+                      onChange={onInputChangeIndex}
+                      label="page.checkRequest.input.bankName"
+                      type="text"
+                    />
+                  </Colxx>
+                  <Colxx xxs="12" sm="6" lg="4">
+                    <SimpleSelect
+                      name="accountType"
+                      value={accountType}
+                      onChange={onInputChangeIndex}
+                      label="page.checkRequest.select.accountType"
+                      options={ACCOUNT_TYPES}
+                    />
+                  </Colxx>
+                  <Colxx xxs="12" sm="6" lg="4">
+                    <InputField
+                      name="bankAccount"
+                      value={bankAccount}
+                      onChange={onInputChangeIndex}
+                      label="page.checkRequest.input.bankAccount"
+                      type="text"
+                    />
+                  </Colxx>
+                  <Colxx xxs="12" sm="6" lg="4">
+                    <InputField
+                      name="beneficiaryAccountName"
+                      value={beneficiaryAccountName}
+                      onChange={onInputChangeIndex}
+                      label="page.checkRequest.input.beneficiaryAccountName"
+                      type="text"
+                    />
+                  </Colxx>
+                  <Colxx xxs="12" sm="6" lg="4">
+                    <InputField
+                      name="beneficiaryRtn"
+                      value={beneficiaryRtn}
+                      onChange={onInputChangeIndex}
+                      label="page.checkRequest.input.rtn"
+                      type="text"
+                    />
+                  </Colxx>
+                  <Colxx xxs="12" sm="6" lg="4">
+                    <InputField
+                      name="beneficiaryEmail"
+                      value={beneficiaryEmail}
+                      onChange={onInputChangeIndex}
+                      label="page.checkRequest.input.email"
+                      type="text"
+                    />
+                  </Colxx>
+                </Row>
+              </ContainerWithLabel>
+            </Colxx>
+          </Row>
+        )}
       </Colxx>
     </Row>
-  )
+  );
 }
-

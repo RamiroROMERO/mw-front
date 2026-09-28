@@ -9,11 +9,21 @@ const Process = (props) => {
   const history = useNavigate();
   const propsToCard = [{
     id: 1,
-    icon: "large-icon simple-icon-note",
-    title: "menu.checkRequest",
+    icon: "large-icon bi bi-building-gear",
+    title: "menu.fixedAssets.register",
     fnOnclick: () => {
       history(
-        `${adminRoot}/fixedAssets/process/checkRequest`,
+        `${adminRoot}/fixedAssets/process/register`,
+        { replace: true }
+      );
+    }
+  }, {
+    id: 2,
+    icon: "large-icon bi bi-building-up",
+    title: "menu.fixedAssets.assign",
+    fnOnclick: () => {
+      history(
+        `${adminRoot}/fixedAssets/process/assign`,
         { replace: true }
       );
     }

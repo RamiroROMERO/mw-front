@@ -3,46 +3,24 @@ import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from "@Helpers/Utils";
 import ReactTable from "@Components/reactTable";
-import { formatNumber } from "@Helpers/Utils";
 
-export const ModalViewRequest = (props) => {
-  const { data, setOpen } = props;
-  const { listRequest, fnViewRequest } = data;
+export const ModalViewRequest = ({ data, setOpen }) => {
+  const { dataList, fnViewRequest } = data;
 
-  const [table, setTable] = useState({
+  const [table] = useState({
     columns: [
-      { text: IntlMessages("table.column.code"), dataField: "code", headerStyle: { 'width': '25%' } },
-      { text: IntlMessages("table.column.date"), dataField: "date", headerStyle: { 'width': '20%' } },
-      {
-        text: IntlMessages("table.column.beneficiary"), dataField: "beneficiary", headerStyle: { 'width': '25%' },
-        classes: 'd-xs-none-table-cell', headerClasses: 'd-xs-none-table-cell'
-      },
-      {
-        text: IntlMessages("table.column.value"), dataField: "total", headerStyle: { 'width': '20%' },
-        cell: ({ row }) => { return formatNumber(row.original.total, "L. ", 2) }
-      },
-      // { text: IntlMessages("table.column.options"), dataField: "options", headerStyle: { 'width': '10%' } }
-
+      { text: IntlMessages("table.column.date"), dataField: "date", headerStyle: { width: '15%' } },
+      { text: IntlMessages("table.column.beneficiary"), dataField: "providerName", headerStyle: { width: '35%' } },
+      { text: IntlMessages("table.column.value"), dataField: "value", headerStyle: { width: '15%' } },
+      { text: IntlMessages("page.checkRequest.input.requestedBy"), dataField: "requestedBy", headerStyle: { width: '20%' } },
+      { text: IntlMessages("page.checkRequest.title.status"), dataField: "status", headerStyle: { width: '15%' } }
     ],
-    data: listRequest || [],
-    actions: [
-      {
-        color: 'warning',
-        icon: 'view',
-        toolTip: 'button.edit',
-        onClick: fnViewRequest,
-        title: IntlMessages('button.edit')
-      },
-      // { color: 'danger',
-      //   icon: 'trash',
-      //   toolTip: 'button.delete',
-      //   onClick: fnDeleteItem,
-      //   showInMenu: true,
-      //   title: IntlMessages('button.delete') }
-    ],
-    options: {
-      enabledActionButtons: true
-    }
+    actions: [{
+      color: 'warning',
+      icon: 'view',
+      toolTip: 'button.edit',
+      onClick: fnViewRequest
+    }]
   });
 
   return (
@@ -50,16 +28,15 @@ export const ModalViewRequest = (props) => {
       <ModalBody>
         <Row>
           <Colxx xxs="12">
-            <ReactTable {...table} />
+            <ReactTable {...table} data={dataList || []} />
           </Colxx>
         </Row>
       </ModalBody>
       <ModalFooter>
-        <Button color="danger" onClick={() => { setOpen(false) }}>
+        <Button color="danger" onClick={() => setOpen(false)}>
           <i className="bi bi-box-arrow-right" />{` ${IntlMessages('button.exit')}`}
         </Button>
       </ModalFooter>
     </>
-  )
+  );
 }
-

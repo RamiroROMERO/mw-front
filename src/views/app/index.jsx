@@ -444,10 +444,6 @@ const BankConciliation = React.lazy(() =>
   import('./banks/reports/bankConciliation')
 );
 
-const BankReports = React.lazy(() =>
-  import('./banks/reports/bankReports')
-);
-
 const Payments = React.lazy(() =>
   import('./banks/reports/payments')
 );
@@ -1190,11 +1186,6 @@ const App = ({ match }) => {
               path={`${match.url}/banks/reports/bankConciliation`}
               exact
               render={(props) => <BankConciliation setLoading={setLoading} {...props} />}
-            />
-            <Route
-              path={`${match.url}/banks/reports/bankReports`}
-              exact
-              render={(props) => <BankReports setLoading={setLoading} {...props} />}
             />
             <Route
               path={`${match.url}/banks/reports/payments`}

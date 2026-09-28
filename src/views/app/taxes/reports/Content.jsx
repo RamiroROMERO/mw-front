@@ -20,28 +20,6 @@ const Reports = () => {
   {
     id: 2,
     icon: "large-icon bi bi-bar-chart",
-    title: "menu.providersCNReport",
-    fnOnclick: () => {
-      history(
-        `${adminRoot}/taxes/reports/providersCNReport`,
-        { replace: true }
-      );
-    }
-  },
-  {
-    id: 3,
-    icon: "large-icon simple-icon-chart",
-    title: "menu.providersDNReport",
-    fnOnclick: () => {
-      history(
-        `${adminRoot}/taxes/reports/providersDNReport`,
-        { replace: true }
-      );
-    }
-  },
-  {
-    id: 4,
-    icon: "large-icon bi bi-bar-chart",
     title: "menu.salesReport",
     fnOnclick: () => {
       history(
@@ -51,7 +29,7 @@ const Reports = () => {
     }
   },
   {
-    id: 5,
+    id: 3,
     icon: "large-icon simple-icon-chart",
     title: "menu.retentionReport",
     fnOnclick: () => {

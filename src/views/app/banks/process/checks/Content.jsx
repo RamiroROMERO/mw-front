@@ -26,6 +26,7 @@ const Checks = (props) => {
     propsToControlPanel, formStateIndex, onInputChangeIndex, listDocto, listBanks,
     listProvider, listCurrencyName, formValidationIndex, sendForm, openModalViewChecks, setOpenModalViewChecks,
     dataChecks, fnViewCheck, openModalPrintCheck, setOpenModalPrintCheck, openModalViewRequest, setOpenModalViewRequest,
+    pendingRequests, fnSelectRequest,
     openModalExpenses, setOpenModalExpenses, dataExpenses, openModalAnticiped, setOpenModalAnticiped,
     openModalCxc, setOpenModalCxc, openModalCxp, setOpenModalCxp, propsToMsgVoid,
     cxpPayments, fnRemoveCxpPayment, pendingCxp, fnGetPendingCxp, fnApplyCxpPayment,
@@ -101,6 +102,8 @@ const Checks = (props) => {
     setOpen: setOpenModalViewRequest,
     maxWidth: 'lg',
     data: {
+      dataList: pendingRequests,
+      fnViewRequest: fnSelectRequest
     }
   }
 

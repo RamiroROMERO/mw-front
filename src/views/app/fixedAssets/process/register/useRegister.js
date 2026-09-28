@@ -1,175 +1,200 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react';
 import { useForm } from '@Hooks';
+import DateHelper from '@Helpers/DateHelper';
 import { request } from '@Helpers/core';
-import { useEffect } from 'react';
-import { IntlMessagesFn, validFloat, validInt } from '@Helpers/Utils';
+import notification from '@Containers/ui/Notifications';
+
+const CONDITION_OPTIONS = [
+  { value: 'Nuevo', label: 'Nuevo' },
+  { value: 'Semi-Nuevo', label: 'Semi-Nuevo' },
+  { value: 'Usado', label: 'Usado' },
+  { value: 'Reparado', label: 'Reparado' },
+  { value: 'Casa', label: 'Casa' }
+];
 
 export const useRegister = ({ setLoading }) => {
-
-  const [sendForm, setSendForm] = useState(false)
-  const [companyList, setCompanyList] = useState([]);
-  const [areaList, setAreaList] = useState([]);
   const [typeList, setTypeList] = useState([]);
-  const [statusList, setStatusList] = useState([]);
-  const [tableList, setTableList] = useState([]);
-  const [openSearch, setOpenSearch] = useState(false);
+  const [lines, setLines] = useState([]);
+  const [openModalView, setOpenModalView] = useState(false);
+  const [dataList, setDataList] = useState([]);
+  const [openModalChange, setOpenModalChange] = useState(false);
+  const [editingLine, setEditingLine] = useState(null);
+  const [openModalDepreciation, setOpenModalDepreciation] = useState(false);
+  const [sendForm, setSendForm] = useState(false);
 
-  const validations = {
-    companyId: [(val) => validInt(val) > 0, IntlMessagesFn("msg.required.select.companyId")],
-    typeId: [(val) => validInt(val) > 0, IntlMessagesFn("msg.required.select.typeId")],
-    areaId: [(val) => validInt(val) > 0, IntlMessagesFn("msg.required.select.areaId")],
-    statusId: [(val) => validInt(val) > 0, IntlMessagesFn("msg.required.select.statusId")],
-    name: [(val) => val.length > 10, IntlMessagesFn("msg.required.input.name")],
-    dateIn: [(val) => val.length > 0, IntlMessagesFn("msg.required.input.dateIn")],
-    dateBuy: [(val) => val.length > 10, IntlMessagesFn("msg.required.input.dateBuy")],
-    valueIn: [(val) => validFloat(val) > 0, IntlMessagesFn("msg.required.input.valueIn")],
-    valueBuy: [(val) => validFloat(val) > 0, IntlMessagesFn("msg.required.input.valueBuy")]
-  };
-
-  const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
-    id: 0,
-    companyId: 0,
-    typeId: 0,
-    areaId: 0,
-    statusId: 0,
-    code: "",
-    name: "",
-    trademark: "",
-    model: "",
-    serialNumber1: "",
-    serialNumber2: "",
-    dateBuy: "",
-    dateIn: "",
-    nameProv: "",
-    invoiceNumber: "",
-    valueBuy: 0.00,
-    valueIn: 0.00,
-    description: "",
-    notes: "",
-    status: 0,
-  }, validations);
-
-  const fnGetData = () => {
-
-    request.GET("admin/companies/getSL", resp => {
-      const { data } = resp;
-      const listData = data.map(elem => {
-        const newItem = {
-          id: elem.id,
-          name: elem.name
-        };
-        return newItem;
-      });
-      setCompanyList(listData);
-    }, err => { });
-
-    request.GET("fixedAssets/settings/types", resp => {
-      const { data } = resp;
-      const listData = data.map(elem => {
-        const newItem = {
-          id: elem.id,
-          name: elem.name
-        };
-        return newItem;
-      });
-      setTypeList(listData);
-    }, err => { });
-    request.GET("fixedAssets/settings/areas", resp => {
-      const { data } = resp;
-      const listData = data.map(elem => {
-        const newItem = {
-          id: elem.id,
-          name: elem.name
-        };
-        return newItem;
-      });
-      setAreaList(listData);
-    }, err => { });
-    request.GET("fixedAssets/settings/statuses", resp => {
-      const { data } = resp;
-      const listData = data.map(elem => {
-        const newItem = {
-          id: elem.id,
-          name: elem.name
-        };
-        return newItem;
-      });
-      setStatusList(listData)
-    }, err => { });
-
+  const validRegister = {
+    typeId: [(val) => Number(val) > 0, 'page.fixedAssets.msg.typeRequired'],
+    condition: [(val) => (val || '') !== '', 'page.fixedAssets.msg.conditionRequired'],
+    code: [(val) => (val || '') !== '', 'page.fixedAssets.msg.codeRequired'],
+    name: [(val) => (val || '').trim() !== '', 'page.fixedAssets.msg.nameRequired'],
+    dateIn: [(val) => (val || '') !== '', 'page.fixedAssets.msg.dateInRequired']
   }
 
-  const fnNewDocument = () => {
-    onResetForm();
+  const {
+    formState: formStateIndex, onResetForm: onResetFormIndex, setBulkForm: setBulkFormIndex,
+    onInputChange: onInputChangeIndex, isFormValid: isFormValidIndex, formValidation: formValidationIndex
+  } = useForm({
+    id: 0,
+    typeId: '',
+    code: '',
+    name: '',
+    condition: '',
+    trademark: '',
+    model: '',
+    serial1: '',
+    serial2: '',
+    dateBuy: '',
+    dateIn: '',
+    providerName: '',
+    invoiceNumber: '',
+    valueBuy: 0,
+    valueIn: 0,
+    description: '',
+    notes: '',
+    isActive: 1
+  }, validRegister);
+
+  const { id, typeId } = formStateIndex;
+
+  const fnNewRegister = () => {
+    setSendForm(false);
+    onResetFormIndex();
+    setLines([]);
   };
-  const fnSearchDocument = () => {
+
+  const fnLoadRegister = (registerId) => {
+    setLoading(true);
+    request.GET(`fixedAssets/process/fixedAssets/${registerId}`, (resp) => {
+      const { header, lines: lineData } = resp.data;
+      setBulkFormIndex(header);
+      setLines(lineData);
+      setSendForm(false);
+      setLoading(false);
+    }, () => setLoading(false));
+  }
+
+  const fnViewRegister = (row) => {
+    setOpenModalView(false);
+    fnLoadRegister(row.id);
+  }
+
+  const fnSearchRegister = () => {
+    setLoading(true);
+    request.GET('fixedAssets/process/fixedAssets/search', (resp) => {
+      setDataList(resp.data);
+      setOpenModalView(true);
+      setLoading(false);
+    }, () => setLoading(false));
+  }
+
+  const fnGenerateCode = () => {
+    if (formStateIndex.code) return;
+    if (!(Number(typeId) > 0)) {
+      notification('warning', 'page.fixedAssets.msg.selectTypeFirst', 'alert.warning.title');
+      return;
+    }
+    setLoading(true);
+    request.GET(`fixedAssets/process/fixedAssets/generateCode?typeId=${typeId}`, (resp) => {
+      setBulkFormIndex({ code: resp.data.code });
+      setLoading(false);
+    }, () => setLoading(false));
+  }
+
+  const fnSaveRegister = () => {
+    setSendForm(true);
+    if (!isFormValidIndex) return;
 
     setLoading(true);
-    request.GET('fixedAssets/process/fixedAssets', resp => {
-      setLoading(false);
-      const { data } = resp;
-      setTableList(data);
-      setOpenSearch(false);
-    }, err => {
-      setLoading(false);
-    });
-
+    if (id > 0) {
+      request.PUT(`fixedAssets/process/fixedAssets/${id}`, { header: formStateIndex }, () => {
+        fnLoadRegister(id);
+        setLoading(false);
+      }, () => setLoading(false));
+    } else {
+      request.POST('fixedAssets/process/fixedAssets', { header: formStateIndex }, (resp) => {
+        fnLoadRegister(resp.data.id);
+        setLoading(false);
+      }, () => setLoading(false));
+    }
   }
 
-  const fnSaveDocument = () => {
-
+  const fnOpenAddChange = () => {
+    if (!(id > 0)) return;
+    setEditingLine({ date: DateHelper.format(DateHelper.now()), description: '', value: 0 });
+    setOpenModalChange(true);
   }
 
-  const fnPrintDocument = () => {
-
+  const fnOpenEditChange = (line) => {
+    if (!line.isEdit) return;
+    setEditingLine(line);
+    setOpenModalChange(true);
   }
 
-  const fnDeleteDocument = () => {
-
+  const fnSaveChangeLine = (data) => {
+    setLoading(true);
+    if (data.id) {
+      request.PUT(`fixedAssets/process/fixedAssets/${id}/changes/${data.id}`, data, () => {
+        setOpenModalChange(false);
+        fnLoadRegister(id);
+        setLoading(false);
+      }, () => setLoading(false));
+    } else {
+      request.POST(`fixedAssets/process/fixedAssets/${id}/changes`, data, () => {
+        setOpenModalChange(false);
+        fnLoadRegister(id);
+        setLoading(false);
+      }, () => setLoading(false));
+    }
   }
 
-  const fnDelete = () => {
-
+  const fnOpenDepreciation = () => {
+    if (!(id > 0)) return;
+    setOpenModalDepreciation(true);
   }
 
   const propsToControlPanel = {
-    fnNew: fnNewDocument,
-    fnSearch: fnSearchDocument,
-    fnSave: fnSaveDocument,
-    fnPrint: fnPrintDocument,
-    fnDelete: fnDeleteDocument,
+    fnNew: fnNewRegister,
+    fnSearch: fnSearchRegister,
+    fnSave: fnSaveRegister,
     buttonsHome: [
-      // {
-      //   title: "button.ledgerAccounts",
-      //   icon: "bi bi-journal-text",
-      //   onClick: fnLedgerAccounts
-      // },
-      // {
-      //   title: "button.export",
-      //   icon: "bi bi-file-earmark-excel",
-      //   onClick: fnExportToExcel
-      // }
+      {
+        title: 'page.fixedAssets.button.depreciation',
+        icon: 'bi bi-graph-down',
+        onClick: fnOpenDepreciation
+      }
     ],
     buttonsOptions: [],
     buttonsAdmin: []
   }
 
   useEffect(() => {
-    fnGetData();
-  }, [])
-
+    request.GET('fixedAssets/settings/types', (resp) => {
+      setTypeList((resp.data || []).map((item) => ({ value: item.id, label: item.name })));
+    }, () => { });
+  }, []);
 
   return {
     propsToControlPanel,
-    formState,
-    formValidation,
-    onInputChange,
-    onBulkForm,
+    formStateIndex,
+    onInputChangeIndex,
+    typeList,
+    conditionOptions: CONDITION_OPTIONS,
+    formValidationIndex,
     sendForm,
-    lists: {
-      companyList, areaList, typeList, statusList, tableList
-    },
-    openSearch,
-    setOpenSearch
+    lines,
+    fnGenerateCode,
+    fnOpenAddChange,
+    fnOpenEditChange,
+    openModalChange,
+    setOpenModalChange,
+    editingLine,
+    fnSaveChangeLine,
+    openModalView,
+    setOpenModalView,
+    dataList,
+    fnViewRegister,
+    openModalDepreciation,
+    setOpenModalDepreciation,
+    assetId: id
   }
 }

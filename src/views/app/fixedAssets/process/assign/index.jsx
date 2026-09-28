@@ -7,13 +7,12 @@ import Breadcrumb from '@Containers/navs/Breadcrumb';
 const Content = React.lazy(() =>
   import('./Content')
 );
-const ProvidersDNReport = (props) => {
+const Assign = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(onTitleEdit("menu.providersDNReport"))
-    dispatch(onBreadcrumbEdit(`${adminRoot}/taxes/reports/providersDNReport`))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    dispatch(onTitleEdit("menu.fixedAssets.assign"))
+    dispatch(onBreadcrumbEdit(`${adminRoot}/fixedAssets/process/assign`))
   }, [])
 
   return (
@@ -24,4 +23,4 @@ const ProvidersDNReport = (props) => {
   )
 };
 
-export default ProvidersDNReport;
+export default Assign;

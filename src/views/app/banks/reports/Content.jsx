@@ -30,17 +30,6 @@ const Reports = (props) => {
   },
   {
     id: 3,
-    icon: "large-icon iconsminds-line-chart-1",
-    title: "menu.bankReports",
-    fnOnclick: () => {
-      history(
-        `${adminRoot}/banks/reports/bankReports`,
-        { replace: true }
-      );
-    }
-  },
-  {
-    id: 4,
     icon: "large-icon bi bi-cash",
     title: "menu.payments",
     fnOnclick: () => {

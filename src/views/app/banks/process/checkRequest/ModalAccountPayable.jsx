@@ -4,24 +4,22 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from "@Helpers/Utils";
 import ReactTable from "@Components/reactTable";
 
-export const ModalAccountPayable = (props) => {
-  const { data, setOpen } = props;
-  const { listCxp } = data;
+export const ModalAccountPayable = ({ data, setOpen }) => {
+  const { pendingCxp, fnApplyCxp } = data;
 
-  const [table, setTable] = useState({
-    title: "",
+  const [table] = useState({
     columns: [
-      { text: IntlMessages("table.column.date"), dataField: "date", headerStyle: { 'width': '20%' } },
-      {
-        text: IntlMessages("table.column.provider"), dataField: "proveedor", headerStyle: { 'width': '25%' },
-        classes: 'd-xs-none-table-cell', headerClasses: 'd-xs-none-table-cell'
-      },
-      { text: IntlMessages("table.column.invoice"), dataField: "descrip", headerStyle: { 'width': '25%' } },
-      { text: IntlMessages("table.column.value"), dataField: "total", headerStyle: { 'width': '20%' } },
-      { text: IntlMessages("table.column.options"), dataField: "options", headerStyle: { 'width': '10%' } }
+      { text: IntlMessages("table.column.date"), dataField: "date", headerStyle: { width: '15%' } },
+      { text: IntlMessages("table.column.provider"), dataField: "providerName", headerStyle: { width: '30%' } },
+      { text: IntlMessages("table.column.nInvoice"), dataField: "documentCode", headerStyle: { width: '25%' } },
+      { text: IntlMessages("table.column.balance"), dataField: "balance", headerStyle: { width: '20%' } }
     ],
-    data: listCxp,
-    actions: []
+    actions: [{
+      color: 'primary',
+      icon: 'check-lg',
+      toolTip: 'button.accept',
+      onClick: fnApplyCxp
+    }]
   });
 
   return (
@@ -29,18 +27,15 @@ export const ModalAccountPayable = (props) => {
       <ModalBody>
         <Row>
           <Colxx xxs="12">
-            <ReactTable {...table} />
+            <ReactTable {...table} data={pendingCxp || []} />
           </Colxx>
         </Row>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary">
-          <i className="bi bi-check-lg" /> {IntlMessages("button.accept")}
-        </Button>
-        <Button color="danger" onClick={() => { setOpen(false) }}>
+        <Button color="danger" onClick={() => setOpen(false)}>
           <i className="bi bi-box-arrow-right" />{` ${IntlMessages('button.exit')}`}
         </Button>
       </ModalFooter>
     </>
-  )
+  );
 }

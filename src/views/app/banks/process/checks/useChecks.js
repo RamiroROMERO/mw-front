@@ -22,6 +22,7 @@ export const useChecks = ({ setLoading, lines, setLines, setEditingLineIndex }) 
   const [dataExpenses] = useState([]);
   const [cxpPayments, setCxpPayments] = useState([]);
   const [pendingCxp, setPendingCxp] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
   const [sendForm, setSendForm] = useState(false);
 
   const validCheck = {
@@ -87,8 +88,27 @@ export const useChecks = ({ setLoading, lines, setLines, setEditingLineIndex }) 
     }, () => setLoading(false));
   }
 
+  // "Cargar Solicitud de Pago" — trae solicitudes pendientes (sin Cheque/Transferencia real
+  // que las haya consumido aún, ver PaymentRequestService.getPending) filtradas a las de tipo
+  // Cheque (typeId 1=Lps, 2=USD); al elegir una, autocompleta beneficiario/valor/RTN/tipo de
+  // cuenta y guarda requestId para que bco_cheques.no_soli quede vinculado al guardar.
   const fnRequest = () => {
-    setOpenModalViewRequest(true)
+    setLoading(true);
+    request.GET('banks/process/paymentRequest/pending', (resp) => {
+      setPendingRequests((resp.data || []).filter((r) => Number(r.typeId) <= 2));
+      setOpenModalViewRequest(true);
+      setLoading(false);
+    }, () => setLoading(false));
+  }
+
+  const fnSelectRequest = (row) => {
+    setOpenModalViewRequest(false);
+    setBulkFormIndex({
+      providerId: row.providerId || 0,
+      providerName: row.providerName,
+      value: row.value,
+      requestId: row.id
+    });
   }
 
   const fnGeneratePrintCheck = () => {
@@ -317,6 +337,8 @@ export const useChecks = ({ setLoading, lines, setLines, setEditingLineIndex }) 
       setOpenModalPrintCheck,
       openModalViewRequest,
       setOpenModalViewRequest,
+      pendingRequests,
+      fnSelectRequest,
       formValidationIndex,
       sendForm,
       openModalExpenses,

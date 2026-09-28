@@ -3,8 +3,6 @@ import { Route, Routes } from "react-router-dom"
 
 const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
 const PurchaseReportTax = React.lazy(() => import('@Views/app/taxes/reports/purchaseReport'));
-const ProvidersCNReport = React.lazy(() => import('@Views/app/taxes/reports/providersCNReport'));
-const ProvidersDNReport = React.lazy(() => import('@Views/app/taxes/reports/providersDNReport'));
 const SalesReportTax = React.lazy(() => import('@Views/app/taxes/reports/salesReport'));
 const RetentionReport = React.lazy(() => import('@Views/app/taxes/reports/retentionReport'));
 const TaxReports = React.lazy(() => import('@Views/app/taxes/reports'));
@@ -20,14 +18,6 @@ const TaxReportsRoutes = (props) => {
       index
       path="/purchaseReport"
       element={<PurchaseReportTax setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
-    <Route
-      index
-      path="/providersCNReport"
-      element={<ProvidersCNReport setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
-    <Route
-      index
-      path="/providersDNReport"
-      element={<ProvidersDNReport setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
       path="/salesReport"

@@ -1,68 +1,42 @@
-import { useState } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import ControlPanel from '@Components/controlPanel';
+import Confirmation from '@Containers/ui/confirmationMsg';
+import Modal from '@Components/modal';
 import { useCheckRequest } from './useCheckRequest';
 import { RequestForm } from './RequestForm';
-import { useCheckRequestDetail } from './useCheckRequestDetail';
 import { RequestDetail } from './RequestDetail';
 import { FooterForm } from './FooterForm';
-import Modal from "@Components/modal";
 import { ModalAccountPayable } from './ModalAccountPayable';
 import { ModalViewRequest } from './ModalViewRequest';
-import ModalChecksPayroll from './ModalChecksPayroll';
 
-const CheckRequest = (props) => {
-  const { setLoading } = props;
+const CheckRequest = ({ setLoading }) => {
+  const {
+    propsToControlPanel, formStateIndex, onInputChangeIndex, listProvider, formValidationIndex, sendForm,
+    isTransfer, lines, fnUpdateLine, fnRemoveLine, fnOpenCxpPicker, openModalCxp, setOpenModalCxp,
+    pendingCxp, fnApplyCxp, openModalView, setOpenModalView, dataList, fnViewRequest, propsToMsgDelete
+  } = useCheckRequest({ setLoading });
 
-  const { formStateDetail, setBulkFormDetail, onInputChangeDetail, onResetFormDetail, openModalAccountPayable, setOpenModalAccountPayable, listCxp, setListCxp, fnViewCxp, } = useCheckRequestDetail({ setLoading });
+  const propsToRequestForm = { formStateIndex, onInputChangeIndex, listProvider, formValidationIndex, sendForm, isTransfer };
+  const propsToRequestDetail = { lines, fnUpdateLine, fnRemoveLine, fnOpenCxpPicker, formStateIndex, onInputChangeIndex };
+  const propsToFooterForm = { formStateIndex, onInputChangeIndex, formValidationIndex, sendForm };
 
-  const { propsToControlPanel, formStateIndex, setBulkFormIndex, onInputChangeIndex, onResetFormIndex, listBeneficiary, listAccountType, openModalViewRequest, setOpenModalViewRequest, formValidationIndex, sendForm, openModalCheckPayroll, setOpenModalCheckPayroll } = useCheckRequest({ setLoading, onResetFormDetail });
-
-  const propsToCheckRequestForm = {
-    onInputChangeIndex, formStateIndex, listBeneficiary, listAccountType, setBulkFormIndex, openModalViewRequest, formValidationIndex, setOpenModalViewRequest, sendForm, openModalCheckPayroll, setOpenModalCheckPayroll
-  }
-
-  const propsToCheckRequestDetail = {
-    onInputChangeDetail, formStateDetail, listCxp, setListCxp, fnViewCxp,
-  }
-
-  const propsToFooterForm = {
-    onInputChangeIndex, formStateIndex, formValidationIndex, sendForm
-  }
-
-  const propsToModalPayable = {
+  const propsToModalCxp = {
     ModalContent: ModalAccountPayable,
-    title: "page.checkRequest.modal.billToPay.title",
-    open: openModalAccountPayable,
-    setOpen: setOpenModalAccountPayable,
+    title: 'page.checkRequest.modal.billToPay.title',
+    open: openModalCxp,
+    setOpen: setOpenModalCxp,
     maxWidth: 'lg',
-    data: {
-      listCxp
-    }
+    data: { pendingCxp, fnApplyCxp }
   }
 
-  const propsToModalViewRequest = {
+  const propsToModalView = {
     ModalContent: ModalViewRequest,
-    title: "page.checkRequest.modal.checkRequest.title",
-    open: openModalViewRequest,
-    setOpen: setOpenModalViewRequest,
+    title: 'page.checkRequest.modal.checkRequest.title',
+    open: openModalView,
+    setOpen: setOpenModalView,
     maxWidth: 'lg',
-    data: {
-      listCxp
-    }
-  }
-
-  const propsToModalChecksPayroll = {
-    ModalContent: ModalChecksPayroll,
-    title: "page.checkRequest.modal.checkPayroll.title",
-    open: openModalCheckPayroll,
-    setOpen: setOpenModalCheckPayroll,
-    maxWidth: 'xl',
-    data: {
-      listRequest: [],
-      fnViewRequest: (data) => { }
-    }
+    data: { dataList, fnViewRequest }
   }
 
   return (
@@ -73,16 +47,16 @@ const CheckRequest = (props) => {
             <CardBody>
               <ControlPanel {...propsToControlPanel} />
               <Separator className="mt-2 mb-5" />
-              <RequestForm {...propsToCheckRequestForm} />
-              <RequestDetail {...propsToCheckRequestDetail} />
+              <RequestForm {...propsToRequestForm} />
+              <RequestDetail {...propsToRequestDetail} />
               <FooterForm {...propsToFooterForm} />
             </CardBody>
           </Card>
         </Colxx>
       </Row>
-      <Modal {...propsToModalPayable} />
-      <Modal {...propsToModalViewRequest} />
-      <Modal {...propsToModalChecksPayroll} />
+      <Modal {...propsToModalCxp} />
+      <Modal {...propsToModalView} />
+      <Confirmation {...propsToMsgDelete} />
     </>
   );
 }

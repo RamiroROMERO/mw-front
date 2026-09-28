@@ -259,6 +259,18 @@ const data = [
           label: 'menu.hospitalManagement.scheduledAppointments',
           to: `${adminRoot}/hospitalManagement/process/scheduledAppointments`,
         }]
+      },
+      {
+        id: 'hospitalManagement-reports',
+        icon: 'simple-icon-chart',
+        label: 'menu.submenu.reports',
+        to: `${adminRoot}/hospitalManagement/reports`,
+        subs: [{
+          id: 'hospitalManagement-reports-honorariosReport',
+          icon: 'bi bi-bar-chart',
+          label: 'menu.hospitalManagement.honorariosReport',
+          to: `${adminRoot}/hospitalManagement/reports/honorariosReport`,
+        }]
       }
     ]
   },
@@ -818,16 +830,6 @@ const data = [
           },
           {
             icon: 'bi bi-bar-chart',
-            label: 'menu.providersCNReport',
-            to: `${adminRoot}/taxes/reports/providersCNReport`,
-          },
-          {
-            icon: 'simple-icon-chart',
-            label: 'menu.providersDNReport',
-            to: `${adminRoot}/taxes/reports/providersDNReport`,
-          },
-          {
-            icon: 'bi bi-bar-chart',
             label: 'menu.salesReport',
             to: `${adminRoot}/taxes/reports/salesReport`,
           },
@@ -861,6 +863,11 @@ const data = [
             icon: 'bi bi-calendar4-week',
             label: 'menu.scheduling',
             to: `${adminRoot}/banks/settings/scheduling`,
+          },
+          {
+            icon: 'bi bi-cash-coin',
+            label: 'menu.littleCashFunds',
+            to: `${adminRoot}/banks/settings/littleCashFunds`,
           }
         ],
       },
@@ -919,6 +926,11 @@ const data = [
             icon: 'simple-icon-docs',
             label: 'menu.debCredNotes',
             to: `${adminRoot}/banks/process/debCredNotes`,
+          },
+          {
+            icon: 'bi bi-cash-coin',
+            label: 'menu.littleCash',
+            to: `${adminRoot}/banks/process/littleCash`,
           }
         ],
       },
@@ -937,11 +949,6 @@ const data = [
             icon: 'iconsminds-library',
             label: 'menu.bankConciliation',
             to: `${adminRoot}/banks/reports/bankConciliation`,
-          },
-          {
-            icon: 'iconsminds-line-chart-1',
-            label: 'menu.bankReports',
-            to: `${adminRoot}/banks/reports/bankReports`,
           },
           {
             icon: 'bi bi-cash',
@@ -1304,52 +1311,16 @@ const data = [
           label: 'menu.fixedAssets.register',
           to: `${adminRoot}/fixedAssets/process/register`,
         }, {
-          id: 'fixedAssets-process-calculate',
-          icon: 'simple-icon-calculator',
-          label: 'menu.fixedAssets.calculate',
-          to: `${adminRoot}/fixedAssets/process/calculate`,
-        }, {
           id: 'fixedAssets-process-assign',
           icon: 'bi bi-building-up',
           label: 'menu.fixedAssets.assign',
-          to: `${adminRoot}/fixedAssets/process/assginate`,
-        }, {
-          id: 'fixedAssets-process-reasignate',
-          icon: 'bi bi-arrow-left-right',
-          label: 'menu.fixedAssets.reasign',
-          to: `${adminRoot}/fixedAssets/process/reasignate`,
-        }, {
-          id: 'fixedAssets-process-remove',
-          icon: 'bi bi-building-dash',
-          label: 'menu.fixedAssets.remove',
-          to: `${adminRoot}/fixedAssets/process/remove`,
-        }, {
-          id: 'fixedAssets-process-execute',
-          icon: 'bi bi-list-nested',
-          label: 'menu.fixedAssets.execute',
-          to: `${adminRoot}/fixedAssets/process/execute`,
+          to: `${adminRoot}/fixedAssets/process/assign`,
         }]
       }, {
         id: 'fixedAssets-reports',
         icon: 'simple-icon-layers',
         label: 'menu.submenu.reports',
         to: `${adminRoot}/fixedAssets/reports`,
-        subs: [{
-          id: 'fixedAssets-reports-general',
-          icon: 'bi bi-file-bar-graph',
-          label: 'menu.fixedAssets.generalReport',
-          to: `${adminRoot}/fixedAssets/reports/general`,
-        }, {
-          id: 'fixedAssets-reports-accumDeprec',
-          icon: 'bi bi-file-bar-graph',
-          label: 'menu.fixedAssets.accumDeprec',
-          to: `${adminRoot}/fixedAssets/reports/accum-deprec`,
-        }, {
-          id: 'fixedAssets-reports-restDeprec',
-          icon: 'bi bi-file-bar-graph',
-          label: 'menu.fixedAssets.restDeprec',
-          to: `${adminRoot}/fixedAssets/reports/rest-deprec`,
-        }]
       }
     ]
   },

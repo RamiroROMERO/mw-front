@@ -36,6 +36,23 @@ export const usePurchaseReport = ({ setLoading }) => {
     data: []
   });
 
+  const [allCreditNotesProvData, setAllCreditNotesProvData] = useState([]);
+  const [creditNotesProvTotal, setCreditNotesProvTotal] = useState(0);
+  const [tableCreditNotesProv, setTableCreditNotesProv] = useState({
+    title: IntlMessages("page.taxPurchaseReport.creditNotesProv.table.title"),
+    columns: [
+      { text: IntlMessages("table.column.date"), dataField: "date", type: 'date', headerStyle: { width: '10%' } },
+      { text: IntlMessages("page.taxPurchaseReport.table.rtnProvider"), dataField: "rtnProvider", headerStyle: { width: '12%' } },
+      { text: IntlMessages("table.column.provider"), dataField: "providerName", headerStyle: { width: '20%' } },
+      { text: IntlMessages("page.taxPurchaseReport.creditNotesProv.table.creditNoteCai"), dataField: "creditNoteCai", headerStyle: { width: '15%' } },
+      { text: IntlMessages("page.taxPurchaseReport.creditNotesProv.table.creditNoteNumber"), dataField: "creditNoteNumber", headerStyle: { width: '12%' } },
+      { text: IntlMessages("page.taxPurchaseReport.creditNotesProv.table.invoiceNumber"), dataField: "invoiceNumber", headerStyle: { width: '13%' } },
+      { text: IntlMessages("page.taxPurchaseReport.creditNotesProv.table.invoiceDate"), dataField: "invoiceDate", type: 'date', headerStyle: { width: '10%' } },
+      { text: IntlMessages("table.column.total"), dataField: "total", type: 'number', headerStyle: { width: '8%' } }
+    ],
+    data: []
+  });
+
   const fnCalcTotals = (data) => {
     const totals = data.reduce((acc, item) => {
       acc.total += Number(item.total || 0);
@@ -47,6 +64,21 @@ export const usePurchaseReport = ({ setLoading }) => {
     setDataTotals(totals);
   }
 
+  const fnCalcCreditNotesProvTotal = (data) => {
+    const total = data.reduce((acc, item) => acc + Number(item.total || 0), 0);
+    setCreditNotesProvTotal(total);
+  }
+
+  const fnSearchCreditNotesProv = (onFinish) => {
+    request.POST('tax/reports/purchaseReport/creditNotesProv', { startDate: dateStart, endDate: dateEnd }, (resp) => {
+      const data = resp.data;
+      setAllCreditNotesProvData(data);
+      setTableCreditNotesProv((prev) => ({ ...prev, data }));
+      fnCalcCreditNotesProvTotal(data);
+      onFinish();
+    }, onFinish);
+  }
+
   const fnSearchReport = () => {
     setLoading(true);
     request.POST('tax/reports/purchaseReport', { startDate: dateStart, endDate: dateEnd }, (resp) => {
@@ -54,7 +86,7 @@ export const usePurchaseReport = ({ setLoading }) => {
       setAllData(data);
       setTable((prev) => ({ ...prev, data }));
       fnCalcTotals(data);
-      setLoading(false);
+      fnSearchCreditNotesProv(() => setLoading(false));
     }, () => {
       setLoading(false);
     });
@@ -74,9 +106,24 @@ export const usePurchaseReport = ({ setLoading }) => {
     setTable((prev) => ({ ...prev, data: filtered }));
   }
 
+  const fnFilterCreditNotesProvData = (value) => {
+    if (!value) {
+      setTableCreditNotesProv((prev) => ({ ...prev, data: allCreditNotesProvData }));
+      return;
+    }
+    const upperValue = value.toUpperCase();
+    const filtered = allCreditNotesProvData.filter((item) => {
+      return `${item.date || ''}${item.providerName || ''}${item.rtnProvider || ''}${item.creditNoteNumber || ''}`
+        .toUpperCase()
+        .includes(upperValue);
+    });
+    setTableCreditNotesProv((prev) => ({ ...prev, data: filtered }));
+  }
+
   const onSearchChange = (e) => {
     onInputChange(e);
     fnFilterData(e.target.value);
+    fnFilterCreditNotesProvData(e.target.value);
   }
 
   const fnPrint = () => {
@@ -97,6 +144,14 @@ export const usePurchaseReport = ({ setLoading }) => {
 
   const fnExportImportBook = () => {
     fnExport('tax/reports/purchaseReport/exportImportBookXLSX', { startDate: dateStart, endDate: dateEnd }, 'RegistroDeImportaciones.xlsx');
+  }
+
+  const fnPrintCreditNotesProv = () => {
+    setLoading(true);
+    request.GETPdf('tax/reports/purchaseReport/creditNotesProv/exportPDF', { startDate: dateStart, endDate: dateEnd }, 'ReporteNCProveedores.pdf', () => {
+      setLoading(false);
+    });
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -124,9 +179,16 @@ export const usePurchaseReport = ({ setLoading }) => {
     tax: formatNumber(dataTotals.tax)
   }
 
+  const propsToCreditNotesProv = {
+    table: tableCreditNotesProv,
+    total: formatNumber(creditNotesProvTotal),
+    fnPrint: fnPrintCreditNotesProv
+  }
+
   return {
     table,
     propsToHeaderReport,
-    propsToTotals
+    propsToTotals,
+    propsToCreditNotesProv
   }
 }

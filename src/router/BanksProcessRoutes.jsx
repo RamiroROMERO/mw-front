@@ -13,6 +13,7 @@ const VariousDeposits = React.lazy(() => import('@Views/app/banks/process/variou
 const CashWithdrawal = React.lazy(() => import('@Views/app/banks/process/cashWithdrawal'));
 const AffiliateDeposits = React.lazy(() => import('@Views/app/banks/process/affiliateDeposits'));
 const DebCredNotes = React.lazy(() => import('@Views/app/banks/process/debCredNotes'));
+const LittleCash = React.lazy(() => import('@Views/app/banks/process/littleCash'));
 
 const BanksProcessRoutes = (props) => {
   const { setLoading } = props;
@@ -61,6 +62,10 @@ const BanksProcessRoutes = (props) => {
       index
       path="/debCredNotes"
       element={<DebCredNotes setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/littleCash"
+      element={<LittleCash setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }

@@ -7,12 +7,13 @@ import Breadcrumb from '@Containers/navs/Breadcrumb';
 const Content = React.lazy(() =>
   import('./Content')
 );
-const BankReports = (props) => {
+const LittleCash = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(onTitleEdit("menu.bankReports"))
-    dispatch(onBreadcrumbEdit(`${adminRoot}/banks/reports/bankReports`))
+    dispatch(onTitleEdit("menu.littleCash"))
+    dispatch(onBreadcrumbEdit(`${adminRoot}/banks/process/littleCash`))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -23,4 +24,4 @@ const BankReports = (props) => {
   )
 };
 
-export default BankReports;
+export default LittleCash;

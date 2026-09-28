@@ -5,6 +5,7 @@ const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
 const BanksSettings = React.lazy(() => import('@Views/app/banks/settings'));
 const BanksAccounts = React.lazy(() => import('@Views/app/banks/settings/banksAccounts'));
 const Scheduling = React.lazy(() => import('@Views/app/banks/settings/scheduling'));
+const LittleCashFunds = React.lazy(() => import('@Views/app/banks/settings/littleCashFunds'));
 
 const BanksSettingsRoutes = (props) => {
   const { setLoading } = props;
@@ -21,6 +22,10 @@ const BanksSettingsRoutes = (props) => {
       index
       path="/scheduling"
       element={<Scheduling setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/littleCashFunds"
+      element={<LittleCashFunds setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
