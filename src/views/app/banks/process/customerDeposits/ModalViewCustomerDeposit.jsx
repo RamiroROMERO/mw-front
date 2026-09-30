@@ -18,7 +18,7 @@ export const ModalViewCustomerDeposit = (props) => {
     data: dataList || [],
     actions: [{
       color: 'info',
-      icon: 'view',
+      icon: 'eye',
       toolTip: IntlMessages('button.view'),
       onClick: fnViewDeposit
     }]

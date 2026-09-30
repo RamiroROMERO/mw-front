@@ -12,7 +12,7 @@ const FixedAssetsRegister = (props) => {
 
   useEffect(() => {
     dispatch(onTitleEdit("menu.fixedAssets.register"))
-    dispatch(onBreadcrumbEdit(`${adminRoot}/fixedAssets/settings/fixedAssets.register`))
+    dispatch(onBreadcrumbEdit(`${adminRoot}/fixedAssets/process/fixedAssets.register`))
   }, [])
 
   return (

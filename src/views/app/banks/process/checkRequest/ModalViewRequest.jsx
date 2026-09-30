@@ -17,7 +17,7 @@ export const ModalViewRequest = ({ data, setOpen }) => {
     ],
     actions: [{
       color: 'warning',
-      icon: 'view',
+      icon: 'eye',
       toolTip: 'button.edit',
       onClick: fnViewRequest
     }]

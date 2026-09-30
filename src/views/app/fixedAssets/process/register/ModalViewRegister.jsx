@@ -20,7 +20,7 @@ export const ModalViewRegister = ({ data, setOpen }) => {
     ],
     actions: [{
       color: 'warning',
-      icon: 'view',
+      icon: 'eye',
       toolTip: 'button.edit',
       onClick: fnViewRegister
     }]

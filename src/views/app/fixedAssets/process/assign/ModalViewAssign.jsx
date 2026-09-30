@@ -17,7 +17,7 @@ export const ModalViewAssign = ({ data, setOpen }) => {
     ],
     actions: [{
       color: 'warning',
-      icon: 'view',
+      icon: 'eye',
       toolTip: 'button.edit',
       onClick: fnViewAssign
     }]
