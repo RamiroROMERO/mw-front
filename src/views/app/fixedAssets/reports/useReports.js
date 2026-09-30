@@ -95,7 +95,7 @@ export const useReports = ({ setLoading }) => {
       setTable({
         columns: DEPREC_COLUMNS,
         data: resp.data,
-        actions: [{ color: 'primary', icon: 'view', toolTip: 'button.view', onClick: (row) => fnViewSchedule(row) }]
+        actions: [{ color: 'primary', icon: 'eye', toolTip: 'button.view', onClick: (row) => fnViewSchedule(row) }]
       });
       setLoading(false);
     }, () => setLoading(false));

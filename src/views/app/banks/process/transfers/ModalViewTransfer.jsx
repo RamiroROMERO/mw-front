@@ -22,7 +22,7 @@ export const ModalViewTransfer = (props) => {
     data: dataTransfers || [],
     actions: [{
       color: 'info',
-      icon: 'view',
+      icon: 'eye',
       toolTip: IntlMessages('button.view'),
       onClick: fnViewTransfer
     }]

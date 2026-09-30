@@ -19,7 +19,7 @@ export const ModalViewDeposit = (props) => {
     data: dataDeposits || [],
     actions: [{
       color: 'info',
-      icon: 'view',
+      icon: 'eye',
       toolTip: IntlMessages('button.view'),
       onClick: fnViewDeposit
     }]

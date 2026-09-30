@@ -12,7 +12,7 @@ const Assign = (props) => {
 
   useEffect(() => {
     dispatch(onTitleEdit("menu.fixedAssets.assign"))
-    dispatch(onBreadcrumbEdit(`${adminRoot}/fixedAssets/process/assign`))
+    dispatch(onBreadcrumbEdit(`${adminRoot}/fixedAssets/process/fixedAssets.assign`))
   }, [])
 
   return (

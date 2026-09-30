@@ -22,7 +22,7 @@ export const ModalViewCheck = (props) => {
     data: dataChecks || [],
     actions: [{
       color: 'info',
-      icon: 'view',
+      icon: 'eye',
       toolTip: IntlMessages('button.view'),
       onClick: fnViewCheck
     }]

@@ -31,7 +31,7 @@ export const usePayments = ({ setLoading }) => {
     data: [],
     actions: [{
       color: 'primary',
-      icon: 'view',
+      icon: 'eye',
       toolTip: 'button.view',
       onClick: (row) => fnSelectRow(row)
     }]

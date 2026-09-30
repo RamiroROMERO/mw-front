@@ -14,10 +14,10 @@ export const ModalSelectInvoices = (props) => {
 
   const [table] = useState({
     columns: [
-      { text: IntlMessages("table.column.date"), dataField: "date", headerStyle: { 'width': '15%' } },
+      { text: IntlMessages("table.column.date"), dataField: "date", type: 'date', headerStyle: { 'width': '15%' } },
       { text: IntlMessages("table.column.nInvoice"), dataField: "documentCode", headerStyle: { 'width': '30%' } },
-      { text: IntlMessages("page.customerDeposits.table.originalValue"), dataField: "originalValue", headerStyle: { 'width': '20%' } },
-      { text: IntlMessages("table.column.balance"), dataField: "balance", headerStyle: { 'width': '20%' } },
+      { text: IntlMessages("page.customerDeposits.table.originalValue"), dataField: "originalValue", type: 'number', headerStyle: { 'width': '20%' } },
+      { text: IntlMessages("table.column.balance"), dataField: "balance", type: 'number', headerStyle: { 'width': '20%' } },
     ],
     data: pendingInvoices || [],
     actions: [{

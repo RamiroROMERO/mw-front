@@ -20,7 +20,7 @@ const AffiliateDeposits = ({ setLoading }) => {
     data: dataList,
     actions: [{
       color: 'warning',
-      icon: 'view',
+      icon: 'eye',
       toolTip: 'button.view',
       onClick: fnView
     }]

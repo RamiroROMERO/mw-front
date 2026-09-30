@@ -18,7 +18,7 @@ export const ModalViewTransferAffiliate = (props) => {
     data: dataList || [],
     actions: [{
       color: 'info',
-      icon: 'view',
+      icon: 'eye',
       toolTip: IntlMessages('button.view'),
       onClick: fnViewTransfer
     }]
