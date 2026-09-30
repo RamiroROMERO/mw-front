@@ -34,13 +34,14 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
   const validTransfer = {
     date: [(val) => val !== '', "msg.required.select.date"],
     bankCode: [(val) => val !== '', "msg.required.select.bank"],
+    documentCode: [(val) => val !== '', "msg.required.select.document"],
     providerName: [(val) => val !== '', "msg.required.select.provider"]
   }
 
   const { formState: formStateIndex, onResetForm: onResetFormIndex, setBulkForm: setBulkFormIndex, onInputChange: onInputChangeIndex, isFormValid: isFormValidIndex, formValidation: formValidationIndex } = useForm({
     id: 0,
     documentId: 0,
-    document: '',
+    documentCode: '',
     bankCode: '',
     bankAccountName: '',
     providerId: 0,
@@ -58,7 +59,7 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
     status: true
   }, validTransfer)
 
-  const { id, bankCode, providerId } = formStateIndex;
+  const { id, bankCode, providerId, documentCode } = formStateIndex;
 
   const fnNewTransfer = () => {
     setSendForm(false);
@@ -292,6 +293,13 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lines]);
 
+  // Con un solo documento de transferencia disponible se preselecciona (también tras "Nuevo", que limpia el formulario).
+  useEffect(() => {
+    if (id > 0 || documentCode || listDocto.length !== 1) return;
+    setBulkFormIndex({ documentCode: listDocto[0].value });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listDocto, id, documentCode]);
+
   useEffect(() => {
     if (!bankCode || id > 0) return;
     const bank = listBanks.find((b) => b.value === bankCode);
@@ -312,11 +320,8 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
   useEffect(() => {
     setLoading(true);
     request.GET('banks/process/transfers/documentTypes', (resp) => {
-      const docto = resp.data.map((item) => ({ label: `${item.code} | ${item.name}`, value: item.code, documentId: item.id }));
+      const docto = resp.data.map((item) => ({ label: `${item.code} | ${item.name}`, value: item.code }));
       setListDocto(docto);
-      if (docto.length === 1) {
-        setBulkFormIndex({ documentId: docto[0].value, document: docto[0].label });
-      }
       setLoading(false);
     }, () => setLoading(false));
 
