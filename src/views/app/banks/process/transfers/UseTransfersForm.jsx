@@ -7,16 +7,16 @@ import DateCalendar from '@Components/dateCalendar';
 
 export const UseTransfersForm = (props) => {
   const {
-    formStateIndex, onInputChangeIndex, listBanks, listProvider, listCurrencyName, listAccountTypes,
+    formStateIndex, onInputChangeIndex, listDocto, listBanks, listProvider, listCurrencyName, listAccountTypes,
     formValidationIndex, sendForm
   } = props;
 
   const {
-    document, bankCode, bankAccountName, providerId, providerName, date, value, valueUsd, exchangeRate,
+    id, documentCode, bankCode, bankAccountName, providerId, providerName, date, value, valueUsd, exchangeRate,
     currencyName, checkNumber, referenceCode, benefRtn, accountType
   } = formStateIndex;
 
-  const { dateValid, bankCodeValid, providerNameValid } = formValidationIndex;
+  const { dateValid, bankCodeValid, providerNameValid, documentCodeValid } = formValidationIndex;
 
   return (
     <>
@@ -60,6 +60,7 @@ export const UseTransfersForm = (props) => {
                 onChange={onInputChangeIndex}
                 label="page.transfers.input.numberTransfer"
                 type="text"
+                disabled
               />
             </Colxx>
             <Colxx xxs="12" xs="12" md="12">
@@ -152,13 +153,17 @@ export const UseTransfersForm = (props) => {
               />
             </Colxx>
             <Colxx xxs="6" xs="6" sm="6" md="6" lg="12">
-              <InputField
-                name="document"
-                value={document}
+              {/* Se elige al crear; el back numera con él y no cambia al editar */}
+              <SearchSelect
+                name="documentCode"
+                inputValue={documentCode}
                 onChange={onInputChangeIndex}
                 label="input.document"
-                type="text"
-                disabled
+                options={listDocto}
+                isClearable={false}
+                isDisabled={id > 0}
+                invalid={sendForm && !!documentCodeValid}
+                feedbackText={sendForm && documentCodeValid || null}
               />
             </Colxx>
           </Row>

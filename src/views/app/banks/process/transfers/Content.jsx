@@ -20,7 +20,7 @@ const Transfers = (props) => {
   const [editingLineIndex, setEditingLineIndex] = useState(null);
 
   const {
-    propsToControlPanel, formStateIndex, onInputChangeIndex, listBanks, listProvider, listCustomer,
+    propsToControlPanel, formStateIndex, onInputChangeIndex, listDocto, listBanks, listProvider, listCustomer,
     listCurrencyName, listAccountTypes, formValidationIndex, sendForm, openModalViewTransfers,
     setOpenModalViewTransfers, dataTransfers, fnViewTransfer, openModalCxp, setOpenModalCxp,
     openModalCxc, setOpenModalCxc, propsToMsgDelete,
@@ -37,7 +37,7 @@ const Transfers = (props) => {
   } = useTransfersDetail({ setLoading, lines, setLines, editingLineIndex, setEditingLineIndex });
 
   const propsToTransfersForm = {
-    formStateIndex, onInputChangeIndex, listBanks, listProvider, listCurrencyName, listAccountTypes,
+    formStateIndex, onInputChangeIndex, listDocto, listBanks, listProvider, listCurrencyName, listAccountTypes,
     formValidationIndex, sendForm
   }
 
