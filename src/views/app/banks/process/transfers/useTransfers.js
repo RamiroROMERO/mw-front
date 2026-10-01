@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm } from '@Hooks'
 import { validFloat } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
+import { createValueSync } from './transferValueSync';
 
 const listAccountTypes = [
   { id: '', name: '' },
@@ -11,6 +12,7 @@ const listAccountTypes = [
 ];
 
 export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex }) => {
+  const valueSync = useRef(createValueSync()).current;
   const [listDocto, setListDocto] = useState([]);
   const [listBanks, setListBanks] = useState([]);
   const [listProvider, setListProvider] = useState([]);
@@ -98,6 +100,7 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
     request.GET(`banks/process/transfers/${id}`, (resp) => {
       const { header, lines: lineData } = resp.data;
       setBulkFormIndex(header);
+      valueSync.markLoaded();
       setLines(lineData);
       setEditingLineIndex(null);
       setSendForm(false);
@@ -286,8 +289,10 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
   }
 
   // El valor de la transferencia es el total del grid contable (debe=haber una vez
-  // cuadrado, igual criterio que Cheques/DailyItemService.saveEntry).
+  // cuadrado, igual criterio que Cheques/DailyItemService.saveEntry). Al cargar una transferencia existente se
+  // conserva el valor guardado (neto, con retenciones) en vez de reemplazarlo por el total de débitos.
   useEffect(() => {
+    if (!valueSync.shouldSyncValue()) return;
     const totalDebit = lines.reduce((sum, l) => sum + (validFloat(l.valueDebit) || 0), 0);
     setBulkFormIndex({ value: totalDebit });
     // eslint-disable-next-line react-hooks/exhaustive-deps
