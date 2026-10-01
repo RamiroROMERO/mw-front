@@ -4,33 +4,7 @@ import { validFloat, formatNumber } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
-
-// Categorización de documentos réplica de calculartotales (bco_conciliacion.sc2, PROCEDURE
-// calculartotales, línea 1476). Se hace por texto normalizado (no por el string exacto de
-// bco_conciliacion_setreport.report, que trae la variante "Tranferencias") para no depender
-// de la ortografía real de esa tabla.
-const normalize = (value) => (value || '').toString().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-
-const categorize = (label) => {
-  const upper = normalize(label);
-  if (upper.includes('CHEQUE')) return 'checks';
-  if (upper.includes('DEPOSITO')) return 'deposits';
-  if (upper.includes('CREDITO')) return 'creditNotes';
-  if (upper.includes('DEBITO')) return 'debitNotes';
-  if (upper.includes('TRANSF')) return 'transfers';
-  return null;
-}
-
-const emptyTotals = () => ({
-  checks: { book: 0, bank: 0, diff: 0 },
-  deposits: { book: 0, bank: 0, diff: 0 },
-  creditNotes: { book: 0, bank: 0, diff: 0 },
-  debitNotes: { book: 0, bank: 0, diff: 0 },
-  transfers: { book: 0, bank: 0, diff: 0 },
-  adjBook: 0,
-  adjBank: 0,
-  finalDifference: 0
-});
+import { calculateTotals, categorize } from './bankConciliationTotals';
 
 export const useBankConciliation = ({ setLoading }) => {
   const [listPeriods, setListPeriods] = useState([]);
@@ -41,6 +15,8 @@ export const useBankConciliation = ({ setLoading }) => {
   const [openModalSearch, setOpenModalSearch] = useState(false);
   const [dataList, setDataList] = useState([]);
   const [sendFormNew, setSendFormNew] = useState(false);
+  const [openModalPrint, setOpenModalPrint] = useState(false);
+  const [savedSignature, setSavedSignature] = useState('');
 
   const validNew = {
     periodId: [(val) => !!val, 'page.bankConciliation.msg.periodBankRequired'],
@@ -61,9 +37,13 @@ export const useBankConciliation = ({ setLoading }) => {
 
   const { id, dateIn, dateOut, valueBank, valueBook } = header;
 
+  // Firma de lo marcado y de los saldos: sirve para saber si hay cambios sin guardar antes de imprimir.
+  const signatureOf = (list, bank, book) => JSON.stringify([list.map((l) => [l.id, !!l.isConBank, !!l.isConBook]), validFloat(bank), validFloat(book)]);
+
   const fnResetAll = () => {
     onResetHeader();
     setLines([]);
+    setSavedSignature(signatureOf([], 0, 0));
   }
 
   const fnOpenNewModal = () => {
@@ -110,6 +90,7 @@ export const useBankConciliation = ({ setLoading }) => {
         valueBank: h.valueBank, valueBook: h.valueBook
       });
       setLines(lineData);
+      setSavedSignature(signatureOf(lineData, h.valueBank, h.valueBook));
       setLoading(false);
     }, () => setLoading(false));
   }
@@ -122,6 +103,7 @@ export const useBankConciliation = ({ setLoading }) => {
     setLoading(true);
     request.POST(`banks/process/conciliations/${id}/items`, {}, (resp) => {
       setLines(resp.data);
+      setSavedSignature(signatureOf(resp.data, valueBank, valueBook));
       setLoading(false);
     }, () => setLoading(false));
   }
@@ -151,6 +133,24 @@ export const useBankConciliation = ({ setLoading }) => {
     }, () => setLoading(false));
   }
 
+  const fnOpenPrintModal = () => {
+    if (!(id > 0)) {
+      notification('warning', 'page.bankConciliation.msg.selectFirst', 'alert.warning.title');
+      return;
+    }
+    if (signatureOf(lines, valueBank, valueBook) !== savedSignature) {
+      notification('warning', 'page.bankConciliation.msg.unsavedChanges', 'alert.warning.title');
+      return;
+    }
+    setOpenModalPrint(true);
+  }
+
+  // El reporte se arma en el back con lo guardado en DB (por eso se exige guardar antes).
+  const fnPrint = (type) => {
+    setOpenModalPrint(false);
+    request.GETPdf(`banks/process/conciliations/${id}/report`, { type }, 'Conciliacion Bancaria.pdf', () => setLoading(false));
+  }
+
   const propsToControlPanel = {
     fnNew: fnOpenNewModal,
     fnSearch: fnOpenSearchModal,
@@ -160,52 +160,22 @@ export const useBankConciliation = ({ setLoading }) => {
         title: 'page.bankConciliation.button.loadDocuments',
         icon: 'bi bi-arrow-repeat',
         onClick: fnLoadDocuments
+      },
+      {
+        title: 'button.print',
+        icon: 'bi bi-printer',
+        onClick: fnOpenPrintModal
       }
     ],
     buttonsOptions: [],
     buttonsAdmin: []
   }
 
-  // Réplica exacta de calculartotales: para Cheques, el lado Banco NO filtra por fecha
-  // (incluye cheques arrastrados de períodos anteriores que aún no compensan), el lado
-  // Libro SÍ se restringe al rango del período; las otras 4 categorías restringen ambos
-  // lados al rango del período.
-  const totals = useMemo(() => {
-    const result = emptyTotals();
-    if (!dateIn || !dateOut) return result;
-
-    lines.forEach((line) => {
-      const category = docCategoryMap[line.documentCode];
-      if (!category) return;
-
-      const withinPeriod = line.date >= dateIn && line.date <= dateOut;
-      const debit = validFloat(line.valueDebit);
-      const credit = validFloat(line.valueCredit);
-
-      if (category === 'checks') {
-        if (line.isConBank && !line.annulled) result.checks.bank += debit;
-        if (line.isConBook && !line.annulled && withinPeriod) result.checks.book += debit;
-        return;
-      }
-      if (!withinPeriod) return;
-
-      const value = (category === 'debitNotes' || category === 'transfers') ? (debit - credit) : (credit - debit);
-      if (line.isConBank) result[category].bank += value;
-      if (line.isConBook) result[category].book += value;
-    });
-
-    result.checks.diff = result.checks.book - result.checks.bank;
-    result.deposits.diff = result.deposits.bank - result.deposits.book;
-    result.creditNotes.diff = result.creditNotes.bank - result.creditNotes.book;
-    result.debitNotes.diff = result.debitNotes.bank - result.debitNotes.book;
-    result.transfers.diff = result.transfers.bank - result.transfers.book;
-
-    result.adjBook = validFloat(valueBook) - result.checks.book + result.deposits.book + result.creditNotes.book - result.debitNotes.book - result.transfers.book;
-    result.adjBank = validFloat(valueBank) - result.checks.bank + result.deposits.bank + result.creditNotes.bank - result.debitNotes.bank - result.transfers.bank;
-    result.finalDifference = result.adjBook - result.adjBank;
-
-    return result;
-  }, [lines, docCategoryMap, dateIn, dateOut, valueBank, valueBook]);
+  // Réplica de calculartotales (ver bankConciliationTotals.js).
+  const totals = useMemo(
+    () => calculateTotals({ lines, docCategoryMap, dateIn, dateOut, valueBank, valueBook }),
+    [lines, docCategoryMap, dateIn, dateOut, valueBank, valueBook]
+  );
 
   const propsToTotals = useMemo(() => ({
     checks: { book: formatNumber(totals.checks.book), bank: formatNumber(totals.checks.bank), diff: formatNumber(totals.checks.diff) },
@@ -213,6 +183,7 @@ export const useBankConciliation = ({ setLoading }) => {
     creditNotes: { book: formatNumber(totals.creditNotes.book), bank: formatNumber(totals.creditNotes.bank), diff: formatNumber(totals.creditNotes.diff) },
     debitNotes: { book: formatNumber(totals.debitNotes.book), bank: formatNumber(totals.debitNotes.bank), diff: formatNumber(totals.debitNotes.diff) },
     transfers: { book: formatNumber(totals.transfers.book), bank: formatNumber(totals.transfers.bank), diff: formatNumber(totals.transfers.diff) },
+    annulledChecksBook: formatNumber(totals.annulledChecksBook),
     adjBook: formatNumber(totals.adjBook),
     adjBank: formatNumber(totals.adjBank),
     finalDifference: formatNumber(totals.finalDifference)
@@ -247,6 +218,8 @@ export const useBankConciliation = ({ setLoading }) => {
     dataList, fnSelectConciliation
   }
 
+  const propsToModalPrint = { fnPrint }
+
   return {
     header,
     onInputChangeHeader,
@@ -256,6 +229,9 @@ export const useBankConciliation = ({ setLoading }) => {
     propsToControlPanel,
     propsToModalNew,
     propsToModalSearch,
+    propsToModalPrint,
+    openModalPrint,
+    setOpenModalPrint,
     openModalNew,
     setOpenModalNew,
     openModalSearch,

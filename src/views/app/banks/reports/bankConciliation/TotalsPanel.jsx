@@ -36,6 +36,11 @@ const TotalsPanel = ({ propsToTotals }) => {
       </Table>
       <Row>
         <Colxx xxs="12" sm="4">
+          <InputField name="annulledChecksBook" label="page.bankConciliation.totals.annulledChecksBook" value={propsToTotals.annulledChecksBook} type="text" bold disabled />
+        </Colxx>
+      </Row>
+      <Row>
+        <Colxx xxs="12" sm="4">
           <InputField name="adjBook" label="page.bankConciliation.totals.adjBook" value={propsToTotals.adjBook} type="text" bold disabled />
         </Colxx>
         <Colxx xxs="12" sm="4">
