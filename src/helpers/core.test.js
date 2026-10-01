@@ -240,3 +240,40 @@ describe('core.js — getFile', () => {
     expect(url).toBeUndefined();
   });
 });
+
+describe('core.js — request.GETPdf', () => {
+  const blobResponse = () => ({ ok: true, status: 200, blob: async () => new Blob(['%PDF-']) });
+
+  beforeEach(() => {
+    localStorage.clear();
+    global.fetch = vi.fn();
+    global.window.URL.createObjectURL = vi.fn(() => 'blob:test');
+  });
+
+  it('por defecto envía POST con el body en JSON (comportamiento previo)', async () => {
+    setStoredUser(makeToken(futureExp()));
+    global.fetch.mockResolvedValue(blobResponse());
+
+    request.GETPdf('some/report', { type: 'summary' }, 'r.pdf');
+    await vi.waitFor(() => expect(global.fetch).toHaveBeenCalled());
+
+    const [url, options] = global.fetch.mock.calls[0];
+    expect(url).toMatch(/some\/report$/);
+    expect(options.method).toBe('POST');
+    expect(options.body).toBe(JSON.stringify({ type: 'summary' }));
+  });
+
+  it("con 'GET' envía los datos como query string y sin body", async () => {
+    setStoredUser(makeToken(futureExp()));
+    global.fetch.mockResolvedValue(blobResponse());
+
+    request.GETPdf('some/report', { type: 'detailed' }, 'r.pdf', undefined, 'GET');
+    await vi.waitFor(() => expect(global.fetch).toHaveBeenCalled());
+
+    const [url, options] = global.fetch.mock.calls[0];
+    expect(url).toMatch(/some\/report\?type=detailed$/);
+    expect(options.method).toBe('GET');
+    expect(options.body).toBeUndefined();
+    expect(options.headers.Authorization).toMatch(/^Bearer /);
+  });
+});

@@ -148,7 +148,7 @@ export const useBankConciliation = ({ setLoading }) => {
   // El reporte se arma en el back con lo guardado en DB (por eso se exige guardar antes).
   const fnPrint = (type) => {
     setOpenModalPrint(false);
-    request.GETPdf(`banks/process/conciliations/${id}/report`, { type }, 'Conciliacion Bancaria.pdf', () => setLoading(false));
+    request.GETPdf(`banks/process/conciliations/${id}/report`, { type }, 'Conciliacion Bancaria.pdf', () => setLoading(false), 'GET');
   }
 
   const propsToControlPanel = {

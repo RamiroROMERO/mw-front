@@ -307,18 +307,22 @@ const request = {
       });
     return data;
   },
-  GETPdf: (url, data, fileName, fnError) => {
+  // `method` 'GET' envía `data` como query string y sin body: sirve para reportes de solo lectura, que así
+  // no exigen el permiso de crear del middleware (con 'POST', por defecto, sí).
+  GETPdf: (url, data, fileName, fnError, method = 'POST') => {
     const token = fnGetToken();
-    fetchWithTimeout(`${urlAPI}${url}`, {
+    const isGet = method === 'GET';
+    const query = isGet && data ? `?${new URLSearchParams(data).toString()}` : '';
+    fetchWithTimeout(`${urlAPI}${url}${query}`, {
       async: true,
       crossDomain: true,
-      method: 'POST',
+      method: isGet ? 'GET' : 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       contentType: 'JSON',
-      body: JSON.stringify(data),
+      body: isGet ? undefined : JSON.stringify(data),
     })
       .then(parseBlobResponse)
       .then((blob) => {
