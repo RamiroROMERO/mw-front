@@ -7,13 +7,14 @@ import { LinesTable } from './LinesTable';
 import TotalsPanel from './TotalsPanel';
 import { ModalNewConciliation } from './ModalNewConciliation';
 import { ModalSearchConciliation } from './ModalSearchConciliation';
+import { ModalPrintConciliation } from './ModalPrintConciliation';
 import { useBankConciliation } from './useBankConciliation';
 
 const BankConciliation = ({ setLoading }) => {
   const {
     header, onInputChangeHeader, lines, fnToggleConBank, fnToggleConBook, propsToControlPanel,
     propsToModalNew, propsToModalSearch, openModalNew, setOpenModalNew, openModalSearch, setOpenModalSearch,
-    propsToTotals
+    propsToTotals, propsToModalPrint, openModalPrint, setOpenModalPrint
   } = useBankConciliation({ setLoading });
 
   const propsToModalNewWrapper = {
@@ -32,6 +33,15 @@ const BankConciliation = ({ setLoading }) => {
     setOpen: setOpenModalSearch,
     maxWidth: 'lg',
     data: propsToModalSearch
+  }
+
+  const propsToModalPrintWrapper = {
+    ModalContent: ModalPrintConciliation,
+    title: 'page.bankConciliation.modal.title.print',
+    open: openModalPrint,
+    setOpen: setOpenModalPrint,
+    maxWidth: 'sm',
+    data: propsToModalPrint
   }
 
   return (
@@ -63,6 +73,7 @@ const BankConciliation = ({ setLoading }) => {
       </Row>
       <Modal {...propsToModalNewWrapper} />
       <Modal {...propsToModalSearchWrapper} />
+      <Modal {...propsToModalPrintWrapper} />
     </>
   );
 }
