@@ -12,7 +12,7 @@ import { useBankAccounts } from './useBankAccounts';
 const BanksAccounts = (props) => {
   const { setLoading } = props;
 
-  const {sendForm, table, propsToMsgDelete, formState, formValidation, listAccount, listCurrency, listCheckFormat, fnClearInputs, fnSave, onInputChange} = useBankAccounts({setLoading});
+  const {sendForm, table, propsToMsgDelete, formState, formValidation, listAccount, listCurrency, listCheckFormat, codeLocked, fnClearInputs, fnSave, onInputChange} = useBankAccounts({setLoading});
 
   const { code, status, bankNumber, name, currentCheck, currencyName, ctaBank, ctaShortage, ctaMissing, checkFormat } = formState;
 
@@ -31,6 +31,7 @@ const BanksAccounts = (props) => {
                     label="page.banksAccount.input.code"
                     value={code}
                     onChange={onInputChange}
+                    disabled={codeLocked}
                     type="text"
                     invalid={sendForm && !!codeValid}
                     feedbackText={sendForm && (codeValid || null)}

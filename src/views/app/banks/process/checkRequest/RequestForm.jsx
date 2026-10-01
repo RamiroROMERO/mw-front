@@ -6,16 +6,9 @@ import DateCalendar from '@Components/dateCalendar';
 import { InputField } from '@Components/inputFields';
 import { RadioGroup } from '@Components/radioGroup';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
+import { ACCOUNT_TYPES } from './providerBankFill';
 
-const ACCOUNT_TYPES = [
-  { value: '', label: '' },
-  { value: 'Cuenta de Ahorro', label: 'Cuenta de Ahorro' },
-  { value: 'Cuenta de Cheques', label: 'Cuenta de Cheques' },
-  { value: 'Cuenta de Ahorro en Dolares', label: 'Cuenta de Ahorro en Dolares' },
-  { value: 'Cuenta de Cheques en Dolares', label: 'Cuenta de Cheques en Dolares' }
-];
-
-export const RequestForm = ({ formStateIndex, onInputChangeIndex, listProvider, formValidationIndex, sendForm, isTransfer }) => {
+export const RequestForm = ({ formStateIndex, onInputChangeIndex, listProvider, formValidationIndex, sendForm, isTransfer, providerAccountOptions = [], onSelectProviderAccount }) => {
   const {
     date, value, typeId, providerId, providerName, concept, bankName, bankAccount, accountType,
     beneficiaryAccountName, beneficiaryRtn, beneficiaryEmail
@@ -105,6 +98,19 @@ export const RequestForm = ({ formStateIndex, onInputChangeIndex, listProvider, 
             <Colxx xxs="12">
               <ContainerWithLabel label="page.checkRequest.title.transferData">
                 <Row>
+                  {providerAccountOptions.length > 0 && (
+                    <Colxx xxs="12" sm="6" lg="4">
+                      <SimpleSelect
+                        name="providerAccount"
+                        value=""
+                        onChange={onSelectProviderAccount}
+                        label="page.checkRequest.select.providerAccount"
+                        options={providerAccountOptions}
+                        getOptionValue={(option) => option.value}
+                        getOptionLabel={(option) => option.label}
+                      />
+                    </Colxx>
+                  )}
                   <Colxx xxs="12" sm="6" lg="4">
                     <InputField
                       name="bankName"
@@ -121,6 +127,8 @@ export const RequestForm = ({ formStateIndex, onInputChangeIndex, listProvider, 
                       onChange={onInputChangeIndex}
                       label="page.checkRequest.select.accountType"
                       options={ACCOUNT_TYPES}
+                      getOptionValue={(option) => option.value}
+                      getOptionLabel={(option) => option.label}
                     />
                   </Colxx>
                   <Colxx xxs="12" sm="6" lg="4">

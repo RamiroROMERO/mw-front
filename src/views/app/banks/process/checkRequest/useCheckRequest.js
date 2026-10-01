@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from '@Hooks';
 import { validFloat } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
+import { shouldAutofill, decideAutofill, accountOptions, mapAccountToForm, createLoadGuard } from './providerBankFill';
 
 export const useCheckRequest = ({ setLoading }) => {
   const [listProvider, setListProvider] = useState([]);
@@ -13,6 +14,8 @@ export const useCheckRequest = ({ setLoading }) => {
   const [dataList, setDataList] = useState([]);
   const [openMsgDelete, setOpenMsgDelete] = useState(false);
   const [sendForm, setSendForm] = useState(false);
+  const [providerAccounts, setProviderAccounts] = useState([]);
+  const loadGuard = useRef(createLoadGuard());
 
   const validRequest = {
     date: [(val) => val !== '', 'msg.required.select.date'],
@@ -53,6 +56,7 @@ export const useCheckRequest = ({ setLoading }) => {
 
   const fnNewRequest = () => {
     setSendForm(false);
+    setProviderAccounts([]);
     onResetFormIndex();
     setLines([]);
   };
@@ -61,6 +65,8 @@ export const useCheckRequest = ({ setLoading }) => {
     setLoading(true);
     request.GET(`banks/process/paymentRequest/${requestId}`, (resp) => {
       const { header, lines: lineData } = resp.data;
+      loadGuard.current.markLoaded();
+      setProviderAccounts([]);
       setBulkFormIndex(header);
       setLines(lineData);
       setSendForm(false);
@@ -165,6 +171,27 @@ export const useCheckRequest = ({ setLoading }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [providerId]);
 
+  // Autocompleta los datos de transferencia con las cuentas del proveedor: solo en una solicitud nueva de transferencia
+  // (no al abrir una guardada). Una cuenta rellena directo; varias muestran el selector; ninguna no toca nada.
+  useEffect(() => {
+    if (loadGuard.current.consume()) return;
+    setProviderAccounts([]);
+    if (!shouldAutofill({ requestId: id, typeId, providerId })) return;
+    request.GET(`banks/process/paymentRequest/providerBankAccounts?providerId=${providerId}`, (resp) => {
+      const accounts = resp.data || [];
+      const decision = decideAutofill(accounts);
+      if (decision.mode === 'single') setBulkFormIndex(decision.fill);
+      if (decision.mode === 'multiple') setProviderAccounts(accounts);
+    }, () => { });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [providerId, isTransfer]);
+
+  // El usuario elige una de varias cuentas del proveedor.
+  const onSelectProviderAccount = ({ target }) => {
+    const account = providerAccounts.find((item) => String(item.id) === String(target.value));
+    if (account) setBulkFormIndex(mapAccountToForm(account));
+  };
+
   useEffect(() => {
     request.GET(buildUrl('inventory/process/providers', { status: 1 }), (resp) => {
       setListProvider((resp.data || []).map((item) => ({ value: item.id, label: `${item.dni} | ${item.name}`, name: item.name })));
@@ -179,6 +206,8 @@ export const useCheckRequest = ({ setLoading }) => {
     formValidationIndex,
     sendForm,
     isTransfer,
+    providerAccountOptions: providerAccounts.length > 1 ? accountOptions(providerAccounts) : [],
+    onSelectProviderAccount,
     lines,
     fnUpdateLine,
     fnRemoveLine,
