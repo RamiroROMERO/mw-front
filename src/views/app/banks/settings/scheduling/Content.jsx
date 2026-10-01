@@ -58,7 +58,7 @@ const Scheduling = (props) => {
                     name="status"
                     value={status}
                     onChange={onInputChange}
-                    label="page.scheduling.checkbox.status"
+                    label="page.scheduling.checkbox.closed"
                   />
                 </Colxx>
               </Row>

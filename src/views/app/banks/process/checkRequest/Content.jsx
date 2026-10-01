@@ -13,11 +13,11 @@ import { ModalViewRequest } from './ModalViewRequest';
 const CheckRequest = ({ setLoading }) => {
   const {
     propsToControlPanel, formStateIndex, onInputChangeIndex, listProvider, formValidationIndex, sendForm,
-    isTransfer, lines, fnUpdateLine, fnRemoveLine, fnOpenCxpPicker, openModalCxp, setOpenModalCxp,
+    isTransfer, providerAccountOptions, onSelectProviderAccount, lines, fnUpdateLine, fnRemoveLine, fnOpenCxpPicker, openModalCxp, setOpenModalCxp,
     pendingCxp, fnApplyCxp, openModalView, setOpenModalView, dataList, fnViewRequest, propsToMsgDelete
   } = useCheckRequest({ setLoading });
 
-  const propsToRequestForm = { formStateIndex, onInputChangeIndex, listProvider, formValidationIndex, sendForm, isTransfer };
+  const propsToRequestForm = { formStateIndex, onInputChangeIndex, listProvider, formValidationIndex, sendForm, isTransfer, providerAccountOptions, onSelectProviderAccount };
   const propsToRequestDetail = { lines, fnUpdateLine, fnRemoveLine, fnOpenCxpPicker, formStateIndex, onInputChangeIndex };
   const propsToFooterForm = { formStateIndex, onInputChangeIndex, formValidationIndex, sendForm };
 

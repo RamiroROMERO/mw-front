@@ -5,6 +5,7 @@ import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
 import { getMonthLetter } from '@Helpers/Utils';
+import { isClosed, canModify, nextStatus, buildYearMonths } from './schedulingRules';
 
 export const useScheduling = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
@@ -22,16 +23,34 @@ export const useScheduling = ({ setLoading }) => {
     dateIn: '',
     dateOut: '',
     period: '',
-    status: true
+    status: 0
   }, schedulingValid);
 
+  // Un período cerrado no se edita ni se elimina: primero hay que reabrirlo.
   const fnDeleteItem = (item) => {
+    if (!canModify(item)) {
+      notification('warning', 'page.scheduling.msg.closed', 'alert.warning.title');
+      return;
+    }
     setCurrentItem(item)
     setOpenMsgQuestion(true);
   };
 
   const fnEditItem = (item) => {
+    if (!canModify(item)) {
+      notification('warning', 'page.scheduling.msg.closed', 'alert.warning.title');
+      return;
+    }
     setBulkForm(item);
+  };
+
+  // Cerrar un período abierto, o reabrir uno cerrado (el back exige el privilegio 11.01.019 para reabrir).
+  const fnToggleClosed = (item) => {
+    setLoading(true);
+    request.PUT(`banks/settings/banksCalendar/${item.id}`, { status: nextStatus(item) }, () => {
+      fnGetData();
+      fnClearInputs();
+    }, () => setLoading(false));
   };
 
   const [table, setTable] = useState({
@@ -41,12 +60,12 @@ export const useScheduling = ({ setLoading }) => {
       { text: IntlMessages("page.scheduling.table.dateIn"), dataField: "dateIn", headerStyle: { 'width': '20%' } },
       { text: IntlMessages("page.scheduling.table.dateOut"), dataField: "dateOut", headerStyle: { 'width': '20%' } },
       {
-        text: IntlMessages("page.scheduling.table.status"), dataField: "status", headerStyle: { 'width': '15%' },
+        text: IntlMessages("page.scheduling.table.closed"), dataField: "status", headerStyle: { 'width': '15%' },
         classes: 'd-xs-none-table-cell', headerClasses: 'd-xs-none-table-cell',
         cell: ({ row }) => {
-          return (row.original.status === 1 || row.original.status === true)
-            ? <i className="medium-icon bi bi-check2-square" />
-            : <i className="medium-icon bi bi-square" />
+          return isClosed(row.original)
+            ? <i className="medium-icon bi bi-lock-fill" />
+            : <i className="medium-icon bi bi-unlock" />
         }
       }
     ],
@@ -57,6 +76,12 @@ export const useScheduling = ({ setLoading }) => {
       toolTip: 'button.edit',
       onClick: fnEditItem,
       title: IntlMessages('button.edit')
+    }, {
+      color: 'info',
+      icon: 'lock',
+      toolTip: 'page.scheduling.button.toggleClosed',
+      onClick: fnToggleClosed,
+      title: IntlMessages('page.scheduling.button.toggleClosed')
     }, {
       color: 'danger',
       icon: 'trash',
@@ -98,16 +123,7 @@ export const useScheduling = ({ setLoading }) => {
     }
 
     const existingMonths = dataCalendar.filter((item) => item.year === year).map((item) => item.month);
-    const monthsToCreate = [];
-    for (let m = 0; m < 12; m++) {
-      const dateIn = `${year}-${String(m + 1).padStart(2, '0')}-01`;
-      const month = getMonthLetter(dateIn);
-      if (!existingMonths.includes(month)) {
-        const daysInMonth = new Date(year, m + 1, 0).getDate();
-        const dateOut = `${year}-${String(m + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
-        monthsToCreate.push({ month, dateIn, dateOut, status: true });
-      }
-    }
+    const monthsToCreate = buildYearMonths(year, existingMonths, getMonthLetter);
 
     if (monthsToCreate.length === 0) {
       notification('info', 'msg.info.yearAlreadyGenerated', 'alert.info.title');
@@ -182,12 +198,9 @@ export const useScheduling = ({ setLoading }) => {
 
   const fnDisableDocument = () => {
     setOpenMsgQuestion(false);
-    const data = {
-      status: 0
-    }
     if (currentItem.id && currentItem.id > 0) {
       setLoading(true);
-      request.PUT(`banks/settings/banksCalendar/${currentItem.id}`, data, () => {
+      request.DELETE(`banks/settings/banksCalendar/${currentItem.id}`, () => {
         fnGetData();
         fnClearInputs();
         setCurrentItem({});

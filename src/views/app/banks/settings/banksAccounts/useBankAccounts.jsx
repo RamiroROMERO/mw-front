@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { IntlMessages } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
+import { resolveCodeLock } from './bankAccountRules';
 
 export const useBankAccounts = ({ setLoading }) => {
   const listCurrency = [{ id: "Dolares", name: "Dolares" }, { id: "Lempiras", name: "Lempiras" }];
@@ -10,6 +11,7 @@ export const useBankAccounts = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
+  const [codeLocked, setCodeLocked] = useState(false);
 
   const bankAccountsValid = {
     code: [(val) => val !== "", "msg.required.input.codeAccount"],
@@ -35,8 +37,13 @@ export const useBankAccounts = ({ setLoading }) => {
     checkFormat: ''
   }, bankAccountsValid);
 
+  // El código de una cuenta con documentos no se puede cambiar: se consulta el uso y, mientras tanto, queda bloqueado.
   const fnEditItem = (item) => {
     setBulkForm(item);
+    setCodeLocked(resolveCodeLock({ isExisting: true, inUse: undefined }));
+    request.GET(`banks/settings/banksAccounts/${item.id}/usage`, (resp) => {
+      setCodeLocked(resolveCodeLock({ isExisting: true, inUse: Boolean(resp?.data?.inUse) }));
+    }, () => { });
   }
 
   const fnDeleteItem = (item) => {
@@ -83,6 +90,7 @@ export const useBankAccounts = ({ setLoading }) => {
   const fnClearInputs = () => {
     onResetForm();
     setSendForm(false);
+    setCodeLocked(false);
   }
 
   const fnGetData = () => {
@@ -131,12 +139,10 @@ export const useBankAccounts = ({ setLoading }) => {
 
   const fnDisableDocument = () => {
     setOpenMsgQuestion(false);
-    const data = {
-      status: 0
-    }
     if (currentItem.id && currentItem.id > 0) {
       setLoading(true);
-      request.PUT(`banks/settings/banksAccounts/${currentItem.id}`, data, () => {
+      // Eliminar (elimina = 1) solo si la cuenta no tiene documentos; el back lo rechaza si tiene uso.
+      request.DELETE(`banks/settings/banksAccounts/${currentItem.id}`, () => {
         fnGetData();
         fnClearInputs();
         setCurrentItem({});
@@ -181,6 +187,7 @@ export const useBankAccounts = ({ setLoading }) => {
       listAccount,
       listCurrency,
       listCheckFormat,
+      codeLocked,
       fnClearInputs,
       fnSave,
       onInputChange

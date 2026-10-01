@@ -5,6 +5,7 @@ import DateHelper from '@Helpers/DateHelper';
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 import { calculateTotals, categorize } from './bankConciliationTotals';
+import { isClosed } from '../../settings/scheduling/schedulingRules';
 
 export const useBankConciliation = ({ setLoading }) => {
   const [listPeriods, setListPeriods] = useState([]);
@@ -191,7 +192,8 @@ export const useBankConciliation = ({ setLoading }) => {
 
   useEffect(() => {
     request.GET('banks/process/conciliations/periods', (resp) => {
-      setListPeriods(resp.data.map((p) => ({
+      // Solo los períodos abiertos admiten conciliaciones nuevas (los cerrados las rechaza el back).
+      setListPeriods(resp.data.filter((p) => !isClosed(p)).map((p) => ({
         value: p.id, label: `${(p.month || '').toUpperCase()}-${DateHelper.format(p.dateIn, 'YYYY')}`
       })));
     }, () => { });
