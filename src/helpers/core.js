@@ -1,5 +1,6 @@
 import { Buffer } from 'buffer';
 import notification from '@Containers/ui/Notifications';
+import getErrorMessage from './errorMessage';
 import { logoutUser } from '@Redux/actions';
 import { getStore } from '@Redux/stores';
 
@@ -93,6 +94,10 @@ const parseResponse = async (response) => {
     body = undefined;
   }
   if (!response.ok) {
+    // statusCode permite a getErrorMessage distinguir un error de negocio (400) de una falla (500).
+    if (body && typeof body === 'object' && body.statusCode === undefined) {
+      body.statusCode = response.status;
+    }
     throw body ?? {
       status: 'error',
       statusCode: response.status,
@@ -122,6 +127,13 @@ const parseBlobResponse = async (response) => {
     throw errorBody;
   }
   return response.blob();
+};
+
+// Notifica un error de la API: el mensaje real del back si hay (traducido o su description) y,
+// si no, el genérico de la operación (msg.save.record.error, etc.).
+const notifyError = (err, fallbackKey) => {
+  const { id, text } = getErrorMessage(err, fallbackKey);
+  notification('error', text !== undefined ? { text } : id, 'alert.error.title');
 };
 
 const request = {
@@ -188,14 +200,14 @@ const request = {
           if (showMessage) notification('success', 'msg.save.record', 'alert.success.title');
         } else {
           if (typeof error === 'function') error(response);
-          if (showMessage) notification('error', 'msg.save.record.error', 'alert.error.title');
+          if (showMessage) notifyError(response, 'msg.save.record.error');
           console.error(response);
         }
         return response;
       })
       .catch((err) => {
         if (typeof error === 'function') error(err);
-        if (showMessage) notification('error', 'msg.save.record.error', 'alert.error.title');
+        if (showMessage) notifyError(err, 'msg.save.record.error');
         console.error(err);
         return err;
       })
@@ -230,14 +242,14 @@ const request = {
           if (showMessage) notification('success', 'msg.update.record', 'alert.success.title');
         } else {
           if (typeof fnError === 'function') fnError(response);
-          if (showMessage) notification('error', 'msg.update.record.error', 'alert.error.title');
+          if (showMessage) notifyError(response, 'msg.update.record.error');
           console.error(response)
         }
         return response;
       })
       .catch((err) => {
         if (typeof fnError === 'function') fnError(err);
-        if (showMessage) notification('error', 'msg.update.record.error', 'alert.error.title');
+        if (showMessage) notifyError(err, 'msg.update.record.error');
         console.error(err);
         return err;
       })
@@ -261,14 +273,14 @@ const request = {
           if (showMessage) notification('success', 'msg.delete.record', 'alert.success.title');
         } else {
           if (typeof fnError === 'function') fnError(response);
-          if (showMessage) notification('error', 'msg.delete.record.error', 'alert.error.title');
+          if (showMessage) notifyError(response, 'msg.delete.record.error');
           console.error(response);
         }
         return response;
       })
       .catch(err => {
         if (typeof fnError === 'function') fnError(err);
-        if (showMessage) notification('error', 'msg.delete.record.error', 'alert.error.title');
+        if (showMessage) notifyError(err, 'msg.delete.record.error');
         console.error(err);
         return err;
       })

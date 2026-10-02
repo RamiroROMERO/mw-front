@@ -14,6 +14,7 @@ vi.mock('@Redux/stores', () => ({
 }));
 
 const { request, buildUrl } = await import('./core');
+const notification = (await import('@Containers/ui/Notifications')).default;
 
 const makeToken = (exp) => {
   const payload = Buffer.from(JSON.stringify({ exp })).toString('base64');
@@ -177,6 +178,78 @@ describe('core.js — request', () => {
       });
 
       expect(fnFinally).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('mensaje de error del back (SPEC v2-20)', () => {
+    const businessBody = (message, description) => ({
+      status: 'error', data: [], messages: [{ type: 'error', message, description }],
+    });
+    const call = (method, response) => new Promise((resolve) => {
+      setStoredUser(makeToken(futureExp()));
+      global.fetch.mockResolvedValue(response);
+      if (method === 'DELETE') request.DELETE('some/endpoint/1', () => {}, () => {}, true, resolve);
+      else request[method]('some/endpoint', {}, () => {}, () => {}, true, resolve);
+    });
+
+    beforeEach(() => { notification.mockClear(); vi.spyOn(console, 'error').mockImplementation(() => {}); });
+
+    it.each(['POST', 'PUT', 'DELETE'])('%s: un 400 con una clave traducida muestra la traducción', async (method) => {
+      await call(method, jsonResponse(businessBody('period.closed.module', 'x'), { ok: false, status: 400 }));
+      expect(notification).toHaveBeenCalledWith('error', 'error.period.closed.module', 'alert.error.title');
+    });
+
+    it.each(['POST', 'PUT', 'DELETE'])('%s: un 400 sin traducción muestra la description del back', async (method) => {
+      await call(method, jsonResponse(businessBody('notFound', 'El cheque no existe'), { ok: false, status: 400 }));
+      expect(notification).toHaveBeenCalledWith('error', { text: 'El cheque no existe' }, 'alert.error.title');
+    });
+
+    it.each([
+      ['POST', 'msg.save.record.error'],
+      ['PUT', 'msg.update.record.error'],
+      ['DELETE', 'msg.delete.record.error'],
+    ])('%s: un 500 mantiene el mensaje genérico y no muestra la falla interna', async (method, generic) => {
+      await call(method, jsonResponse(businessBody('server.error', 'SequelizeDatabaseError: Unknown column'), { ok: false, status: 500 }));
+      expect(notification).toHaveBeenCalledWith('error', generic, 'alert.error.title');
+    });
+
+    it('un 403 de permisos muestra la traducción del permiso', async () => {
+      const forbidden = { id: 403, type: 'Forbidden', message: 'user.update.forbidden', description: 'User Update Forbidden', status: 'error', data: [], messages: [{ type: 'error', message: 'user.update.forbidden', description: 'User Update Forbidden' }] };
+      await call('PUT', jsonResponse(forbidden, { ok: false, status: 403 }));
+      expect(notification).toHaveBeenCalledWith('error', 'error.user.update.forbidden', 'alert.error.title');
+    });
+
+    it('un 403 sin traducción muestra la description del back', async () => {
+      const forbidden = { id: 403, type: 'Forbidden', message: 'user.otro.forbidden', description: 'No tiene permiso', status: 'error', data: [], messages: [{ type: 'error', message: 'user.otro.forbidden', description: 'No tiene permiso' }] };
+      await call('PUT', jsonResponse(forbidden, { ok: false, status: 403 }));
+      expect(notification).toHaveBeenCalledWith('error', { text: 'No tiene permiso' }, 'alert.error.title');
+    });
+
+    it('una respuesta sin cuerpo JSON mantiene el mensaje genérico', async () => {
+      await call('POST', jsonResponse(undefined, { ok: false, status: 502, statusText: 'Bad Gateway' }));
+      expect(notification).toHaveBeenCalledWith('error', 'msg.save.record.error', 'alert.error.title');
+    });
+
+    it('un fallo de red mantiene el mensaje genérico', async () => {
+      setStoredUser(makeToken(futureExp()));
+      global.fetch.mockRejectedValue(new TypeError('Failed to fetch'));
+      await new Promise((resolve) => { request.POST('some/endpoint', {}, () => {}, () => {}, true, resolve); });
+      expect(notification).toHaveBeenCalledWith('error', 'msg.save.record.error', 'alert.error.title');
+    });
+
+    it('con showMessage false no notifica nada', async () => {
+      setStoredUser(makeToken(futureExp()));
+      global.fetch.mockResolvedValue(jsonResponse(businessBody('notFound', 'x'), { ok: false, status: 400 }));
+      await new Promise((resolve) => { request.POST('some/endpoint', {}, () => {}, () => {}, false, resolve); });
+      expect(notification).not.toHaveBeenCalled();
+    });
+
+    it('el callback de error recibe el cuerpo con statusCode', async () => {
+      setStoredUser(makeToken(futureExp()));
+      global.fetch.mockResolvedValue(jsonResponse(businessBody('notFound', 'x'), { ok: false, status: 400 }));
+      const fnError = vi.fn();
+      await new Promise((resolve) => { request.POST('some/endpoint', {}, () => {}, fnError, false, resolve); });
+      expect(fnError).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 400, messages: expect.any(Array) }));
     });
   });
 });
