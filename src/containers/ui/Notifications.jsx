@@ -3,13 +3,21 @@ import IntlMessages from '@Helpers/IntlMessages';
 import { NotificationManager } from '@Components/common/react-notifications';
 
 
+// title y message son ids de traducción; un objeto { text } se muestra tal cual (mensajes que
+// vienen del back, ya redactados).
+const toNode = (value) => (
+  value && typeof value === 'object' && value.text !== undefined
+    ? value.text
+    : <IntlMessages id={value} />
+);
+
 const createNotification = (type, title, message, className) => {
   const cName = className || '';
   switch (type) {
     case 'primary':
       NotificationManager.primary(
-        <IntlMessages id={title} />,
-        <IntlMessages id={message} />,
+        toNode(title),
+        toNode(message),
         3000,
         null,
         null,
@@ -18,8 +26,8 @@ const createNotification = (type, title, message, className) => {
       break;
     case 'secondary':
       NotificationManager.secondary(
-        <IntlMessages id={title} />,
-        <IntlMessages id={message} />,
+        toNode(title),
+        toNode(message),
         3000,
         null,
         null,
@@ -31,8 +39,8 @@ const createNotification = (type, title, message, className) => {
       break;
     case 'success':
       NotificationManager.success(
-        <IntlMessages id={title} />,
-        <IntlMessages id={message} />,
+        toNode(title),
+        toNode(message),
         3000,
         null,
         null,
@@ -41,8 +49,8 @@ const createNotification = (type, title, message, className) => {
       break;
     case 'warning':
       NotificationManager.warning(
-        <IntlMessages id={title} />,
-        <IntlMessages id={message} />,
+        toNode(title),
+        toNode(message),
         3000,
         null,
         null,
@@ -51,8 +59,8 @@ const createNotification = (type, title, message, className) => {
       break;
     case 'error':
       NotificationManager.error(
-        <IntlMessages id={title} />,
-        <IntlMessages id={message} />,
+        toNode(title),
+        toNode(message),
         5000,
         null,
         null,
