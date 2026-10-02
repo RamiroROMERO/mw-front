@@ -12,7 +12,7 @@ const HonorariosReport = (props) => {
 
   useEffect(() => {
     dispatch(onTitleEdit("menu.hospitalManagement.honorariosReport"))
-    dispatch(onBreadcrumbEdit(`${adminRoot}/hospitalManagement/reports/honorariosReport`))
+    dispatch(onBreadcrumbEdit(`${adminRoot}/hospitalManagement/reports/hospitalManagement.honorariosReport`))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

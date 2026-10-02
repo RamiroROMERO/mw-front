@@ -19,7 +19,7 @@ const Format = (props) => {
 
   useEffect(() => {
     dispatch(onTitleEdit("menu.quotes"))
-    dispatch(onBreadcrumbEdit(`${adminRoot}/billing/quotes`))
+    dispatch(onBreadcrumbEdit(`${adminRoot}/billing/process/quotes`))
   }, [])
 
   return (

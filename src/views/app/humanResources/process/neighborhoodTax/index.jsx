@@ -17,7 +17,7 @@ const NeighborhoodTax = (props) => {
 
   useEffect(() => {
     dispatch(onTitleEdit("menu.neighborhoodTaxPayroll"))
-    dispatch(onBreadcrumbEdit(`${adminRoot}/humanResources/process/neighborhoodTax`))
+    dispatch(onBreadcrumbEdit(`${adminRoot}/humanResources/process/neighborhoodTaxPayroll`))
   }, []);
 
   return (
