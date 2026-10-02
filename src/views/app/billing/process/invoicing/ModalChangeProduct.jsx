@@ -3,6 +3,7 @@ import { Button, ModalBody, ModalFooter, Row, Table, Input } from "reactstrap";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages, formatNumber } from "@Helpers/Utils";
 import { request, buildUrl } from '@Helpers/core';
+import { getErrorCode } from '@Helpers/errorMessage';
 import notification from '@Containers/ui/Notifications';
 
 // Equivalente a fac_pos_change_product.sc2: cambia el producto de una línea de una
@@ -51,7 +52,7 @@ const ModalChangeProduct = (props) => {
       fnSuccess(line.id, resp.data.productCode, resp.data.productName);
       setOpen(false);
     }, (err) => {
-      const errorCode = err?.messages?.[0]?.description?.name;
+      const errorCode = getErrorCode(err);
       if (errorCode === 'stock.insufficient') {
         notification('error', 'msg.error.insufficientStock', 'alert.error.title');
       } else {

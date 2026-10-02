@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { request, buildUrl } from '@Helpers/core';
+import { getErrorCode } from '@Helpers/errorMessage';
 import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
 import { validFloat, validInt } from '@Helpers/Utils';
@@ -507,7 +508,7 @@ export const useCreditNotes = ({ setLoading }) => {
       notification('success', 'msg.success.processDocument', 'alert.success.title');
       setLoading(false);
     }, (err) => {
-      const errorCode = err?.messages?.[0]?.description?.name;
+      const errorCode = getErrorCode(err);
       if (errorCode) {
         notification('error', `msg.error.creditNote.${errorCode}`, 'alert.error.title');
       } else {

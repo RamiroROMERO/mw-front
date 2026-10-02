@@ -26,4 +26,12 @@ describe('imports de @Helpers/Utils y @Helpers/core', () => {
     });
     expect(offenders).toEqual([]);
   });
+
+  it('ningún archivo lee el código de error de description.name: se usa getErrorCode (desde la SPEC v2-20 la description es texto)', () => {
+    const offenders = Object.entries(files)
+      .filter(([file]) => !/errorMessage(\.test)?\.js$|importSources\.test\.js$/.test(file))
+      .filter(([, source]) => /description\??\.name\b/.test(source))
+      .map(([file]) => file);
+    expect(offenders).toEqual([]);
+  });
 });

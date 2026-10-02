@@ -1,6 +1,7 @@
 import DateHelper from '@Helpers/DateHelper';
 import { useEffect, useState } from 'react';
 import { request, buildUrl } from '@Helpers/core';
+import { getErrorCode } from '@Helpers/errorMessage';
 import { useForm } from '@Hooks'
 import { validInt } from '@Helpers/Utils';
 import createNotification from '@Containers/ui/Notifications';
@@ -301,7 +302,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       createNotification('success', 'msg.success.voidDocument', 'alert.success.title');
       setLoading(false);
     }, (err) => {
-      const errorCode = err?.messages?.[0]?.description?.name;
+      const errorCode = getErrorCode(err);
       if (errorCode === 'refund.cxp.has.payments') {
         createNotification('error', 'msg.error.refund.cxpHasPayments', 'alert.error.title');
       } else {
