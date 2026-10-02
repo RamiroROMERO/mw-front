@@ -4,3 +4,9 @@
 #   true  (default) → /spec-impl crea y cambia a spec-NN-slug sin preguntar
 #   false           → /spec-impl pide confirmación [y/N] antes de crear la rama
 AutoCreateBranch: true
+
+# RepoSuffix — sufijo que /spec-impl agrega al nombre de rama en ESTE repo,
+# para specs full-stack que usan el mismo NN-slug en mw-front y mw-back.
+#   spec-NN-slug          (default, sin RepoSuffix)
+#   spec-NN-slug-front    (este repo, con RepoSuffix: front)
+RepoSuffix: front
