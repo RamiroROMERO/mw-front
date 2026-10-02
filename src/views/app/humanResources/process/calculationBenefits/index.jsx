@@ -16,7 +16,7 @@ const CalculationBenefits = (props) => {
 
   useEffect(() => {
     dispatch(onTitleEdit("menu.calculationBenefits"))
-    dispatch(onBreadcrumbEdit(`${adminRoot}/humanResources/reports/calculationBenefits`))
+    dispatch(onBreadcrumbEdit(`${adminRoot}/humanResources/process/calculationBenefits`))
   }, []);
 
   return (

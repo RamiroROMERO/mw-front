@@ -16,7 +16,7 @@ const PaymentsHistory = (props) => {
 
   useEffect(() => {
     dispatch(onTitleEdit("menu.paymentsHistory"))
-    dispatch(onBreadcrumbEdit(`${adminRoot}/humanResources/reports/controlIncapacities`))
+    dispatch(onBreadcrumbEdit(`${adminRoot}/humanResources/reports/paymentsHistory`))
   }, []);
 
   return (
