@@ -16,15 +16,15 @@ const CustomerDeposits = (props) => {
     propsToControlPanel, formStateIndex, onInputChangeIndex, listDocto, listBanks, listAccount,
     listCustomer, formValidationIndex, sendForm, lines, fnUpdateLine, fnRemoveLine,
     fnOpenInvoicesPicker, openModalInvoices, setOpenModalInvoices, pendingInvoices, fnApplyInvoice,
-    openModalView, setOpenModalView, dataList, fnViewDeposit, propsToMsgDelete, isApplied
+    openModalView, setOpenModalView, dataList, fnViewDeposit, propsToMsgDelete, isApplied, totals, problem
   } = useCustomerDeposits({ setLoading });
 
   const propsToDepositForm = {
-    formStateIndex, onInputChangeIndex, listDocto, listBanks, listCustomer, formValidationIndex, sendForm, isApplied
+    formStateIndex, onInputChangeIndex, listDocto, listBanks, listCustomer, listAccount, formValidationIndex, sendForm, isApplied, problem
   }
 
   const propsToLinesTable = {
-    lines, listAccount, fnUpdateLine, fnRemoveLine, fnOpenInvoicesPicker, isApplied
+    lines, listAccount, fnUpdateLine, fnRemoveLine, fnOpenInvoicesPicker, isApplied, totals, problem
   }
 
   const propsToModalInvoices = {

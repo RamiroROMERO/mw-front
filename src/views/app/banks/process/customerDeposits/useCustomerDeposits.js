@@ -1,9 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useForm } from '@Hooks'
 import { validFloat } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
+import { calculateDepositTotals, findDepositProblem, isFutureDate } from './customerDepositRules';
+
+// Código de error de la regla (el mismo nombre del back) → aviso traducido, sin montos (los montos se ven en el panel).
+const PROBLEM_MESSAGES = {
+  'line.applied.invalid': 'page.customerDeposits.msg.lineInvalid',
+  'line.applied.exceeded': 'page.customerDeposits.msg.lineExceeded',
+  'deposit.shortage.exceeded': 'page.customerDeposits.msg.shortageExceeded',
+  'deposit.difference.account.required': 'page.customerDeposits.msg.differenceAccountRequired'
+};
 
 export const useCustomerDeposits = ({ setLoading }) => {
   const [listDocto, setListDocto] = useState([]);
@@ -19,11 +28,12 @@ export const useCustomerDeposits = ({ setLoading }) => {
   const [sendForm, setSendForm] = useState(false);
 
   const validDeposit = {
-    date: [(val) => val !== '', "msg.required.select.date"],
+    date: [(val) => val !== '' && !isFutureDate(val), "page.customerDeposits.msg.dateInvalid"],
     documentCode: [(val) => val !== '', "msg.required.select.document"],
     bankCode: [(val) => val !== '', "msg.required.select.bank"],
     description: [(val) => (val || '').trim() !== '', "page.customerDeposits.msg.descriptionRequired"],
-    customerId: [(val) => val !== '', "page.customerDeposits.msg.customerRequired"]
+    customerId: [(val) => val !== '', "page.customerDeposits.msg.customerRequired"],
+    depositNumber: [(val) => (val || '').trim() !== '', "page.customerDeposits.msg.depositNumberRequired"]
   }
 
   const {
@@ -42,13 +52,28 @@ export const useCustomerDeposits = ({ setLoading }) => {
     customerId: '',
     customerName: '',
     value: 0,
+    idCtaCxP: '',
     exchangeRate: 1,
     pdaNumber: 0,
     status: true
   }, validDeposit)
 
-  const { id, bankCode, customerId, pdaNumber } = formStateIndex;
+  const { id, bankCode, customerId, pdaNumber, value, idCtaCxP } = formStateIndex;
   const isApplied = Number(pdaNumber) > 0;
+
+  // Diferencia en vivo (SPEC v2-22): valor del depósito − (aplicado − deducciones). Positiva = sobrante, negativa = faltante.
+  const totals = useMemo(() => calculateDepositTotals({ value: validFloat(value), lines }), [value, lines]);
+  const problem = useMemo(
+    () => findDepositProblem({ value: validFloat(value), lines, differenceAccount: idCtaCxP }),
+    [value, lines, idCtaCxP]
+  );
+
+  // Avisa antes de llamar al back; el back sigue siendo quien decide (cuenta inexistente o la del banco, etc.).
+  const fnCheckDeposit = () => {
+    if (!problem) return true;
+    notification('warning', PROBLEM_MESSAGES[problem.code], 'alert.warning.title');
+    return false;
+  }
 
   const fnNewDeposit = () => {
     setSendForm(false);
@@ -88,6 +113,7 @@ export const useCustomerDeposits = ({ setLoading }) => {
   const fnSaveDeposit = () => {
     setSendForm(true);
     if (!isFormValidIndex) return;
+    if (!fnCheckDeposit()) return;
 
     const payload = { header: formStateIndex, lines };
     setLoading(true);
@@ -109,6 +135,7 @@ export const useCustomerDeposits = ({ setLoading }) => {
       notification('warning', 'page.customerDeposits.msg.saveFirst', 'alert.warning.title');
       return;
     }
+    if (!fnCheckDeposit()) return;
     setLoading(true);
     request.POST(`banks/process/customerDeposits/${id}/applyToAccounting`, {}, () => {
       fnLoadDeposit(id);
@@ -232,6 +259,8 @@ export const useCustomerDeposits = ({ setLoading }) => {
     listCustomer,
     formValidationIndex,
     sendForm,
+    totals,
+    problem,
     lines,
     fnUpdateLine,
     fnRemoveLine,
