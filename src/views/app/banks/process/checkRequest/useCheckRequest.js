@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useForm } from '@Hooks';
 import { validFloat } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
 import { shouldAutofill, decideAutofill, accountOptions, mapAccountToForm, createLoadGuard } from './providerBankFill';
 
@@ -154,12 +155,21 @@ export const useCheckRequest = ({ setLoading }) => {
 
   const propsToMsgDelete = { open: openMsgDelete, setOpen: setOpenMsgDelete, fnOnOk: fnDeleteOk, title: 'page.checkRequest.msg.deleteConfirm' }
 
+  // Imprime lo guardado en DB (SPEC v2-21).
+  const fnPrint = () => printDocument({ path: 'banks/process/paymentRequest', id, fileName: 'Solicitud de Pago.pdf', setLoading });
+
   const propsToControlPanel = {
     fnNew: fnNewRequest,
     fnSearch: fnSearchRequest,
     fnSave: fnSaveRequest,
     fnDelete: fnAskDelete,
-    buttonsHome: [],
+    buttonsHome: [
+      {
+        title: 'button.print',
+        icon: 'bi bi-printer',
+        onClick: fnPrint
+      }
+    ],
     buttonsOptions: [],
     buttonsAdmin: []
   }

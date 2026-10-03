@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from '@Hooks'
 import { validFloat } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
 
 export const useChecks = ({ setLoading, lines, setLines, setEditingLineIndex }) => {
@@ -215,12 +216,20 @@ export const useChecks = ({ setLoading, lines, setLines, setEditingLineIndex }) 
 
   const propsToMsgVoid = { open: openMsgVoid, setOpen: setOpenMsgVoid, fnOnOk: fnVoidCheckOk, title: "page.checks.msg.voidConfirm" }
 
+  // Imprime lo guardado en DB (SPEC v2-21).
+  const fnPrint = () => printDocument({ path: 'banks/process/checks', id, suffix: 'print/voucher', fileName: 'Comprobante de Cheque.pdf', setLoading });
+
   const propsToControlPanel = {
     fnNew: fnNewCheck,
     fnSearch: fnSearchCheck,
     fnSave: fnSaveCheck,
     fnDelete: fnAskVoidCheck,
     buttonsHome: [
+      {
+        title: 'page.checks.button.printVoucher',
+        icon: 'bi bi-printer',
+        onClick: fnPrint
+      },
       {
         title: "button.checks",
         icon: "bi bi-cash-coin",

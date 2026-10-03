@@ -117,6 +117,8 @@ const parseBlobResponse = async (response) => {
     try {
       const text = await response.text();
       errorBody = JSON.parse(text);
+      // Igual que parseResponse: sin el código HTTP, getErrorMessage no muestra la description de un 400.
+      if (errorBody && typeof errorBody === 'object') errorBody.statusCode = response.status;
     } catch {
       errorBody = {
         status: 'error',
@@ -321,7 +323,7 @@ const request = {
   },
   // `method` 'GET' envía `data` como query string y sin body: sirve para reportes de solo lectura, que así
   // no exigen el permiso de crear del middleware (con 'POST', por defecto, sí).
-  GETPdf: (url, data, fileName, fnError, method = 'POST') => {
+  GETPdf: (url, data, fileName, fnError, method = 'POST', fnSuccess) => {
     const token = fnGetToken();
     const isGet = method === 'GET';
     const query = isGet && data ? `?${new URLSearchParams(data).toString()}` : '';
@@ -342,6 +344,7 @@ const request = {
         a.href = window.URL.createObjectURL(blob);
         a.download = fileName;
         a.click();
+        if (typeof fnSuccess === 'function') fnSuccess(blob);
         return blob;
       })
       .catch((err) => {
@@ -483,4 +486,4 @@ const request = {
 
 };
 
-export { request, moveScrollTop, buildUrl };
+export { request, moveScrollTop, buildUrl, notifyError };

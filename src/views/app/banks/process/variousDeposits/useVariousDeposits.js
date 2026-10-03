@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useForm } from '@Hooks'
 import { request, buildUrl } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
 
 export const useVariousDeposits = ({ setLoading }) => {
@@ -146,12 +147,20 @@ export const useVariousDeposits = ({ setLoading }) => {
 
   const propsToMsgDelete = { open: openMsgDelete, setOpen: setOpenMsgDelete, fnOnOk: fnDeleteDepositOk, title: "page.variousDeposits.msg.deleteConfirm" }
 
+  // Imprime lo guardado en DB (SPEC v2-21).
+  const fnPrint = () => printDocument({ path: 'banks/process/deposits', id, fileName: 'Deposito Vario.pdf', setLoading });
+
   const propsToControlPanel = {
     fnNew: fnNewDeposit,
     fnSearch: fnSearchDeposit,
     fnSave: fnSaveDeposit,
     fnDelete: fnAskDeleteDeposit,
     buttonsHome: [
+      {
+        title: 'button.print',
+        icon: 'bi bi-printer',
+        onClick: fnPrint
+      },
       {
         title: "page.variousDeposits.button.applyAccounting",
         icon: "bi bi-journal-check",

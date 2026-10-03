@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useForm } from '@Hooks'
 import { request, buildUrl } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
 
 export const useLittleCash = ({ setLoading }) => {
@@ -136,12 +137,20 @@ export const useLittleCash = ({ setLoading }) => {
 
   const propsToMsgDelete = { open: openMsgDelete, setOpen: setOpenMsgDelete, fnOnOk: fnDeleteLittleCashOk, title: "page.littleCash.msg.deleteConfirm" }
 
+  // Imprime lo guardado en DB (SPEC v2-21).
+  const fnPrint = () => printDocument({ path: 'banks/process/littleCash', id, fileName: 'Recibo de Caja Chica.pdf', setLoading });
+
   const propsToControlPanel = {
     fnNew: fnNewLittleCash,
     fnSearch: fnSearchLittleCash,
     fnSave: fnSaveLittleCash,
     fnDelete: fnAskDeleteLittleCash,
     buttonsHome: [
+      {
+        title: 'button.print',
+        icon: 'bi bi-printer',
+        onClick: fnPrint
+      },
       {
         title: "page.littleCash.button.applyAccounting",
         icon: "bi bi-journal-check",

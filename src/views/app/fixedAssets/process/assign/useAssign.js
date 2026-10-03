@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm } from '@Hooks';
 import { request } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 
 export const useAssign = ({ setLoading }) => {
   const [assetList, setAssetList] = useState([]);
@@ -134,12 +135,20 @@ export const useAssign = ({ setLoading }) => {
 
   const propsToMsgDelete = { open: openMsgDelete, setOpen: setOpenMsgDelete, fnOnOk: fnDeleteOk, title: 'page.fixedAssets.msg.deleteAssignConfirm' }
 
+  // Imprime lo guardado en DB (SPEC v2-21).
+  const fnPrint = () => printDocument({ path: 'fixedAssets/process/assign', id, fileName: 'Acta de Asignacion.pdf', setLoading });
+
   const propsToControlPanel = {
     fnNew: fnNewAssign,
     fnSearch: fnSearchAssign,
     fnSave: fnSaveAssign,
     fnDelete: fnAskDelete,
     buttonsHome: [
+      {
+        title: 'button.print',
+        icon: 'bi bi-printer',
+        onClick: fnPrint
+      },
       {
         title: 'page.fixedAssets.button.apply',
         icon: 'bi bi-check2-square',

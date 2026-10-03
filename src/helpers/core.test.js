@@ -349,4 +349,35 @@ describe('core.js — request.GETPdf', () => {
     expect(options.body).toBeUndefined();
     expect(options.headers.Authorization).toMatch(/^Bearer /);
   });
+
+  it('al terminar la descarga llama a fnSuccess con el blob', async () => {
+    setStoredUser(makeToken(futureExp()));
+    global.fetch.mockResolvedValue(blobResponse());
+    const fnSuccess = vi.fn();
+
+    request.GETPdf('some/report', undefined, 'r.pdf', undefined, 'GET', fnSuccess);
+    await vi.waitFor(() => expect(fnSuccess).toHaveBeenCalled());
+    expect(fnSuccess.mock.calls[0][0]).toBeInstanceOf(Blob);
+  });
+
+  it('un error JSON del back llega a fnError con su statusCode (para mostrar el mensaje real de un 400)', async () => {
+    setStoredUser(makeToken(futureExp()));
+    const body = { status: 'error', data: [], messages: [{ type: 'error', message: 'void.cannotPrint', description: 'No se puede imprimir un Cheque Anulado' }] };
+    global.fetch.mockResolvedValue({ ok: false, status: 400, statusText: 'Bad Request', text: async () => JSON.stringify(body) });
+    const fnError = vi.fn();
+
+    request.GETPdf('some/report', undefined, 'r.pdf', fnError, 'GET');
+    await vi.waitFor(() => expect(fnError).toHaveBeenCalled());
+    expect(fnError.mock.calls[0][0]).toMatchObject({ statusCode: 400, messages: [{ message: 'void.cannotPrint' }] });
+  });
+
+  it('un error que no es JSON cae al mensaje genérico con el código HTTP', async () => {
+    setStoredUser(makeToken(futureExp()));
+    global.fetch.mockResolvedValue({ ok: false, status: 502, statusText: 'Bad Gateway', text: async () => '<html>' });
+    const fnError = vi.fn();
+
+    request.GETPdf('some/report', undefined, 'r.pdf', fnError, 'GET');
+    await vi.waitFor(() => expect(fnError).toHaveBeenCalled());
+    expect(fnError.mock.calls[0][0]).toMatchObject({ statusCode: 502 });
+  });
 });
