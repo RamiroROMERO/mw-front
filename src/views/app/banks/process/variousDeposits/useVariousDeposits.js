@@ -3,8 +3,9 @@ import { useForm } from '@Hooks'
 import { request, buildUrl } from '@Helpers/core';
 import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
+import { isPostedDeposit, resolveSaveAction } from './variousDepositRules';
 
-export const useVariousDeposits = ({ setLoading }) => {
+export const useVariousDeposits = ({ setLoading, canEditPosted = false }) => {
   const [listDocto, setListDocto] = useState([]);
   const [listBanks, setListBanks] = useState([]);
   const [listAccount, setListAccount] = useState([]);
@@ -14,6 +15,7 @@ export const useVariousDeposits = ({ setLoading }) => {
   const [openModalAdvance, setOpenModalAdvance] = useState(false);
   const [pendingAdvances, setPendingAdvances] = useState([]);
   const [openMsgDelete, setOpenMsgDelete] = useState(false);
+  const [openMsgEditPosted, setOpenMsgEditPosted] = useState(false);
   const [sendForm, setSendForm] = useState(false);
 
   const validDeposit = {
@@ -45,7 +47,7 @@ export const useVariousDeposits = ({ setLoading }) => {
     advanceId: 0,
     advanceProviderName: '',
     advanceValue: 0,
-    numberPDA: 0,
+    pdaNumber: 0,
     status: true
   }, validDeposit)
 
@@ -79,15 +81,18 @@ export const useVariousDeposits = ({ setLoading }) => {
     }, () => setLoading(false));
   }
 
-  const fnSaveDeposit = () => {
-    setSendForm(true);
-    if (!isFormValidIndex) return;
+  const isPosted = isPostedDeposit(formStateIndex);
 
+  // Guarda en el back. Editar un depósito YA contabilizado regenera su asiento y el libro de bancos y exige el privilegio
+  // 11.01.015 (SPEC v2-24): sin él el back responde 403 y `request.PUT` muestra su mensaje traducido.
+  const fnPersistDeposit = () => {
     const payload = { header: formStateIndex };
     setLoading(true);
     if (id > 0) {
+      const wasPosted = isPosted;
       request.PUT(`banks/process/deposits/${id}`, payload, (resp) => {
         setBulkFormIndex(resp.data.header);
+        if (wasPosted) notification('success', 'page.variousDeposits.msg.editedPostedOk', 'alert.success.title');
         setLoading(false);
       }, () => setLoading(false));
     } else {
@@ -96,6 +101,29 @@ export const useVariousDeposits = ({ setLoading }) => {
         setLoading(false);
       }, () => setLoading(false));
     }
+  }
+
+  const fnSaveDeposit = () => {
+    setSendForm(true);
+    if (!isFormValidIndex) return;
+
+    // Un depósito contabilizado regenera la partida al guardarse y exige el privilegio 11.01.015: con permiso se pide
+    // confirmación; sin él se avisa sin llamar al back (que respondería 403 `user.forbidden.editPosted`).
+    const action = resolveSaveAction(formStateIndex, canEditPosted);
+    if (action === 'forbidden') {
+      notification('warning', 'error.user.forbidden.editPosted', 'alert.warning.title');
+      return;
+    }
+    if (action === 'confirm') {
+      setOpenMsgEditPosted(true);
+      return;
+    }
+    fnPersistDeposit();
+  }
+
+  const fnEditPostedOk = () => {
+    setOpenMsgEditPosted(false);
+    fnPersistDeposit();
   }
 
   const fnApplyToAccounting = () => {
@@ -144,6 +172,8 @@ export const useVariousDeposits = ({ setLoading }) => {
       setLoading(false);
     }, () => setLoading(false));
   }
+
+  const propsToMsgEditPosted = { open: openMsgEditPosted, setOpen: setOpenMsgEditPosted, fnOnOk: fnEditPostedOk, title: "page.variousDeposits.msg.editPostedConfirm" }
 
   const propsToMsgDelete = { open: openMsgDelete, setOpen: setOpenMsgDelete, fnOnOk: fnDeleteDepositOk, title: "page.variousDeposits.msg.deleteConfirm" }
 
@@ -235,6 +265,8 @@ export const useVariousDeposits = ({ setLoading }) => {
     fnSelectAdvance,
     fnApplyAdvance,
     fnRemoveAdvance,
+    isPosted,
+    propsToMsgEditPosted,
     propsToMsgDelete
   }
 }
