@@ -5,14 +5,17 @@ import { InputField } from '@Components/inputFields';
 import DateCalendar from '@Components/dateCalendar';
 
 export const UseCustomerDepositsForm = (props) => {
-  const { formStateIndex, onInputChangeIndex, listDocto, listBanks, listCustomer, formValidationIndex, sendForm, isApplied } = props;
+  const { formStateIndex, onInputChangeIndex, listDocto, listBanks, listCustomer, listAccount, formValidationIndex, sendForm, isApplied, problem } = props;
 
   const {
     date, documentCode, documentId, bankCode, bankAccountName, depositNumber, description,
-    responsible, customerId, customerName, value, exchangeRate
+    responsible, customerId, customerName, value, exchangeRate, idCtaCxP
   } = formStateIndex;
 
-  const { dateValid, documentCodeValid, bankCodeValid, descriptionValid, customerIdValid } = formValidationIndex;
+  const { dateValid, documentCodeValid, bankCodeValid, descriptionValid, customerIdValid, depositNumberValid } = formValidationIndex;
+
+  // La cuenta del sobrante/faltante se exige cuando hay diferencia (SPEC v2-22).
+  const accountInvalid = sendForm && problem && problem.code === 'deposit.difference.account.required';
 
   return (
     <Row className='mb-3'>
@@ -69,6 +72,8 @@ export const UseCustomerDepositsForm = (props) => {
               onChange={onInputChangeIndex}
               label="page.customerDeposits.input.depositNumber"
               type="text"
+              invalid={sendForm && !!depositNumberValid}
+              feedbackText={sendForm && depositNumberValid || null}
               disabled={isApplied}
             />
           </Colxx>
@@ -126,6 +131,7 @@ export const UseCustomerDepositsForm = (props) => {
               value={date}
               onChange={onInputChangeIndex}
               label="select.date"
+              maxDate={new Date()}
               invalid={sendForm && !!dateValid}
               feedbackText={sendForm && dateValid || null}
               disabled={isApplied}
@@ -139,6 +145,18 @@ export const UseCustomerDepositsForm = (props) => {
               label="input.valueLps"
               type="text"
               disabled={isApplied}
+            />
+          </Colxx>
+          <Colxx xxs="12" xs="12" sm="12" md="12" lg="12">
+            <SearchSelect
+              name="idCtaCxP"
+              inputValue={idCtaCxP}
+              onChange={onInputChangeIndex}
+              label="page.customerDeposits.input.differenceAccount"
+              options={listAccount}
+              invalid={!!accountInvalid}
+              feedbackText={accountInvalid ? 'page.customerDeposits.msg.differenceAccountRequired' : null}
+              isDisabled={isApplied}
             />
           </Colxx>
           <Colxx xxs="6" xs="6" sm="6" md="6" lg="12">

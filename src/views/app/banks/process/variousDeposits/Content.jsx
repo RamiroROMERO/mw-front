@@ -9,18 +9,18 @@ import { ModalViewDeposit } from './ModalViewDeposit';
 import { ModalSelectAdvance } from './ModalSelectAdvance';
 
 const VariousDeposits = (props) => {
-  const { setLoading } = props;
+  const { setLoading, canEditPosted } = props;
 
   const {
     propsToControlPanel, formStateIndex, onInputChangeIndex, listDocto, listBanks, listAccount,
     listCustomer, formValidationIndex, sendForm, openModalViewDeposits, setOpenModalViewDeposits,
     dataDeposits, fnViewDeposit, openModalAdvance, setOpenModalAdvance, pendingAdvances,
-    fnSelectAdvance, fnApplyAdvance, fnRemoveAdvance, propsToMsgDelete
-  } = useVariousDeposits({ setLoading });
+    fnSelectAdvance, fnApplyAdvance, fnRemoveAdvance, isPosted, propsToMsgEditPosted, propsToMsgDelete
+  } = useVariousDeposits({ setLoading, canEditPosted });
 
   const propsToDepositsForm = {
     formStateIndex, onInputChangeIndex, listDocto, listBanks, listAccount, listCustomer,
-    formValidationIndex, sendForm, fnSelectAdvance, fnRemoveAdvance
+    formValidationIndex, sendForm, fnSelectAdvance, fnRemoveAdvance, isPosted, canEditPosted
   }
 
   const propsToModalViewDeposits = {
@@ -56,6 +56,7 @@ const VariousDeposits = (props) => {
       </Row>
       <Modal {...propsToModalViewDeposits} />
       <Modal {...propsToModalAdvance} />
+      <Confirmation {...propsToMsgEditPosted} />
       <Confirmation {...propsToMsgDelete} />
     </>
   );

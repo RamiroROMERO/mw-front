@@ -70,7 +70,9 @@ const Checks = (props) => {
     setOpen: setOpenModalPrintCheck,
     maxWidth: 'xs',
     data: {
-      dataExpenses
+      dataExpenses,
+      checkId: formStateIndex.id,
+      setLoading
     }
   }
 

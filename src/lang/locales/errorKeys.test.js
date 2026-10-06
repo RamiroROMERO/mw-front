@@ -22,6 +22,9 @@ const TRANSLATED = [
 const NOT_TRANSLATED = [
   'notFound', 'validation.error', 'locked', 'lines.required', 'unbalanced', 'value.required',
   'calendar.closed', 'bank.notFound', 'customer.noCxcAccount', 'void.cannotEdit',
+  // SPEC v2-22: su descripción lleva los montos reales (valor del depósito, lo aplicado, el faltante y el tope).
+  'line.applied.exceeded', 'line.applied.invalid', 'deposit.shortage.exceeded', 'deposit.difference.account.required',
+  'deposit.difference.account.invalid',
 ];
 
 describe('traducciones de errores del back (error.<name>)', () => {

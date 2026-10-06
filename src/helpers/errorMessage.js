@@ -42,4 +42,29 @@ const getErrorMessage = (err, fallbackKey, messages = esLang) => {
   return fallback;
 };
 
+/**
+ * Código de un error de negocio (el `name` del ValidError del back), o undefined si el error no lo es.
+ *
+ * Los handlers que muestran un mensaje propio por código (`msg.error.creditNote.<code>`, 'invoice.hasPayments', ...)
+ * lo usan para decidir. Solo hay código en un 400 de negocio: un 500, un 401/403 de permisos o un 400 de validación
+ * de campos (`errors`) no tienen, así que esos handlers caen a su mensaje genérico.
+ *
+ * Dos formas de respuesta:
+ *  - actual (SPEC v2-20): `messages[0].message` es el código y `description` es texto;
+ *  - anterior: `messages[0].description` era el objeto `{ name, description }` del ValidError.
+ */
+export const getErrorCode = (err) => {
+  const first = err && Array.isArray(err.messages) ? err.messages[0] : undefined;
+  if (!first || typeof first !== 'object') return undefined;
+
+  const legacy = first.description;
+  if (legacy && typeof legacy === 'object' && typeof legacy.name === 'string' && legacy.name) return legacy.name;
+
+  const description = typeof first.description === 'string' ? first.description.trim() : '';
+  const businessError = err.statusCode === 400
+    && !(Array.isArray(err.errors) && err.errors.length > 0)
+    && !GENERIC_DESCRIPTIONS.includes(description);
+  return businessError && typeof first.message === 'string' && first.message ? first.message : undefined;
+};
+
 export default getErrorMessage;

@@ -3,7 +3,7 @@ import { InputLabel } from "@Components/inputLabel";
 import 'react-datepicker/dist/react-datepicker.css';
 
 const DateCalendar = (props) => {
-  const { value, label = "calendar.input.title", onChange, disabled = false, name = "date", feedbackText = undefined } = props;
+  const { value, label = "calendar.input.title", onChange, disabled = false, name = "date", feedbackText = undefined, maxDate = undefined } = props;
 
   const onDateChange = (e) => {
     const eSet = e ? e.toJSON().slice(0, 10) : '';
@@ -17,6 +17,7 @@ const DateCalendar = (props) => {
         onChange={onDateChange}
         disabled={disabled}
         dateFormat="dd/MM/yyyy"
+        maxDate={maxDate}
         zone="00:00"
         isClearable
       />

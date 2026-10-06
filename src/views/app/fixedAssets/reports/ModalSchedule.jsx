@@ -3,6 +3,7 @@ import { ModalBody, ModalFooter, Button, Row, Table } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 
 export const ModalSchedule = ({ data, setOpen }) => {
   const { assetId, setLoading } = data;
@@ -49,6 +50,14 @@ export const ModalSchedule = ({ data, setOpen }) => {
         </Row>
       </ModalBody>
       <ModalFooter>
+        <Button
+          color="primary"
+          onClick={() => printDocument({
+            path: 'fixedAssets/reports/depreciationSchedule', id: assetId, fileName: 'Cronograma de Depreciacion.pdf', setLoading
+          })}
+        >
+          <i className="bi bi-printer" /> {IntlMessages('button.print')}
+        </Button>
         <Button color="danger" onClick={() => setOpen(false)}>
           <i className="bi bi-box-arrow-right" />{` ${IntlMessages('button.exit')}`}
         </Button>

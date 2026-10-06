@@ -3,6 +3,7 @@ import { Badge, Card, CardBody, Row } from 'reactstrap';
 import { validFloat, formatNumber, validInt, IntlMessages } from "@Helpers/Utils";
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { request, buildUrl } from '@Helpers/core';
+import { getErrorCode } from '@Helpers/errorMessage';
 import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
 import ControlPanel from '@Components/controlPanel';
@@ -396,7 +397,7 @@ const PointSales = (props) => {
       notification('success', 'msg.success.voidInvoice', 'alert.success.title');
       setLoading(false);
     }, (err) => {
-      const errorCode = err?.messages?.[0]?.description?.name;
+      const errorCode = getErrorCode(err);
       if (errorCode === 'invoice.hasPayments') {
         notification('error', 'msg.error.voidInvoice.hasPayments', 'alert.error.title');
       } else if (errorCode === 'invoice.cashClosed') {

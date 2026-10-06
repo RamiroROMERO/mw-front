@@ -1,4 +1,4 @@
-import { Row, Button } from 'reactstrap';
+import { Row, Button, Alert } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { InputField } from '@Components/inputFields';
@@ -8,12 +8,12 @@ import { IntlMessages } from '@Helpers/Utils';
 export const UseVariousDepositsForm = (props) => {
   const {
     formStateIndex, onInputChangeIndex, listDocto, listBanks, listAccount, listCustomer,
-    formValidationIndex, sendForm, fnSelectAdvance, fnRemoveAdvance
+    formValidationIndex, sendForm, fnSelectAdvance, fnRemoveAdvance, isPosted, canEditPosted
   } = props;
 
   const {
     documentCode, documentId, date, bankCode, bankAccountName, description, referenceCode,
-    idCtaCont, value, exchangeRate, customerId, customerName, advanceId, advanceProviderName, advanceValue
+    idCtaCont, value, exchangeRate, customerId, customerName, advanceId, advanceProviderName, advanceValue, pdaNumber
   } = formStateIndex;
 
   const {
@@ -22,6 +22,15 @@ export const UseVariousDepositsForm = (props) => {
 
   return (
     <>
+      {isPosted && (
+        <Row className='mb-3'>
+          <Colxx xxs="12">
+            <Alert color={canEditPosted ? 'info' : 'warning'} className="mb-0">
+              <i className="bi bi-journal-check" /> {IntlMessages("page.variousDeposits.notice.posted")} <strong>{pdaNumber}</strong>. {IntlMessages(canEditPosted ? "page.variousDeposits.notice.postedEdit" : "page.variousDeposits.notice.postedNoPermission")}
+            </Alert>
+          </Colxx>
+        </Row>
+      )}
       <Row className='mb-3'>
         <Colxx xxs="12" sm="12" md="12" lg="8">
           <Row>

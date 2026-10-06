@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useForm } from '@Hooks'
 import { validFloat } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
 import { createValueSync } from './transferValueSync';
 
@@ -262,12 +263,20 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
 
   const propsToMsgDelete = { open: openMsgDelete, setOpen: setOpenMsgDelete, fnOnOk: fnDeleteTransferOk, title: "page.transfers.msg.deleteConfirm" }
 
+  // Imprime lo guardado en DB (SPEC v2-21).
+  const fnPrint = () => printDocument({ path: 'banks/process/transfers', id, fileName: 'Transferencia Bancaria.pdf', setLoading });
+
   const propsToControlPanel = {
     fnNew: fnNewTransfer,
     fnSearch: fnSearchTransfer,
     fnSave: fnSaveTransfer,
     fnDelete: fnAskDeleteTransfer,
     buttonsHome: [
+      {
+        title: 'button.print',
+        icon: 'bi bi-printer',
+        onClick: fnPrint
+      },
       {
         title: "button.cxp",
         icon: "iconsminds-coins",

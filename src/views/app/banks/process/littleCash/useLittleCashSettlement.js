@@ -3,6 +3,7 @@ import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import { useForm } from '@Hooks';
 import { request, buildUrl } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
 
 export const useLittleCashSettlement = ({ idCch, setLoading }) => {
@@ -48,6 +49,11 @@ export const useLittleCashSettlement = ({ idCch, setLoading }) => {
     }, () => setLoading(false));
   }
 
+  // Imprime lo guardado en DB (SPEC v2-21).
+  const fnPrintSettlement = (row) => printDocument({
+    path: 'banks/process/littleCash/settlements', id: row.id, fileName: 'Liquidacion de Caja Chica.pdf', setLoading
+  });
+
   const fnAskClose = (row) => {
     if (!bankCode || !documentCode) {
       notification('warning', 'page.littleCashSettlement.msg.selectBankDocFirst', 'alert.warning.title');
@@ -91,6 +97,11 @@ export const useLittleCashSettlement = ({ idCch, setLoading }) => {
     ],
     data: [],
     actions: [{
+      color: 'secondary',
+      icon: 'printer',
+      toolTip: IntlMessages('button.print'),
+      onClick: fnPrintSettlement
+    }, {
       color: 'success',
       icon: 'check',
       toolTip: IntlMessages('page.littleCashSettlement.button.close'),

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useForm } from '@Hooks'
 import { request, buildUrl } from '@Helpers/core';
+import { getErrorCode } from '@Helpers/errorMessage';
 import { validInt, validFloat } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import createNotification from '@Containers/ui/Notifications';
@@ -245,7 +246,7 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
       createNotification('success', 'msg.success.processDocument', 'alert.success.title');
       setLoading(false);
     }, (err) => {
-      const errorCode = err?.messages?.[0]?.description?.name;
+      const errorCode = getErrorCode(err);
       if (errorCode === 'adjustment.noChanges') {
         createNotification('warning', 'msg.warning.noChangesAdjustment', 'alert.warning.title');
       } else {

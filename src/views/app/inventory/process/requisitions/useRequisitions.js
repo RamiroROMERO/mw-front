@@ -1,6 +1,7 @@
 import { useForm } from '@Hooks'
 import { useState, useEffect } from 'react';
 import { request, buildUrl } from '@Helpers/core';
+import { getErrorCode } from '@Helpers/errorMessage';
 import { validInt } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import createNotification from '@Containers/ui/Notifications';
@@ -261,7 +262,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       createNotification('success', 'msg.success.processDocument', 'alert.success.title');
       setLoading(false);
     }, (err) => {
-      const errorCode = err?.messages?.[0]?.description?.name;
+      const errorCode = getErrorCode(err);
       if (errorCode) {
         createNotification('error', `msg.error.transfer.${errorCode}`, 'alert.error.title');
       } else {

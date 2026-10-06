@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useForm } from '@Hooks'
 import { request } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
 
 export const useDebCredNotes = ({ setLoading }) => {
@@ -116,12 +117,20 @@ export const useDebCredNotes = ({ setLoading }) => {
 
   const propsToMsgDelete = { open: openMsgDelete, setOpen: setOpenMsgDelete, fnOnOk: fnDeleteNoteOk, title: "page.debCredNotes.msg.deleteConfirm" }
 
+  // Imprime lo guardado en DB (SPEC v2-21).
+  const fnPrint = () => printDocument({ path: 'banks/process/debCred', id, fileName: 'Nota Bancaria.pdf', setLoading });
+
   const propsToControlPanel = {
     fnNew: fnNewNote,
     fnSearch: fnSearchNote,
     fnSave: fnSaveNote,
     fnDelete: fnAskDeleteNote,
     buttonsHome: [
+      {
+        title: 'button.print',
+        icon: 'bi bi-printer',
+        onClick: fnPrint
+      },
       {
         title: "page.variousDeposits.button.applyAccounting",
         icon: "bi bi-journal-check",

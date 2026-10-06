@@ -3,6 +3,7 @@ import { Card, CardBody, Row } from 'reactstrap';
 import { validFloat, formatNumber, validInt, IntlMessagesFn } from "@Helpers/Utils";
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { request, buildUrl } from '@Helpers/core';
+import { getErrorCode } from '@Helpers/errorMessage';
 import { useForm } from '@Hooks'
 import ControlPanel from '@Components/controlPanel';
 import TableButton from "@Components/tableButtons";
@@ -464,7 +465,7 @@ const Invoicing = (props) => {
       notification('success', 'msg.success.voidInvoice', 'alert.success.title');
       setLoading(false);
     }, (err) => {
-      const errorCode = err?.messages?.[0]?.description?.name;
+      const errorCode = getErrorCode(err);
       if (errorCode === 'invoice.hasPayments') {
         notification('error', 'msg.error.voidInvoice.hasPayments', 'alert.error.title');
       } else {

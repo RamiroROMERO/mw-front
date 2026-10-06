@@ -1,21 +1,37 @@
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
 import { Colxx } from '@Components/common/CustomBootstrap';
+import { InputField } from '@Components/inputFields';
 import { IntlMessages } from "@Helpers/Utils";
+import { printDocument } from '@Helpers/printDocument';
 import { RadioGroup } from "@Components/radioGroup";
-import { RadioButton } from "@Components/radioGroup/RadioButton";
 import notification from '@Containers/ui/Notifications';
 import { useForm } from "@Hooks";
+import { buildCheckPrintQuery } from './checkPrintModes';
 
+// Impresión del cheque físico (SPEC v2-21): el back imprime lo guardado, solo los campos variables, para el papel
+// preimpreso del banco. El cheque tiene que estar guardado (`checkId`).
 export const ModalPrintCheck = ({ data, setOpen }) => {
+  const { checkId, setLoading } = data;
 
-  const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
-    id: 0,
-    typePrintCheck: 0
+  const { formState, onInputChange } = useForm({
+    typePrintCheck: 0,
+    city: ''
   })
 
-  const { typePrintCheck } = formState;
+  const { typePrintCheck, city } = formState;
 
-  const fnPrintCheck = () => { }
+  const fnPrintCheck = () => {
+    const query = buildCheckPrintQuery(typePrintCheck, city);
+    if (!query) {
+      notification('warning', 'msg.print.selectType', 'alert.warning.title');
+      return;
+    }
+    const started = printDocument({
+      path: 'banks/process/checks', id: checkId, suffix: 'print/format', query, fileName: 'Cheque.pdf', setLoading
+    });
+    if (started) setOpen(false);
+  }
+
   return (
     <>
       <ModalBody>
@@ -36,10 +52,15 @@ export const ModalPrintCheck = ({ data, setOpen }) => {
             />
           </Colxx>
         </Row>
+        <Row className="mb-2">
+          <Colxx xxs="12">
+            <InputField name="city" value={city} onChange={onInputChange} label="page.check.modalPrintCheck.input.city" type="text" />
+          </Colxx>
+        </Row>
       </ModalBody>
       <ModalFooter>
         <Button color="primary" onClick={fnPrintCheck}>
-          <i className="iconsminds-save" /> {IntlMessages("button.print")}
+          <i className="bi bi-printer" /> {IntlMessages("button.print")}
         </Button>
         <Button color="danger" onClick={() => { setOpen(false) }} >
           <i className="bi bi-box-arrow-right" />{` ${IntlMessages('button.exit')}`}

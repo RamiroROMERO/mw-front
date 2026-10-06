@@ -6,9 +6,10 @@ import { IntlMessages, validFloat } from '@Helpers/Utils';
 
 // Tabla con inputs editables por fila (no ReactTableEdit — ese componente no soporta
 // acciones/celdas formateadas y silencia valores objeto, ver feedback_reacttableedit_no_actions_no_cell).
-export const DepositLinesTable = ({ lines, listAccount, fnUpdateLine, fnRemoveLine, fnOpenInvoicesPicker, isApplied }) => {
-  const totalApplied = lines.reduce((sum, l) => sum + (validFloat(l.appliedValue) || 0), 0);
-  const totalDeduction = lines.reduce((sum, l) => sum + (validFloat(l.deductionValue) || 0), 0);
+export const DepositLinesTable = ({ lines, listAccount, fnUpdateLine, fnRemoveLine, fnOpenInvoicesPicker, isApplied, totals, problem }) => {
+  const { applied: totalApplied, deduction: totalDeduction, difference } = totals;
+  // Diferencia en rojo cuando la regla del tope la rechazaría (SPEC v2-22).
+  const differenceFailed = problem && (problem.code === 'deposit.shortage.exceeded');
 
   return (
     <>
@@ -97,6 +98,18 @@ export const DepositLinesTable = ({ lines, listAccount, fnUpdateLine, fnRemoveLi
         </Colxx>
         <Colxx xxs="6" sm="4">
           <InputField value={totalDeduction.toFixed(2)} name="totalDeduction" label="page.customerDeposits.table.totalDeduction" type="text" disabled />
+        </Colxx>
+        <Colxx xxs="12" sm="4">
+          <InputField
+            value={difference.toFixed(2)}
+            name="difference"
+            label="page.customerDeposits.table.difference"
+            type="text"
+            invalid={!!differenceFailed}
+            feedbackText={differenceFailed ? 'page.customerDeposits.msg.shortageExceeded' : null}
+            bold
+            disabled
+          />
         </Colxx>
       </Row>
     </>
