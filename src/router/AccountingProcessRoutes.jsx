@@ -11,6 +11,7 @@ const DailyItems = React.lazy(() => import('@Views/app/accounting/process/dailyI
 const DiaryBook = React.lazy(() => import('@Views/app/accounting/process/diaryBook'));
 const Ledger = React.lazy(() => import('@Views/app/accounting/process/ledger'));
 const CashFlow = React.lazy(() => import('@Views/app/accounting/process/cashFlow'));
+const EntryBalancing = React.lazy(() => import('@Views/app/accounting/process/entryBalancing'));
 const AdminExpenses = React.lazy(() => import('@Views/app/accounting/process/adminExpenses'));
 
 const AccountingProcessRoutes = (props) => {
@@ -52,6 +53,10 @@ const AccountingProcessRoutes = (props) => {
       index
       path="/adminExpenses"
       element={<AdminExpenses setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/entryBalancing"
+      element={<EntryBalancing setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }
