@@ -659,6 +659,11 @@ const data = [
             to: `${adminRoot}/accounting/process/cashFlow`,
           },
           {
+            icon: 'bi bi-journal-check',
+            label: 'menu.entryBalancing',
+            to: `${adminRoot}/accounting/process/entryBalancing`,
+          },
+          {
             icon: 'bi bi-cash-stack',
             label: 'menu.adminExpenses',
             to: `${adminRoot}/accounting/process/adminExpenses`,

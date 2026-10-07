@@ -25,6 +25,30 @@ const NOT_TRANSLATED = [
   // SPEC v2-22: su descripción lleva los montos reales (valor del depósito, lo aplicado, el faltante y el tope).
   'line.applied.exceeded', 'line.applied.invalid', 'deposit.shortage.exceeded', 'deposit.difference.account.required',
   'deposit.difference.account.invalid',
+  // SPEC v2-25 (Cuadre de Asientos): su descripcion lleva los montos y cuentas reales de la partida.
+  'repair.account.invalid',
+  'repair.account.isBank',
+  'repair.account.required',
+  'repair.action.invalid',
+  'repair.batch.tooLarge',
+  'repair.check.notFound',
+  'repair.creditNote.notFound',
+  'repair.creditNote.notOneSided',
+  'repair.creditNote.type',
+  'repair.date.closed',
+  'repair.deposit.noExtraLines',
+  'repair.deposit.notFound',
+  'repair.entry.notFound',
+  'repair.header.noLines',
+  'repair.key.invalid',
+  'repair.keys.required',
+  'repair.line.notBlank',
+  'repair.line.notFound',
+  'repair.line.reconciled',
+  'repair.period.confirmRequired',
+  'repair.reason.required',
+  'repair.reversal.notZero',
+  'repair.reversal.originalInvalid',
 ];
 
 describe('traducciones de errores del back (error.<name>)', () => {
