@@ -26,13 +26,13 @@ const Notifications = ({ notifications = [], enterTimeout, leaveTimeout, onReque
           const key = notification.id || new Date().getTime();
           return (
             <CSSTransition
+              key={key}
               nodeRef={nodeRef}
               classNames="notification"
               timeout={{ enter: enterTimeout, exit: leaveTimeout }}
               unmountOnExit
             >
               <Notification
-                key={key}
                 type={notification.type}
                 title={notification.title}
                 message={notification.message}

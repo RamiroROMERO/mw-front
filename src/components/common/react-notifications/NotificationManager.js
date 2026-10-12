@@ -35,11 +35,10 @@ class NotificationManager extends EventEmitter {
       timeOut: 5000,
       customClassName: '',
     };
-    if (notify.priority) {
-      this.listNotify.unshift(Object.assign(defaultNotify, notify));
-    } else {
-      this.listNotify.push(Object.assign(defaultNotify, notify));
-    }
+    // Siempre una lista NUEVA: el contenedor guarda la lista en un estado de React, y emitir la misma referencia
+    // (push/unshift sobre el mismo arreglo) no provoca un nuevo render, así que el aviso nunca se pintaba.
+    const created = Object.assign(defaultNotify, notify);
+    this.listNotify = notify.priority ? [created, ...this.listNotify] : [...this.listNotify, created];
     this.emitChange();
   }
 
