@@ -1,12 +1,20 @@
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import ReactTable from '@Components/reactTable';
+import Modal from '@Components/modal';
+import Confirmation from '@Containers/ui/confirmationMsg';
 import HeaderReport from './HeaderReport';
 import TotalsReport from './TotalsReport';
 import { useBanksBook } from './useBanksBook';
+import { ModalEditRecord } from './ModalEditRecord';
 
 const BanksBooks = ({ setLoading }) => {
-  const { table, propsToHeaderReport, propsToTotals } = useBanksBook({ setLoading });
+  const {
+    table, propsToHeaderReport, propsToTotals, openEdit, setOpenEdit, propsToEdit, propsToMsgDelete
+  } = useBanksBook({ setLoading });
+  const modalEdit = {
+    ModalContent: ModalEditRecord, title: 'page.banksBook.edit.title', open: openEdit, setOpen: setOpenEdit, maxWidth: 'lg', data: propsToEdit
+  };
 
   return (
     <>
@@ -33,6 +41,8 @@ const BanksBooks = ({ setLoading }) => {
           </Card>
         </Colxx>
       </Row>
+      <Modal {...modalEdit} />
+      <Confirmation {...propsToMsgDelete} />
     </>
   );
 }
