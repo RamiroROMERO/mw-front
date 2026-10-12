@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useForm } from '@Hooks'
 import { validFloat } from '@Helpers/Utils';
-import { request, buildUrl } from '@Helpers/core';
+import { request, buildUrl, notifyError } from '@Helpers/core';
 import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
+import { buildDocumentSignature, getAuxiliariesStatus, AUXILIARIES_MESSAGES } from './checkAuxiliariesRules';
 
 export const useChecks = ({ setLoading, lines, setLines, setEditingLineIndex }) => {
   const [listDocto, setListDocto] = useState([]);
@@ -25,6 +26,8 @@ export const useChecks = ({ setLoading, lines, setLines, setEditingLineIndex }) 
   const [pendingCxp, setPendingCxp] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [sendForm, setSendForm] = useState(false);
+  // Huella de lo último cargado o guardado: el back regenera las auxiliares desde lo guardado (SPEC v2-27).
+  const [savedSignature, setSavedSignature] = useState('');
 
   const validCheck = {
     date: [(val) => val !== '', "msg.required.select.date"],
@@ -58,6 +61,7 @@ export const useChecks = ({ setLoading, lines, setLines, setEditingLineIndex }) 
 
   const fnNewCheck = () => {
     setSendForm(false);
+    setSavedSignature('');
     onResetFormIndex();
     setLines([]);
     setEditingLineIndex(null);
@@ -68,6 +72,7 @@ export const useChecks = ({ setLoading, lines, setLines, setEditingLineIndex }) 
     request.GET(`banks/process/checks/${id}`, (resp) => {
       const { header, lines: lineData } = resp.data;
       setBulkFormIndex(header);
+      setSavedSignature(buildDocumentSignature(header, lineData));
       setLines(lineData);
       setEditingLineIndex(null);
       setSendForm(false);
@@ -219,12 +224,36 @@ export const useChecks = ({ setLoading, lines, setLines, setEditingLineIndex }) 
   // Imprime lo guardado en DB (SPEC v2-21).
   const fnPrint = () => printDocument({ path: 'banks/process/checks', id, suffix: 'print/voucher', fileName: 'Comprobante de Cheque.pdf', setLoading });
 
+  // Actualizar auxiliares (CxC y CxP del cheque desde su detalle). Solo con el cheque guardado y sin cambios pendientes.
+  const fnUpdateAuxiliaries = () => {
+    const status = getAuxiliariesStatus({
+      id, isVoided, savedSignature, currentSignature: buildDocumentSignature(formStateIndex, lines)
+    });
+    if (status !== 'ok') {
+      notification('warning', AUXILIARIES_MESSAGES[status], 'alert.warning.title');
+      return;
+    }
+    setLoading(true);
+    request.POST(`banks/process/checks/${id}/auxiliaries`, {}, () => {
+      notification('success', 'msg.checks.auxiliaries.success', 'alert.success.title');
+      setLoading(false);
+    }, (err) => {
+      notifyError(err, 'msg.checks.auxiliaries.error');
+      setLoading(false);
+    }, false);
+  }
+
   const propsToControlPanel = {
     fnNew: fnNewCheck,
     fnSearch: fnSearchCheck,
     fnSave: fnSaveCheck,
     fnDelete: fnAskVoidCheck,
     buttonsHome: [
+      {
+        title: 'page.checks.button.updateAuxiliaries',
+        icon: 'bi bi-arrow-repeat',
+        onClick: fnUpdateAuxiliaries
+      },
       {
         title: 'page.checks.button.printVoucher',
         icon: 'bi bi-printer',
