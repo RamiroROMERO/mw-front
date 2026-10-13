@@ -1,23 +1,25 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from '@Hooks';
 import { validFloat, formatNumber } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
-import { calculateTotals, categorize } from './bankConciliationTotals';
+import {
+  DEBOUNCE_MS, buildPrintRequest, buildTotalsBody, shouldFetchTotals, toPanelTotals, totalsWithoutLines
+} from './bankConciliationTotalsClient';
 import { isClosed } from '../../settings/scheduling/schedulingRules';
 
 export const useBankConciliation = ({ setLoading }) => {
   const [listPeriods, setListPeriods] = useState([]);
   const [listBanks, setListBanks] = useState([]);
-  const [docCategoryMap, setDocCategoryMap] = useState({});
+  const [totals, setTotals] = useState(() => totalsWithoutLines({ id: 0 }));
+  const totalsRequestRef = useRef(0);
   const [lines, setLines] = useState([]);
   const [openModalNew, setOpenModalNew] = useState(false);
   const [openModalSearch, setOpenModalSearch] = useState(false);
   const [dataList, setDataList] = useState([]);
   const [sendFormNew, setSendFormNew] = useState(false);
   const [openModalPrint, setOpenModalPrint] = useState(false);
-  const [savedSignature, setSavedSignature] = useState('');
 
   const validNew = {
     periodId: [(val) => !!val, 'page.bankConciliation.msg.periodBankRequired'],
@@ -36,15 +38,11 @@ export const useBankConciliation = ({ setLoading }) => {
     valueBank: 0, valueBook: 0
   });
 
-  const { id, dateIn, dateOut, valueBank, valueBook } = header;
-
-  // Firma de lo marcado y de los saldos: sirve para saber si hay cambios sin guardar antes de imprimir.
-  const signatureOf = (list, bank, book) => JSON.stringify([list.map((l) => [l.id, !!l.isConBank, !!l.isConBook]), validFloat(bank), validFloat(book)]);
+  const { id, valueBank, valueBook } = header;
 
   const fnResetAll = () => {
     onResetHeader();
     setLines([]);
-    setSavedSignature(signatureOf([], 0, 0));
   }
 
   const fnOpenNewModal = () => {
@@ -91,7 +89,6 @@ export const useBankConciliation = ({ setLoading }) => {
         valueBank: h.valueBank, valueBook: h.valueBook
       });
       setLines(lineData);
-      setSavedSignature(signatureOf(lineData, h.valueBank, h.valueBook));
       setLoading(false);
     }, () => setLoading(false));
   }
@@ -104,7 +101,6 @@ export const useBankConciliation = ({ setLoading }) => {
     setLoading(true);
     request.POST(`banks/process/conciliations/${id}/items`, {}, (resp) => {
       setLines(resp.data);
-      setSavedSignature(signatureOf(resp.data, valueBank, valueBook));
       setLoading(false);
     }, () => setLoading(false));
   }
@@ -139,17 +135,15 @@ export const useBankConciliation = ({ setLoading }) => {
       notification('warning', 'page.bankConciliation.msg.selectFirst', 'alert.warning.title');
       return;
     }
-    if (signatureOf(lines, valueBank, valueBook) !== savedSignature) {
-      notification('warning', 'page.bankConciliation.msg.unsavedChanges', 'alert.warning.title');
-      return;
-    }
     setOpenModalPrint(true);
   }
 
-  // El reporte se arma en el back con lo guardado en DB (por eso se exige guardar antes).
-  const fnPrint = (type) => {
+  // Imprime lo que hay en pantalla, esté o no guardado: el back recibe las marcas y los saldos, los superpone a
+  // lo que hay en DB y no escribe nada (SPEC v2-33).
+  const fnPrint = (type, format = 'pdf') => {
     setOpenModalPrint(false);
-    request.GETPdf(`banks/process/conciliations/${id}/report`, { type }, 'Conciliacion Bancaria.pdf', () => setLoading(false), 'GET');
+    const { url, data, fileName } = buildPrintRequest({ id, type, format, lines, valueBank, valueBook });
+    request.GETPdf(url, data, fileName, () => setLoading(false));
   }
 
   const propsToControlPanel = {
@@ -172,11 +166,26 @@ export const useBankConciliation = ({ setLoading }) => {
     buttonsAdmin: []
   }
 
-  // Réplica de calculartotales (ver bankConciliationTotals.js).
-  const totals = useMemo(
-    () => calculateTotals({ lines, docCategoryMap, dateIn, dateOut, valueBank, valueBook }),
-    [lines, docCategoryMap, dateIn, dateOut, valueBank, valueBook]
-  );
+  // Los totales los calcula el back (única implementación de la fórmula, SPEC v2-33) con las marcas actuales,
+  // sin guardar. Se consulta con un pequeño retraso para no pedir un cálculo por cada casilla; una respuesta
+  // vieja nunca pisa a una más nueva. Mientras llega la nueva se mantiene el último resultado.
+  useEffect(() => {
+    const requestId = totalsRequestRef.current + 1;
+    totalsRequestRef.current = requestId;
+
+    if (!shouldFetchTotals({ id, lines })) {
+      setTotals(totalsWithoutLines({ id, valueBank, valueBook }));
+      return undefined;
+    }
+
+    const timer = setTimeout(() => {
+      request.POST(`banks/process/conciliations/${id}/totals`, buildTotalsBody({ lines, valueBank, valueBook }), (resp) => {
+        if (totalsRequestRef.current === requestId) setTotals(toPanelTotals(resp.data));
+      }, () => { }, false);
+    }, DEBOUNCE_MS);
+
+    return () => clearTimeout(timer);
+  }, [id, lines, valueBank, valueBook]);
 
   const propsToTotals = useMemo(() => ({
     checks: { book: formatNumber(totals.checks.book), bank: formatNumber(totals.checks.bank), diff: formatNumber(totals.checks.diff) },
@@ -200,15 +209,6 @@ export const useBankConciliation = ({ setLoading }) => {
 
     request.GET('banks/settings/banksAccounts/getSL', (resp) => {
       setListBanks(resp.data.map((item) => ({ label: `${item.code} - ${item.name}`, value: item.code })));
-    }, () => { });
-
-    request.GET('banks/process/conciliations/categories', (resp) => {
-      const map = {};
-      resp.data.forEach((row) => {
-        const category = categorize(row.category);
-        if (category) map[row.documentCode] = category;
-      });
-      setDocCategoryMap(map);
     }, () => { });
   }, []);
 
