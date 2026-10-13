@@ -4096,6 +4096,8 @@ const enLang = {
   "page.transfers.input.totalCredit": "Total Credit",
   "page.transfers.msg.deleteConfirm": "DELETE this Transfer? This action cannot be undone.",
   "msg.transfers.lines.required": "The Transfer has no Detail",
+  "page.transfers.msg.valueMismatch": "The value does not match the credit to the bank account",
+  "page.transfers.msg.noBankLine": "There is no credit line to the bank ledger account",
   "msg.transfers.line.valueRequired": "Enter a Debit or Credit value",
   "msg.transfers.selectProviderFirst": "Select a Provider first",
   "msg.transfers.selectCustomerFirst": "Select a Customer first",

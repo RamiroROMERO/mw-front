@@ -4111,6 +4111,8 @@ const esLang = {
   "page.transfers.input.totalCredit": "Total Credito",
   "page.transfers.msg.deleteConfirm": "¿Desea ELIMINAR esta Transferencia? Esta acción no se puede deshacer.",
   "msg.transfers.lines.required": "La Transferencia no tiene Detalle",
+  "page.transfers.msg.valueMismatch": "El valor no coincide con el crédito a la cuenta contable del banco",
+  "page.transfers.msg.noBankLine": "No hay una línea de crédito a la cuenta contable del banco",
   "msg.transfers.line.valueRequired": "Ingrese un valor de Debito o Credito",
   "msg.transfers.selectProviderFirst": "Seleccione un Proveedor primero",
   "msg.transfers.selectCustomerFirst": "Seleccione un Cliente primero",

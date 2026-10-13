@@ -5,10 +5,15 @@ import { SimpleSelect } from '@Components/simpleSelect';
 import { InputField } from '@Components/inputFields';
 import DateCalendar from '@Components/dateCalendar';
 
+const VALUE_FEEDBACK = {
+  mismatch: 'page.transfers.msg.valueMismatch',
+  noBankLine: 'page.transfers.msg.noBankLine'
+};
+
 export const UseTransfersForm = (props) => {
   const {
     formStateIndex, onInputChangeIndex, listDocto, listBanks, listProvider, listCurrencyName, listAccountTypes,
-    formValidationIndex, sendForm
+    formValidationIndex, sendForm, valueStatus
   } = props;
 
   const {
@@ -108,7 +113,7 @@ export const UseTransfersForm = (props) => {
                 onChange={onInputChangeIndex}
                 label="input.valueLps"
                 type="text"
-                disabled
+                feedbackText={VALUE_FEEDBACK[valueStatus] || null}
               />
             </Colxx>
             <Colxx xxs="6" xs="6" md="6">

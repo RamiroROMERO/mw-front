@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { useForm } from '@Hooks'
-import { validFloat } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
 import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
-import { createValueSync } from './transferValueSync';
+import { valueStatus, defaultValue, blocksSave } from './transferValueRules';
 
 const listAccountTypes = [
   { id: '', name: '' },
@@ -12,8 +11,14 @@ const listAccountTypes = [
   { id: 'Cuenta de Ahorro', name: 'Cuenta de Ahorro' }
 ];
 
+const VALUE_STATUS_MESSAGES = {
+  mismatch: 'page.transfers.msg.valueMismatch',
+  noBankLine: 'page.transfers.msg.noBankLine'
+};
+
 export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex }) => {
-  const valueSync = useRef(createValueSync()).current;
+  // true cuando el usuario escribió el valor o se cargó uno guardado: ya no se recalcula al cambiar las líneas.
+  const valueEdited = useRef(false);
   const [listDocto, setListDocto] = useState([]);
   const [listBanks, setListBanks] = useState([]);
   const [listProvider, setListProvider] = useState([]);
@@ -64,7 +69,17 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
 
   const { id, bankCode, providerId, documentCode } = formStateIndex;
 
+  const bankAccount = listBanks.find((b) => b.value === bankCode) || null;
+  const currentValueStatus = valueStatus({ value: formStateIndex.value, lines, bankAccount });
+
+  // Escribir en el campo "valor" lo marca como editado a mano.
+  const onInputChangeValue = (event) => {
+    if (event && event.target && event.target.name === 'value') valueEdited.current = true;
+    onInputChangeIndex(event);
+  };
+
   const fnNewTransfer = () => {
+    valueEdited.current = false;
     setSendForm(false);
     onResetFormIndex();
     setLines([]);
@@ -86,6 +101,7 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
 
   const fnSelectRequest = (row) => {
     setOpenModalViewRequest(false);
+    valueEdited.current = true;
     setBulkFormIndex({
       providerId: row.providerId || 0,
       providerName: row.providerName,
@@ -101,7 +117,7 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
     request.GET(`banks/process/transfers/${id}`, (resp) => {
       const { header, lines: lineData } = resp.data;
       setBulkFormIndex(header);
-      valueSync.markLoaded();
+      valueEdited.current = true;
       setLines(lineData);
       setEditingLineIndex(null);
       setSendForm(false);
@@ -128,6 +144,11 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
     if (!isFormValidIndex) return;
     if (!Array.isArray(lines) || lines.length === 0) {
       notification('warning', 'msg.transfers.lines.required', 'alert.warning.title');
+      return;
+    }
+
+    if (blocksSave(currentValueStatus)) {
+      notification('warning', VALUE_STATUS_MESSAGES[currentValueStatus], 'alert.warning.title');
       return;
     }
 
@@ -297,15 +318,13 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
     buttonsAdmin: []
   }
 
-  // El valor de la transferencia es el total del grid contable (debe=haber una vez
-  // cuadrado, igual criterio que Cheques/DailyItemService.saveEntry). Al cargar una transferencia existente se
-  // conserva el valor guardado (neto, con retenciones) en vez de reemplazarlo por el total de débitos.
+  // El valor por defecto es el crédito a la cuenta contable del banco (SPEC v2-31); mientras el usuario no lo haya
+  // editado (ni se haya cargado uno guardado) se recalcula al cambiar las líneas o el banco.
   useEffect(() => {
-    if (!valueSync.shouldSyncValue()) return;
-    const totalDebit = lines.reduce((sum, l) => sum + (validFloat(l.valueDebit) || 0), 0);
-    setBulkFormIndex({ value: totalDebit });
+    if (valueEdited.current) return;
+    setBulkFormIndex({ value: defaultValue({ lines, bankAccount }) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lines]);
+  }, [lines, bankCode, listBanks]);
 
   // Con un solo documento de transferencia disponible se preselecciona (también tras "Nuevo", que limpia el formulario).
   useEffect(() => {
@@ -343,7 +362,9 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
       const banks = resp.data.map((item) => ({
         label: `${item.code} - ${item.name}`,
         value: item.code,
-        bankAccountName: item.name
+        bankAccountName: item.name,
+        ctaBank: item.ctaBank,
+        currencyName: item.currencyName
       }))
       setListBanks(banks);
     });
@@ -369,7 +390,8 @@ export const useTransfers = ({ setLoading, lines, setLines, setEditingLineIndex 
       propsToControlPanel,
       formStateIndex,
       setBulkFormIndex,
-      onInputChangeIndex,
+      onInputChangeIndex: onInputChangeValue,
+      valueStatus: currentValueStatus,
       onResetFormIndex,
       listDocto,
       listBanks,
