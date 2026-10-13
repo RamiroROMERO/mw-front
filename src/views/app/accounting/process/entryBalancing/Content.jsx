@@ -10,6 +10,8 @@ import { useEntryBalancing } from './useEntryBalancing';
 import { ModalDetail } from './ModalDetail';
 import { ModalPreview } from './ModalPreview';
 import { ModalIgnore } from './ModalIgnore';
+import { ModalCheckRange } from './ModalCheckRange';
+import { useCheckRange } from './useCheckRange';
 import {
   CATEGORIES, categoryMeta, statusMeta, subcategoryLabelKey, actionLabelKey, summaryTotals
 } from './entryBalancingRules';
@@ -17,6 +19,8 @@ import {
 const Content = (props) => {
   const { setLoading } = props;
   const eb = useEntryBalancing({ setLoading });
+  // Regenerar partidas de cheques por rango (SPEC v2-28): al terminar se recarga la lista de defectos.
+  const cr = useCheckRange({ privileges: eb.privileges, onDone: () => eb.load(1) });
   const {
     t, privileges, filters, onFilterChange, fnSearch, fnPickCategory, fnExport, page, items, pagination, load,
     selected, selectedItems, actions, mixed, allIgnored, fnToggle, fnTogglePage, pageAllSelected, fnClearSelection,
@@ -36,6 +40,10 @@ const Content = (props) => {
   const modalPreview = {
     ModalContent: ModalPreview, title: 'page.entryBalancing.preview.title', open: eb.openPreview, setOpen: eb.setOpenPreview,
     maxWidth: 'xl', data: eb
+  };
+  const modalCheckRange = {
+    ModalContent: ModalCheckRange, title: 'page.entryBalancing.checkRange.title', open: cr.open, setOpen: cr.setOpen,
+    maxWidth: 'xl', data: cr
   };
   const modalIgnore = {
     ModalContent: ModalIgnore, title: 'page.entryBalancing.ignore.title', open: eb.openIgnore, setOpen: eb.setOpenIgnore,
@@ -67,6 +75,7 @@ const Content = (props) => {
               <div className="d-flex flex-wrap gap-2 mt-2">
                 <Button color="primary" size="sm" onClick={fnSearch}><i className="bi bi-search" /> {t('page.entryBalancing.button.search')}</Button>
                 <Button color="success" outline size="sm" onClick={fnExport}><i className="bi bi-file-earmark-excel" /> {t('page.entryBalancing.button.export')}</Button>
+                <Button color="danger" outline size="sm" onClick={cr.fnOpen}><i className="bi bi-arrow-repeat" /> {t('page.entryBalancing.checkRange.button.open')}</Button>
               </div>
             </CardBody>
           </Card>
@@ -191,6 +200,7 @@ const Content = (props) => {
       <Modal {...modalDetail} />
       <Modal {...modalPreview} />
       <Modal {...modalIgnore} />
+      <Modal {...modalCheckRange} />
     </>
   );
 };
