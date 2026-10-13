@@ -72,3 +72,12 @@ export const validateEditForm = (row, form) => {
   }
   return null;
 };
+
+// Filtro de texto de la pantalla: documento, beneficiario, descripción o referencia. Sin texto devuelve todas las líneas.
+export const filterBookLines = (lines = [], text = '') => {
+  const value = String(text || '').trim().toUpperCase();
+  if (!value) return lines;
+  return lines.filter((item) => (
+    `${item.documentCode || ''}${item.benefName || ''}${item.description || ''}${item.reference || ''}`.toUpperCase().includes(value)
+  ));
+};

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  hasEntry, isReconciled, canEditAmounts, formDateNull, getEditStatus, getDeleteStatus, buildChanges, validateEditForm
+  hasEntry, isReconciled, canEditAmounts, formDateNull, getEditStatus, getDeleteStatus, buildChanges, validateEditForm, filterBookLines
 } from './bookRecordRules';
 
 const POSTED = {
@@ -83,5 +83,28 @@ describe('validateEditForm', () => {
     expect(validateEditForm(LOOSE, formOf(LOOSE, { valueCredit: -5 }))).toBe('page.banksBook.msg.amountsRequired');
     expect(validateEditForm(LOOSE, formOf(LOOSE, { exchangeRate: 0 }))).toBe('page.banksBook.msg.rateInvalid');
     expect(validateEditForm(LOOSE, formOf(LOOSE, { valueCredit: 10, valueDebit: 0 }))).toBeNull();
+  });
+});
+
+describe('filterBookLines', () => {
+  const lines = [
+    { id: 1, documentCode: 'CH', benefName: 'Proveedor Uno', description: 'Pago luz', reference: 'A1' },
+    { id: 2, documentCode: 'TRB', benefName: 'Banco', description: 'Traslado', reference: 'B2' },
+    { id: 3, documentCode: 'CH', benefName: null, description: null, reference: undefined }
+  ];
+
+  it('sin texto devuelve todas las líneas', () => {
+    expect(filterBookLines(lines, '')).toBe(lines);
+    expect(filterBookLines(lines, '   ')).toBe(lines);
+    expect(filterBookLines(lines)).toBe(lines);
+  });
+  it('busca sin distinguir mayúsculas en documento, beneficiario, descripción y referencia', () => {
+    expect(filterBookLines(lines, 'pago').map((l) => l.id)).toEqual([1]);
+    expect(filterBookLines(lines, 'trb').map((l) => l.id)).toEqual([2]);
+    expect(filterBookLines(lines, 'b2').map((l) => l.id)).toEqual([2]);
+    expect(filterBookLines(lines, 'ch').map((l) => l.id)).toEqual([1, 3]);
+  });
+  it('tolera campos nulos y sin coincidencias', () => {
+    expect(filterBookLines(lines, 'zzz')).toEqual([]);
   });
 });

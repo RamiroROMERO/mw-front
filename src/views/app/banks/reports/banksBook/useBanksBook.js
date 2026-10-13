@@ -6,7 +6,7 @@ import { request } from '@Helpers/core';
 import createNotification from '@Containers/ui/Notifications';
 import {
   PRIVILEGE_SCREEN, PRIVILEGE_EDIT_POSTED, PRIVILEGE_DELETE, formDateNull, getEditStatus, getDeleteStatus, buildChanges,
-  validateEditForm, EDIT_MESSAGES, DELETE_MESSAGES
+  validateEditForm, filterBookLines, EDIT_MESSAGES, DELETE_MESSAGES
 } from './bookRecordRules';
 
 const readPrivilege = (code) => {
@@ -106,7 +106,7 @@ export const useBanksBook = ({ setLoading }) => {
     request.POST('banks/process/bankBooks', { bankCode, startDate: dateStart, endDate: dateEnd }, (resp) => {
       const { lines, openingBalance: opening, openingBalanceUsd: openingUsd, closingBalance: closing, closingBalanceUsd: closingUsd, totals } = resp.data;
       setAllData(lines);
-      setTable((prev) => ({ ...prev, data: lines }));
+      setTable((prev) => ({ ...prev, data: filterBookLines(lines, search) }));
       setOpeningBalance(opening);
       setOpeningBalanceUsd(openingUsd);
       setClosingBalance(closing);
@@ -141,19 +141,7 @@ export const useBanksBook = ({ setLoading }) => {
     }, () => setLoading(false));
   };
 
-  const fnFilterData = (value) => {
-    if (!value) {
-      setTable((prev) => ({ ...prev, data: allData }));
-      return;
-    }
-    const upperValue = value.toUpperCase();
-    const filtered = allData.filter((item) => (
-      `${item.documentCode || ''}${item.benefName || ''}${item.description || ''}${item.reference || ''}`
-        .toUpperCase()
-        .includes(upperValue)
-    ));
-    setTable((prev) => ({ ...prev, data: filtered }));
-  }
+  const fnFilterData = (value) => setTable((prev) => ({ ...prev, data: filterBookLines(allData, value) }));
 
   const onSearchChange = (e) => {
     onInputChange(e);
