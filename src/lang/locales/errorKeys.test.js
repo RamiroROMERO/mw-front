@@ -15,13 +15,15 @@ const TRANSLATED = [
   'littleCashSettlement.alreadyClosed', 'littleCashSettlement.empty', 'missing.data', 'notEditable',
   'period.closed.global', 'period.closed.module', 'range.invalid', 'range.required', 'settings.notFound',
   'user.forbidden.editPosted', 'void.advanceExists', 'void.alreadyApplied', 'void.alreadyVoided',
-  'void.paymentsApplied',
+  'void.paymentsApplied', 'auxiliaries.paymentsApplied',
   'user.unauthorized', 'user.forbidden', 'user.create.forbidden', 'user.update.forbidden', 'user.delete.forbidden',
 ];
 
 const NOT_TRANSLATED = [
   'notFound', 'validation.error', 'locked', 'lines.required', 'unbalanced', 'value.required',
   'calendar.closed', 'bank.notFound', 'customer.noCxcAccount', 'void.cannotEdit',
+  // SPEC v2-27: su descripción lleva el número de la línea del cheque.
+  'auxiliaries.customer.invalid', 'auxiliaries.provider.invalid',
   // SPEC v2-22: su descripción lleva los montos reales (valor del depósito, lo aplicado, el faltante y el tope).
   'line.applied.exceeded', 'line.applied.invalid', 'deposit.shortage.exceeded', 'deposit.difference.account.required',
   'deposit.difference.account.invalid',
