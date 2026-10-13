@@ -22,6 +22,8 @@ const TRANSLATED = [
 const NOT_TRANSLATED = [
   'notFound', 'validation.error', 'locked', 'lines.required', 'unbalanced', 'value.required',
   'calendar.closed', 'bank.notFound', 'customer.noCxcAccount', 'void.cannotEdit',
+  // SPEC v2-29: su descripción dice qué regla del libro se incumplió.
+  'bookRecord.data.required', 'bookRecord.posted', 'bookRecord.reversal', 'bookRecord.reconciled',
   // SPEC v2-27: su descripción lleva el número de la línea del cheque.
   'auxiliaries.customer.invalid', 'auxiliaries.provider.invalid',
   // SPEC v2-22: su descripción lleva los montos reales (valor del depósito, lo aplicado, el faltante y el tope).
