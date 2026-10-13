@@ -3,7 +3,21 @@
 // siendo quien decide (además valida que la cuenta exista y que no sea la del banco, datos que la pantalla no tiene).
 // Todo en centavos enteros: mismo redondeo de mitades hacia arriba que RoundMoney del back.
 
+// Valor por defecto; el real lo manda el back (GET customerDeposits/settings, DEPOSIT_MAX_SHORTAGE_PERCENT).
 export const MAX_SHORTAGE_PERCENT = 10;
+
+// Advertencias que el back devuelve al guardar (saldo de CxC superado): una por factura, ya redactadas.
+export const warningTexts = (warnings) => (Array.isArray(warnings) ? warnings : [])
+  .map((warning) => warning && warning.message)
+  .filter(Boolean);
+
+// El tope que manda el back, o el valor por defecto si no llegó o no es válido.
+export const resolveMaxShortagePercent = (value) => {
+  const percent = Number(value);
+  return value !== null && value !== undefined && String(value).trim() !== '' && Number.isFinite(percent) && percent >= 0 && percent <= 100
+    ? percent
+    : MAX_SHORTAGE_PERCENT;
+};
 
 export const toCents = (value) => {
   const number = Number(value);
@@ -71,9 +85,12 @@ export const calculateDepositTotals = ({ value, lines = [] }) => {
 
 // Primer problema que el back también rechazaría, en su mismo orden, o null. Solo hay algo que validar con líneas.
 // Códigos = nombres de error del back; `documentCode` identifica la factura de una línea.
-export const findDepositProblem = ({ value, lines = [], differenceAccount = '' }) => {
+export const findDepositProblem = ({
+  value, lines = [], differenceAccount = '', maxShortagePercent = MAX_SHORTAGE_PERCENT
+}) => {
   if (!lines.length) return null;
 
+  const seen = new Set();
   for (const line of lines) {
     if (!isNumber(line.appliedValue) || Number(line.appliedValue) < 0) {
       return { code: 'line.applied.invalid', documentCode: line.documentCode };
@@ -81,10 +98,25 @@ export const findDepositProblem = ({ value, lines = [], differenceAccount = '' }
     if (toCents(line.appliedValue) > toCents(line.originalValue)) {
       return { code: 'line.applied.exceeded', documentCode: line.documentCode };
     }
+
+    // SPEC v2-32: una factura una sola vez, y la deducción no puede pasar de lo aplicado a esa factura.
+    const key = String(line.documentCode || '').trim();
+    if (key) {
+      if (seen.has(key)) return { code: 'line.duplicated', documentCode: line.documentCode };
+      seen.add(key);
+    }
+    const hasDeduction = line.deductionValue !== null && line.deductionValue !== undefined && String(line.deductionValue).trim() !== '';
+    if (hasDeduction && (!isNumber(line.deductionValue) || Number(line.deductionValue) < 0)) {
+      return { code: 'line.deduction.invalid', documentCode: line.documentCode };
+    }
+    if (hasDeduction && toCents(line.deductionValue) > toCents(line.appliedValue)) {
+      return { code: 'line.deduction.exceeded', documentCode: line.documentCode };
+    }
   }
 
   const { difference, shortage } = calculateDepositTotals({ value, lines });
-  const maxShortage = Math.floor((toCents(value) * MAX_SHORTAGE_PERCENT) / 100);
+  // Puntos básicos enteros, igual que el back: división entera en centavos.
+  const maxShortage = Math.floor((toCents(value) * Math.round(maxShortagePercent * 100)) / 10000);
   if (toCents(shortage) > maxShortage) return { code: 'deposit.shortage.exceeded' };
 
   if (difference !== 0 && !String(differenceAccount || '').trim()) return { code: 'deposit.difference.account.required' };

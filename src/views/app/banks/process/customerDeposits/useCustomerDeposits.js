@@ -5,12 +5,17 @@ import { request } from '@Helpers/core';
 import { buildAccountOption } from '@Helpers/accountOptions';
 import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
-import { calculateDepositTotals, findDepositProblem, isFutureDate } from './customerDepositRules';
+import {
+  calculateDepositTotals, findDepositProblem, isFutureDate, resolveMaxShortagePercent, warningTexts
+} from './customerDepositRules';
 
 // Código de error de la regla (el mismo nombre del back) → aviso traducido, sin montos (los montos se ven en el panel).
 const PROBLEM_MESSAGES = {
   'line.applied.invalid': 'page.customerDeposits.msg.lineInvalid',
   'line.applied.exceeded': 'page.customerDeposits.msg.lineExceeded',
+  'line.duplicated': 'page.customerDeposits.msg.lineDuplicated',
+  'line.deduction.invalid': 'page.customerDeposits.msg.deductionInvalid',
+  'line.deduction.exceeded': 'page.customerDeposits.msg.deductionExceeded',
   'deposit.shortage.exceeded': 'page.customerDeposits.msg.shortageExceeded',
   'deposit.difference.account.required': 'page.customerDeposits.msg.differenceAccountRequired'
 };
@@ -27,6 +32,7 @@ export const useCustomerDeposits = ({ setLoading }) => {
   const [pendingInvoices, setPendingInvoices] = useState([]);
   const [openMsgDelete, setOpenMsgDelete] = useState(false);
   const [sendForm, setSendForm] = useState(false);
+  const [maxShortagePercent, setMaxShortagePercent] = useState(resolveMaxShortagePercent());
 
   const validDeposit = {
     date: [(val) => val !== '' && !isFutureDate(val), "page.customerDeposits.msg.dateInvalid"],
@@ -65,8 +71,8 @@ export const useCustomerDeposits = ({ setLoading }) => {
   // Diferencia en vivo (SPEC v2-22): valor del depósito − (aplicado − deducciones). Positiva = sobrante, negativa = faltante.
   const totals = useMemo(() => calculateDepositTotals({ value: validFloat(value), lines }), [value, lines]);
   const problem = useMemo(
-    () => findDepositProblem({ value: validFloat(value), lines, differenceAccount: idCtaCxP }),
-    [value, lines, idCtaCxP]
+    () => findDepositProblem({ value: validFloat(value), lines, differenceAccount: idCtaCxP, maxShortagePercent }),
+    [value, lines, idCtaCxP, maxShortagePercent]
   );
 
   // Avisa antes de llamar al back; el back sigue siendo quien decide (cuenta inexistente o la del banco, etc.).
@@ -111,6 +117,13 @@ export const useCustomerDeposits = ({ setLoading }) => {
     }, () => setLoading(false));
   }
 
+  // El back guarda igual y avisa si lo aplicado a una factura supera su saldo real de CxC (SPEC v2-32).
+  const fnShowWarnings = (resp) => {
+    warningTexts(resp?.data?.warnings).forEach((text) => {
+      notification('warning', { text }, 'alert.warning.title');
+    });
+  }
+
   const fnSaveDeposit = () => {
     setSendForm(true);
     if (!isFormValidIndex) return;
@@ -119,12 +132,14 @@ export const useCustomerDeposits = ({ setLoading }) => {
     const payload = { header: formStateIndex, lines };
     setLoading(true);
     if (id > 0) {
-      request.PUT(`banks/process/customerDeposits/${id}`, payload, () => {
+      request.PUT(`banks/process/customerDeposits/${id}`, payload, (resp) => {
+        fnShowWarnings(resp);
         fnLoadDeposit(id);
         setLoading(false);
       }, () => setLoading(false));
     } else {
       request.POST('banks/process/customerDeposits', payload, (resp) => {
+        fnShowWarnings(resp);
         fnLoadDeposit(resp.data.header.id);
         setLoading(false);
       }, () => setLoading(false));
@@ -236,6 +251,10 @@ export const useCustomerDeposits = ({ setLoading }) => {
       setLoading(false);
     }, () => setLoading(false));
 
+    request.GET('banks/process/customerDeposits/settings', (resp) => {
+      setMaxShortagePercent(resolveMaxShortagePercent(resp.data?.maxShortagePercent));
+    });
+
     request.GET('banks/settings/banksAccounts/getSL', (resp) => {
       setListBanks(resp.data.map((item) => ({ label: `${item.code} - ${item.name}`, value: item.code, bankAccountName: item.name })));
     });
@@ -262,6 +281,7 @@ export const useCustomerDeposits = ({ setLoading }) => {
     sendForm,
     totals,
     problem,
+    maxShortagePercent,
     lines,
     fnUpdateLine,
     fnRemoveLine,
