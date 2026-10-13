@@ -32,6 +32,8 @@ const NOT_TRANSLATED = [
   // SPEC v2-22: su descripción lleva los montos reales (valor del depósito, lo aplicado, el faltante y el tope).
   'line.applied.exceeded', 'line.applied.invalid', 'deposit.shortage.exceeded', 'deposit.difference.account.required',
   'deposit.difference.account.invalid',
+  // SPEC v2-32: su descripción lleva el código de la factura, los montos reales o el código de la cuenta.
+  'line.deduction.exceeded', 'line.deduction.invalid', 'line.duplicated', 'account.notFound', 'account.sameAsBank',
   // SPEC v2-31: su descripción lleva el valor y el crédito al banco reales.
   'value.bankCredit.mismatch', 'value.bankCredit.required', 'bankAccount.accountMissing',
   // SPEC v2-25 (Cuadre de Asientos): su descripcion lleva los montos y cuentas reales de la partida.
