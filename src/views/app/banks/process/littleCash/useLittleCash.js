@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useForm } from '@Hooks'
 import { request, buildUrl } from '@Helpers/core';
+import { buildAccountOption } from '@Helpers/accountOptions';
 import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
 
@@ -176,7 +177,7 @@ export const useLittleCash = ({ setLoading }) => {
     });
 
     request.GET('accounting/settings/accountants/getSL', (resp) => {
-      setListAccount(resp.data.map((item) => ({ label: `${item.cta} - ${item.nombre}`, value: item.cta })));
+      setListAccount(resp.data.map((item) => (buildAccountOption(item))));
     });
   }, [])
 

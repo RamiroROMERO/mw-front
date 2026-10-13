@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useForm } from '@Hooks'
 import { request, buildUrl } from '@Helpers/core';
+import { buildAccountOption } from '@Helpers/accountOptions';
 import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
 import { isPostedDeposit, resolveSaveAction } from './variousDepositRules';
@@ -234,7 +235,7 @@ export const useVariousDeposits = ({ setLoading, canEditPosted = false }) => {
     });
 
     request.GET('accounting/settings/accountants/getSL', (resp) => {
-      const accounts = resp.data.map((item) => ({ label: `${item.cta} - ${item.nombre}`, value: item.cta }));
+      const accounts = resp.data.map((item) => buildAccountOption(item));
       setListAccount(accounts);
     });
 

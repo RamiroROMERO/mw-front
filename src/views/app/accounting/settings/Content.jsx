@@ -60,6 +60,17 @@ const Settings = (props) => {
         { replace: true }
       );
     }
+  },
+  {
+    id: 6,
+    icon: "large-icon bi bi-lock",
+    title: "menu.lockedAccounts",
+    fnOnclick: () => {
+      history(
+        `${adminRoot}/accounting/settings/lockedAccounts`,
+        { replace: true }
+      );
+    }
   }
   ]
   return (

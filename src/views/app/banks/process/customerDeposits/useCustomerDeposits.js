@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useForm } from '@Hooks'
 import { validFloat } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
+import { buildAccountOption } from '@Helpers/accountOptions';
 import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
 import { calculateDepositTotals, findDepositProblem, isFutureDate } from './customerDepositRules';
@@ -240,7 +241,7 @@ export const useCustomerDeposits = ({ setLoading }) => {
     });
 
     request.GET('accounting/settings/accountants/getSL', (resp) => {
-      setListAccount(resp.data.map((item) => ({ label: `${item.cta} - ${item.nombre}`, value: item.cta })));
+      setListAccount(resp.data.map((item) => (buildAccountOption(item))));
     });
 
     request.GET('billing/settings/customers/getSL', (resp) => {

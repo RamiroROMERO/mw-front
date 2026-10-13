@@ -615,6 +615,11 @@ const data = [
             label: 'menu.recurringItems',
             to: `${adminRoot}/accounting/settings/recurringItems`,
           },
+          {
+            icon: 'bi bi-lock',
+            label: 'menu.lockedAccounts',
+            to: `${adminRoot}/accounting/settings/lockedAccounts`,
+          },
         ],
       },
       {

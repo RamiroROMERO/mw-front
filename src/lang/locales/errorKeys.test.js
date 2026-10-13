@@ -22,6 +22,9 @@ const TRANSLATED = [
 const NOT_TRANSLATED = [
   'notFound', 'validation.error', 'locked', 'lines.required', 'unbalanced', 'value.required',
   'calendar.closed', 'bank.notFound', 'customer.noCxcAccount', 'void.cannotEdit',
+  // SPEC v2-30 (cuentas bloqueadas): su descripción lleva las cuentas, el motivo y los datos del bloqueo.
+  'account.blocked', 'lockedAccount.account.notFound', 'lockedAccount.account.notDetail', 'lockedAccount.duplicate',
+  'lockedAccount.reason.required', 'lockedAccount.range.invalid', 'lockedAccount.notActive',
   // SPEC v2-29: su descripción dice qué regla del libro se incumplió.
   'bookRecord.data.required', 'bookRecord.posted', 'bookRecord.reversal', 'bookRecord.reconciled',
   // SPEC v2-27: su descripción lleva el número de la línea del cheque.
