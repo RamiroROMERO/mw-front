@@ -9,6 +9,7 @@ const TransactionConcepts = React.lazy(() => import('@Views/app/accounting/setti
 const BudgetStructure = React.lazy(() => import('@Views/app/accounting/settings/budgetStructure'));
 const IncomeStatement = React.lazy(() => import('@Views/app/accounting/settings/incomeStatement'));
 const RecurringItems = React.lazy(() => import('@Views/app/accounting/settings/recurringItems'));
+const LockedAccounts = React.lazy(() => import('@Views/app/accounting/settings/lockedAccounts'));
 
 const AccountingSettingsRoutes = (props) => {
   const { setLoading } = props;
@@ -37,6 +38,10 @@ const AccountingSettingsRoutes = (props) => {
       index
       path="/recurringItems"
       element={<RecurringItems setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/lockedAccounts"
+      element={<LockedAccounts setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }

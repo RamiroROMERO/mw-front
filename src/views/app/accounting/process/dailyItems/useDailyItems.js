@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { request, buildUrl } from '@Helpers/core';
+import { buildAccountOption } from '@Helpers/accountOptions';
 import { useForm } from '@Hooks/useForms';
 import { useExportExcel } from '@Hooks';
 import { validFloat, IntlMessagesFn } from '@Helpers/Utils';
@@ -86,7 +87,7 @@ export const useDailyItems = ({ setLoading }) => {
 
   useEffect(() => {
     request.GET('accounting/settings/accountants/getSL', (resp) => {
-      setListAccounts(resp.data.map((item) => ({ label: `${item.cta} - ${item.nombre}`, value: item.cta, name: item.nombre })));
+      setListAccounts(resp.data.map((item) => ({ ...buildAccountOption(item), name: item.nombre })));
     }, () => { });
 
     request.GET('accounting/settings/currencies/getSL', (resp) => {

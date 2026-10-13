@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useForm } from '@Hooks';
 import { request } from '@Helpers/core';
+import { buildAccountOption } from '@Helpers/accountOptions';
 import { validFloat } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
 
@@ -64,12 +65,7 @@ export const useChecksDetail = ({ setLoading, lines, setLines, editingLineIndex,
   useEffect(() => {
     setLoading(true);
     request.GET('accounting/settings/accountants/getSL', (resp) => {
-      const listAccounts = resp.data.map((item) => {
-        return {
-          label: `${item.cta} - ${item.nombre}`,
-          value: item.cta
-        }
-      })
+      const listAccounts = resp.data.map((item) => buildAccountOption(item))
       setListLedgerAccount(listAccounts);
       setLoading(false);
     }, () => setLoading(false));
