@@ -60,6 +60,10 @@ const NOT_TRANSLATED = [
   'repair.reason.required',
   'repair.reversal.notZero',
   'repair.reversal.originalInvalid',
+  // SPEC v2-34 (Aplicar Depreciación): su descripción lleva los activos, las cuentas, los montos o el mes reales.
+  'depreciation.month.invalid', 'depreciation.month.future', 'depreciation.nothingToApply', 'depreciation.accounts.missing',
+  // Su nombre es distinto de `period.closed.*` (texto de Bancos) para que se vea la descripción de Contabilidad.
+  'depreciation.period.closed.module', 'depreciation.period.closed.global',
 ];
 
 describe('traducciones de errores del back (error.<name>)', () => {

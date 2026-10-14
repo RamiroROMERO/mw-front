@@ -5,6 +5,7 @@ const PageNotFound = React.lazy(() => import("@Views/pageNotFound"));
 const FAProcess = React.lazy(() => import('@Views/app/fixedAssets/process'));
 const FixedAssetsProcessRegister = React.lazy(() => import('@Views/app/fixedAssets/process/register'));
 const FixedAssetsProcessAssign = React.lazy(() => import('@Views/app/fixedAssets/process/assign'));
+const FixedAssetsProcessDepreciationApply = React.lazy(() => import('@Views/app/fixedAssets/process/depreciationApply'));
 
 
 const FAProcessRoutes = (props) => {
@@ -22,6 +23,10 @@ const FAProcessRoutes = (props) => {
       index
       path="/assign"
       element={<FixedAssetsProcessAssign setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/depreciationApply"
+      element={<FixedAssetsProcessDepreciationApply setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route path={`/*`} element={<PageNotFound />} />
   </Routes>
 }

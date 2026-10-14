@@ -1325,6 +1325,11 @@ const data = [
           icon: 'bi bi-building-up',
           label: 'menu.fixedAssets.assign',
           to: `${adminRoot}/fixedAssets/process/assign`,
+        }, {
+          id: 'fixedAssets-process-depreciationApply',
+          icon: 'bi bi-graph-down-arrow',
+          label: 'menu.depreciationApply',
+          to: `${adminRoot}/fixedAssets/process/depreciationApply`,
         }]
       }, {
         id: 'fixedAssets-reports',
