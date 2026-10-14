@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { ModalBody } from 'reactstrap';
 
 const ViewPdf = ({ setOpen, data }) => {

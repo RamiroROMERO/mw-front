@@ -38,6 +38,8 @@ export default defineConfig([
       react: { version: '19.1' },
     },
     rules: {
+      // React 19 no valida propTypes y el proyecto no usa TypeScript: la regla solo agrega ruido.
+      'react/prop-types': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
       'react-refresh/only-export-components': [

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
 import { IntlMessages } from '@Helpers/Utils';
 import { Row } from 'reactstrap';

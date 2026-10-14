@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react'
 import { Button, Row } from 'reactstrap'
 import { Checkbox } from '@Components/checkbox';

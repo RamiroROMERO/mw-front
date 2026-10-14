@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useNeighborhoodTax } from './useNeighborhoodTax'
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';

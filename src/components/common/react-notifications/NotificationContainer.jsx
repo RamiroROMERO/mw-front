@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
 import NotificationManager from './NotificationManager';
 import Notifications from './Notifications';

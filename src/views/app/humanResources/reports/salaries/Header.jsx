@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Button, Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from '@Helpers/Utils';

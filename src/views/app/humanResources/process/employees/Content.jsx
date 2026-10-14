@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Colxx, Separator } from '@Components/common/CustomBootstrap'
 import { Card, CardBody, Row } from 'reactstrap'
 import ControlPanel from '@Components/controlPanel';

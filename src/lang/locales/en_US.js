@@ -1293,7 +1293,7 @@ const enLang = {
   "menu.fixedAssets.responsibles": "Responsibles",
   "menu.fixedAssets.register": "Assets Register",
   "menu.fixedAssets.calculate": "Depreciation Calculation",
-  "menu.fixedAssets.assign": "Assets Assing",
+  "menu.fixedAssets.assign": "Assets Assignment",
   "menu.fixedAssets.execute": "Depreciation Execute",
   "menu.fixedAssets.reasign": "Assets Reasign",
   "menu.fixedAssets.remove": "Assets Remove",

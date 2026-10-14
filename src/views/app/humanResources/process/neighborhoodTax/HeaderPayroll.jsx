@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { InputField } from '@Components/inputFields';
 import { Row } from 'reactstrap';

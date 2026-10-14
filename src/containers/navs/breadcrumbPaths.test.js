@@ -33,7 +33,8 @@ const screens = Object.entries(files)
   .filter((s) => s.dispatched);
 
 // Pantallas con una desalineación conocida que no se corrige aquí:
-//  - Format: pantalla huérfana (no está en el menú) y `menu.format` no existe en ningún idioma.
+//  - Format: plantilla intencional para copiar a pantallas nuevas, sin menú ni traducción a propósito
+//    (`menu.format` no existe en ningún idioma). No es una pantalla olvidada: no "arreglarla".
 //  - dashboards/*: la ruta real es `/dashboards/billingSales` y `/dashboards/productCatalog`; la carpeta tiene un nivel
 //    más (`billing/`) y el breadcrumb de dos niveles es el correcto.
 const KNOWN_ISSUES = ['Format', 'dashboards/billing/sales', 'dashboards/productCatalog'];
@@ -72,7 +73,7 @@ describe('breadcrumbs de todas las pantallas', () => {
     expect(enLang[crumb]).toBe(enLang[titleKey]);
   });
 
-  it('las desalineaciones conocidas siguen siéndolo (si se arreglan, quitarlas de la lista)', () => {
+  it('la plantilla Format y las desalineaciones conocidas siguen siéndolo (si se arreglan, quitarlas de la lista)', () => {
     const format = screens.find((s) => s.folder === 'Format');
     expect(has(esLang, 'menu.format')).toBe(false);
     expect(format.titleKey).toBe('menu.format');

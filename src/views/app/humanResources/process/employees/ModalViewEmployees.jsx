@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState } from 'react'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { IntlMessages, formatDate, validInt } from '@Helpers/Utils'

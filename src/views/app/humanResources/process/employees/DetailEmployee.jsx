@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState } from 'react'
 import { IntlMessages, validInt } from '@Helpers/Utils';
 import { Nav, NavItem, NavLink, Row, TabContent, Table, TabPane } from 'reactstrap'

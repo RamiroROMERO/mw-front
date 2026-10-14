@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useModalChangeSalary } from './useModalChangeSalary';
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';

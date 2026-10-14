@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState } from 'react'
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { InputField } from '@Components/inputFields';
