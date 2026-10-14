@@ -113,3 +113,87 @@ describe('getErrorCode', () => {
     expect(getErrorCode(err)).toBeUndefined();
   });
 });
+
+describe('getErrorMessage con el detalle campo por campo (SPEC v2-36)', () => {
+  const validation = (errors, extra = {}) => body('validation.error', 'Invalid request parameters', { statusCode: 400, errors, ...extra });
+  const fieldErrors = (n) => Array.from({ length: n }, (_, i) => ({ field: `f${i + 1}`, message: `Mensaje ${i + 1}` }));
+  const lines = (result) => result.text.split('\n');
+
+  it('un campo: su mensaje, sin el nombre técnico del campo', () => {
+    const result = getErrorMessage(validation([{ field: 'name', message: 'El nombre es requerido' }]), FALLBACK, catalog);
+    expect(result).toEqual({ text: 'El nombre es requerido' });
+  });
+
+  it('varios campos: un mensaje por línea, en el orden del DTO', () => {
+    const result = getErrorMessage(validation([
+      { field: 'name', message: 'El nombre es requerido' },
+      { field: 'typeId', message: 'El tipo debe ser un número entero' },
+    ]), FALLBACK, catalog);
+    expect(result).toEqual({ text: 'El nombre es requerido\nEl tipo debe ser un número entero' });
+  });
+
+  it('los mensajes repetidos salen una vez', () => {
+    const result = getErrorMessage(validation([
+      { field: 'a', message: 'Falta un dato' }, { field: 'b', message: 'Falta un dato' }, { field: 'c', message: 'Otro' },
+    ]), FALLBACK, catalog);
+    expect(result).toEqual({ text: 'Falta un dato\nOtro' });
+  });
+
+  it('exactamente 5 mensajes se muestran todos', () => {
+    const result = getErrorMessage(validation(fieldErrors(5)), FALLBACK, catalog);
+    expect(lines(result)).toEqual(['Mensaje 1', 'Mensaje 2', 'Mensaje 3', 'Mensaje 4', 'Mensaje 5']);
+  });
+
+  it('6 mensajes: 4 más "… y 2 más"', () => {
+    const result = getErrorMessage(validation(fieldErrors(6)), FALLBACK, catalog);
+    expect(lines(result)).toEqual(['Mensaje 1', 'Mensaje 2', 'Mensaje 3', 'Mensaje 4', '… y 2 más']);
+  });
+
+  it.each([7, 12])('%i mensajes: nunca más de 5 líneas y N = total − 4', (total) => {
+    const result = getErrorMessage(validation(fieldErrors(total)), FALLBACK, catalog);
+    expect(lines(result)).toHaveLength(5);
+    expect(lines(result)[4]).toBe(`… y ${total - 4} más`);
+  });
+
+  it('el tope se cuenta después de quitar repetidos y vacíos', () => {
+    const errors = [...fieldErrors(5), { field: 'x', message: 'Mensaje 1' }, { field: 'y', message: '' }];
+    expect(lines(getErrorMessage(validation(errors), FALLBACK, catalog))).toHaveLength(5);
+    expect(getErrorMessage(validation(errors), FALLBACK, catalog).text).not.toMatch(/más/);
+  });
+
+  it('descarta mensajes vacíos, solo espacios y no string', () => {
+    const result = getErrorMessage(validation([
+      { field: 'a', message: '' }, { field: 'b', message: '   ' }, { field: 'c', message: 42 },
+      { field: 'd' }, null, { field: 'e', message: 'Válido' },
+    ]), FALLBACK, catalog);
+    expect(result).toEqual({ text: 'Válido' });
+  });
+
+  it('sin ningún mensaje válido cae al genérico', () => {
+    const result = getErrorMessage(validation([{ field: 'a', message: '' }, { field: 'b' }]), FALLBACK, catalog);
+    expect(result).toEqual({ id: FALLBACK });
+  });
+
+  it('errors vacío cae al genérico', () => {
+    expect(getErrorMessage(validation([]), FALLBACK, catalog)).toEqual({ id: FALLBACK });
+  });
+
+  it('un 500 con errors en el cuerpo sigue siendo el genérico', () => {
+    const err = body('validation.error', 'texto interno', { statusCode: 500, errors: fieldErrors(2) });
+    expect(getErrorMessage(err, FALLBACK, catalog)).toEqual({ id: FALLBACK });
+  });
+
+  it('solo aplica a validation.error: otro nombre con errors conserva el genérico', () => {
+    const err = body('created.error', 'Invalid request parameters', { statusCode: 400, errors: fieldErrors(2) });
+    expect(getErrorMessage(err, FALLBACK, catalog)).toEqual({ id: FALLBACK });
+  });
+
+  it('sin statusCode no muestra el detalle', () => {
+    const err = body('validation.error', 'Invalid request parameters', { errors: fieldErrors(2) });
+    expect(getErrorMessage(err, FALLBACK, catalog)).toEqual({ id: FALLBACK });
+  });
+
+  it('getErrorCode sigue sin código en un 400 de validación de campos', () => {
+    expect(getErrorCode(validation(fieldErrors(2)))).toBeUndefined();
+  });
+});
