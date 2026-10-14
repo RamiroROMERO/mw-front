@@ -27,6 +27,16 @@ const Process = (props) => {
         { replace: true }
       );
     }
+  }, {
+    id: 3,
+    icon: "large-icon bi bi-graph-down-arrow",
+    title: "menu.depreciationApply",
+    fnOnclick: () => {
+      history(
+        `${adminRoot}/fixedAssets/process/depreciationApply`,
+        { replace: true }
+      );
+    }
   }]
   return (
     <>
