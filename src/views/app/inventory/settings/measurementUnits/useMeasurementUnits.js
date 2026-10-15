@@ -121,12 +121,11 @@ export const useMeasurementUnits = ({ setLoading }) => {
 
   const fnDisableDocument = () => {
     setOpenMsgQuestion(false);
-    const data = {
-      status: 0
-    }
     if (currentItem.id && currentItem.id > 0) {
       setLoading(true);
-      request.PUT(`inventory/settings/measurementUnits/${currentItem.id}`, data, (resp) => {
+      // Eliminar (elimina = 1) solo si la unidad no está en uso por productos, documentos o conversiones; el back lo rechaza
+      // con measurementUnit.inUse. La casilla "Activo" (status) es independiente.
+      request.DELETE(`inventory/settings/measurementUnits/${currentItem.id}`, (resp) => {
         fnGetData();
         fnClearInputs();
         setCurrentItem({});
