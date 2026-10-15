@@ -5,9 +5,9 @@ import { validInt } from '@Helpers/Utils';
 // backend, sin capa de traducción numérica (SimpleSelect sí soporta valores string, a
 // diferencia de RadioGroup/RadioButton que compara con validInt).
 export const ACCOUNT_BY_APPLY_TO = {
-  Inventario: 'idCtaInventory',
-  Costo: 'idCtaCost',
-  Gasto: 'idCtaExpense'
+  Inventario: 'invCtaCode',
+  Costo: 'costCtaCode',
+  Gasto: 'expenseCtaCode'
 }
 
 export const useFormTransfers = ({ onBulkForm, listStores }) => {
@@ -17,14 +17,14 @@ export const useFormTransfers = ({ onBulkForm, listStores }) => {
 
     const filter = listStores.find(item => item.value === validInt(store));
 
-    onBulkForm({ sourceStoreId: store, noCtaOrigin: filter ? filter.idCtaInventory : '' });
+    onBulkForm({ sourceStoreId: store, noCtaOrigin: filter ? filter.invCtaCode : '' });
   }
 
   const onDestinationChange = (e, applyTo) => {
     const destination = e.target.value;
 
     const filter = listStores.find(item => item.value === validInt(destination));
-    const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'idCtaInventory';
+    const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'invCtaCode';
 
     onBulkForm({ assignStoreId: destination, noCtaAssign: filter ? filter[accountField] : '' });
   }
@@ -33,7 +33,7 @@ export const useFormTransfers = ({ onBulkForm, listStores }) => {
     const applyTo = e.target.value;
 
     const filter = listStores.find(item => item.value === validInt(assignStoreId));
-    const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'idCtaInventory';
+    const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'invCtaCode';
 
     onBulkForm({ applyTo, noCtaAssign: filter ? filter[accountField] : '' });
   }

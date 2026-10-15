@@ -13,7 +13,7 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, listPr
 
     const filter = listStores.find(item => item.value === validInt(store));
 
-    onBulkForm({ sourceStoreId: store, noCtaOrigin: filter ? filter.idCtaInventory : '' });
+    onBulkForm({ sourceStoreId: store, noCtaOrigin: filter ? filter.invCtaCode : '' });
   }
 
   // CTADestino (reintType=2/Reintegro): cuenta del Centro de Destino según "Aplica".
@@ -21,7 +21,7 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, listPr
     const destination = e.target.value;
 
     const filter = listDestinations.find(item => item.value === validInt(destination));
-    const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'idCtaInventory';
+    const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'invCtaCode';
 
     onBulkForm({ assignStoreId: destination, noCtaAssign: filter ? filter[accountField] : '' });
   }
@@ -30,7 +30,7 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, listPr
     const applyTo = e.target.value;
 
     const filter = listDestinations.find(item => item.value === validInt(assignStoreId));
-    const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'idCtaInventory';
+    const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'invCtaCode';
 
     onBulkForm({ applyTo, noCtaAssign: filter ? filter[accountField] : '' });
   }

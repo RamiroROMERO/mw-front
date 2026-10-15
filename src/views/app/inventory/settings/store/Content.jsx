@@ -15,7 +15,7 @@ const Store = (props) => {
 
   const { sendForm, listType, listLedgerAccounts, coffeeControl, table, dataTable, propsToMsgDelete, formState, formValidation, fnClearInputs, fnSave, onInputChange } = useStore({ setLoading });
 
-  const { name, description, type, status, idCtaInventory, idCtaCost, idCtaExpense, fertilizerCredit } = formState;
+  const { name, description, type, status, invCtaCode, costCtaCode, expenseCtaCode, fertilizerCredit } = formState;
 
   const { nameValid } = formValidation;
 
@@ -88,8 +88,8 @@ const Store = (props) => {
                         <Colxx sm="12" md={6} lg="12">
                           <SearchSelect
                             label="page.store.select.storeAccount"
-                            name="idCtaInventory"
-                            inputValue={idCtaInventory}
+                            name="invCtaCode"
+                            inputValue={invCtaCode}
                             options={listLedgerAccounts}
                             onChange={onInputChange}
                           />
@@ -97,8 +97,8 @@ const Store = (props) => {
                         <Colxx sm="12" md={6} lg="12">
                           <SearchSelect
                             label="page.store.select.costAccount"
-                            name="idCtaCost"
-                            inputValue={idCtaCost}
+                            name="costCtaCode"
+                            inputValue={costCtaCode}
                             options={listLedgerAccounts}
                             onChange={onInputChange}
                           />
@@ -108,8 +108,8 @@ const Store = (props) => {
                         <Colxx sm="12" md={6} lg="12">
                           <SearchSelect
                             label="page.store.select.spentAccount"
-                            name="idCtaExpense"
-                            inputValue={idCtaExpense}
+                            name="expenseCtaCode"
+                            inputValue={expenseCtaCode}
                             options={listLedgerAccounts}
                             onChange={onInputChange}
                           />

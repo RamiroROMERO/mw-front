@@ -25,9 +25,9 @@ export const useStore = ({ setLoading }) => {
     description: '',
     type: 1,
     status: true,
-    idCtaInventory: '',
-    idCtaCost: '',
-    idCtaExpense: '',
+    invCtaCode: '',
+    costCtaCode: '',
+    expenseCtaCode: '',
     fertilizerCredit: false
   }, storeValid);
 

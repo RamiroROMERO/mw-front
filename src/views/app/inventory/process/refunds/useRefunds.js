@@ -336,9 +336,9 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
           label: item.name,
           value: item.id,
           type: item.type,
-          idCtaInventory: item.idCtaInventory,
-          idCtaCost: item.idCtaCost,
-          idCtaExpense: item.idCtaExpense
+          invCtaCode: item.invCtaCode,
+          costCtaCode: item.costCtaCode,
+          expenseCtaCode: item.expenseCtaCode
         }
       });
       const filter1 = stores.filter(item => { return item.type === 1 });
