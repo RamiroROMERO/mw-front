@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from '@Hooks/useForms';
 import { IntlMessages } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
-import { validInt } from '@Helpers/Utils';
+import { validateUnit, buildUnitPayload } from './measurementUnitRules';
 
 export const useMeasurementUnits = ({ setLoading }) => {
 
@@ -14,21 +14,21 @@ export const useMeasurementUnits = ({ setLoading }) => {
   // el legacy (Checkbox_hw1.Init: This.Visible = IIF(nIs_ContControl == 1, .T., .F.)).
   const [containerControl, setContainerControl] = useState(false);
 
-  const measurementUnitsValid = {
-    code: [(val) => val !== "", "msg.required.input.code"],
-    name: [(val) => val !== "", "msg.required.input.name"]
-  }
-
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
+  // `isPackaging` es "Presentación de Empaque" (booleano; el back lo guarda como tipo 1 o 2) y `baseConversion` la
+  // "Conversión en base 1" (columna `cant`).
+  const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
     code: '',
     name: '',
     description: '',
-    type: false,
-    quantity: 0,
+    isPackaging: false,
+    baseConversion: 0,
     containerUse: false,
     status: true
-  }, measurementUnitsValid);
+  });
+
+  // Mismas reglas que el back (measurementUnitRules.js): errores por campo y sin llamar al back si alguna falla.
+  const errors = useMemo(() => validateUnit(formState), [formState]);
 
   const fnEditItem = (item) => {
     setCurrentItem(item);
@@ -49,7 +49,7 @@ export const useMeasurementUnits = ({ setLoading }) => {
         classes: 'd-xs-none-table-cell', headerClasses: 'd-xs-none-table-cell'
       },
       {
-        text: IntlMessages("page.measurementUnits.table.type"), dataField: "isPack", headerStyle: { 'width': '15%' },
+        text: IntlMessages("page.measurementUnits.table.type"), dataField: "isPackaging", headerStyle: { 'width': '15%' },
         classes: 'd-xxs-none-table-cell', headerClasses: 'd-xxs-none-table-cell', type: 'boolean'
       },
       { text: IntlMessages("page.measurementUnits.table.status"), dataField: "status", type: 'boolean', headerStyle: { 'width': '15%' } },
@@ -71,12 +71,8 @@ export const useMeasurementUnits = ({ setLoading }) => {
   const fnGetData = () => {
     setLoading(true);
     request.GET('inventory/settings/measurementUnits', (resp) => {
-      const data = resp.data.map((item) => {
-        item.isPack = validInt(item.type) === 2 ? true : false
-        return item;
-      });
       const tableData = {
-        ...table, data
+        ...table, data: resp.data
       }
       setTable(tableData);
       setLoading(false);
@@ -94,13 +90,15 @@ export const useMeasurementUnits = ({ setLoading }) => {
 
   const fnSave = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    if (Object.keys(errors).length > 0) {
       return;
     }
 
+    const payload = buildUnitPayload(formState, { containerControl });
+
     if (currentItem.id > 0) {
       setLoading(true);
-      request.PUT(`inventory/settings/measurementUnits/${currentItem.id}`, formState, () => {
+      request.PUT(`inventory/settings/measurementUnits/${currentItem.id}`, payload, () => {
         fnClearInputs();
         fnGetData();
         setLoading(false);
@@ -110,7 +108,7 @@ export const useMeasurementUnits = ({ setLoading }) => {
       });
     } else {
       setLoading(true);
-      request.POST('inventory/settings/measurementUnits', formState, () => {
+      request.POST('inventory/settings/measurementUnits', payload, () => {
         fnClearInputs();
         fnGetData();
         setLoading(false);
@@ -159,7 +157,7 @@ export const useMeasurementUnits = ({ setLoading }) => {
       table,
       propsToMsgDelete,
       formState,
-      formValidation,
+      errors,
       containerControl,
       fnClearInputs,
       fnSave,
