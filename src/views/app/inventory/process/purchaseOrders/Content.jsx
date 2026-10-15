@@ -342,7 +342,7 @@ const PurchaseOrders = (props) => {
       unitOptions: options,
       undId: defaultUnit?.id || 0,
       nameUM: defaultUnit?.name || item.nameUM,
-      conversionFactor: item.submConversion || 1
+      conversionFactor: item.packQty || 1
     });
     setOpenModalProducts(false);
   }

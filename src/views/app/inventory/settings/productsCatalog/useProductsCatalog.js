@@ -1,6 +1,6 @@
 import { validInt, validFloat, formatDate, IntlMessagesFn } from "@Helpers/Utils";
 import { request, buildUrl } from "@Helpers/core";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ModalViewProd from "./ModalViewProd";
 import ModalDistProducts from "./ModalDistProducts";
 import ModalAddTrademarks from "./ModalAddTrademarks";
@@ -12,6 +12,7 @@ import ModalStockControl from "./ModalStockControl";
 import ModalCosts from "./ModalCosts";
 import ModalCopy from "./ModalCopy";
 import { NotificationManager } from "@Components/common/react-notifications";
+import { validateProduct, buildProductPayload } from "./productRules";
 
 const useProductsCatalog = ({ setLoading }) => {
 
@@ -45,26 +46,13 @@ const useProductsCatalog = ({ setLoading }) => {
   const msgCopyMissingUnits = IntlMessagesFn('msg.copy.missingUnits');
   const msgCopyZeroCost = IntlMessagesFn('msg.copy.zeroCost');
 
-  const productsCatalogValid = {
-    code: [(val) => val !== "", "msg.required.input.code"],
-    name: [(val) => val !== "", "msg.required.input.name"],
-    typeId: [(val) => validInt(val) > 0, "msg.required.select.classification2"],
-    type: [(val) => validInt(val) > 0, "msg.required.radio.type"],
-    undinId: [(val) => validInt(val) > 0, "msg.required.select.units"],
-    undoutId: [(val) => validInt(val) > 0, "msg.required.select.units"],
-    packId: [(val) => validInt(val) > 0, "msg.required.select.packaging"],
-    costValue: [(val) => validInt(val) > 0, "msg.required.input.averageCost"],
-    typeCalculateCost: [(val) => validInt(val) > 0, "msg.required.select.typeCalculatePrice"],
-    typeCalculatePrice: [(val) => validInt(val) > 0, "msg.required.select.typeCalculatePrice"]
-  }
-
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
+  const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
     code: '',
     name: '',
-    status: 0,
+    isDisabled: false,
     description: '',
-    submConversion: '1.0000',
+    packQty: '1.0000',
     type: 0,
     costValue: 0,
     maxCostValue: 0,
@@ -95,7 +83,7 @@ const useProductsCatalog = ({ setLoading }) => {
     notes: '',
     enableForPurchase: false,
     enableForSale: false,
-    paymentTax: false,
+    chargesTax: false,
     requireExpLot: false,
     validToSale: false,
     paymentComiss: false,
@@ -111,11 +99,20 @@ const useProductsCatalog = ({ setLoading }) => {
     undoutId: 0,
     packId: 0,
     tradeId: 0,
-  }, productsCatalogValid);
+  });
 
-  const { id, code, name, status, description, submConversion, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
-    typeCalculatePrice, typeCalculateCost, percentLocalPriceMin, valuePercentLocalPriceMin, priceLocalMin, percentLocalPriceMid,
-    valuePercentLocalPriceMid, priceLocalMid, percentLocalPriceMax, valuePercentLocalPriceMax, priceLocalMax, percentOutsidePriceMin, valuePercentOutsidePriceMin, priceOutsideMin, percentOutsidePriceMid, valuePercentOutsidePriceMid, priceOutsideMid, percentOutsidePriceMax, valuePercentOutsidePriceMax, priceOutsideMax, parentProduct, notes, enableForPurchase, enableForSale, paymentTax, requireExpLot, validToSale, paymentComiss, priceIncludeTax, dateLastPurchase, numLastPurchase, provLastPurchase, classification, submission, inputUnit, outputUnit, tradeMark, typeId, undinId, undoutId, packId, tradeId } = formState;
+  // Mismas reglas que el back (productRules.js): errores por campo y sin llamar al back si alguna falla.
+  const errors = useMemo(() => validateProduct(formState), [formState]);
+  const isFormValid = Object.keys(errors).length === 0;
+  const formValidation = useMemo(() => {
+    const valid = {};
+    ['code', 'name', 'description', 'typeId', 'type', 'packId', 'undinId', 'undoutId', 'tradeId', 'packQty', 'costValue', 'typeCalculateCost', 'typeCalculatePrice', 'percentTax'].forEach((field) => {
+      valid[`${field}Valid`] = errors[field] || null;
+    });
+    return valid;
+  }, [errors]);
+
+  const { id, code, name, packQty, type, costValue, classification, typeId, undinId, undoutId } = formState;
 
   const fnGenerateCode = () => {
     if (classification === "") {
@@ -173,13 +170,13 @@ const useProductsCatalog = ({ setLoading }) => {
         return {
           label: item.name.toUpperCase(),
           value: item.id,
-          type: item.type,
+          isPackaging: !!item.isPackaging,
           id: item.id,
           name: item.name.toUpperCase(),
         }
       });
       const packagingUnits = measurementUnits.filter((item) => {
-        return item.type === 2;
+        return item.isPackaging;
       });
       setListPackagingUnits(packagingUnits);
       setListMeasurementUnits(measurementUnits);
@@ -240,51 +237,8 @@ const useProductsCatalog = ({ setLoading }) => {
     });
   }
 
-  // Whitelist de campos persistibles de un producto — compartida entre el alta/edición normal
-  // y "Copiar" (que clona este mismo payload con código/nombre/clasificación nuevos).
-  const fnBuildProductPayload = () => ({
-    code,
-    name,
-    description,
-    classification,
-    type,
-    paymentTax,
-    percentTax,
-    typeId, undinId, undoutId, packId, tradeId,
-    submConversion,
-    typeCalculateCost,
-    typeCalculatePrice,
-    enableForPurchase,
-    enableForSale,
-    requireExpLot,
-    validToSale,
-    paymentComiss,
-    priceIncludeTax,
-    percentLocalPriceMin,
-    valuePercentLocalPriceMin,
-    priceLocalMin,
-    percentLocalPriceMid,
-    valuePercentLocalPriceMid,
-    priceLocalMid,
-    percentLocalPriceMax,
-    valuePercentLocalPriceMax,
-    priceLocalMax,
-    percentOutsidePriceMin,
-    valuePercentOutsidePriceMin,
-    priceOutsideMin,
-    percentOutsidePriceMid,
-    valuePercentOutsidePriceMid,
-    priceOutsideMid,
-    percentOutsidePriceMax,
-    valuePercentOutsidePriceMax,
-    priceOutsideMax,
-    costValue,
-    lastCostValue,
-    maxCostValue,
-    notes,
-    parentProduct: validInt(id) > 0 ? parentProduct : code,
-    status
-  });
+  // Payload de alta/edición y de "Copiar" (que clona este mismo payload con código/nombre/clasificación nuevos); ver productRules.js.
+  const fnBuildProductPayload = () => buildProductPayload(formState, { isNew: validInt(id) === 0 });
 
   const fnSaveProduct = () => {
     setSendForm(true);
@@ -323,7 +277,7 @@ const useProductsCatalog = ({ setLoading }) => {
   const fnDisableDocument = () => {
     setOpenMsgDeleteProd(false);
     const data = {
-      status: 0
+      isDisabled: 1
     }
     if (id && id > 0) {
       setLoading(true);
@@ -403,7 +357,7 @@ const useProductsCatalog = ({ setLoading }) => {
       NotificationManager.error(msgCopyMissingClassificationType, '', 4000, null, null, '');
       return;
     }
-    if (validInt(undinId) === 0 || validInt(undoutId) === 0 || validFloat(submConversion) === 0) {
+    if (validInt(undinId) === 0 || validInt(undoutId) === 0 || validFloat(packQty) === 0) {
       NotificationManager.error(msgCopyMissingUnits, '', 4000, null, null, '');
       return;
     }
@@ -423,8 +377,7 @@ const useProductsCatalog = ({ setLoading }) => {
       name: newName,
       description: '',
       typeId: newTypeId,
-      parentProduct: newCode,
-      status: 0
+      parentProduct: newCode
     };
 
     setLoading(true);
