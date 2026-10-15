@@ -12,7 +12,7 @@ import { MAX_NAME, MAX_CODE_INIT, MAX_DESCRIPTION } from './typeProductRules';
 const TypeProducts = (props) => {
   const { setLoading } = props;
 
-  const { formState, errors, sendForm, table, propsToMsgDelete, listLedgerAccount, onInputChange, fnClearInputs, fnSave } = useTypeProducts({ setLoading });
+  const { formState, errors, sendForm, table, propsToMsgDelete, listLedgerAccount, onInputChange, fnClearInputs, fnSave, fnExport } = useTypeProducts({ setLoading });
 
   const { id, name, description, codeInit, codeSeq, invCtaCode, costCtaCode, expenseCtaCode, incomeCtaCode, status } = formState;
 
@@ -140,6 +140,7 @@ const TypeProducts = (props) => {
                 </Row>
                 <Row>
                   <Colxx xxs="12" className="div-action-button-container">
+                    <Button color="success" onClick={fnExport}><i className="bi bi-file-earmark-excel" /> {IntlMessages("button.export")}</Button>
                     <Button color="secondary" onClick={fnClearInputs}><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
                     <Button color="primary" onClick={fnSave}><i className="iconsminds-save" /> {IntlMessages("button.save")}</Button>
                   </Colxx>
