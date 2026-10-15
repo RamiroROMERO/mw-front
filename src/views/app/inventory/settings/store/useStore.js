@@ -57,6 +57,12 @@ export const useStore = ({ setLoading }) => {
       icon: 'pencil',
       toolTip: IntlMessages('button.edit'),
       onClick: fnEditItem
+    }, {
+      color: 'danger',
+      icon: 'trash',
+      toolTip: 'button.delete',
+      onClick: fnDeleteItem,
+      title: IntlMessages('button.delete')
     }]
   });
 
@@ -109,13 +115,11 @@ export const useStore = ({ setLoading }) => {
 
   const fnDisableDocument = () => {
     setOpenMsgQuestion(false);
-    setLoading(true);
-    const data = {
-      status: 0
-    }
     if (currentItem.id && currentItem.id > 0) {
       setLoading(true);
-      request.PUT(`inventory/settings/stores/${currentItem.id}`, data, (resp) => {
+      // Eliminar (elimina = 1) solo si el almacén no tiene documentos ni movimientos; el back lo rechaza si tiene uso.
+      // La casilla "Activa" (status) es independiente.
+      request.DELETE(`inventory/settings/stores/${currentItem.id}`, (resp) => {
         fnGetData();
         fnClearInputs();
         setCurrentItem({});
