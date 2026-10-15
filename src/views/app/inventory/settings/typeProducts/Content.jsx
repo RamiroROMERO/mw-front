@@ -7,15 +7,19 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ReactTable from "@Components/reactTable";
 import { useTypeProducts } from './useTypeProducts';
+import { MAX_NAME, MAX_CODE_INIT, MAX_DESCRIPTION } from './typeProductRules';
 
 const TypeProducts = (props) => {
   const { setLoading } = props;
 
-  const { formState, formValidation, sendForm, table, propsToMsgDelete, listLedgerAccount, onInputChange, fnClearInputs, fnSave } = useTypeProducts({ setLoading });
+  const { formState, errors, sendForm, table, propsToMsgDelete, listLedgerAccount, onInputChange, fnClearInputs, fnSave } = useTypeProducts({ setLoading });
 
-  const { id, name, description, codeInit, codeSeq, inventoryAccount, costAccount, expenseAccount, incomeAccount, status } = formState;
+  const { id, name, description, codeInit, codeSeq, invCtaCode, costCtaCode, expenseCtaCode, incomeCtaCode, status } = formState;
 
-  const { nameValid, codeInitValid } = formValidation;
+  const showError = (field) => (sendForm && errors[field]) || null;
+
+  // El legacy fuerza nombre y código inicial a mayúsculas (Format "!").
+  const onUpperChange = ({ target }) => onInputChange({ target: { name: target.name, value: String(target.value).toUpperCase() } });
   // El legacy deshabilita ambos campos una vez que el registro ya existe (Grid1.DblClick),
   // para que el prefijo de código interno no cambie después de generarse productos con él.
   const codeLocked = validInt(id) > 0;
@@ -32,11 +36,12 @@ const TypeProducts = (props) => {
                     <InputField
                       value={name}
                       name="name"
-                      onChange={onInputChange}
+                      onChange={onUpperChange}
                       type="text"
-                      label="page.typeProducts.input.name"
-                      invalid={sendForm && !!nameValid}
-                      feedbackText={sendForm && (nameValid || null)}
+                      label="page.typeProducts.input.nameRequired"
+                      maxLength={MAX_NAME}
+                      invalid={sendForm && !!errors.name}
+                      feedbackText={showError('name')}
                     />
                   </Colxx>
                 </Row>
@@ -48,6 +53,9 @@ const TypeProducts = (props) => {
                       onChange={onInputChange}
                       type="textarea"
                       label="page.typeProducts.input.description"
+                      maxLength={MAX_DESCRIPTION}
+                      invalid={sendForm && !!errors.description}
+                      feedbackText={showError('description')}
                     />
                   </Colxx>
                 </Row>
@@ -56,12 +64,13 @@ const TypeProducts = (props) => {
                     <InputField
                       value={codeInit}
                       name="codeInit"
-                      onChange={onInputChange}
+                      onChange={onUpperChange}
                       disabled={codeLocked}
                       type="text"
-                      label="page.typeProducts.input.codeInit"
-                      invalid={sendForm && !!codeInitValid}
-                      feedbackText={sendForm && (codeInitValid || null)}
+                      label="page.typeProducts.input.codeInitRequired"
+                      maxLength={MAX_CODE_INIT}
+                      invalid={sendForm && !!errors.codeInit}
+                      feedbackText={showError('codeInit')}
                     />
                   </Colxx>
                   <Colxx xxs="6">
@@ -72,6 +81,9 @@ const TypeProducts = (props) => {
                       disabled={codeLocked}
                       type="text"
                       label="page.typeProducts.input.codeSeq"
+                      maxLength={5}
+                      invalid={sendForm && !!errors.codeSeq}
+                      feedbackText={showError('codeSeq')}
                     />
                   </Colxx>
                 </Row>
@@ -82,8 +94,8 @@ const TypeProducts = (props) => {
                   <Colxx xxs="12" md="6" lg="12">
                     <SearchSelect
                       label="page.typeProducts.select.inventoryAccount"
-                      name="inventoryAccount"
-                      inputValue={inventoryAccount}
+                      name="invCtaCode"
+                      inputValue={invCtaCode}
                       options={listLedgerAccount}
                       onChange={onInputChange}
                     />
@@ -91,8 +103,8 @@ const TypeProducts = (props) => {
                   <Colxx xxs="12" md="6" lg="12">
                     <SearchSelect
                       label="page.typeProducts.select.costAccount"
-                      name="costAccount"
-                      inputValue={costAccount}
+                      name="costCtaCode"
+                      inputValue={costCtaCode}
                       options={listLedgerAccount}
                       onChange={onInputChange}
                     />
@@ -100,8 +112,8 @@ const TypeProducts = (props) => {
                   <Colxx xxs="12" md="6" lg="12">
                     <SearchSelect
                       label="page.typeProducts.select.expenseAccount"
-                      name="expenseAccount"
-                      inputValue={expenseAccount}
+                      name="expenseCtaCode"
+                      inputValue={expenseCtaCode}
                       options={listLedgerAccount}
                       onChange={onInputChange}
                     />
@@ -109,8 +121,8 @@ const TypeProducts = (props) => {
                   <Colxx xxs="12" md="6" lg="12">
                     <SearchSelect
                       label="page.typeProducts.select.incomeAccount"
-                      name="incomeAccount"
-                      inputValue={incomeAccount}
+                      name="incomeCtaCode"
+                      inputValue={incomeCtaCode}
                       options={listLedgerAccount}
                       onChange={onInputChange}
                     />

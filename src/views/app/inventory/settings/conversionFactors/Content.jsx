@@ -7,15 +7,16 @@ import Confirmation from '@Containers/ui/confirmationMsg';
 import ReactTable from "@Components/reactTable";
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { useConversionFactors } from './useConversionFactors';
+import { MAX_FACTOR_LENGTH } from './conversionFactorRules';
 
 const ConversionFactors = (props) => {
   const { setLoading } = props;
 
-  const {formState, formValidation, sendForm, table, propsToMsgDelete, listMUnits, onInputChange, fnClearInputs, fnSave, fnBulkAddAll} = useConversionFactors({setLoading});
+  const {formState, errors, sendForm, table, propsToMsgDelete, listMUnits, onInputChange, fnClearInputs, fnSave, fnBulkAddAll} = useConversionFactors({setLoading});
 
-  const { inputUnit, outputUnit, valueFactor, status } = formState;
+  const { inputUnitCode, outputUnitCode, valueFactor, status } = formState;
 
-  const { inputUnitValid, outputUnitValid, valueFactorValid } = formValidation;
+  const showError = (field) => (sendForm && errors[field]) || null;
 
   return (
     <>
@@ -27,24 +28,24 @@ const ConversionFactors = (props) => {
                 <Row>
                   <Colxx xxs="12" sm="6" lg="12">
                     <SearchSelect
-                      label="page.conversionFactors.select.inputUnit"
-                      name="inputUnit"
-                      inputValue={inputUnit}
+                      label="page.conversionFactors.select.inputUnitRequired"
+                      name="inputUnitCode"
+                      inputValue={inputUnitCode}
                       options={listMUnits}
                       onChange={onInputChange}
-                      invalid={sendForm && !!inputUnitValid}
-                      feedbackText={sendForm && (inputUnitValid || null)}
+                      invalid={sendForm && !!errors.inputUnitCode}
+                      feedbackText={showError('inputUnitCode')}
                     />
                   </Colxx>
                   <Colxx xxs="12" sm="6" lg="12">
                     <SearchSelect
-                      label="page.conversionFactors.select.outputUnit"
-                      name="outputUnit"
+                      label="page.conversionFactors.select.outputUnitRequired"
+                      name="outputUnitCode"
                       options={listMUnits}
-                      inputValue={outputUnit}
+                      inputValue={outputUnitCode}
                       onChange={onInputChange}
-                      invalid={sendForm && !!outputUnitValid}
-                      feedbackText={sendForm && (outputUnitValid || null)}
+                      invalid={sendForm && !!errors.outputUnitCode}
+                      feedbackText={showError('outputUnitCode')}
                     />
                   </Colxx>
                 </Row>
@@ -55,9 +56,10 @@ const ConversionFactors = (props) => {
                       name="valueFactor"
                       onChange={onInputChange}
                       type="text"
-                      label="page.conversionFactors.input.valueFactor"
-                      invalid={sendForm && !!valueFactorValid}
-                      feedbackText={sendForm && (valueFactorValid || null)}
+                      label="page.conversionFactors.input.valueFactorRequired"
+                      maxLength={MAX_FACTOR_LENGTH}
+                      invalid={sendForm && !!errors.valueFactor}
+                      feedbackText={showError('valueFactor')}
                     />
                   </Colxx>
                   <Colxx xxs="12" sm="6" lg="12">

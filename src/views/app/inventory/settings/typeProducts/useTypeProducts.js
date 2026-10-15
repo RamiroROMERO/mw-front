@@ -1,17 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from '@Hooks/useForms';
-import { IntlMessages } from "@Helpers/Utils";
+import { IntlMessages, validInt } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
-import notification from '@Containers/ui/Notifications';
-
-// Equivalente a "Codigo Interno ya existe!" del legacy.
-const fnHandleSaveError = (err) => {
-  if (err?.messages?.[0]?.message === 'typeProduct.codeInitExists') {
-    notification('error', 'msg.error.typeProduct.codeInitExists', 'alert.error.title');
-  } else {
-    notification('error', 'msg.save.record.error', 'alert.error.title');
-  }
-}
+import { validateType, buildTypePayload } from './typeProductRules';
 
 export const useTypeProducts = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
@@ -19,23 +10,21 @@ export const useTypeProducts = ({ setLoading }) => {
   const [sendForm, setSendForm] = useState(false);
   const [listLedgerAccount, setListLedgerAccount] = useState([]);
 
-  const typeProductsValid = {
-    name: [(val) => val !== "", "msg.required.input.name"],
-    codeInit: [(val) => val !== "", "msg.required.input.codeInit"]
-  }
-
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
+  const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
     name: '',
     description: '',
     codeInit: '',
     codeSeq: '00000',
-    inventoryAccount: '',
-    costAccount: '',
-    expenseAccount: '',
-    incomeAccount: '',
+    invCtaCode: '',
+    costCtaCode: '',
+    expenseCtaCode: '',
+    incomeCtaCode: '',
     status: true
-  }, typeProductsValid);
+  });
+
+  // Mismas reglas que el back (typeProductRules.js): errores por campo y sin llamar al back si alguna falla.
+  const errors = useMemo(() => validateType(formState), [formState]);
 
   const fnEditItem = (item) => {
     request.moveScrollTop();
@@ -95,46 +84,45 @@ export const useTypeProducts = ({ setLoading }) => {
 
   const fnSave = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    if (Object.keys(errors).length > 0) {
       return;
     }
 
-    if (currentItem && currentItem.id > 0) {
+    // Editar o crear lo decide el id del formulario (fnEditItem lo carga con setBulkForm; currentItem solo lo usa Eliminar).
+    const editingId = validInt(formState.id);
+    const payload = buildTypePayload(formState, { isEdit: editingId > 0 });
+
+    if (editingId > 0) {
       setLoading(true);
-      request.PUT(`inventory/settings/productsClassifications/${currentItem.id}`, formState, () => {
+      request.PUT(`inventory/settings/productsClassifications/${editingId}`, payload, () => {
         fnClearInputs();
         fnGetData();
         setLoading(false);
-      }, (err) => {
-        fnHandleSaveError(err);
+      }, () => {
         setLoading(false);
       });
     } else {
       setLoading(true);
-      request.POST('inventory/settings/productsClassifications', formState, () => {
+      request.POST('inventory/settings/productsClassifications', payload, () => {
         fnClearInputs();
         fnGetData();
         setLoading(false);
-      }, (err) => {
-        fnHandleSaveError(err);
+      }, () => {
         setLoading(false);
       });
     }
   }
 
+  // Eliminar = baja lógica (DELETE): el back rechaza el tipo si ya tiene productos asignados y muestra su mensaje.
   const fnDisableDocument = () => {
     setOpenMsgQuestion(false);
-    const data = {
-      status: 0
-    }
     if (currentItem.id && currentItem.id > 0) {
       setLoading(true);
-      request.PUT(`inventory/settings/productsClassifications/${currentItem.id}`, data, (resp) => {
+      request.DELETE(`inventory/settings/productsClassifications/${currentItem.id}`, () => {
         fnGetData();
         fnClearInputs();
-        setCurrentItem({});
         setLoading(false);
-      }, (err) => {
+      }, () => {
         setLoading(false);
       });
     }
@@ -157,7 +145,7 @@ export const useTypeProducts = ({ setLoading }) => {
       table,
       propsToMsgDelete,
       formState,
-      formValidation,
+      errors,
       listLedgerAccount,
       fnClearInputs,
       fnSave,

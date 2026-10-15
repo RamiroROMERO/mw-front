@@ -4,7 +4,7 @@ import esLang from './es_ES.js';
 import validErrors from './validErrorTranslations.json';
 
 // SPEC v2-36. `validErrorTranslations.json` es una COPIA de `utils/validErrorTranslations.json` del back
-// (la fuente de verdad: allí un test falla si un ValidError de modules/banks o modules/fixedAssets no está
+// (la fuente de verdad: allí un test falla si cualquier ValidError del back no está
 // clasificado). Este test solo compara la copia con es_ES.js y en_US.js; no detecta que la copia difiera
 // de la del back, así que al cambiar la del back hay que copiarla a mano (mismo contenido y orden).
 //
@@ -13,23 +13,13 @@ import validErrors from './validErrorTranslations.json';
 //   que cambian de significado por documento y los que llevan montos, cuentas o números de línea).
 const { translated: TRANSLATED_BACK, descriptionOnly: DESCRIPTION_ONLY_BACK } = validErrors;
 
-// Nombres que el back lanza fuera de modules/banks y modules/fixedAssets (el test del back no los ve).
-// Permisos (middleware ValidUserPermission): con traducción.
+// Nombres que el back NO lanza con ValidError (el test del back no los ve): los permisos del middleware
+// ValidUserPermission (con traducción). Todos los ValidError del back, incluidos los de Contabilidad, Facturación e
+// Inventario, están clasificados en validErrorTranslations.json.
 const TRANSLATED_LOCAL = [
   'user.unauthorized', 'user.forbidden', 'user.create.forbidden', 'user.update.forbidden', 'user.delete.forbidden',
 ];
-// Contabilidad (cuentas bloqueadas SPEC v2-30, Cuadre de Asientos SPEC v2-25): su descripción lleva las
-// cuentas, el motivo y los montos reales; sin traducción.
-const DESCRIPTION_ONLY_LOCAL = [
-  'account.blocked', 'lockedAccount.account.notFound', 'lockedAccount.account.notDetail', 'lockedAccount.duplicate',
-  'lockedAccount.reason.required', 'lockedAccount.range.invalid', 'lockedAccount.notActive',
-  'repair.account.invalid', 'repair.account.isBank', 'repair.account.required', 'repair.action.invalid',
-  'repair.batch.tooLarge', 'repair.check.notFound', 'repair.creditNote.notFound', 'repair.creditNote.notOneSided',
-  'repair.creditNote.type', 'repair.date.closed', 'repair.deposit.noExtraLines', 'repair.deposit.notFound',
-  'repair.entry.notFound', 'repair.header.noLines', 'repair.key.invalid', 'repair.keys.required',
-  'repair.line.notBlank', 'repair.line.notFound', 'repair.line.reconciled', 'repair.period.confirmRequired',
-  'repair.reason.required', 'repair.reversal.notZero', 'repair.reversal.originalInvalid',
-];
+const DESCRIPTION_ONLY_LOCAL = [];
 
 const TRANSLATED = [...TRANSLATED_BACK, ...TRANSLATED_LOCAL];
 const NOT_TRANSLATED = [...DESCRIPTION_ONLY_BACK, ...DESCRIPTION_ONLY_LOCAL];
