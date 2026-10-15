@@ -45,9 +45,9 @@ const useCostsAndPrices = ({ setLoading }) => {
       setListClassifications(resp.data.map((item) => ({ label: item.name, value: item.id })));
     }, () => { });
     request.GET('inventory/settings/measurementUnits', (resp) => {
-      const units = resp.data.map((item) => ({ label: item.name.toUpperCase(), value: item.id, type: item.type }));
+      const units = resp.data.map((item) => ({ label: item.name.toUpperCase(), value: item.id, isPackaging: !!item.isPackaging }));
       setListMeasurementUnits(units);
-      setListPackagingUnits(units.filter((item) => item.type === 2));
+      setListPackagingUnits(units.filter((item) => item.isPackaging));
     }, () => { });
     request.GET('inventory/settings/trademarks', (resp) => {
       setListMarks(resp.data.map((item) => ({ label: item.name, value: item.id })));

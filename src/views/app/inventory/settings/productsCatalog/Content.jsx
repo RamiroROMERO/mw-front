@@ -12,6 +12,7 @@ import Confirmation from '@Containers/ui/confirmationMsg';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import Modal from "@Components/modal";
 import useProductsCatalog from './useProductsCatalog';
+import { MAX_CODE, MAX_NAME, MAX_DESCRIPTION } from './productRules';
 
 const ProductsCatalog = (props) => {
   const { setLoading } = props;
@@ -38,11 +39,11 @@ const ProductsCatalog = (props) => {
     dataStock,
     propsToModalDistProduct, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalStockControl, propsToModalCosts, propsToModalCopy } = useProductsCatalog({ setLoading });
 
-  const { id, code, name, status, description, submConversion, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
+  const { id, code, name, isDisabled, description, packQty, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
     typeCalculatePrice, typeCalculateCost, percentLocalPriceMin, valuePercentLocalPriceMin, priceLocalMin, percentLocalPriceMid,
-    valuePercentLocalPriceMid, priceLocalMid, percentLocalPriceMax, valuePercentLocalPriceMax, priceLocalMax, percentOutsidePriceMin, valuePercentOutsidePriceMin, priceOutsideMin, percentOutsidePriceMid, valuePercentOutsidePriceMid, priceOutsideMid, percentOutsidePriceMax, valuePercentOutsidePriceMax, priceOutsideMax, parentProduct, notes, enableForPurchase, enableForSale, paymentTax, requireExpLot, validToSale, paymentComiss, priceIncludeTax, dateLastPurchase, numLastPurchase, provLastPurchase, typeId, undinId, undoutId, packId, tradeId } = formState;
+    valuePercentLocalPriceMid, priceLocalMid, percentLocalPriceMax, valuePercentLocalPriceMax, priceLocalMax, percentOutsidePriceMin, valuePercentOutsidePriceMin, priceOutsideMin, percentOutsidePriceMid, valuePercentOutsidePriceMid, priceOutsideMid, percentOutsidePriceMax, valuePercentOutsidePriceMax, priceOutsideMax, parentProduct, notes, enableForPurchase, enableForSale, chargesTax, requireExpLot, validToSale, paymentComiss, priceIncludeTax, dateLastPurchase, numLastPurchase, provLastPurchase, typeId, undinId, undoutId, packId, tradeId } = formState;
 
-  const { codeValid, nameValid, typeIdValid, typeValid, packValid, undinIdValid, undoutIdValid, costValueValid, typeCalculateCostValid, typeCalculatePriceValid } = formValidation;
+  const { codeValid, nameValid, descriptionValid, typeIdValid, typeValid, packIdValid, undinIdValid, undoutIdValid, tradeIdValid, packQtyValid, costValueValid, typeCalculateCostValid, typeCalculatePriceValid, percentTaxValid } = formValidation;
 
   return (
     <>
@@ -99,6 +100,7 @@ const ProductsCatalog = (props) => {
                             type="text"
                             value={code}
                             onChange={onInputChange}
+                            maxLength={MAX_CODE}
                             disabled={validInt(id) > 0 ? true : false}
                             invalid={sendForm && !!codeValid}
                             feedbackText={sendForm && (codeValid || null)}
@@ -121,6 +123,7 @@ const ProductsCatalog = (props) => {
                             name="name"
                             onChange={onInputChange}
                             type="text"
+                            maxLength={MAX_NAME}
                             label="page.productsCatalog.modal.newProduct.input.name"
                             invalid={sendForm && !!nameValid}
                             feedbackText={sendForm && (nameValid || null)}
@@ -129,8 +132,8 @@ const ProductsCatalog = (props) => {
                         <Colxx xxs="4">
                           <Checkbox
                             onChange={onInputChange}
-                            name="status"
-                            value={status}
+                            name="isDisabled"
+                            value={isDisabled}
                             label="check.status.inactive"
                           />
                         </Colxx>
@@ -142,6 +145,9 @@ const ProductsCatalog = (props) => {
                             name="description"
                             onChange={onInputChange}
                             type="textarea"
+                            maxLength={MAX_DESCRIPTION}
+                            invalid={sendForm && !!descriptionValid}
+                            feedbackText={sendForm && (descriptionValid || null)}
                             label="page.productsCatalog.modal.newProduct.input.description"
                           />
                         </Colxx>
@@ -164,6 +170,8 @@ const ProductsCatalog = (props) => {
                             inputValue={tradeId}
                             onChange={onInputChange}
                             options={listMarks}
+                            invalid={sendForm && !!tradeIdValid}
+                            feedbackText={sendForm && (tradeIdValid || null)}
                             label="page.productsCatalog.modal.newProduct.select.tradeMark"
                           />
                         </Colxx>
@@ -174,15 +182,17 @@ const ProductsCatalog = (props) => {
                             onChange={onInputChange}
                             inputValue={packId}
                             options={listPackagingUnits}
-                            invalid={sendForm && !!packValid}
-                            feedbackText={sendForm && (packValid || null)}
+                            invalid={sendForm && !!packIdValid}
+                            feedbackText={sendForm && (packIdValid || null)}
                           />
                         </Colxx>
                         <Colxx xxs="12" sm="6" md="12" lg="6">
                           <InputField
-                            value={submConversion}
-                            name="submConversion"
+                            value={packQty}
+                            name="packQty"
                             onChange={onInputChange}
+                            invalid={sendForm && !!packQtyValid}
+                            feedbackText={sendForm && (packQtyValid || null)}
                             type="text"
                             label="page.productsCatalog.modal.newProduct.input.conversion"
                           />
@@ -225,13 +235,13 @@ const ProductsCatalog = (props) => {
                             options={
                               [
                                 { id: 1, label: "page.productsCatalog.modal.newProduct.radio.product" },
-                                { id: 2, label: "page.productsCatalog.modal.newProduct.radio.service" },
-                                { id: 3, label: "page.productsCatalog.modal.newProduct.radio.rawMaterial" }
+                                { id: 2, label: "page.productsCatalog.modal.newProduct.radio.service" }
                               ]
                             }
                             invalid={sendForm && !!typeValid}
                             feedbackText={sendForm && (typeValid || null)}
                           />
+                          {sendForm && typeValid && <div className="invalid-feedback d-block">{IntlMessages(typeValid)}</div>}
                         </Colxx>
                       </Row>
                       <Row>
@@ -275,6 +285,8 @@ const ProductsCatalog = (props) => {
                                   value={percentTax}
                                   name="percentTax"
                                   onChange={onInputChange}
+                                  invalid={sendForm && !!percentTaxValid}
+                                  feedbackText={sendForm && (percentTaxValid || null)}
                                   options={listTaxPercent}
                                   label="page.productsCatalog.modal.newProduct.input.taxPecent"
                                 />
@@ -320,6 +332,7 @@ const ProductsCatalog = (props) => {
                             invalid={sendForm && !!typeCalculatePriceValid}
                             feedbackText={sendForm && (typeCalculatePriceValid || null)}
                           />
+                          {sendForm && typeCalculatePriceValid && <div className="invalid-feedback d-block">{IntlMessages(typeCalculatePriceValid)}</div>}
                         </Colxx>
                         <Colxx xxs={12} sm={6}>
                           <RadioGroup
@@ -337,6 +350,7 @@ const ProductsCatalog = (props) => {
                             invalid={sendForm && !!typeCalculateCostValid}
                             feedbackText={sendForm && (typeCalculateCostValid || null)}
                           />
+                          {sendForm && typeCalculateCostValid && <div className="invalid-feedback d-block">{IntlMessages(typeCalculateCostValid)}</div>}
                         </Colxx>
                       </Row>
                       <Row>
@@ -621,8 +635,8 @@ const ProductsCatalog = (props) => {
                           <Colxx xxs="12" sm="6" md="6" lg="4" xl="3">
                             <Checkbox
                               onChange={onInputChange}
-                              name="paymentTax"
-                              value={paymentTax}
+                              name="chargesTax"
+                              value={chargesTax}
                               label="page.productsCatalog.modal.newProduct.check.applyISV"
                             />
                           </Colxx>
