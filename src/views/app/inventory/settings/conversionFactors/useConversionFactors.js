@@ -1,18 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from '@Hooks/useForms';
 import { IntlMessages } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
-import { validFloat } from '@Helpers/Utils';
-import notification from '@Containers/ui/Notifications';
-
-// Equivalente a "Esta Conversión ya existe!" del legacy — ver ConversionFactorsController.
-const fnHandleSaveError = (err) => {
-  if (err?.messages?.[0]?.message === 'conversionFactor.alreadyExists') {
-    notification('error', 'msg.error.conversionFactor.alreadyExists', 'alert.error.title');
-  } else {
-    notification('error', 'msg.save.record.error', 'alert.error.title');
-  }
-}
+import { validateFactor, buildFactorPayload } from './conversionFactorRules';
 
 export const useConversionFactors = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
@@ -20,19 +10,16 @@ export const useConversionFactors = ({ setLoading }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
 
-  const conversionFactorsValid = {
-    inputUnit: [(val) => val !== '', "msg.required.select.inputUnit"],
-    outputUnit: [(val) => val !== '', "msg.required.select.outputUnit"],
-    valueFactor: [(val) => validFloat(val) > 0, "msg.required.input.valueFactor"]
-  }
-
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
+  const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
-    inputUnit: '',
-    outputUnit: '',
+    inputUnitCode: '',
+    outputUnitCode: '',
     valueFactor: 0,
     status: true
-  }, conversionFactorsValid);
+  });
+
+  // Mismas reglas que el back (conversionFactorRules.js): errores por campo y sin llamar al back si alguna falla.
+  const errors = useMemo(() => validateFactor(formState), [formState]);
 
   const fnEditItem = (item) => {
     setCurrentItem(item);
@@ -94,28 +81,28 @@ export const useConversionFactors = ({ setLoading }) => {
 
   const fnSave = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    if (Object.keys(errors).length > 0) {
       return;
     }
 
+    const payload = buildFactorPayload(formState);
+
     if (currentItem.id > 0) {
       setLoading(true);
-      request.PUT(`inventory/settings/conversionFactors/${currentItem.id}`, formState, () => {
+      request.PUT(`inventory/settings/conversionFactors/${currentItem.id}`, payload, () => {
         fnClearInputs();
         fnGetData();
         setLoading(false);
-      }, (err) => {
-        fnHandleSaveError(err);
+      }, () => {
         setLoading(false);
       });
     } else {
       setLoading(true);
-      request.POST('inventory/settings/conversionFactors', formState, () => {
+      request.POST('inventory/settings/conversionFactors', payload, () => {
         fnClearInputs();
         fnGetData();
         setLoading(false);
-      }, (err) => {
-        fnHandleSaveError(err);
+      }, () => {
         setLoading(false);
       });
     }
@@ -178,7 +165,7 @@ export const useConversionFactors = ({ setLoading }) => {
       table,
       propsToMsgDelete,
       formState,
-      formValidation,
+      errors,
       listMUnits,
       fnClearInputs,
       fnSave,
