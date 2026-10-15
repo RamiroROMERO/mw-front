@@ -6,15 +6,19 @@ import { Checkbox } from '@Components/checkbox';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ReactTable from "@Components/reactTable";
 import { useMeasurementUnits } from './useMeasurementUnits';
+import { MAX_CODE, MAX_NAME, MAX_DESCRIPTION } from './measurementUnitRules';
 
 const MeasurementUnits = (props) => {
   const { setLoading } = props;
 
-  const { formState, formValidation, sendForm, table, propsToMsgDelete, containerControl, onInputChange, fnClearInputs, fnSave } = useMeasurementUnits({ setLoading });
+  const { formState, errors, sendForm, table, propsToMsgDelete, containerControl, onInputChange, fnClearInputs, fnSave } = useMeasurementUnits({ setLoading });
 
-  const { id, code, name, description, type, quantity, containerUse, status } = formState;
+  const { id, code, name, description, isPackaging, baseConversion, containerUse, status } = formState;
 
-  const { codeValid, nameValid } = formValidation;
+  const showError = (field) => (sendForm && errors[field]) || null;
+
+  // El código va en mayúsculas (el legacy lo forzaba con Format "!").
+  const onCodeChange = ({ target }) => onInputChange({ target: { name: 'code', value: String(target.value).toUpperCase() } });
 
   return (
     <>
@@ -28,11 +32,12 @@ const MeasurementUnits = (props) => {
                     <InputField
                       value={code}
                       name="code"
-                      onChange={onInputChange}
+                      onChange={onCodeChange}
                       type="text"
-                      label="page.measurementUnits.input.code"
-                      invalid={sendForm && !!codeValid}
-                      feedbackText={sendForm && (codeValid || null)}
+                      label="page.measurementUnits.input.codeRequired"
+                      maxLength={MAX_CODE}
+                      invalid={sendForm && !!errors.code}
+                      feedbackText={showError('code')}
                       disabled={validInt(id) === 0 ? false : true}
                     />
                   </Colxx>
@@ -42,9 +47,10 @@ const MeasurementUnits = (props) => {
                       name="name"
                       onChange={onInputChange}
                       type="text"
-                      label="page.measurementUnits.input.name"
-                      invalid={sendForm && !!nameValid}
-                      feedbackText={sendForm && (nameValid || null)}
+                      label="page.measurementUnits.input.nameRequired"
+                      maxLength={MAX_NAME}
+                      invalid={sendForm && !!errors.name}
+                      feedbackText={showError('name')}
                     />
                   </Colxx>
                 </Row>
@@ -56,17 +62,24 @@ const MeasurementUnits = (props) => {
                       onChange={onInputChange}
                       type="textarea"
                       label="page.measurementUnits.input.description"
+                      maxLength={MAX_DESCRIPTION}
+                      invalid={sendForm && !!errors.description}
+                      feedbackText={showError('description')}
                     />
                   </Colxx>
                 </Row>
                 <Row>
                   <Colxx xxs="12" sm="6" lg="12">
                     <InputField
-                      value={quantity}
-                      name="quantity"
+                      value={baseConversion}
+                      name="baseConversion"
                       onChange={onInputChange}
                       type="number"
+                      min="0"
+                      step="1"
                       label="page.measurementUnits.input.quantity"
+                      invalid={sendForm && !!errors.baseConversion}
+                      feedbackText={showError('baseConversion')}
                     />
                   </Colxx>
                 </Row>
@@ -74,8 +87,8 @@ const MeasurementUnits = (props) => {
                   <Colxx xxs="12" sm="6" lg="12">
                     <Checkbox
                       onChange={onInputChange}
-                      name="type"
-                      value={type}
+                      name="isPackaging"
+                      value={isPackaging}
                       label="page.measurementUnits.check.presentation"
                     />
                   </Colxx>

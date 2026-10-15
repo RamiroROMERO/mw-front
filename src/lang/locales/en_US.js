@@ -1674,6 +1674,12 @@ const enLang = {
   "page.measurementUnits.table.description": "Description",
   "page.measurementUnits.table.type": "Packaging Presentation",
   "page.measurementUnits.table.status": "Active",
+  "page.measurementUnits.input.codeRequired": "Code *",
+  "page.measurementUnits.input.nameRequired": "Name *",
+  "page.measurementUnits.error.codeMax": "The code cannot exceed 5 characters",
+  "page.measurementUnits.error.nameMax": "The name cannot exceed 25 characters",
+  "page.measurementUnits.error.descriptionMax": "The description cannot exceed 500 characters",
+  "page.measurementUnits.error.baseConversion": "The base 1 conversion must be an integer greater than or equal to 0",
   /* 16.Conversion Factors page in inventory module */
   "page.conversionFactors.select.inputUnit": "Input Unit",
   "page.conversionFactors.select.outputUnit": "Output Unit",

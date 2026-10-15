@@ -1690,6 +1690,12 @@ const esLang = {
   "page.measurementUnits.table.description": "Descripción",
   "page.measurementUnits.table.type": "Presentación en Empaque",
   "page.measurementUnits.table.status": "Activo",
+  "page.measurementUnits.input.codeRequired": "Código *",
+  "page.measurementUnits.input.nameRequired": "Nombre *",
+  "page.measurementUnits.error.codeMax": "El código no puede exceder 5 caracteres",
+  "page.measurementUnits.error.nameMax": "El nombre no puede exceder 25 caracteres",
+  "page.measurementUnits.error.descriptionMax": "La descripción no puede exceder 500 caracteres",
+  "page.measurementUnits.error.baseConversion": "La conversión en base 1 debe ser un entero mayor o igual a 0",
   /* 16.Conversion Factors page in inventory module */
   "page.conversionFactors.select.inputUnit": "Unidad de Entrada",
   "page.conversionFactors.select.outputUnit": "Unidad de Salida",
