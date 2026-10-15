@@ -9,15 +9,17 @@ import Confirmation from '@Containers/ui/confirmationMsg';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { useStore } from './useStore';
+import { MAX_NAME, MAX_DESCRIPTION, isStoreAccountRequired } from './storeRules';
 
 const Store = (props) => {
   const { setLoading } = props;
 
-  const { sendForm, listType, listLedgerAccounts, coffeeControl, table, dataTable, propsToMsgDelete, formState, formValidation, fnClearInputs, fnSave, onInputChange } = useStore({ setLoading });
+  const { sendForm, listType, listLedgerAccounts, coffeeControl, accountingActive, errors, table, dataTable, propsToMsgDelete, formState, fnClearInputs, fnSave, onInputChange } = useStore({ setLoading });
 
   const { name, description, type, status, invCtaCode, costCtaCode, expenseCtaCode, fertilizerCredit } = formState;
 
-  const { nameValid } = formValidation;
+  const storeAccountRequired = isStoreAccountRequired({ type, accountingActive });
+  const showError = (field) => (sendForm && errors[field]) || null;
 
   return (
     <>
@@ -33,9 +35,10 @@ const Store = (props) => {
                       name="name"
                       onChange={onInputChange}
                       type="text"
-                      label="page.store.input.name"
-                      invalid={sendForm && !!nameValid}
-                      feedbackText={sendForm && (nameValid || null)}
+                      label="page.store.input.nameRequired"
+                      maxLength={MAX_NAME}
+                      invalid={sendForm && !!errors.name}
+                      feedbackText={showError('name')}
                     />
                   </Colxx>
                   <Colxx xxs="12" sm="6" lg="12">
@@ -44,7 +47,9 @@ const Store = (props) => {
                       value={type}
                       options={listType}
                       onChange={onInputChange}
-                      label="page.store.select.type"
+                      label="page.store.select.typeRequired"
+                      invalid={sendForm && !!errors.type}
+                      feedbackText={showError('type')}
                     />
                   </Colxx>
                 </Row>
@@ -56,6 +61,9 @@ const Store = (props) => {
                       onChange={onInputChange}
                       type="textarea"
                       label="page.store.input.description"
+                      maxLength={MAX_DESCRIPTION}
+                      invalid={sendForm && !!errors.description}
+                      feedbackText={showError('description')}
                     />
                   </Colxx>
                 </Row>
@@ -81,17 +89,19 @@ const Store = (props) => {
                     />
                   </Colxx>
                 </Row>
+                {accountingActive && (
                 <Row>
                   <Colxx xxs="12">
                     <ContainerWithLabel label="page.store.title.ledgerAccounts">
                       <Row>
                         <Colxx sm="12" md={6} lg="12">
                           <SearchSelect
-                            label="page.store.select.storeAccount"
+                            label={storeAccountRequired ? 'page.store.select.storeAccountRequired' : 'page.store.select.storeAccount'}
                             name="invCtaCode"
                             inputValue={invCtaCode}
                             options={listLedgerAccounts}
                             onChange={onInputChange}
+                            feedbackText={showError('invCtaCode')}
                           />
                         </Colxx>
                         <Colxx sm="12" md={6} lg="12">
@@ -118,6 +128,7 @@ const Store = (props) => {
                     </ContainerWithLabel>
                   </Colxx>
                 </Row>
+                )}
                 <Row>
                   <Colxx xxs="12" className="div-action-button-container">
                     <Button color="secondary" onClick={fnClearInputs}><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
