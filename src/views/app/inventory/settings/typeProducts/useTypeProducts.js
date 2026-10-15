@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useForm } from '@Hooks/useForms';
 import { IntlMessages, validInt } from "@Helpers/Utils";
-import { request } from '@Helpers/core';
+import { request, notifyError } from '@Helpers/core';
 import { validateType, buildTypePayload } from './typeProductRules';
 
 export const useTypeProducts = ({ setLoading }) => {
@@ -128,6 +128,17 @@ export const useTypeProducts = ({ setLoading }) => {
     }
   }
 
+  // Excel de Tipos de producto (SPEC v2-05-sr): el back exporta lo guardado en la DB, no lo que está en el formulario. Es un GET
+  // (solo lectura: no exige el permiso de crear). GETPdf no notifica por sí mismo: el error se avisa aquí.
+  const fnExport = () => {
+    setLoading(true);
+    const stop = () => setLoading(false);
+    request.GETPdf('inventory/settings/productsClassifications/export', {}, 'Clasificaciones de Productos.xlsx', (err) => {
+      stop();
+      notifyError(err, 'page.typeProducts.msg.exportError');
+    }, 'GET', stop);
+  }
+
   useEffect(() => {
     fnGetData();
 
@@ -149,6 +160,7 @@ export const useTypeProducts = ({ setLoading }) => {
       listLedgerAccount,
       fnClearInputs,
       fnSave,
+      fnExport,
       onInputChange
     }
   )

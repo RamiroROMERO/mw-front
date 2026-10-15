@@ -1727,6 +1727,7 @@ const esLang = {
   "page.typeProducts.error.codeInitMax": "El código inicial no puede exceder 4 caracteres",
   "page.typeProducts.error.codeSeqFormat": "El correlativo debe tener exactamente 5 dígitos",
   "page.typeProducts.error.descriptionMax": "La descripción no puede exceder 500 caracteres",
+  "page.typeProducts.msg.exportError": "No se pudo exportar a Excel.",
   "page.typeProducts.title.accounts": "Cuentas Contables",
   "page.typeProducts.select.inventoryAccount": "Cta. de Inventario",
   "page.typeProducts.select.costAccount": "Cta. de Costo",

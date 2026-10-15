@@ -1711,6 +1711,7 @@ const enLang = {
   "page.typeProducts.error.codeInitMax": "The initial code cannot exceed 4 characters",
   "page.typeProducts.error.codeSeqFormat": "The sequence must have exactly 5 digits",
   "page.typeProducts.error.descriptionMax": "The description cannot exceed 500 characters",
+  "page.typeProducts.msg.exportError": "The Excel file could not be exported.",
   "page.typeProducts.title.accounts": "Accounting Accounts",
   "page.typeProducts.select.inventoryAccount": "Inventory Account",
   "page.typeProducts.select.costAccount": "Cost Account",
