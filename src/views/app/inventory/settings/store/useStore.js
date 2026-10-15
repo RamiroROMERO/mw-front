@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from '@Hooks/useForms';
 import { IntlMessages } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
+import { validateStore, buildStorePayload } from './storeRules';
 
 export const useStore = ({ setLoading }) => {
 
@@ -13,23 +14,25 @@ export const useStore = ({ setLoading }) => {
   // "Crédito Fertilizantes" solo se muestra si la empresa tiene coffeeControl activo
   // (mw_setting.coffee), igual que Checkbox_hw2.Init en el legacy.
   const [coffeeControl, setCoffeeControl] = useState(false);
+  // Contabilidad activa (mw_setting.cont_menu): sin ella no se piden ni se envían las cuentas contables. Mientras no se
+  // conoce se asume activa (el back decide); el valor real llega con admin/companyInternalSettings.
+  const [accountingActive, setAccountingActive] = useState(true);
   const listType = [{ id: 1, name: "Almacen" }, { id: 2, name: "Centro de Destino" }, { id: 3, name: "Ambos" }]
 
-  const storeValid = {
-    name: [(val) => val !== "", "msg.required.input.name"]
-  }
-
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
+  const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
     name: '',
     description: '',
-    type: 1,
+    type: 0, // sin selección inicial: el usuario debe elegirlo (1 Almacén, 2 Centro de Destino, 3 Ambos)
     status: true,
     invCtaCode: '',
     costCtaCode: '',
     expenseCtaCode: '',
     fertilizerCredit: false
-  }, storeValid);
+  });
+
+  // Mismas reglas que el back (storeRules.js): errores por campo y sin llamar al back si alguna falla.
+  const errors = useMemo(() => validateStore(formState, { accountingActive }), [formState, accountingActive]);
 
   const fnEditItem = (item) => {
     setCurrentItem(item);
@@ -88,13 +91,15 @@ export const useStore = ({ setLoading }) => {
 
   const fnSave = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    if (Object.keys(errors).length > 0) {
       return;
     }
 
+    const payload = buildStorePayload(formState, { accountingActive, coffeeActive: coffeeControl });
+
     if (currentItem.id > 0) {
       setLoading(true);
-      request.PUT(`inventory/settings/stores/${currentItem.id}`, formState, (resp) => {
+      request.PUT(`inventory/settings/stores/${currentItem.id}`, payload, (resp) => {
         fnClearInputs();
         fnGetData();
         setLoading(false);
@@ -103,7 +108,7 @@ export const useStore = ({ setLoading }) => {
       });
     } else {
       setLoading(true);
-      request.POST('inventory/settings/stores', formState, (resp) => {
+      request.POST('inventory/settings/stores', payload, (resp) => {
         fnClearInputs();
         fnGetData();
         setLoading(false);
@@ -151,6 +156,7 @@ export const useStore = ({ setLoading }) => {
       request.GET(`admin/companyInternalSettings?companyId=${companyData.id}`, (resp) => {
         const [settings] = resp.data;
         setCoffeeControl(!!settings?.coffeeControl);
+        setAccountingActive(!!settings?.accountingMenu);
       }, () => { });
     }
   }, []);
@@ -163,11 +169,12 @@ export const useStore = ({ setLoading }) => {
       listType,
       listLedgerAccounts,
       coffeeControl,
+      accountingActive,
+      errors,
       table,
       dataTable,
       propsToMsgDelete,
       formState,
-      formValidation,
       fnClearInputs,
       fnSave,
       onInputChange
