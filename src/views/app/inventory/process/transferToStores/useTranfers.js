@@ -304,9 +304,9 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
         return {
           label: item.name,
           value: item.id,
-          idCtaInventory: item.idCtaInventory,
-          idCtaCost: item.idCtaCost,
-          idCtaExpense: item.idCtaExpense
+          invCtaCode: item.invCtaCode,
+          costCtaCode: item.costCtaCode,
+          expenseCtaCode: item.expenseCtaCode
         }
       });
       setListStores(stores);

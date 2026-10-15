@@ -10,9 +10,9 @@ const ModalViewTransfers = ({setOpen, data}) => {
   const {dataTransfers, onBulkForm, fnGetDataDetail} = data;
 
   const fnViewTransfers = (item)=>{
-    const accountField = ACCOUNT_BY_APPLY_TO[item.applyTo] || 'idCtaInventory';
+    const accountField = ACCOUNT_BY_APPLY_TO[item.applyTo] || 'invCtaCode';
 
-    item.noCtaOrigin = item.invStore ? item.invStore.idCtaInventory : ''
+    item.noCtaOrigin = item.invStore ? item.invStore.invCtaCode : ''
     // Reintegro tipo Compra no tiene invAssign (Centro de Destino) — la contra-cuenta es la
     // de Cuentas por Pagar del proveedor (providerData.idCtaCxp).
     item.noCtaAssign = item.invAssign ? item.invAssign[accountField] : (item.providerData ? item.providerData.idCtaCxp : '')
