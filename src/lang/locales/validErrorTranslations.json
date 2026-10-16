@@ -148,6 +148,8 @@
     "product.pack.notFound",
     "product.percentTax.required",
     "product.same",
+    "product.store.invalid",
+    "product.store.required",
     "product.trademark.notFound",
     "product.unit.notFound",
     "provider.not.found",

@@ -35,9 +35,10 @@ const ProductsCatalog = (props) => {
     setActiveTabPrices,
     sendForm,
     fnConfirmGenerateCode,
+    fnLoadByCode,
     listProducts,
     dataStock,
-    propsToModalDistProduct, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalStockControl, propsToModalCosts, propsToModalCopy } = useProductsCatalog({ setLoading });
+    propsToModalDistProduct, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalStockControl, propsToModalCosts, propsToModalCopy, propsToModalAddToStores } = useProductsCatalog({ setLoading });
 
   const { id, code, name, isDisabled, description, packQty, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
     typeCalculatePrice, typeCalculateCost, percentLocalPriceMin, valuePercentLocalPriceMin, priceLocalMin, percentLocalPriceMid,
@@ -100,6 +101,7 @@ const ProductsCatalog = (props) => {
                             type="text"
                             value={code}
                             onChange={onInputChange}
+                            onBlur={fnLoadByCode}
                             maxLength={MAX_CODE}
                             disabled={validInt(id) > 0 ? true : false}
                             invalid={sendForm && !!codeValid}
@@ -760,6 +762,7 @@ const ProductsCatalog = (props) => {
       <Modal {...propsToModalStockControl} />
       <Modal {...propsToModalCosts} />
       <Modal {...propsToModalCopy} />
+      <Modal {...propsToModalAddToStores} />
       <Confirmation {...propsToMsgCode} />
       <Confirmation {...propsToMsgDeleteProduct} />
     </>

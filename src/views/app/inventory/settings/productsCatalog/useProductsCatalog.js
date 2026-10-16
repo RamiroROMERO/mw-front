@@ -1,6 +1,6 @@
 import { validInt, validFloat, formatDate, IntlMessagesFn } from "@Helpers/Utils";
 import { request, buildUrl, notifyError } from "@Helpers/core";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ModalViewProd from "./ModalViewProd";
 import ModalDistProducts from "./ModalDistProducts";
 import ModalAddTrademarks from "./ModalAddTrademarks";
@@ -11,8 +11,10 @@ import ModalImages from "./ModalImages";
 import ModalStockControl from "./ModalStockControl";
 import ModalCosts from "./ModalCosts";
 import ModalCopy from "./ModalCopy";
+import ModalAddToStores from "./ModalAddToStores";
 import { NotificationManager } from "@Components/common/react-notifications";
 import { validateProduct, buildProductPayload } from "./productRules";
+import { shouldLookupByCode, canApplyLookup } from "./productLookupRules";
 
 const useProductsCatalog = ({ setLoading }) => {
 
@@ -40,6 +42,8 @@ const useProductsCatalog = ({ setLoading }) => {
   const [openModalStockControl, setOpenModalStockControl] = useState(false);
   const [openModalCosts, setOpenModalCosts] = useState(false);
   const [openModalCopy, setOpenModalCopy] = useState(false);
+  const [openModalAddToStores, setOpenModalAddToStores] = useState(false);
+  const [createdProductCode, setCreatedProductCode] = useState('');
 
   const msgCopySelectProduct = IntlMessagesFn('msg.copy.selectProduct');
   const msgCopyMissingClassificationType = IntlMessagesFn('msg.copy.missingClassificationType');
@@ -114,6 +118,10 @@ const useProductsCatalog = ({ setLoading }) => {
 
   const { id, code, name, packQty, type, costValue, typeId, undinId, undoutId } = formState;
 
+  // Valores actuales del formulario para la carga por código: la respuesta es asíncrona y no debe pisar lo que el usuario escribió.
+  const currentRef = useRef({ id, code });
+  currentRef.current = { id, code };
+
   // Pide el código al back (SPEC v2-07-sr): reserva el siguiente número de la clasificación elegida, o el contador de la
   // empresa si no hay ninguna. Un rechazo muestra su mensaje real y el código no cambia.
   const fnGenerateCode = () => {
@@ -144,6 +152,19 @@ const useProductsCatalog = ({ setLoading }) => {
       const { data } = res;
       const purchaseData = { dateLastPurchase: data?.date ? formatDate(data.date) : '', provLastPurchase: data?.providerName || '', numLastPurchase: data?.numCai || '' }
       setBulkForm(purchaseData);
+    }, () => { });
+  }
+
+  // Carga por código (SPEC v2-08-sr): al salir del campo Código con un producto nuevo, si el código ya existe se carga igual que
+  // con Buscar. Un código que no existe es el caso normal de un alta: el back responde notFound y no se hace nada ni se avisa.
+  const fnLoadByCode = () => {
+    if (!shouldLookupByCode({ id, code })) return;
+    const requestedCode = code.trim();
+    request.GET(`inventory/settings/products/byCode/${encodeURIComponent(requestedCode)}`, (res) => {
+      const item = res?.data;
+      if (!item) return;
+      if (!canApplyLookup({ requestedCode, currentCode: currentRef.current.code, currentId: currentRef.current.id })) return;
+      fnViewProduct(item);
     }, () => { });
   }
 
@@ -257,6 +278,9 @@ const useProductsCatalog = ({ setLoading }) => {
       request.POST('inventory/settings/products', newData, (resp) => {
         onInputChange({ target: { name: 'id', value: resp.data.id } });
         setLoading(false);
+        // SPEC v2-08-sr: tras el alta (no tras Copiar) se ofrece agregar el producto a los almacenes.
+        setCreatedProductCode(newData.code);
+        setOpenModalAddToStores(true);
       }, (err) => {
         setLoading(false);
       });
@@ -567,6 +591,17 @@ const useProductsCatalog = ({ setLoading }) => {
     }
   }
 
+  const propsToModalAddToStores = {
+    ModalContent: ModalAddToStores,
+    title: "page.productsCatalog.modal.addToStores.title",
+    open: openModalAddToStores,
+    setOpen: setOpenModalAddToStores,
+    maxWidth: 'sm',
+    data: {
+      productCode: createdProductCode
+    }
+  }
+
   const propsToMsgCode = {
     open: openMsgGenerateCode,
     setOpen: setOpenMsgGenerateCode,
@@ -601,6 +636,7 @@ const useProductsCatalog = ({ setLoading }) => {
     setActiveTabPrices,
     sendForm,
     fnConfirmGenerateCode,
+    fnLoadByCode,
 
     dataStock,
     propsToControlPanel,
@@ -613,7 +649,8 @@ const useProductsCatalog = ({ setLoading }) => {
     propsToModalImagesProduct,
     propsToModalStockControl,
     propsToModalCosts,
-    propsToModalCopy
+    propsToModalCopy,
+    propsToModalAddToStores
   }
 
 };
