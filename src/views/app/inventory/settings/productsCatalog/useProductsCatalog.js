@@ -1,5 +1,5 @@
 import { validInt, validFloat, formatDate, IntlMessagesFn } from "@Helpers/Utils";
-import { request, buildUrl } from "@Helpers/core";
+import { request, buildUrl, notifyError } from "@Helpers/core";
 import { useEffect, useMemo, useState } from "react";
 import ModalViewProd from "./ModalViewProd";
 import ModalDistProducts from "./ModalDistProducts";
@@ -112,29 +112,26 @@ const useProductsCatalog = ({ setLoading }) => {
     return valid;
   }, [errors]);
 
-  const { id, code, name, packQty, type, costValue, classification, typeId, undinId, undoutId } = formState;
+  const { id, code, name, packQty, type, costValue, typeId, undinId, undoutId } = formState;
 
+  // Pide el código al back (SPEC v2-07-sr): reserva el siguiente número de la clasificación elegida, o el contador de la
+  // empresa si no hay ninguna. Un rechazo muestra su mensaje real y el código no cambia.
   const fnGenerateCode = () => {
-    if (classification === "") {
-      const codeRandom = new Uint32Array(1);
-      window.crypto.getRandomValues(codeRandom);
-      setBulkForm({ code: codeRandom[0], parentProduct: codeRandom[0] });
-      setOpenMsgGenerateCode(false);
-    } else {
-      const filter = listClassifications.filter((item) => {
-        return item.value === classification;
-      });
-      const nextCode = `${parseInt(filter[0].codeSeq, 10) + 1}`;
-      const codeType = `${filter[0].codeInit}-${(nextCode).padStart(5, 0)}`;
-      setBulkForm({ code: codeType, parentProduct: codeType });
-    }
+    const body = validInt(typeId) > 0 ? { typeId } : {};
+    setOpenMsgGenerateCode(false);
+    request.POST('inventory/settings/products/generateCode', body, (res) => {
+      const generated = res?.data?.code;
+      if (generated) setBulkForm({ code: generated, parentProduct: generated });
+    }, (err) => {
+      notifyError(err, 'page.productsCatalog.msg.generateCodeError');
+    }, false);
   }
 
   const fnConfirmGenerateCode = () => {
-    if (classification === "") {
-      setOpenMsgGenerateCode(true);
-    } else {
+    if (validInt(typeId) > 0) {
       fnGenerateCode();
+    } else {
+      setOpenMsgGenerateCode(true);
     }
   }
 
