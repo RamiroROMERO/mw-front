@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { Button, Card, CardBody, ModalBody, ModalFooter, Row } from "reactstrap";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages, validInt } from "@Helpers/Utils";
+import Confirmation from "@Containers/ui/confirmationMsg";
 import ReactTable from "@Components/reactTable";
 import UseModalDistProducts from "./useModalDistProducts";
 import { SimpleSelect } from "@Components/simpleSelect";
@@ -13,12 +13,12 @@ import { ContainerWithLabel } from "@Components/containerWithLabel";
 const ModalDistProducts = (props) => {
 
   const { data, setOpen } = props;
-  const { dataProducts, setLoading, productCode, productName, listPackagingUnits } = data;
-  const { table, formState, formValidation, onInputChange, sendForm, fnSaveDetaItem, fnClearDetaItem } = UseModalDistProducts({ setLoading, productCode, productName });
+  const { setLoading, productCode, productName, listPackagingUnits, product } = data;
+  const { table, formState, formValidation, onInputChange, sendForm, isEditingDefault, fnSaveDetaItem, fnClearDetaItem, fnCalculatePrices, propsToMsgDelete } = UseModalDistProducts({ setLoading, productCode, product });
 
-  const { id, undCode, valChange, localMinPrice, localMedPrice, localMaxPrice, localOtherPrice, foranMinPrice, foranMedPrice, foranMaxPrice, foranOtherPrice, isDefault, status } = formState
+  const { id, undoutId, valChange, localMinPrice, localMedPrice, localMaxPrice, localOtherPrice, foranMinPrice, foranMedPrice, foranMaxPrice, foranOtherPrice, status } = formState
 
-  const { undCodeValid, valChangeValid, localMinPriceValid, localMedPriceValid, localMaxPriceValid, foranMinPriceValid, foranMedPriceValid, foranMaxPriceValid } = formValidation;
+  const { undoutIdValid, valChangeValid, localMinPriceValid, localMedPriceValid, localMaxPriceValid, localOtherPriceValid, foranMinPriceValid, foranMedPriceValid, foranMaxPriceValid, foranOtherPriceValid } = formValidation;
 
   return (
     <>
@@ -41,13 +41,13 @@ const ModalDistProducts = (props) => {
               <Colxx xxs={12} xs={5} lg={7}>
                 <SimpleSelect
                   label="page.productsCatalog.modal.distProduct.table.column.measureUnit"
-                  id="undCode"
-                  name="undCode"
-                  value={undCode}
+                  id="undoutId"
+                  name="undoutId"
+                  value={undoutId}
                   options={listPackagingUnits}
                   onChange={onInputChange}
-                  invalid={sendForm && !!undCodeValid}
-                  feedbackText={sendForm && (undCodeValid || null)}
+                  invalid={sendForm && !!undoutIdValid}
+                  feedbackText={sendForm && (undoutIdValid || null)}
                   disabled={validInt(id) === 0 ? false : true}
                 />
               </Colxx>
@@ -70,7 +70,7 @@ const ModalDistProducts = (props) => {
                   name="status"
                   value={status}
                   onChange={onInputChange}
-                  disabled={isDefault ? true : false}
+                  disabled={isEditingDefault}
                 />
               </Colxx>
             </Row>
@@ -114,6 +114,8 @@ const ModalDistProducts = (props) => {
                         name="localOtherPrice"
                         value={localOtherPrice}
                         onChange={onInputChange}
+                        invalid={sendForm && !!localOtherPriceValid}
+                        feedbackText={sendForm && (localOtherPriceValid || null)}
                       />
                     </Colxx>
                   </Row>
@@ -163,6 +165,8 @@ const ModalDistProducts = (props) => {
                         name="foranOtherPrice"
                         value={foranOtherPrice}
                         onChange={onInputChange}
+                        invalid={sendForm && !!foranOtherPriceValid}
+                        feedbackText={sendForm && (foranOtherPriceValid || null)}
                       />
                     </Colxx>
                   </Row>
@@ -176,6 +180,7 @@ const ModalDistProducts = (props) => {
             </Row>
             <Row>
               <Colxx xxs={12} className="div-action-button-container">
+                <Button color="info" onClick={fnCalculatePrices}><i className="bi bi-calculator"></i> {` ${IntlMessages('page.productsCatalog.modal.distProduct.button.calculate')}`} </Button>
                 <Button color="secondary" onClick={fnClearDetaItem}><i className="bi bi-stars"></i> {` ${IntlMessages('button.clear')}`} </Button>
                 <Button color="primary" onClick={fnSaveDetaItem}><i className="iconsminds-save"></i> {` ${IntlMessages('button.save')}`} </Button>
               </Colxx>
@@ -190,6 +195,7 @@ const ModalDistProducts = (props) => {
           </Colxx>
         </Row>
       </ModalBody>
+      <Confirmation {...propsToMsgDelete} />
       <ModalFooter>
         {/* <Button color="danger" onClick={() => { setOpen(false) }} >
           <i className="bi bi-box-arrow-right" />
