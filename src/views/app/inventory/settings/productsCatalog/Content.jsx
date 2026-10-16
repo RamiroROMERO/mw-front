@@ -15,7 +15,7 @@ import useProductsCatalog from './useProductsCatalog';
 import { MAX_CODE, MAX_NAME, MAX_DESCRIPTION } from './productRules';
 
 const ProductsCatalog = (props) => {
-  const { setLoading } = props;
+  const { setLoading, canEditCosts } = props;
 
   const { formState,
     formValidation,
@@ -40,7 +40,7 @@ const ProductsCatalog = (props) => {
     fnLoadByCode,
     listProducts,
     dataStock,
-    propsToModalDistProduct, propsToModalDistributeAll, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalStockControl, propsToModalCosts, propsToModalCopy, propsToModalAddToStores } = useProductsCatalog({ setLoading });
+    propsToModalDistProduct, propsToModalDistributeAll, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalCosts, propsToModalCopy, propsToModalAddToStores } = useProductsCatalog({ setLoading, canEditCosts });
 
   const { id, code, name, isDisabled, description, packQty, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
     typeCalculatePrice, typeCalculateCost, percentLocalPriceMin, valuePercentLocalPriceMin, priceLocalMin, percentLocalPriceMid,
@@ -250,6 +250,7 @@ const ProductsCatalog = (props) => {
                       </Row>
                       <Row>
                         <Colxx xxs="12">
+                          {/* SPEC v2-10-sr: en edición los costos son de solo lectura; se cambian con el botón "Costos" (11.01.003). */}
                           <ContainerWithLabel label="page.productsCatalog.modal.newProduct.title.costs">
                             <Row>
                               <Colxx xxs="12" sm="6" md="12" lg="6">
@@ -259,6 +260,7 @@ const ProductsCatalog = (props) => {
                                   name="costValue"
                                   onChange={onCostInputChange}
                                   type="text"
+                                  disabled={validInt(id) > 0}
                                   label="page.productsCatalog.modal.newProduct.input.averageCost"
                                   invalid={sendForm && !!costValueValid}
                                   feedbackText={sendForm && (costValueValid || null)}
@@ -270,6 +272,7 @@ const ProductsCatalog = (props) => {
                                   name="maxCostValue"
                                   onChange={onCostInputChange}
                                   type="text"
+                                  disabled={validInt(id) > 0}
                                   label="page.productsCatalog.modal.newProduct.input.maxCost"
                                 />
                               </Colxx>
@@ -281,6 +284,7 @@ const ProductsCatalog = (props) => {
                                   name="lastCostValue"
                                   onChange={onCostInputChange}
                                   type="text"
+                                  disabled={validInt(id) > 0}
                                   label="page.productsCatalog.modal.newProduct.input.lastPrice"
                                 />
                               </Colxx>
@@ -768,7 +772,6 @@ const ProductsCatalog = (props) => {
       <Modal {...propsToModalAddTrademarks} />
       <Modal {...propsToModalCompProduct} />
       <Modal {...propsToModalImagesProduct} />
-      <Modal {...propsToModalStockControl} />
       <Modal {...propsToModalCosts} />
       <Modal {...propsToModalCopy} />
       <Modal {...propsToModalAddToStores} />
