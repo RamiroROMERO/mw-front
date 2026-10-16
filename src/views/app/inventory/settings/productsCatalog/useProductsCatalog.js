@@ -7,6 +7,7 @@ import ModalAddTrademarks from "./ModalAddTrademarks";
 import { useForm } from "@Hooks/useForms";
 import { PATH_FILES } from '/src/helpers/pathFiles';
 import { ModalCompProduct } from "./ModalCompProduct";
+import { canOpenComponents } from "./compoundRules";
 import ModalImages from "./ModalImages";
 import ModalCosts from "./ModalCosts";
 import ModalCopy from "./ModalCopy";
@@ -55,6 +56,7 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
     code: '',
     name: '',
     isDisabled: false,
+    isCompound: false,
     description: '',
     packQty: '1.0000',
     type: 0,
@@ -320,7 +322,7 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
   }
 
   const fnComposed = () => {
-    if (code === "" || validInt(id) === 0) return;
+    if (!canOpenComponents(formState)) return;
     setOpenModalCompProduct(true);
   }
 
@@ -435,7 +437,8 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
       {
         title: "button.composed",
         icon: "bi bi-list-check",
-        onClick: fnComposed
+        onClick: fnComposed,
+        disabled: !canOpenComponents(formState)
       },
       {
         title: "button.distribution",
