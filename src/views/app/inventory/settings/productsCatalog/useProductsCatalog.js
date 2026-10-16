@@ -8,7 +8,6 @@ import { useForm } from "@Hooks/useForms";
 import { PATH_FILES } from '/src/helpers/pathFiles';
 import { ModalCompProduct } from "./ModalCompProduct";
 import ModalImages from "./ModalImages";
-import ModalStockControl from "./ModalStockControl";
 import ModalCosts from "./ModalCosts";
 import ModalCopy from "./ModalCopy";
 import ModalAddToStores from "./ModalAddToStores";
@@ -18,14 +17,13 @@ import { validateProduct, buildProductPayload } from "./productRules";
 import { shouldLookupByCode, canApplyLookup } from "./productLookupRules";
 import { recalculatePrice, recalculateAllPrices, calculateTaxValue, defaultPercentsPatch } from "./priceRules";
 
-const useProductsCatalog = ({ setLoading }) => {
+const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
 
   const [listProducts, setListProducts] = useState([]);
   const [listClassifications, setListClassifications] = useState([]);
   const [listMeasurementUnits, setListMeasurementUnits] = useState([]);
   const [listPackagingUnits, setListPackagingUnits] = useState([]);
   const [listMarks, setListMarks] = useState([]);
-  const [listProviders, setListProviders] = useState([]);
   const [dataProducts, setDataProducts] = useState([]);
   const [activeTab, setActiveTab] = useState('1');
   const [activeTabPrices, setActiveTabPrices] = useState('1');
@@ -41,7 +39,6 @@ const useProductsCatalog = ({ setLoading }) => {
   const [openModalAddTrademark, setOpenModalAddTrademark] = useState(false);
   const [openModalCompProduct, setOpenModalCompProduct] = useState(false);
   const [openModalImages, setOpenModalImages] = useState(false);
-  const [openModalStockControl, setOpenModalStockControl] = useState(false);
   const [openModalCosts, setOpenModalCosts] = useState(false);
   const [openModalCopy, setOpenModalCopy] = useState(false);
   const [openModalAddToStores, setOpenModalAddToStores] = useState(false);
@@ -217,18 +214,6 @@ const useProductsCatalog = ({ setLoading }) => {
     }, (err) => {
       setLoading(false);
     });
-    request.GET(buildUrl('inventory/process/providers', { status: 1 }), (resp) => {
-      const providers = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id
-        }
-      });
-      setListProviders(providers);
-      setLoading(false);
-    }, (err) => {
-      setLoading(false);
-    });
   }, []);
 
   // "Nuevo" (SPEC v2-09-sr): limpia el formulario y carga en las seis casillas de porcentaje los de `inv_porp`. Sin fila o con
@@ -380,16 +365,11 @@ const useProductsCatalog = ({ setLoading }) => {
   const fnCodes = () => { }
 
   const fnCosts = () => {
-    if (validInt(id) === 0) return;
+    if (!canEditCosts || validInt(id) === 0) return;
     setOpenModalCosts(true);
   }
 
   const fnPrices = () => { }
-
-  const fnStockControl = () => {
-    if (validInt(id) === 0) return;
-    setOpenModalStockControl(true);
-  }
 
   const fnBrands = () => {
     setOpenModalAddTrademark(true);
@@ -474,20 +454,15 @@ const useProductsCatalog = ({ setLoading }) => {
         icon: "bi bi-upc",
         onClick: fnCodes
       },
-      {
+      ...(canEditCosts ? [{
         title: "button.costs",
         icon: "bi bi-coin",
         onClick: fnCosts
-      },
+      }] : []),
       {
         title: "button.prices",
         icon: "bi bi-tag",
         onClick: fnPrices
-      },
-      {
-        title: "button.stockControl",
-        icon: "bi bi-box2",
-        onClick: fnStockControl
       },
       {
         title: "button.brands",
@@ -589,34 +564,19 @@ const useProductsCatalog = ({ setLoading }) => {
     }
   }
 
-  const propsToModalStockControl = {
-    ModalContent: ModalStockControl,
-    title: "page.productsCatalog.modal.stockControl.title",
-    open: openModalStockControl,
-    setOpen: setOpenModalStockControl,
-    maxWidth: 'lg',
-    data: {
-      setLoading,
-      productId: id,
-      productCode: code,
-      productName: name,
-      listProviders,
-      product: formState,
-      setBulkForm
-    }
-  }
-
   const propsToModalCosts = {
     ModalContent: ModalCosts,
     title: "page.productsCatalog.modal.costs.title",
     open: openModalCosts,
     setOpen: setOpenModalCosts,
-    maxWidth: 'sm',
+    maxWidth: 'md',
     data: {
       setLoading,
       productId: id,
       productCode: code,
       productName: name,
+      productType: type,
+      costs: { costValue, lastCostValue: formState.lastCostValue, maxCostValue: formState.maxCostValue },
       setBulkForm
     }
   }
@@ -676,7 +636,6 @@ const useProductsCatalog = ({ setLoading }) => {
     listPackagingUnits,
     listTaxPercent,
     listProducts,
-    listProviders,
     activeTab,
     setActiveTab,
     activeTabPrices,
@@ -695,7 +654,6 @@ const useProductsCatalog = ({ setLoading }) => {
     propsToModalAddTrademarks,
     propsToModalCompProduct,
     propsToModalImagesProduct,
-    propsToModalStockControl,
     propsToModalCosts,
     propsToModalCopy,
     propsToModalAddToStores
