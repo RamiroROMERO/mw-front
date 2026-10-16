@@ -1,154 +1,163 @@
-import { useEffect, useState } from 'react'
-import { IntlMessages, validFloat, validInt } from "@Helpers/Utils";
+import { useEffect, useMemo, useState } from 'react'
+import { IntlMessages, validInt } from "@Helpers/Utils";
 import { useForm } from '@Hooks';
 import { request, buildUrl } from '@Helpers/core';
-import TableButton from '@Components/tableButtons';
+import { XReactTableActionButton } from '@Components/reactTable/XReactTableActionButton';
+import { calculateDistributionPrices } from './priceRules';
+import {
+  emptyDistributionForm, mapDistributionToForm, validateDistribution, buildDistributionPayload, pickCalculatedPrices,
+  canDeleteDistribution, isDefaultRow
+} from './distributionRules';
 
+const URL = 'inventory/settings/productsDistributions';
+
+// `product` es el formulario del catálogo (costos, tipo de cálculo de costo, impuesto y porcentajes): "Calcular Precios" lo usa.
 const UseModalDistProducts = (props) => {
-  const { setLoading, productCode } = props;
+  const { setLoading, productCode, product } = props;
 
   const [sendForm, setSendForm] = useState(false);
   const [detaDist, setDetaDist] = useState([]);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
-  const productDistValid = {
-    undCode: [(val) => val !== "", "msg.required.input.undOut"],
-    valChange: [(val) => validInt(val) >= 0, "msg.required.input.valChange"],
-    localMinPrice: [(val) => validInt(val) >= 0, "msg.required.input.valChange"],
-    localMedPrice: [(val) => validInt(val) >= 0, "msg.required.input.valChange"],
-    localMaxPrice: [(val) => validInt(val) >= 0, "msg.required.input.valChange"],
-    foranMinPrice: [(val) => validInt(val) >= 0, "msg.required.input.valChange"],
-    foranMedPrice: [(val) => validInt(val) >= 0, "msg.required.input.valChange"],
-    foranMaxPrice: [(val) => validInt(val) >= 0, "msg.required.input.valChange"]
+  const { formState, onInputChange, onResetForm, setBulkForm } = useForm(emptyDistributionForm());
 
-  }
+  // Mismas reglas que el back (distributionRules.js): errores por campo y sin llamar al back si alguna falla.
+  const errors = useMemo(() => validateDistribution(formState), [formState]);
+  const formValidation = useMemo(() => {
+    const valid = {};
+    ['undoutId', 'valChange', 'localMinPrice', 'localMedPrice', 'localMaxPrice', 'localOtherPrice', 'foranMinPrice', 'foranMedPrice', 'foranMaxPrice', 'foranOtherPrice'].forEach((field) => {
+      valid[`${field}Valid`] = errors[field] || null;
+    });
+    return valid;
+  }, [errors]);
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
-    id: 0,
-    idFather: productCode,
-    undCode: "",
-    undOut: "",
-    valChange: 0,
-    localMinPrice: 0,
-    localMedPrice: 0,
-    localMaxPrice: 0,
-    localOtherPrice: 0,
-    foranMinPrice: 0,
-    foranMedPrice: 0,
-    foranMaxPrice: 0,
-    foranOtherPrice: 0,
-    isDefault: false,
-    status: true,
-  }, productDistValid);
-
-  const { id, undOut, undCode, valChange, localMinPrice, localMedPrice, localMaxPrice, foranMinPrice, foranMedPrice, foranMaxPrice, foranOtherPrice, isDefault, status } = formState;
-
-  const fnEditDetaItem = (item) => {
-    setBulkForm(item);
-  };
-
-  const fnDeleteDetaItem = (item) => {
-    if (item.isDefault) {
-      return;
-    }
-  };
+  const { id } = formState;
 
   const fnGetDistData = () => {
     setLoading(true);
-    request.GET(buildUrl('inventory/settings/productsDistributions', { idFather: productCode }), res => {
-      const { data } = res;
-      const detaDistRefresh = data.map(elem => {
-        elem.options = <><TableButton color='warning' icon='pencil' fnOnClick={() => fnEditDetaItem(elem)} />
-          <TableButton color='danger' icon='trash' fnOnClick={() => fnDeleteDetaItem(elem)} /></>
-      })
-      setDetaDist(detaDistRefresh);
-      setTable({ ...table, data: data });
+    request.GET(buildUrl(URL, { productCode }), (res) => {
+      setDetaDist(res?.data || []);
       setLoading(false);
-    }, err => {
+    }, () => {
       setDetaDist([]);
       setLoading(false);
-    })
+    });
+  };
+
+  const fnEditDetaItem = (item) => {
+    setSendForm(false);
+    setBulkForm(mapDistributionToForm(item));
   };
 
   const fnClearDetaItem = () => {
+    setSendForm(false);
     onResetForm();
   };
 
   const fnSaveDetaItem = () => {
-    setSendForm(true)
-    if (!isFormValid) {
-      return;
-    }
-    if (validFloat(localMinPrice) <= 0 && validFloat(localMedPrice) <= 0 && validFloat(localMaxPrice) <= 0) {
-      return;
-    }
-    const data = {
-      idFather: productCode,
-      undCode,
-      undOut, valChange, localMinPrice, localMedPrice, localMaxPrice, foranMaxPrice, foranMedPrice, foranMinPrice, isDefault, status
+    setSendForm(true);
+    if (Object.keys(errors).length > 0) return;
+
+    const data = buildDistributionPayload(formState, productCode);
+    const onDone = () => {
+      fnGetDistData();
+      setSendForm(false);
+      onResetForm();
     };
+    const onError = () => setLoading(false);
+
     setLoading(true);
     if (validInt(id) === 0) {
-      request.POST('inventory/settings/productsDistributions', data, res => {
-        fnGetDistData();
-        setLoading(false);
-        setSendForm(false);
-        onResetForm();
-      }, err => {
-        setLoading(false);
-      });
+      request.POST(URL, data, onDone, onError);
     } else {
-      request.PUT(`inventory/settings/productsDistributions/${id}`, data, res => {
-        fnGetDistData();
-        setSendForm(false);
-        onResetForm();
-        setLoading(false);
-      }, err => {
-        setLoading(false);
-      });
+      request.PUT(`${URL}/${id}`, data, onDone, onError);
     }
   };
 
-  const [table, setTable] = useState({
+  // "Calcular Precios": costo (según el tipo de cálculo) x cantidad base, cada precio con su propio porcentaje del producto.
+  // Solo reemplaza los precios que salen mayores a 0.
+  const fnCalculatePrices = () => {
+    setBulkForm(pickCalculatedPrices(calculateDistributionPrices(product, formState.valChange)));
+  };
+
+  const fnConfirmDelete = (item) => {
+    if (!canDeleteDistribution(item)) return;
+    setItemToDelete(item);
+  };
+
+  const fnDeleteDetaItem = () => {
+    const item = itemToDelete;
+    setItemToDelete(null);
+    if (!item || !canDeleteDistribution(item)) return;
+    setLoading(true);
+    request.DELETE(`${URL}/${item.id}`, () => {
+      if (validInt(formState.id) === validInt(item.id)) onResetForm();
+      fnGetDistData();
+    }, () => setLoading(false));
+  };
+
+  const table = {
     title: IntlMessages("page.productsCatalog.modal.distProduct.table.title"),
     columns: [
       {
         text: IntlMessages("page.productsCatalog.modal.distProduct.table.column.measureUnit"),
-        dataField: "measureName",
-        headerStyle: { 'width': '15%' }
+        dataField: "undOutName",
+        headerStyle: { 'width': '20%' }
       }, {
         text: IntlMessages("page.productsCatalog.modal.distProduct.table.column.baseValue"),
         dataField: "valChange",
+        type: 'number',
+        decimals: 2,
         headerStyle: { 'width': '10%' }
       }, {
         text: IntlMessages("page.productsCatalog.modal.distProduct.table.column.minPrice"),
         dataField: "localMinPrice",
+        type: 'number',
         headerStyle: { 'width': '15%' },
         classes: 'd-sm-none-table-cell', headerClasses: 'd-sm-none-table-cell'
       }, {
-        text: IntlMessages("page.productsCatalog.modal.distProduct.table.column.maxPrice"),
+        text: IntlMessages("page.productsCatalog.modal.distProduct.table.column.medPrice"),
         dataField: "localMedPrice",
+        type: 'number',
         headerStyle: { 'width': '15%' },
         classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell'
       }, {
         text: IntlMessages("page.productsCatalog.modal.distProduct.table.column.maxPrice"),
         dataField: "localMaxPrice",
+        type: 'number',
         headerStyle: { 'width': '15%' },
         classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell'
+      }, {
+        text: IntlMessages("page.productsCatalog.modal.distProduct.table.column.default"),
+        dataField: "isDefault",
+        type: 'boolean',
+        headerStyle: { 'width': '10%' }
+      }, {
+        // Acciones propias: la default no muestra el botón de eliminar (ni se puede desactivar).
+        id: 'distActions',
+        header: ' ',
+        headerStyle: { 'width': '15%' },
+        cell: ({ row }) => (
+          <div className="btn-group">
+            <XReactTableActionButton buttonItem={{ color: 'warning', icon: 'pencil', toolTip: IntlMessages('button.edit'), onClick: fnEditDetaItem }} row={row} />
+            {canDeleteDistribution(row.original) && (
+              <XReactTableActionButton buttonItem={{ color: 'danger', icon: 'trash', toolTip: IntlMessages('button.delete'), onClick: fnConfirmDelete }} row={row} />
+            )}
+          </div>
+        )
       }
     ],
     data: detaDist,
-    actions: [{
-      color: 'warning',
-      icon: 'pencil',
-      toolTip: IntlMessages('button.edit'),
-      onClick: fnEditDetaItem
-    }, {
-      color: 'danger',
-      icon: 'trash',
-      toolTip: IntlMessages('button.delete'),
-      onClick: fnDeleteDetaItem
-    }]
-  });
+    actions: []
+  };
+
+  const propsToMsgDelete = {
+    open: itemToDelete !== null,
+    setOpen: (open) => { if (!open) setItemToDelete(null); },
+    fnOnOk: fnDeleteDetaItem,
+    title: "alert.question.title",
+    textLegend: itemToDelete ? `${itemToDelete.undOutName || ''}` : ''
+  };
 
   useEffect(() => {
     fnGetDistData();
@@ -158,11 +167,13 @@ const UseModalDistProducts = (props) => {
     table,
     formState,
     formValidation,
-    isFormValid,
     onInputChange,
     sendForm,
+    isEditingDefault: isDefaultRow(formState),
     fnClearDetaItem,
-    fnSaveDetaItem
+    fnSaveDetaItem,
+    fnCalculatePrices,
+    propsToMsgDelete
   }
 }
 

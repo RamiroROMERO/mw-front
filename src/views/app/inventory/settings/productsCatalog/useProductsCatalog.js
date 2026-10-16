@@ -12,9 +12,11 @@ import ModalStockControl from "./ModalStockControl";
 import ModalCosts from "./ModalCosts";
 import ModalCopy from "./ModalCopy";
 import ModalAddToStores from "./ModalAddToStores";
+import ModalDistributeAll from "./ModalDistributeAll";
 import { NotificationManager } from "@Components/common/react-notifications";
 import { validateProduct, buildProductPayload } from "./productRules";
 import { shouldLookupByCode, canApplyLookup } from "./productLookupRules";
+import { recalculatePrice, recalculateAllPrices, calculateTaxValue, defaultPercentsPatch } from "./priceRules";
 
 const useProductsCatalog = ({ setLoading }) => {
 
@@ -43,6 +45,7 @@ const useProductsCatalog = ({ setLoading }) => {
   const [openModalCosts, setOpenModalCosts] = useState(false);
   const [openModalCopy, setOpenModalCopy] = useState(false);
   const [openModalAddToStores, setOpenModalAddToStores] = useState(false);
+  const [openModalDistributeAll, setOpenModalDistributeAll] = useState(false);
   const [createdProductCode, setCreatedProductCode] = useState('');
 
   const msgCopySelectProduct = IntlMessagesFn('msg.copy.selectProduct');
@@ -228,9 +231,29 @@ const useProductsCatalog = ({ setLoading }) => {
     });
   }, []);
 
+  // "Nuevo" (SPEC v2-09-sr): limpia el formulario y carga en las seis casillas de porcentaje los de `inv_porp`. Sin fila o con
+  // una falla quedan en 0 y no se avisa. La respuesta no se aplica si mientras tanto se cargó otro producto.
   const fnNewProduct = () => {
     onResetForm();
     setSendForm(false);
+    request.GET('inventory/settings/productsPercentages/default', (res) => {
+      if (validInt(currentRef.current.id) !== 0) return;
+      setBulkForm(defaultPercentsPatch(res?.data));
+    }, () => { });
+  }
+
+  // Al salir de una casilla de porcentaje (pestaña Precios): calcula su valor y su total con el costo del tipo de cálculo.
+  const fnCalculatePriceOf = (event) => {
+    setBulkForm(recalculatePrice(formState, event.target.name));
+  }
+
+  // Cambio de un dato que entra en el cálculo (costo, tipo de costo, impuesto, "incluye ISV"): guarda el cambio y recalcula las
+  // casillas con porcentaje. Solo lo dispara el usuario: cargar un producto no recalcula, para no pisar sus precios guardados.
+  const onCostInputChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    const next = { ...formState, [name]: type === 'checkbox' ? checked : value };
+    onInputChange(event);
+    setBulkForm({ ...recalculateAllPrices(next), taxValue: calculateTaxValue(next).toFixed(2) });
   }
 
   const fnSearchProduct = () => {
@@ -319,6 +342,11 @@ const useProductsCatalog = ({ setLoading }) => {
   const fnDistribution = () => {
     if (code === '' || validInt(id) === 0) return;
     setOpenModalDistProduct(true)
+  };
+
+  // "Distribuir Todos" no depende del producto cargado: actúa sobre todos los que no tienen distribución.
+  const fnDistributeAll = () => {
+    setOpenModalDistributeAll(true);
   };
 
   const fnImages = () => {
@@ -470,6 +498,11 @@ const useProductsCatalog = ({ setLoading }) => {
         title: "button.copy",
         icon: "bi bi-files",
         onClick: fnCopy
+      },
+      {
+        title: "button.distributeAll",
+        icon: "bi bi-diagram-3-fill",
+        onClick: fnDistributeAll
       }
     ],
     buttonsAdmin: []
@@ -498,7 +531,19 @@ const useProductsCatalog = ({ setLoading }) => {
       productId: id,
       productCode: code,
       productName: name,
-      listPackagingUnits
+      listPackagingUnits,
+      product: formState
+    }
+  }
+
+  const propsToModalDistributeAll = {
+    ModalContent: ModalDistributeAll,
+    title: "page.productsCatalog.modal.distAll.title",
+    open: openModalDistributeAll,
+    setOpen: setOpenModalDistributeAll,
+    maxWidth: 'lg',
+    data: {
+      setLoading
     }
   }
 
@@ -621,6 +666,8 @@ const useProductsCatalog = ({ setLoading }) => {
     formValidation,
     isFormValid,
     onInputChange,
+    onCostInputChange,
+    fnCalculatePriceOf,
     onResetForm,
     setBulkForm,
     listClassifications,
@@ -644,6 +691,7 @@ const useProductsCatalog = ({ setLoading }) => {
     propsToMsgCode,
     propsToModalViewProd,
     propsToModalDistProduct,
+    propsToModalDistributeAll,
     propsToModalAddTrademarks,
     propsToModalCompProduct,
     propsToModalImagesProduct,

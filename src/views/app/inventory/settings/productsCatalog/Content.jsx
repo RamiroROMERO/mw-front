@@ -20,6 +20,8 @@ const ProductsCatalog = (props) => {
   const { formState,
     formValidation,
     onInputChange,
+    onCostInputChange,
+    fnCalculatePriceOf,
     propsToControlPanel,
     propsToMsgDeleteProduct,
     propsToMsgCode,
@@ -38,7 +40,7 @@ const ProductsCatalog = (props) => {
     fnLoadByCode,
     listProducts,
     dataStock,
-    propsToModalDistProduct, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalStockControl, propsToModalCosts, propsToModalCopy, propsToModalAddToStores } = useProductsCatalog({ setLoading });
+    propsToModalDistProduct, propsToModalDistributeAll, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalStockControl, propsToModalCosts, propsToModalCopy, propsToModalAddToStores } = useProductsCatalog({ setLoading });
 
   const { id, code, name, isDisabled, description, packQty, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
     typeCalculatePrice, typeCalculateCost, percentLocalPriceMin, valuePercentLocalPriceMin, priceLocalMin, percentLocalPriceMid,
@@ -255,7 +257,7 @@ const ProductsCatalog = (props) => {
                                   value={costValue}
                                   id="costValue"
                                   name="costValue"
-                                  onChange={onInputChange}
+                                  onChange={onCostInputChange}
                                   type="text"
                                   label="page.productsCatalog.modal.newProduct.input.averageCost"
                                   invalid={sendForm && !!costValueValid}
@@ -266,7 +268,7 @@ const ProductsCatalog = (props) => {
                                 <InputField
                                   value={maxCostValue}
                                   name="maxCostValue"
-                                  onChange={onInputChange}
+                                  onChange={onCostInputChange}
                                   type="text"
                                   label="page.productsCatalog.modal.newProduct.input.maxCost"
                                 />
@@ -277,7 +279,7 @@ const ProductsCatalog = (props) => {
                                 <InputField
                                   value={lastCostValue}
                                   name="lastCostValue"
-                                  onChange={onInputChange}
+                                  onChange={onCostInputChange}
                                   type="text"
                                   label="page.productsCatalog.modal.newProduct.input.lastPrice"
                                 />
@@ -286,7 +288,7 @@ const ProductsCatalog = (props) => {
                                 <SimpleSelect
                                   value={percentTax}
                                   name="percentTax"
-                                  onChange={onInputChange}
+                                  onChange={onCostInputChange}
                                   invalid={sendForm && !!percentTaxValid}
                                   feedbackText={sendForm && (percentTaxValid || null)}
                                   options={listTaxPercent}
@@ -341,7 +343,7 @@ const ProductsCatalog = (props) => {
                             label="page.productsCatalog.modal.newProduct.title.inventoryCostOpt"
                             name="typeCalculateCost"
                             value={typeCalculateCost}
-                            onChange={onInputChange}
+                            onChange={onCostInputChange}
                             options={
                               [
                                 { id: 1, label: "page.productsCatalog.modal.newProduct.input.averageCost" },
@@ -426,6 +428,7 @@ const ProductsCatalog = (props) => {
                                           value={percentLocalPriceMin}
                                           name="percentLocalPriceMin"
                                           onChange={onInputChange}
+                                          onBlur={fnCalculatePriceOf}
                                           type="text"
                                         />
                                       </td>
@@ -453,6 +456,7 @@ const ProductsCatalog = (props) => {
                                           value={percentLocalPriceMid}
                                           name="percentLocalPriceMid"
                                           onChange={onInputChange}
+                                          onBlur={fnCalculatePriceOf}
                                           type="text"
                                         />
                                       </td>
@@ -480,6 +484,7 @@ const ProductsCatalog = (props) => {
                                           value={percentLocalPriceMax}
                                           name="percentLocalPriceMax"
                                           onChange={onInputChange}
+                                          onBlur={fnCalculatePriceOf}
                                           type="text"
                                         />
                                       </td>
@@ -527,6 +532,7 @@ const ProductsCatalog = (props) => {
                                           value={percentOutsidePriceMin}
                                           name="percentOutsidePriceMin"
                                           onChange={onInputChange}
+                                          onBlur={fnCalculatePriceOf}
                                           type="text"
                                         />
                                       </td>
@@ -554,6 +560,7 @@ const ProductsCatalog = (props) => {
                                           value={percentOutsidePriceMid}
                                           name="percentOutsidePriceMid"
                                           onChange={onInputChange}
+                                          onBlur={fnCalculatePriceOf}
                                           type="text"
                                         />
                                       </td>
@@ -581,6 +588,7 @@ const ProductsCatalog = (props) => {
                                           value={percentOutsidePriceMax}
                                           name="percentOutsidePriceMax"
                                           onChange={onInputChange}
+                                          onBlur={fnCalculatePriceOf}
                                           type="text"
                                         />
                                       </td>
@@ -668,7 +676,7 @@ const ProductsCatalog = (props) => {
                           </Colxx>
                           <Colxx xxs="12" sm="6" md="6" lg="4" xl="3">
                             <Checkbox
-                              onChange={onInputChange}
+                              onChange={onCostInputChange}
                               name="priceIncludeTax"
                               value={priceIncludeTax}
                               label="page.productsCatalog.modal.newProduct.check.priceIncludeTax"
@@ -756,6 +764,7 @@ const ProductsCatalog = (props) => {
       </Row>
       <Modal {...propsToModalViewProd} />
       <Modal {...propsToModalDistProduct} />
+      <Modal {...propsToModalDistributeAll} />
       <Modal {...propsToModalAddTrademarks} />
       <Modal {...propsToModalCompProduct} />
       <Modal {...propsToModalImagesProduct} />
