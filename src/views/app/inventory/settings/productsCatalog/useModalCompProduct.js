@@ -1,94 +1,197 @@
-import { request } from "@Helpers/core";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { IntlMessages, validInt } from "@Helpers/Utils";
+import { request, buildUrl } from "@Helpers/core";
 import { useForm } from "@Hooks";
-import { useEffect, useState } from "react";
+import {
+  emptyComponentForm, mapComponentToForm, validateComponent, buildComponentPayload, componentOptions, unitOptions
+} from "./compoundRules";
 
+const componentsUrl = (fatherId) => `inventory/settings/products/${fatherId}/components`;
+const DISTRIBUTIONS_URL = 'inventory/settings/productsDistributions';
+const PRODUCTS_SL_URL = 'inventory/settings/products/getSL';
 
-export const useModalCompProduct = ({ setLoading, fatherCode }) => {
+// Componentes del producto compuesto (SPEC v2-11-sr). `fatherId` y `fatherCode` son el id y el código del producto compuesto.
+// Las reglas son las del back (compoundRules.js): aquí solo se evita llamar al back con lo que ya se sabe rechazado; los
+// rechazos del back (ciclo, duplicado, unidad, ...) los muestra `request` con su mensaje real.
+export const useModalCompProduct = ({ setLoading, fatherId, fatherCode }) => {
 
-  const [detaDist, setDetaDist] = useState([]);
+  const [components, setComponents] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [units, setUnits] = useState([]);
   const [sendForm, setSendForm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const lastUnitsRequest = useRef(0);
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
-    id: 0,
+  const { formState, onInputChange, onResetForm, setBulkForm } = useForm(emptyComponentForm());
+  const { id } = formState;
+  const isEdit = validInt(id) > 0;
+
+  // Errores por campo (mismas reglas que el back) y su forma `<campo>Valid`, como el resto de los modales.
+  const errors = useMemo(() => validateComponent(formState, { fatherCode, isEdit }), [formState, fatherCode, isEdit]);
+  const formValidation = useMemo(() => ({
+    productCodeValid: errors.productCode || null,
+    unitedOutValid: errors.unitedOut || null,
+    qtyValid: errors.qty || null
+  }), [errors]);
+
+  // Combo de componentes: en el alta no ofrece al padre ni a los que ya son componentes; al editar, el producto es fijo y
+  // tiene que seguir apareciendo en la lista.
+  const productOptions = useMemo(() => componentOptions(products, {
     fatherCode,
-    productCode: "",
-    qty: 0,
-    status: true
-  });
+    existingCodes: isEdit ? [] : components.map((c) => c.productCode)
+  }), [products, components, fatherCode, isEdit]);
 
-  const fnEditDetaItem = () => {
+  const fnGetComponents = () => {
+    setLoading(true);
+    request.GET(componentsUrl(fatherId), (res) => {
+      setComponents(res?.data || []);
+      setLoading(false);
+    }, () => {
+      setComponents([]);
+      setLoading(false);
+    });
+  };
 
-  }
+  const fnGetProducts = () => {
+    request.GET(buildUrl(PRODUCTS_SL_URL, { isRemoved: 0 }), (res) => {
+      setProducts((res?.data || []).map((item) => ({ value: item.code, label: `${item.code} - ${item.name}` })));
+    }, () => setProducts([]));
+  };
 
-  const [table, setTable] = useState({
-    title: "",
+  // Unidades de salida = distribuciones ACTIVAS del componente elegido. Una respuesta tardía de otro producto no pisa a la última.
+  const fnGetUnits = (productCode, { autoSelect = false } = {}) => {
+    const requestId = lastUnitsRequest.current + 1;
+    lastUnitsRequest.current = requestId;
+    if (!productCode) {
+      setUnits([]);
+      return;
+    }
+    request.GET(buildUrl(DISTRIBUTIONS_URL, { productCode }), (res) => {
+      if (lastUnitsRequest.current !== requestId) return;
+      const options = unitOptions(res?.data || []);
+      setUnits(options);
+      if (autoSelect && options.length === 1) setBulkForm({ unitedOut: options[0].id });
+    }, () => {
+      if (lastUnitsRequest.current === requestId) setUnits([]);
+    });
+  };
+
+  // Los combos mandan "0" al limpiar la selección: se guarda como vacío.
+  const onFieldChange = (event) => {
+    const { name } = event.target;
+    const value = event.target.value === '0' ? '' : event.target.value;
+    if (name === 'productCode') {
+      setBulkForm({ productCode: value, unitedOut: '' });
+      fnGetUnits(value, { autoSelect: true });
+      return;
+    }
+    onInputChange({ target: { name, value } });
+  };
+
+  const fnEditItem = (item) => {
+    setSendForm(false);
+    setBulkForm(mapComponentToForm(item));
+    fnGetUnits(item.productCode);
+  };
+
+  const fnReset = () => {
+    setSendForm(false);
+    setUnits([]);
+    lastUnitsRequest.current += 1;
+    onResetForm();
+  };
+
+  const fnSave = () => {
+    setSendForm(true);
+    if (Object.keys(errors).length > 0) return;
+
+    const data = buildComponentPayload(formState, { isEdit });
+    const onDone = () => {
+      fnReset();
+      fnGetComponents();
+    };
+    const onError = () => setLoading(false);
+
+    setLoading(true);
+    if (isEdit) {
+      request.PUT(`${componentsUrl(fatherId)}/${id}`, data, onDone, onError);
+    } else {
+      request.POST(componentsUrl(fatherId), data, onDone, onError);
+    }
+  };
+
+  const fnDelete = () => {
+    const item = itemToDelete;
+    setItemToDelete(null);
+    if (!item) return;
+    setLoading(true);
+    request.DELETE(`${componentsUrl(fatherId)}/${item.id}`, () => {
+      if (validInt(formState.id) === validInt(item.id)) fnReset();
+      fnGetComponents();
+    }, () => setLoading(false));
+  };
+
+  const table = {
+    title: IntlMessages("page.productsCatalog.modal.compProduct.table.title"),
     columns: [
       {
-        text: IntlMessages("select.productId"),
+        text: IntlMessages("page.productsCatalog.modal.compProduct.column.code"),
+        dataField: "productCode",
+        headerStyle: { 'width': '20%' }
+      }, {
+        text: IntlMessages("page.productsCatalog.modal.compProduct.column.name"),
         dataField: "productName",
-        headerStyle: { 'width': '60%' }
+        headerStyle: { 'width': '40%' }
       }, {
-        text: IntlMessages("page.invoicing.input.qtyProd"),
+        text: IntlMessages("page.productsCatalog.modal.compProduct.column.unit"),
+        dataField: "unitedOut",
+        headerStyle: { 'width': '15%' }
+      }, {
+        text: IntlMessages("page.productsCatalog.modal.compProduct.column.qty"),
         dataField: "qty",
+        type: 'number',
+        decimals: 2,
         headerStyle: { 'width': '10%' }
-      }, {
-        text: IntlMessages("select.status"),
-        dataField: "status",
-        headerStyle: { 'width': '10%' },
-        classes: 'd-sm-none-table-cell', headerClasses: 'd-sm-none-table-cell'
       }
     ],
-    data: detaDist,
+    data: components,
     actions: [{
       color: 'warning',
       icon: 'pencil',
       toolTip: IntlMessages('button.edit'),
-      onClick: fnEditDetaItem
+      onClick: fnEditItem
+    }, {
+      color: 'danger',
+      icon: 'trash',
+      toolTip: IntlMessages('button.delete'),
+      onClick: setItemToDelete
     }]
-  });
+  };
 
-  const fnGetDetail = () => {
+  const propsToMsgDelete = {
+    open: itemToDelete !== null,
+    setOpen: (open) => { if (!open) setItemToDelete(null); },
+    fnOnOk: fnDelete,
+    title: "alert.question.title",
+    textLegend: itemToDelete ? `${itemToDelete.productCode} - ${itemToDelete.productName || ''}` : ''
+  };
 
-    // request.GET('/', resp => {
-
-    //   const deta = resp.data;
-    //   setDetaDist(deta);
-    // }, err => {
-    // });
-  }
-
-  useEffect(() => fnGetDetail(), []);
-
-  const fnSave = () => {
-
-    setSendForm(true);
-    if (!isFormValid) return;
-
-    const data = { ...formState };
-
-    if (validInt(id) === 0) {
-
-    } else {
-
-    }
-
-  }
-
-  const fnReset = () => {
-    onResetForm();
-
-  }
+  useEffect(() => {
+    fnGetComponents();
+    fnGetProducts();
+  }, []);
 
   return {
     formState,
     formValidation,
-    isFormValid,
-    onInputChange,
-    onResetForm,
-    setBulkForm,
+    sendForm,
+    isEdit,
+    productOptions,
+    units,
+    onFieldChange,
     fnSave,
     fnReset,
-    propsTable: table
-  }
-}
+    propsTable: table,
+    propsToMsgDelete
+  };
+};

@@ -68,7 +68,7 @@ const ControlPanel = (props) => {
           <ButtonGroup>
             {buttonsHome.map((item, key) => {
               return (
-                item ? <Button color="light" className="btn-control-panel" key={`buttonsHome-${key}`} onClick={item.onClick}><i className={item.icon} /><br /> {IntlMessages(item.title)}</Button> : ""
+                item ? <Button color="light" className="btn-control-panel" key={`buttonsHome-${key}`} onClick={item.onClick} disabled={Boolean(item.disabled)}><i className={item.icon} /><br /> {IntlMessages(item.title)}</Button> : ""
               )
             })}
           </ButtonGroup>

@@ -60,7 +60,7 @@ export const validateProduct = (form) => {
 const PAYLOAD_FIELDS = [
   'code', 'name', 'description', 'type', 'chargesTax', 'percentTax', 'typeId', 'undinId', 'undoutId', 'packId', 'tradeId', 'packQty',
   'typeCalculateCost', 'typeCalculatePrice', 'enableForPurchase', 'enableForSale', 'requireExpLot', 'validToSale', 'paymentComiss',
-  'priceIncludeTax', 'isDisabled',
+  'priceIncludeTax', 'isDisabled', 'isCompound',
   'percentLocalPriceMin', 'valuePercentLocalPriceMin', 'priceLocalMin', 'percentLocalPriceMid', 'valuePercentLocalPriceMid', 'priceLocalMid',
   'percentLocalPriceMax', 'valuePercentLocalPriceMax', 'priceLocalMax', 'percentOutsidePriceMin', 'valuePercentOutsidePriceMin', 'priceOutsideMin',
   'percentOutsidePriceMid', 'valuePercentOutsidePriceMid', 'priceOutsideMid', 'percentOutsidePriceMax', 'valuePercentOutsidePriceMax', 'priceOutsideMax',
@@ -75,7 +75,7 @@ export const buildProductPayload = (form, { isNew = false } = {}) => {
   if (typeof payload.code === 'string') payload.code = payload.code.trim();
   if (typeof payload.name === 'string') payload.name = payload.name.trim();
   // INTEGER en la DB: la casilla entrega booleano.
-  ['chargesTax', 'isDisabled'].forEach((f) => { if (payload[f] !== undefined) payload[f] = isOn(payload[f]) ? 1 : 0; });
+  ['chargesTax', 'isDisabled', 'isCompound'].forEach((f) => { if (payload[f] !== undefined) payload[f] = isOn(payload[f]) ? 1 : 0; });
   payload.parentProduct = isNew || isBlank(form?.parentProduct) || form?.parentProduct === 0 ? payload.code : form.parentProduct;
   return payload;
 };

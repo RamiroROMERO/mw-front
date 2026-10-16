@@ -118,4 +118,13 @@ describe('buildProductPayload', () => {
     const payload = buildProductPayload({ ...FORM, code: ' A1 ', name: ' Arroz ' });
     expect(payload).toMatchObject({ code: 'A1', name: 'Arroz' });
   });
+
+  // SPEC v2-11-sr: "Producto compuesto" viaja como 0/1 (columna INTEGER); el back rechaza desmarcarlo con componentes.
+  it.each([[true, 1], [1, 1], ['1', 1], [false, 0], [0, 0], ['0', 0]])('isCompound %p se envía como %p', (value, expected) => {
+    expect(buildProductPayload({ ...FORM, isCompound: value }).isCompound).toBe(expected);
+  });
+
+  it('un formulario sin isCompound no lo envía', () => {
+    expect(buildProductPayload(FORM)).not.toHaveProperty('isCompound');
+  });
 });

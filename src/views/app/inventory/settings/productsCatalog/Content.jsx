@@ -42,7 +42,7 @@ const ProductsCatalog = (props) => {
     dataStock,
     propsToModalDistProduct, propsToModalDistributeAll, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalCosts, propsToModalCopy, propsToModalAddToStores } = useProductsCatalog({ setLoading, canEditCosts });
 
-  const { id, code, name, isDisabled, description, packQty, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
+  const { id, code, name, isDisabled, isCompound, description, packQty, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
     typeCalculatePrice, typeCalculateCost, percentLocalPriceMin, valuePercentLocalPriceMin, priceLocalMin, percentLocalPriceMid,
     valuePercentLocalPriceMid, priceLocalMid, percentLocalPriceMax, valuePercentLocalPriceMax, priceLocalMax, percentOutsidePriceMin, valuePercentOutsidePriceMin, priceOutsideMin, percentOutsidePriceMid, valuePercentOutsidePriceMid, priceOutsideMid, percentOutsidePriceMax, valuePercentOutsidePriceMax, priceOutsideMax, parentProduct, notes, enableForPurchase, enableForSale, chargesTax, requireExpLot, validToSale, paymentComiss, priceIncludeTax, dateLastPurchase, numLastPurchase, provLastPurchase, typeId, undinId, undoutId, packId, tradeId } = formState;
 
@@ -139,6 +139,12 @@ const ProductsCatalog = (props) => {
                             name="isDisabled"
                             value={isDisabled}
                             label="check.status.inactive"
+                          />
+                          <Checkbox
+                            onChange={onInputChange}
+                            name="isCompound"
+                            value={isCompound}
+                            label="page.productsCatalog.modal.newProduct.check.compound"
                           />
                         </Colxx>
                       </Row>

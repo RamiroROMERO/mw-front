@@ -1,27 +1,25 @@
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { SimpleSelect } from '@Components/simpleSelect';
 import { IntlMessages } from '@Helpers/Utils';
-import { Button, Card, CardBody, CardFooter, ModalBody, ModalFooter, Row } from 'reactstrap'
+import { Button, Card, CardBody, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { useModalCompProduct } from './useModalCompProduct';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { InputField } from '@Components/inputFields';
-import { Checkbox } from '@Components/checkbox';
 import DataTable from '@Components/reactTable';
+import Confirmation from '@Containers/ui/confirmationMsg';
 
 export const ModalCompProduct = ({ data }) => {
 
-  const { productCode: fatherCode, productName, setLoading, listProducts } = data;
+  const { productId: fatherId, productCode: fatherCode, productName, setLoading } = data;
 
-  const listProductsFilter = listProducts.filter(elem => elem.code !== fatherCode);
+  const {
+    formState, formValidation, sendForm, isEdit, productOptions, units, onFieldChange, fnSave, fnReset, propsTable, propsToMsgDelete
+  } = useModalCompProduct({ setLoading, fatherId, fatherCode });
 
-  const { formState, formValidation, onInputChange, sendForm, propsTable, fnSave, fnReset } = useModalCompProduct({ setLoading, fatherCode });
-
-  const { productCode, qty, status } = formState;
-  const { productCodeValid, qtyValid } = formValidation;
-
+  const { productCode, unitedOut, qty } = formState;
+  const { productCodeValid, unitedOutValid, qtyValid } = formValidation;
 
   return (
-
     <>
       <ModalBody>
         <Row>
@@ -34,15 +32,27 @@ export const ModalCompProduct = ({ data }) => {
         <Card className='mb-2'>
           <CardBody>
             <Row>
-              <Colxx xxs={12} md={8}>
+              <Colxx xxs={12} md={6}>
                 <SearchSelect
-                  value={productCode}
+                  label="page.productsCatalog.modal.compProduct.component"
                   name="productCode"
-                  onChange={onInputChange}
-                  options={listProductsFilter}
-                  label="select.productId"
-                  invalid={sendForm && !!productCodeValid}
+                  inputValue={productCode}
+                  onChange={onFieldChange}
+                  options={productOptions}
+                  isDisabled={isEdit}
                   feedbackText={sendForm && (productCodeValid || null)}
+                />
+              </Colxx>
+              <Colxx xxs={12} md={3}>
+                <SimpleSelect
+                  label="page.productsCatalog.modal.compProduct.unit"
+                  id="unitedOut"
+                  name="unitedOut"
+                  value={unitedOut}
+                  options={units}
+                  onChange={onFieldChange}
+                  invalid={sendForm && !!unitedOutValid}
+                  feedbackText={sendForm && (unitedOutValid || null)}
                 />
               </Colxx>
               <Colxx xxs={12} md={3}>
@@ -52,18 +62,9 @@ export const ModalCompProduct = ({ data }) => {
                   name="qty"
                   type="number"
                   value={qty}
-                  onChange={onInputChange}
+                  onChange={onFieldChange}
                   invalid={sendForm && !!qtyValid}
                   feedbackText={sendForm && (qtyValid || null)}
-                />
-              </Colxx>
-              <Colxx xxs={12} md={3}>
-                <Checkbox
-                  label="check.status"
-                  id="status"
-                  name="status"
-                  value={status}
-                  onChange={onInputChange}
                 />
               </Colxx>
             </Row>
@@ -81,6 +82,7 @@ export const ModalCompProduct = ({ data }) => {
           </Colxx>
         </Row>
       </ModalBody>
+      <Confirmation {...propsToMsgDelete} />
       <ModalFooter>
 
       </ModalFooter>
