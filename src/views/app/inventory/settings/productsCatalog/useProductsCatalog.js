@@ -294,25 +294,23 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
     }
   }
 
-  const fnPrintProduct = () => { }
-
   const fnDeleteProduct = () => {
     if (id > 0) {
       setOpenMsgDeleteProd(true);
     }
   }
 
-  const fnDisableDocument = () => {
+  // Baja lógica (SPEC v2-06-sr): DELETE products/:id. El back la rechaza (product.inUse) si el producto tiene movimientos, documentos,
+  // recetas u otros productos; request.DELETE muestra su mensaje real y el formulario conserva el producto. Solo si responde bien
+  // se limpia el formulario. La casilla "Deshabilitado" (isDisabled) es otro camino y no se toca aquí.
+  const fnRemoveProduct = () => {
     setOpenMsgDeleteProd(false);
-    const data = {
-      isDisabled: 1
-    }
     if (id && id > 0) {
       setLoading(true);
-      request.PUT(`inventory/settings/products/${id}`, data, () => {
+      request.DELETE(`inventory/settings/products/${id}`, () => {
         fnNewProduct();
         setLoading(false);
-      }, (err) => {
+      }, () => {
         setLoading(false);
       });
     }
@@ -431,7 +429,6 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
     fnNew: fnNewProduct,
     fnSearch: fnSearchProduct,
     fnSave: fnSaveProduct,
-    fnPrint: fnPrintProduct,
     fnDelete: fnDeleteProduct,
     buttonsHome: [
       {
@@ -639,7 +636,7 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
   const propsToMsgDeleteProduct = {
     open: openMsgDeleteProd,
     setOpen: setOpenMsgDeleteProd,
-    fnOnOk: fnDisableDocument,
+    fnOnOk: fnRemoveProduct,
     title: "alert.question.title"
   }
 
