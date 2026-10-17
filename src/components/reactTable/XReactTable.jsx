@@ -19,7 +19,7 @@ import { XTd } from "./XTd";
 import PaginationBackend from "./PaginationBackend";
 
 const DataTable = ({ title, columns = [], data = [], options = {}, actions = [], hideShowColumns = {} }) => {
-  let { enabledRowSelection, enabledActionButtons, setRowSelected, pageSize, pageSizeOptions, showViewColumns, typePagination = 1, currentPage, totalPages, setCurrentPage, setSearch } = options;
+  let { enabledRowSelection, enabledActionButtons, setRowSelected, pageSize, pageSizeOptions, showViewColumns, typePagination = 1, currentPage, totalPages, setCurrentPage, setSearch, searchDebounceMs, paginationSummary, bare = false, searchFullWidth = false, searchAutoFocus = false } = options;
 
   if (actions.length > 0) enabledActionButtons = true;
   const finalData = data;
@@ -88,11 +88,15 @@ const DataTable = ({ title, columns = [], data = [], options = {}, actions = [],
     }
   }, [data, filtering]);
 
+  // `bare`: sin Card (para usarla dentro de un modal, que ya tiene su propio marco).
+  const Wrapper = bare ? React.Fragment : Card;
+  const Body = bare ? React.Fragment : CardBody;
+
   return (
     <>
-      <Card>
-        <CardBody>
-          <XReactTableHeader tableInstance={tableInstance} title={title} filtering={filtering} setFiltering={setFiltering} actions={actions} showViewColumns={showViewColumns} setSearch={setSearch} setCurrentPage={setCurrentPage} typePagination={typePagination} />
+      <Wrapper>
+        <Body>
+          <XReactTableHeader tableInstance={tableInstance} title={title} filtering={filtering} setFiltering={setFiltering} actions={actions} showViewColumns={showViewColumns} setSearch={setSearch} setCurrentPage={setCurrentPage} typePagination={typePagination} searchDebounceMs={searchDebounceMs} searchFullWidth={searchFullWidth} searchAutoFocus={searchAutoFocus} />
           <XTable>
             <thead>
               {tableInstance.getHeaderGroups().map((headerEl) => {
@@ -140,10 +144,10 @@ const DataTable = ({ title, columns = [], data = [], options = {}, actions = [],
               <Label> Total Rows {tableInstance.getRowModel().rows.length} </Label>
             </>
             :
-            <PaginationBackend currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
+            <PaginationBackend currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} summary={paginationSummary} />
           }
-        </CardBody>
-      </Card>
+        </Body>
+      </Wrapper>
     </>
   );
 };
@@ -187,6 +191,16 @@ DataTable.propTypes = {
     showViewColumns: PropTypes.bool,
     pageSize: PropTypes.number,
     pageSizeOptions: PropTypes.array,
+    typePagination: PropTypes.number, // 1 = en el navegador (por defecto), 2 = en el servidor
+    currentPage: PropTypes.number, // paginación en el servidor: página actual (desde 1)
+    totalPages: PropTypes.number,
+    setCurrentPage: PropTypes.func,
+    setSearch: PropTypes.func,
+    searchDebounceMs: PropTypes.number, // paginación en el servidor: búsqueda incremental (sin botón) tras N ms
+    paginationSummary: PropTypes.string, // paginación en el servidor: texto de rango, ej. "1-50 / 321"
+    bare: PropTypes.bool, // sin Card
+    searchAutoFocus: PropTypes.bool, // paginación en el servidor: el cursor queda en el cuadro de búsqueda
+    searchFullWidth: PropTypes.bool, // paginación en el servidor: el cuadro de búsqueda ocupa todo el ancho
   })
 }
 

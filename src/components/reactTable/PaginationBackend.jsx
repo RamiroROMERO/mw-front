@@ -4,7 +4,11 @@ import {
   PaginationLink,
 } from "reactstrap";
 
-const PaginationBackend = ({ currentPage, totalPages, setCurrentPage }) => {
+// Centra vertical y horizontalmente el contenido de cada botón (íconos y números quedaban pegados abajo).
+const linkStyle = { display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '36px', height: '36px', lineHeight: 1, padding: 0 };
+
+// `summary` (opcional): texto de rango, por ejemplo "1-50 / 321", que se muestra bajo los botones.
+const PaginationBackend = ({ currentPage, totalPages, setCurrentPage, summary }) => {
 
   const handlePageChange = (page) => {
     if (page > 0 && page <= totalPages) {
@@ -36,7 +40,7 @@ const PaginationBackend = ({ currentPage, totalPages, setCurrentPage }) => {
       const active = currentPage === i;
       pageButtons.push(
         <PaginationItem key={i} active={active}>
-          <PaginationLink onClick={() => setCurrentPage(i)}>{i}</PaginationLink>
+          <PaginationLink style={linkStyle} onClick={() => setCurrentPage(i)}>{i}</PaginationLink>
         </PaginationItem>
       );
     }
@@ -44,9 +48,11 @@ const PaginationBackend = ({ currentPage, totalPages, setCurrentPage }) => {
   };
 
   return (
+    <>
     <Pagination className="d-flex justify-content-center">
       <PaginationItem disabled={currentPage === 1}>
         <PaginationLink
+          style={linkStyle}
           onClick={() => handlePageChange(1)}
         >
           <i className="bi bi-chevron-double-left" />
@@ -55,6 +61,7 @@ const PaginationBackend = ({ currentPage, totalPages, setCurrentPage }) => {
 
       <PaginationItem disabled={currentPage === 1}>
         <PaginationLink
+          style={linkStyle}
           onClick={() => handlePageChange(currentPage - 1)}
         >
           <i className="bi bi-chevron-left" />
@@ -66,7 +73,7 @@ const PaginationBackend = ({ currentPage, totalPages, setCurrentPage }) => {
             key={index + 1}
             active={currentPage === index + 1}
           >
-            <PaginationLink onClick={() => handlePageChange(index + 1)}>
+            <PaginationLink style={linkStyle} onClick={() => handlePageChange(index + 1)}>
               {index + 1}
             </PaginationLink>
           </PaginationItem>
@@ -74,6 +81,7 @@ const PaginationBackend = ({ currentPage, totalPages, setCurrentPage }) => {
 
       <PaginationItem disabled={currentPage === totalPages}>
         <PaginationLink
+          style={linkStyle}
           onClick={() => handlePageChange(currentPage + 1)}
         >
           <i className="bi bi-chevron-right" />
@@ -82,12 +90,15 @@ const PaginationBackend = ({ currentPage, totalPages, setCurrentPage }) => {
 
       <PaginationItem disabled={currentPage === totalPages}>
         <PaginationLink
+          style={linkStyle}
           onClick={() => handlePageChange(totalPages)}
         >
           <i className="bi bi-chevron-double-right" />
         </PaginationLink>
       </PaginationItem>
     </Pagination>
+    {summary && <div className="text-center text-muted small" data-testid="backend-page-range">{summary}</div>}
+    </>
   )
 }
 

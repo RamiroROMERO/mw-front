@@ -340,10 +340,17 @@ const request = {
     })
       .then(parseBlobResponse)
       .then((blob) => {
+        // El enlace va dentro del documento (algunos navegadores ignoran `download` en uno suelto y guardan el blob con
+        // un nombre al azar y sin extensión) y la URL se libera después de que el navegador la tomó.
+        const objectUrl = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
-        a.href = window.URL.createObjectURL(blob);
+        a.href = objectUrl;
         a.download = fileName;
+        a.style.display = 'none';
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
+        setTimeout(() => window.URL.revokeObjectURL(objectUrl), 10000);
         if (typeof fnSuccess === 'function') fnSuccess(blob);
         return blob;
       })
