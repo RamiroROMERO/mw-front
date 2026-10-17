@@ -40,7 +40,7 @@ const ProductsCatalog = (props) => {
     fnLoadByCode,
     listProducts,
     dataStock,
-    propsToModalDistProduct, propsToModalDistributeAll, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalCosts, propsToModalCopy, propsToModalAddToStores } = useProductsCatalog({ setLoading, canEditCosts });
+    propsToModalDistProduct, propsToModalDistributeAll, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalCosts, propsToModalCopy, propsToModalAddToStores, propsToModalExport } = useProductsCatalog({ setLoading, canEditCosts });
 
   const { id, code, name, isDisabled, isCompound, description, packQty, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
     typeCalculatePrice, typeCalculateCost, percentLocalPriceMin, valuePercentLocalPriceMin, priceLocalMin, percentLocalPriceMid,
@@ -781,6 +781,7 @@ const ProductsCatalog = (props) => {
       <Modal {...propsToModalCosts} />
       <Modal {...propsToModalCopy} />
       <Modal {...propsToModalAddToStores} />
+      <Modal {...propsToModalExport} />
       <Confirmation {...propsToMsgCode} />
       <Confirmation {...propsToMsgDeleteProduct} />
     </>
