@@ -12,6 +12,7 @@ const ModalMW = (props) => {
         fullscreen={fullscreen || "sm"}
         backdrop={true}
         fade={true}
+        onOpened={() => document.querySelector('.modal.show [data-autofocus]')?.focus()}
         labelledBy="mw-modal-title"
       // scrollable
       >

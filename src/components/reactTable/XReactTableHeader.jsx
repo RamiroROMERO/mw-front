@@ -3,7 +3,7 @@ import IntlMessages from '@Helpers/IntlMessages';
 import DropdownSelect from '@Components/DropdownSelect/DropdownSelect';
 import SearchBackend from './SearchBackend';
 
-export const XReactTableHeader = ({ title, filtering, setFiltering, actions, tableInstance, showViewColumns, setSearch, setCurrentPage, typePagination }) => {
+export const XReactTableHeader = ({ title, filtering, setFiltering, actions, tableInstance, showViewColumns, setSearch, setCurrentPage, typePagination, searchDebounceMs, searchFullWidth, searchAutoFocus }) => {
 
   const qtyActionButtons = actions.filter(action => action.isFreeAction).length;
   const filterRandomId = Math.round(Math.random() * 1000000)
@@ -13,7 +13,7 @@ export const XReactTableHeader = ({ title, filtering, setFiltering, actions, tab
         <h4>{title}</h4>
       </div>
       <div className='table-hw-header' style={{ display: "flex", flexWrap: "wrap" }}>
-        <div className="m-1" style={{ flexGrow: 0, width: "200px", minWidth: "50px" }} >
+        <div className="m-1" style={searchFullWidth ? { flexGrow: 1, width: "100%" } : { flexGrow: 0, width: "200px", minWidth: "50px" }} >
           {typePagination===1?
             <Form>
               <Label className="form-group has-float-label">
@@ -30,7 +30,7 @@ export const XReactTableHeader = ({ title, filtering, setFiltering, actions, tab
               </Label>
             </Form>
             :
-            <SearchBackend setSearch={setSearch} setCurrentPage={setCurrentPage}/>
+            <SearchBackend setSearch={setSearch} setCurrentPage={setCurrentPage} debounceMs={searchDebounceMs} fullWidth={searchFullWidth} autoFocus={searchAutoFocus} />
           }
         </div>
         <div className="m-1 d-flex justify-content-end" style={{ flexGrow: 1, alignContent: "right", alignItems: 'right' }}>
