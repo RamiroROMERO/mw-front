@@ -17,6 +17,7 @@ import ModalDistributeAll from "./ModalDistributeAll";
 import { NotificationManager } from "@Components/common/react-notifications";
 import { validateProduct, buildProductPayload } from "./productRules";
 import { shouldLookupByCode, canApplyLookup } from "./productLookupRules";
+import { normalizeStock, shouldFetchStock } from "./stockRules";
 import { recalculatePrice, recalculateAllPrices, calculateTaxValue, defaultPercentsPatch } from "./priceRules";
 
 const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
@@ -29,7 +30,8 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
   const [dataProducts, setDataProducts] = useState([]);
   const [activeTab, setActiveTab] = useState('1');
   const [activeTabPrices, setActiveTabPrices] = useState('1');
-  const [dataStock, setDataStock] = useState([]);
+  // Existencias por almacén (SPEC v2-14-sr): filas, total y si aplican al tipo de producto. Vienen del kardex vía el back.
+  const [stock, setStock] = useState(() => normalizeStock(null));
   const [dataImages, setDataImages] = useState([]);
   const listTaxPercent = [{ id: "0.00", name: "0.00" }, { id: "15.00", name: "15.00" }, { id: "18.00", name: "18.00" }];
   const [sendForm, setSendForm] = useState(false);
@@ -52,6 +54,7 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
   const msgCopyMissingClassificationType = IntlMessagesFn('msg.copy.missingClassificationType');
   const msgCopyMissingUnits = IntlMessagesFn('msg.copy.missingUnits');
   const msgCopyZeroCost = IntlMessagesFn('msg.copy.zeroCost');
+  const msgRefreshStockSuccess = IntlMessagesFn('page.productsCatalog.msg.refreshStockSuccess');
 
   const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
@@ -126,6 +129,33 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
   const currentRef = useRef({ id, code });
   currentRef.current = { id, code };
 
+  // Pide las existencias del producto cargado (SPEC v2-14-sr). Una respuesta vieja nunca pisa a una más nueva. Si falla, el grid
+  // queda vacío y no se avisa (igual que la última compra): la pantalla sigue siendo usable.
+  const stockRequestRef = useRef(0);
+  const fnLoadStock = (productCode) => {
+    const requestId = ++stockRequestRef.current;
+    request.GET(`inventory/settings/products/getStock/${encodeURIComponent(String(productCode).trim())}`, (res) => {
+      if (requestId !== stockRequestRef.current) return;
+      setStock(normalizeStock(res?.data));
+    }, () => {
+      if (requestId !== stockRequestRef.current) return;
+      setStock(normalizeStock(null));
+    });
+  }
+
+  // "Actualizar existencias" (SPEC v2-14-sr): recalcula inv_bodprod.existe de toda la empresa (productsStore/refreshStock,
+  // privilegio 01.05.006 de Almacenes y Productos). Con un producto cargado vuelve a pedir su grid. Un rechazo (por ejemplo el 403
+  // sin 01.05.006) muestra el mensaje real del back y el grid no cambia.
+  const fnRefreshStock = () => {
+    setLoading(true);
+    request.POST('inventory/settings/productsStore/refreshStock', {}, () => {
+      NotificationManager.success(msgRefreshStockSuccess, '', 4000, null, null, '');
+      if (shouldFetchStock(currentRef.current)) fnLoadStock(currentRef.current.code);
+    }, (err) => {
+      notifyError(err, 'page.productsCatalog.msg.refreshStockError');
+    }, false, () => setLoading(false));
+  }
+
   // Pide el código al back (SPEC v2-07-sr): reserva el siguiente número de la clasificación elegida, o el contador de la
   // empresa si no hay ninguna. Un rechazo muestra su mensaje real y el código no cambia.
   const fnGenerateCode = () => {
@@ -152,6 +182,7 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
     item.taxValue = tax;
     setBulkForm(item);
     setOpenModalProducts(false);
+    fnLoadStock(item.code);
     request.GET(`inventory/settings/products/getLastPurchase/${item.code}`, res => {
       const { data } = res;
       const purchaseData = { dateLastPurchase: data?.date ? formatDate(data.date) : '', provLastPurchase: data?.providerName || '', numLastPurchase: data?.numCai || '' }
@@ -224,6 +255,8 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
   // una falla quedan en 0 y no se avisa. La respuesta no se aplica si mientras tanto se cargó otro producto.
   const fnNewProduct = () => {
     onResetForm();
+    stockRequestRef.current += 1; // descarta una respuesta de existencias en vuelo
+    setStock(normalizeStock(null));
     setSendForm(false);
     request.GET('inventory/settings/productsPercentages/default', (res) => {
       if (validInt(currentRef.current.id) !== 0) return;
@@ -491,6 +524,11 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
         title: "button.distributeAll",
         icon: "bi bi-diagram-3-fill",
         onClick: fnDistributeAll
+      },
+      {
+        title: "button.refreshStock",
+        icon: "bi bi-arrow-repeat",
+        onClick: fnRefreshStock
       }
     ],
     buttonsAdmin: []
@@ -666,7 +704,7 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
     fnConfirmGenerateCode,
     fnLoadByCode,
 
-    dataStock,
+    stock,
     propsToControlPanel,
     propsToMsgDeleteProduct,
     propsToMsgCode,
