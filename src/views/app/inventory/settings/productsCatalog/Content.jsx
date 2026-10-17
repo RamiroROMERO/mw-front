@@ -13,6 +13,7 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import Modal from "@Components/modal";
 import useProductsCatalog from './useProductsCatalog';
 import { MAX_CODE, MAX_NAME, MAX_DESCRIPTION } from './productRules';
+import { formatQty } from './stockRules';
 
 const ProductsCatalog = (props) => {
   const { setLoading, canEditCosts } = props;
@@ -39,8 +40,10 @@ const ProductsCatalog = (props) => {
     fnConfirmGenerateCode,
     fnLoadByCode,
     listProducts,
-    dataStock,
+    stock,
     propsToModalDistProduct, propsToModalDistributeAll, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalCosts, propsToModalCopy, propsToModalAddToStores, propsToModalExport } = useProductsCatalog({ setLoading, canEditCosts });
+  // IntlMessages es un hook: se llama siempre aquí arriba, no dentro de la condición del grid de existencias.
+  const msgStockNotApplies = IntlMessages("page.productsCatalog.stock.notApplies");
 
   const { id, code, name, isDisabled, isCompound, description, packQty, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
     typeCalculatePrice, typeCalculateCost, percentLocalPriceMin, valuePercentLocalPriceMin, priceLocalMin, percentLocalPriceMid,
@@ -709,19 +712,24 @@ const ProductsCatalog = (props) => {
                                 </tr>
                               </thead>
                               <tbody>
-                                {dataStock.map((item, idx) => {
+                                {!stock.applies && (
+                                  <tr id="tr-table-dataStock-notApplies">
+                                    <td colSpan="2" className="text-center text-muted">{msgStockNotApplies}</td>
+                                  </tr>
+                                )}
+                                {stock.rows.map((item) => {
                                   return (
-                                    <tr id={`tr-table-dataStock-${item.id}`} key={idx}>
-                                      <th scope="row">{item.store}</th>
-                                      <td>{item.qty}</td>
+                                    <tr id={`tr-table-dataStock-${item.storeId}`} key={item.storeId}>
+                                      <th scope="row">{item.storeName}</th>
+                                      <td>{formatQty(item.qty)}</td>
                                     </tr>
                                   );
                                 })}
                               </tbody>
                               <tfoot>
                                 <tr>
-                                  <th scope="row" colSpan="2">Total</th>
-                                  <th className="text-end">00.00</th>
+                                  <th scope="row">Total</th>
+                                  <th className="text-end">{formatQty(stock.total)}</th>
                                 </tr>
                               </tfoot>
                             </Table>
