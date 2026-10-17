@@ -12,6 +12,7 @@ import ModalImages from "./ModalImages";
 import ModalCosts from "./ModalCosts";
 import ModalCopy from "./ModalCopy";
 import ModalAddToStores from "./ModalAddToStores";
+import ModalExport from "./ModalExport";
 import ModalDistributeAll from "./ModalDistributeAll";
 import { NotificationManager } from "@Components/common/react-notifications";
 import { validateProduct, buildProductPayload } from "./productRules";
@@ -43,6 +44,7 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
   const [openModalCosts, setOpenModalCosts] = useState(false);
   const [openModalCopy, setOpenModalCopy] = useState(false);
   const [openModalAddToStores, setOpenModalAddToStores] = useState(false);
+  const [openModalExport, setOpenModalExport] = useState(false);
   const [openModalDistributeAll, setOpenModalDistributeAll] = useState(false);
   const [createdProductCode, setCreatedProductCode] = useState('');
 
@@ -427,6 +429,9 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
     });
   }
 
+  // Exportar a Excel (SPEC v2-12-sr): exporta lo guardado en la DB, no lo que está en el formulario.
+  const fnExport = () => setOpenModalExport(true);
+
   const propsToControlPanel = {
     fnNew: fnNewProduct,
     fnSearch: fnSearchProduct,
@@ -449,6 +454,11 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
         title: "button.images",
         icon: "bi bi-image",
         onClick: fnImages
+      },
+      {
+        title: "button.export",
+        icon: "bi bi-file-earmark-excel",
+        onClick: fnExport
       }
     ],
     buttonsOptions: [
@@ -610,6 +620,15 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
     }
   }
 
+  const propsToModalExport = {
+    ModalContent: ModalExport,
+    title: "page.productsCatalog.modal.export.title",
+    open: openModalExport,
+    setOpen: setOpenModalExport,
+    maxWidth: 'sm',
+    data: {}
+  }
+
   const propsToMsgCode = {
     open: openMsgGenerateCode,
     setOpen: setOpenMsgGenerateCode,
@@ -659,7 +678,8 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
     propsToModalImagesProduct,
     propsToModalCosts,
     propsToModalCopy,
-    propsToModalAddToStores
+    propsToModalAddToStores,
+    propsToModalExport
   }
 
 };
