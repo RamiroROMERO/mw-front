@@ -1,3 +1,4 @@
+import { useIntl } from 'react-intl';
 import { Card, CardBody, TabContent, TabPane, Nav, NavItem, NavLink, Row, Table, Button } from 'reactstrap';
 import { IntlMessages, validInt } from "@Helpers/Utils";
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
@@ -16,7 +17,7 @@ import { MAX_CODE, MAX_NAME, MAX_DESCRIPTION } from './productRules';
 import { formatQty } from './stockRules';
 
 const ProductsCatalog = (props) => {
-  const { setLoading, canEditCosts } = props;
+  const { setLoading, canEditCosts, canRefreshStock } = props;
 
   const { formState,
     formValidation,
@@ -41,9 +42,12 @@ const ProductsCatalog = (props) => {
     fnLoadByCode,
     listProducts,
     stock,
-    propsToModalDistProduct, propsToModalDistributeAll, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalCosts, propsToModalCopy, propsToModalAddToStores, propsToModalExport } = useProductsCatalog({ setLoading, canEditCosts });
+    propsToModalDistProduct, propsToModalDistributeAll, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalCosts, propsToModalCopy, propsToModalAddToStores, propsToModalExport } = useProductsCatalog({ setLoading, canEditCosts, canRefreshStock });
   // IntlMessages es un hook: se llama siempre aquí arriba, no dentro de la condición del grid de existencias.
   const msgStockNotApplies = IntlMessages("page.productsCatalog.stock.notApplies");
+  // Mensajes de validación: un solo useIntl y una función común, no IntlMessages (hook) dentro de condiciones (SPEC v2-15-sr).
+  const intl = useIntl();
+  const t = (msgId) => intl.formatMessage({ id: msgId });
 
   const { id, code, name, isDisabled, isCompound, description, packQty, type, costValue, maxCostValue, lastCostValue, percentTax, taxValue,
     typeCalculatePrice, typeCalculateCost, percentLocalPriceMin, valuePercentLocalPriceMin, priceLocalMin, percentLocalPriceMid,
@@ -254,7 +258,7 @@ const ProductsCatalog = (props) => {
                             invalid={sendForm && !!typeValid}
                             feedbackText={sendForm && (typeValid || null)}
                           />
-                          {sendForm && typeValid && <div className="invalid-feedback d-block">{IntlMessages(typeValid)}</div>}
+                          {sendForm && typeValid && <div className="invalid-feedback d-block">{t(typeValid)}</div>}
                         </Colxx>
                       </Row>
                       <Row>
@@ -349,7 +353,7 @@ const ProductsCatalog = (props) => {
                             invalid={sendForm && !!typeCalculatePriceValid}
                             feedbackText={sendForm && (typeCalculatePriceValid || null)}
                           />
-                          {sendForm && typeCalculatePriceValid && <div className="invalid-feedback d-block">{IntlMessages(typeCalculatePriceValid)}</div>}
+                          {sendForm && typeCalculatePriceValid && <div className="invalid-feedback d-block">{t(typeCalculatePriceValid)}</div>}
                         </Colxx>
                         <Colxx xxs={12} sm={6}>
                           <RadioGroup
@@ -367,7 +371,7 @@ const ProductsCatalog = (props) => {
                             invalid={sendForm && !!typeCalculateCostValid}
                             feedbackText={sendForm && (typeCalculateCostValid || null)}
                           />
-                          {sendForm && typeCalculateCostValid && <div className="invalid-feedback d-block">{IntlMessages(typeCalculateCostValid)}</div>}
+                          {sendForm && typeCalculateCostValid && <div className="invalid-feedback d-block">{t(typeCalculateCostValid)}</div>}
                         </Colxx>
                       </Row>
                       <Row>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateProduct, buildProductPayload, MAX_CODE, MAX_NAME, MAX_DESCRIPTION } from './productRules';
+import { validateProduct, buildProductPayload, normalizeProductForm, INITIAL_PRODUCT_FORM, MAX_CODE, MAX_NAME, MAX_DESCRIPTION } from './productRules';
 
 // Los casos y los números son los mismos de modules/inventory/products/__tests__/ProductDTO.test.js y productRules.test.js del back.
 const VALID = {
@@ -126,5 +126,64 @@ describe('buildProductPayload', () => {
 
   it('un formulario sin isCompound no lo envía', () => {
     expect(buildProductPayload(FORM)).not.toHaveProperty('isCompound');
+  });
+});
+
+// SPEC v2-15-sr: costo en edición y normalización del producto cargado.
+describe('costo en edición (SPEC v2-15-sr)', () => {
+  const ZERO = { ...VALID, costValue: 0 };
+
+  it('alta: producto con costo 0 se rechaza; servicio pasa', () => {
+    expect(validateProduct(ZERO).costValue).toBe('msg.required.input.averageCost');
+    expect(validateProduct({ ...ZERO, type: 2 }).costValue).toBeUndefined();
+  });
+
+  it('edición de un producto tipo 1 con costo 0 se acepta', () => {
+    expect(validateProduct(ZERO, 1).costValue).toBeUndefined();
+  });
+
+  it('edición: pasar un servicio a producto con costo 0 se rechaza; con costo > 0 se acepta', () => {
+    expect(validateProduct(ZERO, 2).costValue).toBe('msg.required.input.averageCost');
+    expect(validateProduct({ ...VALID, costValue: 5 }, 2).costValue).toBeUndefined();
+  });
+
+  it('edición: un servicio que sigue siendo servicio se acepta', () => {
+    expect(validateProduct({ ...ZERO, type: 2 }, 2).costValue).toBeUndefined();
+  });
+
+  it('un costo negativo se rechaza también en edición', () => {
+    expect(validateProduct({ ...VALID, costValue: -1 }, 1).costValue).toBe('page.productsCatalog.error.costInvalid');
+  });
+});
+
+describe('normalizeProductForm', () => {
+  const INITIAL = { id: 0, code: '', notes: '', costValue: 0, isDisabled: false, tradeMark: 0 };
+
+  it('los null de los campos del formulario toman su valor inicial', () => {
+    expect(normalizeProductForm({ id: 5, code: 'A', notes: null, tradeMark: null }, INITIAL)).toMatchObject({ notes: '', tradeMark: 0 });
+  });
+
+  it('los campos ausentes se completan con el valor inicial', () => {
+    expect(normalizeProductForm({ id: 5, code: 'A' }, INITIAL)).toEqual({ id: 5, code: 'A', notes: '', costValue: 0, isDisabled: false, tradeMark: 0 });
+  });
+
+  it('un null fuera del formulario pasa a cadena vacía', () => {
+    expect(normalizeProductForm({ id: 5, extra: null }, INITIAL).extra).toBe('');
+  });
+
+  it('números, booleanos y textos con valor no se tocan (incluido el 0 y false)', () => {
+    const out = normalizeProductForm({ id: 5, code: 'A', notes: 'x', costValue: 0, isDisabled: true }, INITIAL);
+    expect(out).toMatchObject({ code: 'A', notes: 'x', costValue: 0, isDisabled: true });
+  });
+
+  it('no muta la entrada', () => {
+    const item = { id: 5, notes: null };
+    normalizeProductForm(item, INITIAL);
+    expect(item).toEqual({ id: 5, notes: null });
+  });
+
+  it('con el formulario inicial real, ningún campo del formulario queda null o undefined', () => {
+    const out = normalizeProductForm({ id: 9, notes: null, tradeMark: null, classification: null });
+    Object.keys(INITIAL_PRODUCT_FORM).forEach((k) => expect(out[k] === null || out[k] === undefined).toBe(false));
   });
 });

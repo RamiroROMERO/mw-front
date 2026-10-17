@@ -15,12 +15,12 @@ import ModalAddToStores from "./ModalAddToStores";
 import ModalExport from "./ModalExport";
 import ModalDistributeAll from "./ModalDistributeAll";
 import { NotificationManager } from "@Components/common/react-notifications";
-import { validateProduct, buildProductPayload } from "./productRules";
+import { validateProduct, buildProductPayload, normalizeProductForm, INITIAL_PRODUCT_FORM } from "./productRules";
 import { shouldLookupByCode, canApplyLookup } from "./productLookupRules";
 import { normalizeStock, shouldFetchStock } from "./stockRules";
 import { recalculatePrice, recalculateAllPrices, calculateTaxValue, defaultPercentsPatch } from "./priceRules";
 
-const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
+const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock = false }) => {
 
   const [listProducts, setListProducts] = useState([]);
   const [listClassifications, setListClassifications] = useState([]);
@@ -56,64 +56,12 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
   const msgCopyZeroCost = IntlMessagesFn('msg.copy.zeroCost');
   const msgRefreshStockSuccess = IntlMessagesFn('page.productsCatalog.msg.refreshStockSuccess');
 
-  const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
-    id: 0,
-    code: '',
-    name: '',
-    isDisabled: false,
-    isCompound: false,
-    description: '',
-    packQty: '1.0000',
-    type: 0,
-    costValue: 0,
-    maxCostValue: 0,
-    lastCostValue: 0,
-    percentTax: 0,
-    taxValue: 0,
-    typeCalculatePrice: 0,
-    typeCalculateCost: 0,
-    percentLocalPriceMin: 0,
-    valuePercentLocalPriceMin: 0,
-    priceLocalMin: 0,
-    percentLocalPriceMid: 0,
-    valuePercentLocalPriceMid: 0,
-    priceLocalMid: 0,
-    percentLocalPriceMax: 0,
-    valuePercentLocalPriceMax: 0,
-    priceLocalMax: 0,
-    percentOutsidePriceMin: 0,
-    valuePercentOutsidePriceMin: 0,
-    priceOutsideMin: 0,
-    percentOutsidePriceMid: 0,
-    valuePercentOutsidePriceMid: 0,
-    priceOutsideMid: 0,
-    percentOutsidePriceMax: 0,
-    valuePercentOutsidePriceMax: 0,
-    priceOutsideMax: 0,
-    parentProduct: 0,
-    notes: '',
-    enableForPurchase: false,
-    enableForSale: false,
-    chargesTax: false,
-    requireExpLot: false,
-    validToSale: false,
-    paymentComiss: false,
-    priceIncludeTax: false,
-    dateLastPurchase: '',
-    numLastPurchase: '',
-    provLastPurchase: '',
-    classification: '',
-    submission: 0,
-    tradeMark: 0,
-    typeId: 0,
-    undinId: 0,
-    undoutId: 0,
-    packId: 0,
-    tradeId: 0,
-  });
+  const { formState, onInputChange, onResetForm, setBulkForm } = useForm({ ...INITIAL_PRODUCT_FORM });
 
   // Mismas reglas que el back (productRules.js): errores por campo y sin llamar al back si alguna falla.
-  const errors = useMemo(() => validateProduct(formState), [formState]);
+  // Tipo guardado del producto cargado (SPEC v2-15-sr): en una edición el costo solo se exige si un servicio pasa a otro tipo.
+  const [storedType, setStoredType] = useState(undefined);
+  const errors = useMemo(() => validateProduct(formState, formState.id > 0 ? storedType : undefined), [formState, storedType]);
   const isFormValid = Object.keys(errors).length === 0;
   const formValidation = useMemo(() => {
     const valid = {};
@@ -178,9 +126,11 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
   }
 
   const fnViewProduct = (item) => {
-    const tax = parseFloat((item.percentTax / 100) * item.costValue).toFixed(2);
-    item.taxValue = tax;
-    setBulkForm(item);
+    // normalizeProductForm: sin `null` ni columnas ausentes en los campos controlados (SPEC v2-15-sr).
+    const form = normalizeProductForm(item);
+    form.taxValue = parseFloat((form.percentTax / 100) * form.costValue).toFixed(2);
+    setStoredType(form.type);
+    setBulkForm(form);
     setOpenModalProducts(false);
     fnLoadStock(item.code);
     request.GET(`inventory/settings/products/getLastPurchase/${item.code}`, res => {
@@ -253,16 +203,27 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
 
   // "Nuevo" (SPEC v2-09-sr): limpia el formulario y carga en las seis casillas de porcentaje los de `inv_porp`. Sin fila o con
   // una falla quedan en 0 y no se avisa. La respuesta no se aplica si mientras tanto se cargó otro producto.
-  const fnNewProduct = () => {
-    onResetForm();
-    stockRequestRef.current += 1; // descarta una respuesta de existencias en vuelo
-    setStock(normalizeStock(null));
-    setSendForm(false);
+  const fnLoadDefaultPercents = () => {
     request.GET('inventory/settings/productsPercentages/default', (res) => {
       if (validInt(currentRef.current.id) !== 0) return;
       setBulkForm(defaultPercentsPatch(res?.data));
     }, () => { });
   }
+
+  const fnNewProduct = () => {
+    onResetForm();
+    setStoredType(undefined);
+    stockRequestRef.current += 1; // descarta una respuesta de existencias en vuelo
+    setStock(normalizeStock(null));
+    setSendForm(false);
+    fnLoadDefaultPercents();
+  }
+
+  // Al abrir la pantalla los seis porcentajes ya vienen cargados, igual que tras "Nuevo" (SPEC v2-15-sr).
+  useEffect(() => {
+    fnLoadDefaultPercents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo al montar
+  }, []);
 
   // Al salir de una casilla de porcentaje (pestaña Precios): calcula su valor y su total con el costo del tipo de cálculo.
   const fnCalculatePriceOf = (event) => {
@@ -314,6 +275,7 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
     if (id > 0) {
       setLoading(true);
       request.PUT(`inventory/settings/products/${id}`, newData, () => {
+        setStoredType(newData.type);
         setLoading(false);
       }, (err) => {
         setLoading(false);
@@ -525,11 +487,11 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false }) => {
         icon: "bi bi-diagram-3-fill",
         onClick: fnDistributeAll
       },
-      {
+      ...(canRefreshStock ? [{
         title: "button.refreshStock",
         icon: "bi bi-arrow-repeat",
         onClick: fnRefreshStock
-      }
+      }] : [])
     ],
     buttonsAdmin: []
   }

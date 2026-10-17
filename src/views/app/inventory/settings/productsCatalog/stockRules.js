@@ -25,3 +25,8 @@ export const formatQty = (value) => {
   const decimals = text.includes('.') ? text.split('.')[1].length : 0;
   return n.toFixed(Math.min(5, Math.max(2, decimals)));
 };
+
+// "Actualizar existencias" reutiliza POST productsStore/refreshStock, que exige el privilegio de Almacenes y Productos
+// (SPEC v2-14-sr / v2-15-sr): sin él no se muestra el botón.
+export const STORE_PRIVILEGE_CODE = '01.05.006';
+export const hasRefreshStockPrivilege = (privilege) => Boolean(privilege && privilege.active);
