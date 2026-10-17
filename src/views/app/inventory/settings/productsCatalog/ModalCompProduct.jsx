@@ -13,7 +13,7 @@ export const ModalCompProduct = ({ data }) => {
   const { productId: fatherId, productCode: fatherCode, productName, setLoading } = data;
 
   const {
-    formState, formValidation, sendForm, isEdit, productOptions, units, onFieldChange, fnSave, fnReset, propsTable, propsToMsgDelete
+    formState, formValidation, sendForm, isEdit, productOptions, onProductSearch, units, onFieldChange, fnSave, fnReset, propsTable, propsToMsgDelete
   } = useModalCompProduct({ setLoading, fatherId, fatherCode });
 
   const { productCode, unitedOut, qty } = formState;
@@ -39,6 +39,8 @@ export const ModalCompProduct = ({ data }) => {
                   inputValue={productCode}
                   onChange={onFieldChange}
                   options={productOptions}
+                  onInputChange={onProductSearch}
+                  filterOption={null}
                   isDisabled={isEdit}
                   feedbackText={sendForm && (productCodeValid || null)}
                 />

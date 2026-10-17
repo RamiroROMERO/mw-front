@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { request, notifyError } from '@Helpers/core';
+import { request, notifyError, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms';
 import { buildBulkRows } from './priceRules';
+import { loadAllPending, PENDING_PAGE_SIZE } from './pagingRules';
 import { emptyBulkPercents, suggestedPercents, validateBulkPercents, runBulkDistribution, summarizeSkipped } from './distributeAllRules';
 
 const URL = 'inventory/settings/productsDistributions';
@@ -21,17 +22,21 @@ export const useModalDistributeAll = ({ setLoading }) => {
   const preview = useMemo(() => (Object.keys(errors).length ? { rows: [], skipped: [] } : buildBulkRows(pending, formState)), [pending, formState, errors]);
   const skippedSummary = useMemo(() => summarizeSkipped(preview.skipped), [preview.skipped]);
 
-  const fnLoadPending = () => {
+  // SPEC v2-18-sr: los pendientes llegan por páginas (por llave, de 500 en 500); se juntan todas antes de calcular la vista previa.
+  const fetchPendingPage = (afterId) => new Promise((resolve, reject) => {
+    request.GET(buildUrl(`${URL}/pendingProducts`, { limit: PENDING_PAGE_SIZE, afterId }), (res) => resolve(res?.data || {}), reject);
+  });
+
+  const fnLoadPending = async () => {
     setLoading(true);
-    request.GET(`${URL}/pendingProducts`, (res) => {
-      setPending(res?.data || []);
-      setLoaded(true);
-      setLoading(false);
-    }, () => {
+    try {
+      const { rows } = await loadAllPending(fetchPendingPage);
+      setPending(rows);
+    } catch (error) {
       setPending([]);
-      setLoaded(true);
-      setLoading(false);
-    });
+    }
+    setLoaded(true);
+    setLoading(false);
   };
 
   useEffect(() => {

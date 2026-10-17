@@ -1735,6 +1735,7 @@ const enLang = {
   "page.typeProducts.table.status": "Active",
   /* 18.Products Type page in inventory module */
   "page.productsCatalog.table.title": "Product Catalog Table",
+  "page.productsCatalog.search.placeholder": "Search by code, name or description...",
   "page.productsCatalog.table.code": "Code",
   "page.productsCatalog.table.name": "Name",
   "page.productsCatalog.table.description": "Description",

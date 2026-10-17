@@ -41,6 +41,7 @@ const ProductsCatalog = (props) => {
     fnConfirmGenerateCode,
     fnLoadByCode,
     listProducts,
+    onParentSearch,
     stock,
     propsToModalDistProduct, propsToModalDistributeAll, propsToModalAddTrademarks, propsToModalCompProduct, propsToModalImagesProduct, propsToModalCosts, propsToModalCopy, propsToModalAddToStores, propsToModalExport } = useProductsCatalog({ setLoading, canEditCosts, canRefreshStock });
   // IntlMessages es un hook: se llama siempre aquí arriba, no dentro de la condición del grid de existencias.
@@ -383,6 +384,8 @@ const ProductsCatalog = (props) => {
                             inputValue={parentProduct}
                             onChange={onInputChange}
                             options={listProducts}
+                            onInputChange={onParentSearch}
+                            filterOption={null}
                           />
                         </Colxx>
                       </Row>

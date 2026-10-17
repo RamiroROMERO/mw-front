@@ -15,6 +15,8 @@ import ModalAddToStores from "./ModalAddToStores";
 import ModalExport from "./ModalExport";
 import ModalDistributeAll from "./ModalDistributeAll";
 import { NotificationManager } from "@Components/common/react-notifications";
+import { useProductOptions } from "./useProductOptions";
+import { withSelectedOption } from "./pagingRules";
 import { validateProduct, buildProductPayload, normalizeProductForm, INITIAL_PRODUCT_FORM } from "./productRules";
 import { shouldLookupByCode, canApplyLookup } from "./productLookupRules";
 import { normalizeStock, shouldFetchStock } from "./stockRules";
@@ -22,12 +24,10 @@ import { recalculatePrice, recalculateAllPrices, calculateTaxValue, defaultPerce
 
 const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock = false }) => {
 
-  const [listProducts, setListProducts] = useState([]);
   const [listClassifications, setListClassifications] = useState([]);
   const [listMeasurementUnits, setListMeasurementUnits] = useState([]);
   const [listPackagingUnits, setListPackagingUnits] = useState([]);
   const [listMarks, setListMarks] = useState([]);
-  const [dataProducts, setDataProducts] = useState([]);
   const [activeTab, setActiveTab] = useState('1');
   const [activeTabPrices, setActiveTabPrices] = useState('1');
   // Existencias por almacén (SPEC v2-14-sr): filas, total y si aplican al tipo de producto. Vienen del kardex vía el back.
@@ -72,6 +72,10 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
   }, [errors]);
 
   const { id, code, name, packQty, type, costValue, typeId, undinId, undoutId } = formState;
+
+  // Combo de producto padre con búsqueda en el servidor (SPEC v2-18-sr); el padre actual siempre aparece en la lista.
+  const { options: parentSearchOptions, onInputChange: onParentSearch } = useProductOptions();
+  const listProducts = useMemo(() => withSelectedOption(parentSearchOptions, formState.parentProduct), [parentSearchOptions, formState.parentProduct]);
 
   // Valores actuales del formulario para la carga por código: la respuesta es asíncrona y no debe pisar lo que el usuario escribió.
   const currentRef = useRef({ id, code });
@@ -239,26 +243,9 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
     setBulkForm({ ...recalculateAllPrices(next), taxValue: calculateTaxValue(next).toFixed(2) });
   }
 
+  // Buscar (SPEC v2-18-sr): el modal pide el catálogo por páginas y con búsqueda en el servidor; ya no se descarga completo.
   const fnSearchProduct = () => {
-    setLoading(true);
-    request.GET('inventory/settings/products', (resp) => {
-      const data = resp.data.map((item) => {
-        item.presentation = item.submission
-        return item;
-      });
-      setDataProducts(data);
-      const products = resp.data.map((item) => {
-        return {
-          label: `${item.code} - ${item.name}`,
-          value: item.code
-        }
-      });
-      setListProducts(products);
-      setOpenModalProducts(true);
-      setLoading(false);
-    }, (err) => {
-      setLoading(false);
-    });
+    setOpenModalProducts(true);
   }
 
   // Payload de alta/edición y de "Copiar" (que clona este mismo payload con código/nombre/clasificación nuevos); ver productRules.js.
@@ -500,7 +487,6 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
     setOpen: setOpenModalProducts,
     maxWidth: 'lg',
     data: {
-      dataProducts,
       fnSelectItem: fnViewProduct
     }
   }
@@ -542,8 +528,7 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
       setLoading,
       productId: id,
       productCode: code,
-      productName: name,
-      listProducts
+      productName: name
     }
   }
 
@@ -655,6 +640,7 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
     listPackagingUnits,
     listTaxPercent,
     listProducts,
+    onParentSearch,
     activeTab,
     setActiveTab,
     activeTabPrices,
