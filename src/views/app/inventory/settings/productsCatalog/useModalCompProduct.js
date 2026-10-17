@@ -2,13 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { IntlMessages, validInt } from "@Helpers/Utils";
 import { request, buildUrl } from "@Helpers/core";
 import { useForm } from "@Hooks";
+import { useProductOptions } from "./useProductOptions";
+import { withSelectedOption } from "./pagingRules";
 import {
   emptyComponentForm, mapComponentToForm, validateComponent, buildComponentPayload, componentOptions, unitOptions
 } from "./compoundRules";
 
 const componentsUrl = (fatherId) => `inventory/settings/products/${fatherId}/components`;
 const DISTRIBUTIONS_URL = 'inventory/settings/productsDistributions';
-const PRODUCTS_SL_URL = 'inventory/settings/products/getSL';
 
 // Componentes del producto compuesto (SPEC v2-11-sr). `fatherId` y `fatherCode` son el id y el código del producto compuesto.
 // Las reglas son las del back (compoundRules.js): aquí solo se evita llamar al back con lo que ya se sabe rechazado; los
@@ -16,7 +17,8 @@ const PRODUCTS_SL_URL = 'inventory/settings/products/getSL';
 export const useModalCompProduct = ({ setLoading, fatherId, fatherCode }) => {
 
   const [components, setComponents] = useState([]);
-  const [products, setProducts] = useState([]);
+  // Combo de componentes con búsqueda en el servidor (SPEC v2-18-sr): ya no se pide el catálogo completo al abrir.
+  const { options: products, onInputChange: onProductSearch } = useProductOptions();
   const [units, setUnits] = useState([]);
   const [sendForm, setSendForm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
@@ -36,10 +38,15 @@ export const useModalCompProduct = ({ setLoading, fatherId, fatherCode }) => {
 
   // Combo de componentes: en el alta no ofrece al padre ni a los que ya son componentes; al editar, el producto es fijo y
   // tiene que seguir apareciendo en la lista.
-  const productOptions = useMemo(() => componentOptions(products, {
-    fatherCode,
-    existingCodes: isEdit ? [] : components.map((c) => c.productCode)
-  }), [products, components, fatherCode, isEdit]);
+  const productOptions = useMemo(() => {
+    const options = componentOptions(products, {
+      fatherCode,
+      existingCodes: isEdit ? [] : components.map((c) => c.productCode)
+    });
+    // El producto elegido (o el que se edita) sigue apareciendo aunque la búsqueda actual no lo traiga.
+    const known = components.map((c) => ({ value: c.productCode, label: `${c.productCode} - ${c.productName}` }));
+    return withSelectedOption(options, formState.productCode, known);
+  }, [products, components, fatherCode, isEdit, formState.productCode]);
 
   const fnGetComponents = () => {
     setLoading(true);
@@ -50,12 +57,6 @@ export const useModalCompProduct = ({ setLoading, fatherId, fatherCode }) => {
       setComponents([]);
       setLoading(false);
     });
-  };
-
-  const fnGetProducts = () => {
-    request.GET(buildUrl(PRODUCTS_SL_URL, { isRemoved: 0 }), (res) => {
-      setProducts((res?.data || []).map((item) => ({ value: item.code, label: `${item.code} - ${item.name}` })));
-    }, () => setProducts([]));
   };
 
   // Unidades de salida = distribuciones ACTIVAS del componente elegido. Una respuesta tardía de otro producto no pisa a la última.
@@ -178,7 +179,6 @@ export const useModalCompProduct = ({ setLoading, fatherId, fatherCode }) => {
 
   useEffect(() => {
     fnGetComponents();
-    fnGetProducts();
   }, []);
 
   return {
@@ -187,6 +187,7 @@ export const useModalCompProduct = ({ setLoading, fatherId, fatherCode }) => {
     sendForm,
     isEdit,
     productOptions,
+    onProductSearch,
     units,
     onFieldChange,
     fnSave,

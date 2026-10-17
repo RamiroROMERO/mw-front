@@ -1751,6 +1751,7 @@ const esLang = {
   "page.typeProducts.table.status": "Activo",
   /* 18.Products Type page in inventory module */
   "page.productsCatalog.table.title": "Tabla de Catálogo de Productos",
+  "page.productsCatalog.search.placeholder": "Buscar por código, nombre o descripción...",
   "page.productsCatalog.table.code": "Código",
   "page.productsCatalog.table.name": "Nombre",
   "page.productsCatalog.table.description": "Descripción",

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { EMPTY_STOCK, normalizeStock, shouldFetchStock, formatQty } from './stockRules';
+import { EMPTY_STOCK, normalizeStock, shouldFetchStock, formatQty, STORE_PRIVILEGE_CODE, hasRefreshStockPrivilege } from './stockRules';
 
 describe('normalizeStock', () => {
   it('respuesta del back de un tipo 1: filas con cantidades numéricas y total', () => {
@@ -46,4 +46,14 @@ describe('formatQty', () => {
     '%s -> %s', (value, text) => { expect(formatQty(value)).toBe(text); }
   );
   it.each([[undefined], [null], ['abc'], [NaN]])('no numérico (%s): 0.00', (v) => { expect(formatQty(v)).toBe('0.00'); });
+});
+
+describe('privilegio de "Actualizar existencias" (SPEC v2-15-sr)', () => {
+  it('usa el privilegio de Almacenes y Productos', () => {
+    expect(STORE_PRIVILEGE_CODE).toBe('01.05.006');
+  });
+
+  it.each([[undefined, false], [null, false], [{ active: false }, false], [{ active: true }, true]])('%j -> %s', (privilege, expected) => {
+    expect(hasRefreshStockPrivilege(privilege)).toBe(expected);
+  });
 });

@@ -15,8 +15,16 @@ const toNumber = (v) => (isBlank(v) || typeof v === 'boolean' ? NaN : Number(v))
 const isPositiveInt = (v) => { const n = toNumber(v); return Number.isInteger(n) && n > 0; };
 const isOn = (v) => v === true || v === 1 || v === '1' || v === 'true';
 
+// SPEC v2-15-sr: el costo ya no se edita en el formulario (SPEC v2-10-sr). En una edición solo se exige si un servicio guardado
+// pasa a otro tipo; en un alta (`storedType` ausente) se exige siempre salvo en servicios. Mismo criterio que el back.
+export const mustCheckCost = (form, storedType) => {
+  if (storedType === undefined || storedType === null) return toNumber(form?.type) !== TYPE_SERVICE;
+  return toNumber(storedType) === TYPE_SERVICE && toNumber(form?.type) !== TYPE_SERVICE;
+};
+
 // Errores por campo (ids de traducción). Un objeto vacío significa que se puede enviar.
-export const validateProduct = (form) => {
+// `storedType`: tipo guardado del producto cargado (undefined/null en un producto nuevo).
+export const validateProduct = (form, storedType) => {
   const errors = {};
   const code = String(form?.code ?? '').trim();
   const name = String(form?.name ?? '').trim();
@@ -42,7 +50,7 @@ export const validateProduct = (form) => {
   // Costo: obligatorio salvo en servicios (el legacy: "El Costo de este Producto Esta en Cero").
   const cost = toNumber(form?.costValue);
   if (Number.isNaN(cost) || cost < 0) errors.costValue = 'page.productsCatalog.error.costInvalid';
-  else if (toNumber(form?.type) !== TYPE_SERVICE && cost <= 0) errors.costValue = 'msg.required.input.averageCost';
+  else if (mustCheckCost(form, storedType) && cost <= 0) errors.costValue = 'msg.required.input.averageCost';
 
   if (![1, 2, 3].includes(toNumber(form?.typeCalculateCost))) errors.typeCalculateCost = 'msg.required.select.typeCalculatePrice';
   if (![1, 2, 3].includes(toNumber(form?.typeCalculatePrice))) errors.typeCalculatePrice = 'msg.required.select.typeCalculatePrice';
@@ -78,4 +86,29 @@ export const buildProductPayload = (form, { isNew = false } = {}) => {
   ['chargesTax', 'isDisabled', 'isCompound'].forEach((f) => { if (payload[f] !== undefined) payload[f] = isOn(payload[f]) ? 1 : 0; });
   payload.parentProduct = isNew || isBlank(form?.parentProduct) || form?.parentProduct === 0 ? payload.code : form.parentProduct;
   return payload;
+};
+
+// Formulario vacío del Catálogo. Lo usa useProductsCatalog y normalizeProductForm.
+export const INITIAL_PRODUCT_FORM = Object.freeze({
+  id: 0, code: '', name: '', isDisabled: false, isCompound: false, description: '', packQty: '1.0000', type: 0,
+  costValue: 0, maxCostValue: 0, lastCostValue: 0, percentTax: 0, taxValue: 0, typeCalculatePrice: 0, typeCalculateCost: 0,
+  percentLocalPriceMin: 0, valuePercentLocalPriceMin: 0, priceLocalMin: 0, percentLocalPriceMid: 0, valuePercentLocalPriceMid: 0,
+  priceLocalMid: 0, percentLocalPriceMax: 0, valuePercentLocalPriceMax: 0, priceLocalMax: 0, percentOutsidePriceMin: 0,
+  valuePercentOutsidePriceMin: 0, priceOutsideMin: 0, percentOutsidePriceMid: 0, valuePercentOutsidePriceMid: 0, priceOutsideMid: 0,
+  percentOutsidePriceMax: 0, valuePercentOutsidePriceMax: 0, priceOutsideMax: 0, parentProduct: 0, notes: '', enableForPurchase: false,
+  enableForSale: false, chargesTax: false, requireExpLot: false, validToSale: false, paymentComiss: false, priceIncludeTax: false,
+  dateLastPurchase: '', numLastPurchase: '', provLastPurchase: '', classification: '', submission: 0, tradeMark: 0, typeId: 0,
+  undinId: 0, undoutId: 0, packId: 0, tradeId: 0
+});
+
+// SPEC v2-15-sr: la API devuelve `null` en los campos vacíos y a veces omite columnas; un campo controlado de React no admite
+// `null` y no puede pasar de tener valor a `undefined`. Los campos del formulario toman su valor inicial; los demás `null`
+// pasan a ''. No toca números ni booleanos ni muta la entrada.
+export const normalizeProductForm = (item, initialForm = INITIAL_PRODUCT_FORM) => {
+  const out = { ...(item || {}) };
+  Object.keys(out).forEach((key) => { if (out[key] === null) out[key] = ''; });
+  Object.keys(initialForm).forEach((key) => {
+    if (item?.[key] === undefined || item?.[key] === null) out[key] = initialForm[key];
+  });
+  return out;
 };
