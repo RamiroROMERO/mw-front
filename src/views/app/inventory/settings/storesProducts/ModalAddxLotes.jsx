@@ -1,37 +1,38 @@
 import { useEffect, useState } from 'react'
+import { useIntl } from 'react-intl'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { IntlMessages, validInt } from '@Helpers/Utils'
-import { request } from '@Helpers/core'
+import { request, notifyError } from '@Helpers/core'
 import { SimpleSelect } from '@Components/simpleSelect'
+import notification from '@Containers/ui/Notifications';
 
 const ModalAddxLotes = ({ setOpen, data }) => {
-  const { setLoading, listWarehouse } = data;
+  const { setLoading, listWarehouse, onDone } = data;
+  const intl = useIntl();
 
   const [listProductType, setListProductType] = useState([]);
   const [warehouseId, setWarehouseId] = useState('0');
   const [productTypeId, setProductTypeId] = useState('');
 
+  // Almacén y tipo son obligatorios ("Todos" es -1); el back valida el resto.
+  const canProcess = validInt(warehouseId) > 0 && validInt(productTypeId) !== 0;
+
   const fnSaveLocation = () => {
-    if (validInt(warehouseId) === 0) {
-      return;
-    }
+    if (!canProcess) return;
 
-    if (validInt(productTypeId) === 0) {
-      return;
-    }
-
-    const typeProductName = listProductType.find(elem => validInt(elem.id) === validInt(productTypeId)).name;
-    const data = { warehouseId, productTypeId, typeProductName };
     setLoading(true);
-    setLoading(true);
-    request.POST('inventory/settings/productsStore/addxLots', data, (resp) => {
+    // showMessage en false: el éxito lleva los conteos reales y el error lo muestra notifyError (mensaje del back).
+    request.POST('inventory/settings/productsStore/addxLots', { warehouseId, productTypeId }, (resp) => {
+      const { created = 0, skipped = 0 } = resp?.data || {};
+      notification('success', { text: intl.formatMessage({ id: 'page.storesProducts.modal.addxLotes.result' }, { created, skipped }) }, 'alert.success.title');
       setLoading(false);
       setOpen(false);
+      if (onDone) onDone();
     }, (err) => {
+      notifyError(err, 'msg.save.record.error');
       setLoading(false);
-      setOpen(false);
-    });
+    }, false);
   }
 
   useEffect(() => {
@@ -40,7 +41,7 @@ const ModalAddxLotes = ({ setOpen, data }) => {
       data.push({ id: -1, name: 'Todos' });
       setListProductType(data);
       setLoading(false);
-    }, err => {
+    }, () => {
       setLoading(false);
     })
   }, []);
@@ -74,7 +75,7 @@ const ModalAddxLotes = ({ setOpen, data }) => {
         </Row>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={fnSaveLocation}>
+        <Button color="primary" onClick={fnSaveLocation} disabled={!canProcess}>
           <i className="bi bi-send" /> {IntlMessages("button.process")}
         </Button>
       </ModalFooter>
