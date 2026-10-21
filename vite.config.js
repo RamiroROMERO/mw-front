@@ -7,7 +7,9 @@ export default defineConfig({
   server: {
     port: 3000,
     watch: {
-      usePolling: true
+      // El polling es muy costoso en Windows (el SCSS tardaba ~50s en compilar). Solo activarlo
+      // si se trabaja sobre un volumen de red/Docker: VITE_USE_POLLING=true
+      usePolling: process.env.VITE_USE_POLLING === 'true'
     }
   },
   plugins: [
