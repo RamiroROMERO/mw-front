@@ -4,22 +4,19 @@ import { Colxx } from '@Components/common/CustomBootstrap'
 import { IntlMessages } from '@Helpers/Utils'
 import { InputField } from '@Components/inputFields'
 import { request } from '@Helpers/core'
-import notification from '@Containers/ui/Notifications';
 
-// Equivalente a "El Nombre que desea crear para esta Ubicación ya existe en la base de
-// Datos" del legacy (inv_almac_prod_new_location.sc2) — ver InvSetLocationController.
-const fnHandleSaveError = (err) => {
-  if (err?.messages?.[0]?.message === 'location.alreadyExists') {
-    notification('error', 'msg.error.location.alreadyExists', 'alert.error.title');
-  } else {
-    notification('error', 'msg.save.record.error', 'alert.error.title');
-  }
-}
+// Como el legacy (inv_almac_prod_new_location.sc2): el nombre lleva al menos 3 caracteres (sin contar espacios
+// de los extremos) y la columna admite 20. Que no esté repetido lo decide el back (location.alreadyExists).
+const NAME_MIN = 3;
+const NAME_MAX = 20;
 
 const ModalAddLocations = ({ setOpen, data }) => {
   const { setLoading, setListLocations } = data;
 
   const [nameLocation, setNameLocation] = useState('')
+  const [sendForm, setSendForm] = useState(false)
+
+  const nameInvalid = sendForm && nameLocation.trim().length < NAME_MIN
 
   const fnGetLocations = () => {
     request.GET('inventory/settings/locations', (resp) => {
@@ -31,23 +28,24 @@ const ModalAddLocations = ({ setOpen, data }) => {
       });
       setListLocations(listLoc);
       setLoading(false);
-    }, (err) => {
+    }, () => {
       setLoading(false);
     });
   }
 
   const fnSaveLocation = () => {
-    if (nameLocation.length < 3) {
+    setSendForm(true);
+    if (nameLocation.trim().length < NAME_MIN) {
       return
     }
-    const data = { name: nameLocation };
+    const data = { name: nameLocation.trim() };
     setLoading(true);
-    request.POST('inventory/settings/locations', data, (resp) => {
+    request.POST('inventory/settings/locations', data, () => {
       setLoading(false);
       fnGetLocations();
       setOpen(false)
-    }, err => {
-      fnHandleSaveError(err);
+    }, () => {
+      // request.POST ya muestra el mensaje real del back (por ejemplo location.alreadyExists).
       setLoading(false);
     });
   }
@@ -62,6 +60,9 @@ const ModalAddLocations = ({ setOpen, data }) => {
               id="nameLocation"
               name="nameLocation"
               value={nameLocation}
+              maxLength={NAME_MAX}
+              invalid={nameInvalid}
+              feedbackText={nameInvalid ? 'page.storesProducts.error.locationName' : undefined}
               onChange={({ target }) => setNameLocation(target.value)}
             />
           </Colxx>

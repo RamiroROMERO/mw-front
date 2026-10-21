@@ -10,16 +10,17 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ModalAddLocations from './ModalAddLocations';
 import ModalAddxLotes from './ModalAddxLotes';
+import ModalSearchProduct from './ModalSearchProduct';
 import { useStoresProducts } from './useStoresProducts';
 
 const StoresProducts = (props) => {
   const { setLoading } = props;
 
-  const {formState, formValidation, sendForm, table, propsToMsgDelete, listLocations, listProducts, listWarehouse, openModalAddLocations, openModalAddxLotes, setListLocations, setOpenModalAddLocation, setOpenModalAddxLotes, onInputChange, fnClearInputs, fnSave, fnRefreshStock} = useStoresProducts({setLoading});
+  const {formState, errors, isEditing, sendForm, table, propsToMsgDelete, listLocations, listProducts, listWarehouse, openModalAddLocations, openModalAddxLotes, openModalSearchProduct, setListLocations, setOpenModalAddLocation, setOpenModalAddxLotes, setOpenModalSearchProduct, fnOpenSearchProduct, fnSelectProduct, onInputChange, onProductSearch, fnClearInputs, fnGetData, fnSave, fnRefreshStock} = useStoresProducts({setLoading});
 
-  const { locationId, stock, qtyMin, qtyMax, storeId, productId, status } = formState;
+  const { locationId, stock, qtyMin, qtyMax, storeId, productCode, status } = formState;
 
-  const { storeIdValid, productIdValid, locationIdValid } = formValidation;
+  const showError = (field) => (sendForm && errors[field]) || null;
 
   const propsToModalAddLocations = {
     ModalContent: ModalAddLocations,
@@ -42,6 +43,24 @@ const StoresProducts = (props) => {
     data: {
       setLoading,
       listWarehouse,
+      onDone: fnGetData
+    }
+  }
+
+  const propsToModalSearchProduct = {
+    ModalContent: ModalSearchProduct,
+    title: "page.storesProducts.modal.searchProduct",
+    open: openModalSearchProduct,
+    setOpen: setOpenModalSearchProduct,
+    maxWidth: 'lg',
+    data: { fnSelectItem: fnSelectProduct }
+  }
+
+  // F1 en el campo de producto abre la búsqueda (como el legacy) y evita la ayuda del navegador.
+  const onProductKeyDown = (event) => {
+    if (event.key === 'F1') {
+      event.preventDefault();
+      fnOpenSearchProduct();
     }
   }
 
@@ -59,20 +78,24 @@ const StoresProducts = (props) => {
                       inputValue={storeId}
                       onChange={onInputChange}
                       options={listWarehouse}
+                      isDisabled={isEditing}
                       label="page.storesProducts.select.warehouse"
-                      invalid={sendForm && !!storeIdValid}
-                      feedbackText={sendForm && (storeIdValid || null)}
+                      invalid={sendForm && !!errors.storeId}
+                      feedbackText={showError('storeId')}
                     />
                   </Colxx>
-                  <Colxx xxs="12" md="6" lg="7" xl="5">
+                  <Colxx xxs="12" md="6" lg="7" xl="5" onKeyDown={onProductKeyDown}>
                     <SearchSelect
-                      name="productId"
-                      inputValue={productId}
+                      name="productCode"
+                      inputValue={productCode}
                       onChange={onInputChange}
+                      onInputChange={onProductSearch}
+                      filterOption={null}
                       options={listProducts}
+                      isDisabled={isEditing}
                       label="page.storesProducts.select.product"
-                      invalid={sendForm && !!productIdValid}
-                      feedbackText={sendForm && (productIdValid || null)}
+                      invalid={sendForm && !!errors.productCode}
+                      feedbackText={showError('productCode')}
                     />
                   </Colxx>
                   <Colxx xxs="12" md="6" lg="3" xl="3">
@@ -82,8 +105,8 @@ const StoresProducts = (props) => {
                       value={locationId}
                       label="page.storesProducts.select.location"
                       options={listLocations}
-                      invalid={sendForm && !!locationIdValid}
-                      feedbackText={sendForm && (locationIdValid || null)}
+                      invalid={sendForm && !!errors.locationId}
+                      feedbackText={showError('locationId')}
                     />
                   </Colxx>
                   <Colxx xxs="12" xs="6" sm="4" md="3">
@@ -102,6 +125,9 @@ const StoresProducts = (props) => {
                       name="qtyMin"
                       onChange={onInputChange}
                       type="text"
+                      maxLength={15}
+                      invalid={sendForm && !!errors.qtyMin}
+                      feedbackText={showError('qtyMin')}
                       label="page.storesProducts.input.qtyMin"
                     />
                   </Colxx>
@@ -111,6 +137,9 @@ const StoresProducts = (props) => {
                       name="qtyMax"
                       onChange={onInputChange}
                       type="text"
+                      maxLength={15}
+                      invalid={sendForm && !!errors.qtyMax}
+                      feedbackText={showError('qtyMax')}
                       label="page.storesProducts.input.qtyMax"
                     />
                   </Colxx>
@@ -126,6 +155,7 @@ const StoresProducts = (props) => {
                 <Row>
                   <Colxx xxs="12" sm={6}>
                     <Button style={{ marginRight: '5px' }} color="primary" onClick={() => setOpenModalAddLocation(true)}><i className="bi bi-compass" /> {IntlMessages("button.locations")}</Button>
+                    <Button style={{ marginRight: '5px' }} color="success" onClick={fnOpenSearchProduct} disabled={isEditing} title="F1"><i className="bi bi-search" /> {IntlMessages("button.search")}</Button>
                     <Button style={{ marginRight: '5px' }} color="info" onClick={() => setOpenModalAddxLotes(true)}><i className="bi bi-card-checklist" /> {IntlMessages("button.lots")}</Button>
                     <Button color="secondary" onClick={fnRefreshStock}><i className="bi bi-arrow-clockwise" /> {IntlMessages("button.refreshStock")}</Button>
                   </Colxx>
@@ -144,6 +174,7 @@ const StoresProducts = (props) => {
       </Row>
       <Modal {...propsToModalAddLocations} />
       <Modal {...propsToModalAddxLotes} />
+      <Modal {...propsToModalSearchProduct} />
       <Confirmation {...propsToMsgDelete} />
     </>
   );
