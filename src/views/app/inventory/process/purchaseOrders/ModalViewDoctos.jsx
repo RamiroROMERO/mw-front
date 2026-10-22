@@ -3,20 +3,17 @@ import { Colxx } from '@Components/common/CustomBootstrap'
 import { IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import ReactTable from '@Components/reactTable'
-import Modal from "@Components/modal";
-import ModalPassAdmin from './ModalPassAdmin'
 
 const ModalViewDoctos = ({data, setOpen}) => {
   const {dataPurchases} = data;
-  const [openModalPassAdmin, setOpenModalPassAdmin] = useState(false);
-
-  const fnDeletePurchase = () =>{
-    setOpenModalPassAdmin(true);
-  }
-
   const [table, setTable] = useState({
     title: ' ',
     columns: [
+      {
+        text: IntlMessages("page.purchaseOrders.modal.viewDoctos.table.type"),
+        dataField: "kindText",
+        headerStyle: {width: "10%"}
+      },
       {
         text: IntlMessages("page.purchaseOrders.modal.viewDoctos.table.date"),
         dataField: "date",
@@ -52,28 +49,12 @@ const ModalViewDoctos = ({data, setOpen}) => {
         style:{textAlign: 'right'}
       }
     ],
-    data: dataPurchases,
-    options: {
-      columnActions: "options"
-    },
-    actions: [
-      {
-        color: "danger",
-        icon: "trash",
-        toolTip: IntlMessages("button.delete"),
-        onClick: fnDeletePurchase,
-      }
-    ]
+    data: dataPurchases.map((item) => ({
+      ...item,
+      kindText: IntlMessages(item.kind === 'ticket' ? 'page.purchaseOrders.modal.viewDoctos.kind.ticket' : 'page.purchaseOrders.modal.viewDoctos.kind.purchase')
+    })),
+    options: {}
   });
-
-  const propsToModalPassAdmin = {
-    ModalContent: ModalPassAdmin,
-    title: "page.purchaseOrders.modal.passAdmin.title",
-    open: openModalPassAdmin,
-    setOpen: setOpenModalPassAdmin,
-    maxWidth: "md",
-    data:{}
-  }
 
   return (
     <>
@@ -90,7 +71,6 @@ const ModalViewDoctos = ({data, setOpen}) => {
         {` ${IntlMessages('button.exit')}`}
       </Button>
     </ModalFooter>
-    <Modal {...propsToModalPassAdmin}/>
     </>
   )
 }

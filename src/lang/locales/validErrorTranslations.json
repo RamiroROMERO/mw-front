@@ -111,6 +111,8 @@
     "documentType.invalid",
     "documents.required",
     "invalid.id",
+    "inventory.period.closed.global",
+    "inventory.period.closed.module",
     "invoice.already.generated",
     "invoice.alreadyVoided",
     "invoice.cashClosed",

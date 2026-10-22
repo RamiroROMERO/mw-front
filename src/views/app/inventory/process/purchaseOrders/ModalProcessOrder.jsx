@@ -286,7 +286,9 @@ const ModalProcessOrder = ({ data, setOpen }) => {
         gravado: taxedValue,
         tax: taxProd,
         total: totalProd,
-        isTaxFree: validFloat(item.tax) === 0 ? 1 : 0
+        // Legacy: la columna tax_type del detalle de la compra es el "Exonerado" de la orden, no el exento.
+        isExonerated: !!item.isExonerated,
+        isTaxFree: item.isExonerated ? 1 : 0
       }
     });
     const sumSubtotal = newDetail.map(item => validFloat(item.subTotal)).reduce((prev, curr) => prev + curr, 0);
