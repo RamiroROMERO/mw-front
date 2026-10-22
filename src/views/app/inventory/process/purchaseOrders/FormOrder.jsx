@@ -5,9 +5,7 @@ import { Colxx } from '@Components/common/CustomBootstrap'
 import { InputField } from '@Components/inputFields'
 
 const FormOrder = ({date, providerId, number, paymentTypeId, address, creditDays, expectedDate, listProviders, listPaymenTypes,
-  onInputChange, setBulkForm, formValidation, sendForm}) => {
-
-  const {dateValid, providerIdValid, paymentTypeIdValid} = formValidation;
+  onInputChange, setBulkForm, errors}) => {
 
   const onProviderChange = e =>{
     const filterProvider = listProviders.filter((item)=>{
@@ -27,11 +25,11 @@ const FormOrder = ({date, providerId, number, paymentTypeId, address, creditDays
         <Colxx xxs="12" xs="6" md="4">
           <DateCalendar
             name="date"
-            label="page.purchaseOrders.input.date"
+            label="page.purchaseOrders.input.dateRequired"
             value={date}
             onChange={onInputChange}
-            invalid={sendForm && !!dateValid}
-            feedbackText={sendForm && (dateValid || null)}
+            invalid={!!errors.date}
+            feedbackText={errors.date || null}
           />
         </Colxx>
         <Colxx xxs="12" xs="2" md="6"> </Colxx>
@@ -49,24 +47,24 @@ const FormOrder = ({date, providerId, number, paymentTypeId, address, creditDays
       <Row>
         <Colxx xxs="12" sm="6" md="7" lg="7" xl="6">
           <SearchSelect
-            label='page.purchaseOrders.select.provider'
+            label='page.purchaseOrders.select.providerRequired'
             inputValue={providerId}
             name="providerId"
             options={listProviders}
             onChange={onProviderChange}
-            invalid={sendForm && !!providerIdValid}
-            feedbackText={sendForm && (providerIdValid || null)}
+            invalid={!!errors.providerId}
+            feedbackText={errors.providerId || null}
           />
         </Colxx>
         <Colxx xxs="12" sm="6" md="5" lg="5" xl="4">
           <SearchSelect
-            label='page.purchaseOrders.select.paymentTypeId'
+            label='page.purchaseOrders.select.paymentTypeIdRequired'
             inputValue={paymentTypeId}
             name='paymentTypeId'
             options={listPaymenTypes}
             onChange={onInputChange}
-            invalid={sendForm && !!paymentTypeIdValid}
-            feedbackText={sendForm && (paymentTypeIdValid || null)}
+            invalid={!!errors.paymentTypeId}
+            feedbackText={errors.paymentTypeId || null}
           />
         </Colxx>
         <Colxx xxs="12" sm="12" lg="6">
@@ -86,6 +84,8 @@ const FormOrder = ({date, providerId, number, paymentTypeId, address, creditDays
             value={creditDays}
             onChange={onInputChange}
             type="text"
+            invalid={!!errors.creditDays}
+            feedbackText={errors.creditDays || null}
           />
         </Colxx>
         <Colxx xxs="12" xs="7" md="4" lg="4">

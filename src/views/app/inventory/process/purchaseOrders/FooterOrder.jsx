@@ -3,9 +3,10 @@ import { InputField } from '@Components/inputFields'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { formatNumber } from '@Helpers/Utils'
 import { Row } from 'reactstrap'
+import { MAX_APPLICANT, MAX_DESCRIPTION_OTHERS } from './purchaseOrderRules'
 
-const FooterOrder = ({applicantName, workOrderId, notes, valueExonerated, valueExcent, valueTaxed, valueDiscount, valueTax,
-  valueOthers, valueTotal, descriptionOthers, listWorkOrders, orderDetail, onInputChange, fnRecalculateTotals}) => {
+const FooterOrder = ({applicantName, workOrderId, notes, valueExonerated, valueExempt, valueTaxed, valueDiscount, valueTax,
+  valueOthers, valueTotal, descriptionOthers, listWorkOrders, orderDetail, onInputChange, fnRecalculateTotals, errors}) => {
 
   // Legacy (fnCalculateTotals): "Otros Recargos" es el único total que se captura a mano,
   // el resto siempre se recalcula sumando el detalle completo.
@@ -24,6 +25,9 @@ const FooterOrder = ({applicantName, workOrderId, notes, valueExonerated, valueE
               value={applicantName}
               onChange={onInputChange}
               type="text"
+              maxLength={MAX_APPLICANT}
+              invalid={!!errors.applicantName}
+              feedbackText={errors.applicantName || null}
             />
           </Colxx>
           <Colxx xxs="12" lg="6">
@@ -60,9 +64,9 @@ const FooterOrder = ({applicantName, workOrderId, notes, valueExonerated, valueE
           </Colxx>
           <Colxx xxs="12" xs="6" sm="12" lg="6">
             <InputField
-              name="valueExcent"
-              label='page.purchaseOrders.input.valueExcent'
-              value={formatNumber(valueExcent)}
+              name="valueExempt"
+              label='page.purchaseOrders.input.valueExempt'
+              value={formatNumber(valueExempt)}
               onChange={onInputChange}
               type="text"
               disabled
@@ -105,6 +109,8 @@ const FooterOrder = ({applicantName, workOrderId, notes, valueExonerated, valueE
               value={valueOthers}
               onChange={onOtherValueChange}
               type="text"
+              invalid={!!errors.valueOthers}
+              feedbackText={errors.valueOthers || null}
             />
           </Colxx>
           <Colxx xxs="12" xs="6" sm="12" lg="6">
@@ -124,6 +130,9 @@ const FooterOrder = ({applicantName, workOrderId, notes, valueExonerated, valueE
               value={descriptionOthers}
               onChange={onInputChange}
               type="text"
+              maxLength={MAX_DESCRIPTION_OTHERS}
+              invalid={!!errors.descriptionOthers}
+              feedbackText={errors.descriptionOthers || null}
             />
           </Colxx>
         </Row>

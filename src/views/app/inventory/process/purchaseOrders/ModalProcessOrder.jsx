@@ -97,7 +97,7 @@ const ModalProcessOrder = ({ data, setOpen }) => {
         }
       },
       {
-        label: "page.purchaseOrders.modal.process.table.qtyReceibed", field: "qtyRec", isEditable: true,
+        label: "page.purchaseOrders.modal.process.table.qtyReceived", field: "qtyRec", isEditable: true,
         headerStyle: {
           textAlign: 'center',
           width: '15%'
@@ -190,7 +190,8 @@ const ModalProcessOrder = ({ data, setOpen }) => {
               date,
               purchaseId: resp.data.id,
               productCode: item.productCode,
-              qty: validFloat(item.qty),
+              // Lo recibido ahora (legacy: Cant = CantR), no lo pedido.
+              qty: validFloat(item.qtyRec),
               price: validFloat(item.price),
               subtotal: validFloat(item.subTotal),
               discountPercent: validFloat(item.discountPercent),
@@ -212,8 +213,8 @@ const ModalProcessOrder = ({ data, setOpen }) => {
             setLoading(true);
             // actualizar las cantidades en el detalle de la orden de compra
             const updateOrder = {
-              qtyReceibed: item.qtyRec + item.qtyReceibed,
-              qtyMissing: item.qty - (item.qtyReceibed + item.qtyRec)
+              // Acumulado recibido de la línea; el back calcula el faltante (cantidad - recibido).
+              qtyReceived: item.qtyRec + item.qtyReceived
             }
             setLoading(true);
             request.PUT(`inventory/process/purchaseOrderDetail/${item.id}`, updateOrder, (resp5) => {
@@ -275,7 +276,7 @@ const ModalProcessOrder = ({ data, setOpen }) => {
         productCode: item.productCode,
         qty: validFloat(item.qty),
         qtyRec: validFloat(item.qtyRec),
-        qtyReceibed: validFloat(item.qtyReceibed),
+        qtyReceived: validFloat(item.qtyReceived),
         price: validFloat(item.price),
         subTotal: subtotal,
         discountPercent: validFloat(item.percentDiscount),
@@ -411,7 +412,7 @@ const ModalProcessOrder = ({ data, setOpen }) => {
               <Colxx xxs="12" xs="6">
                 <InputField
                   name="exent"
-                  label='page.purchaseOrders.input.valueExcent'
+                  label='page.purchaseOrders.input.valueExempt'
                   value={exent}
                   onChange={onInputChange}
                   type="text"
