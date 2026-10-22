@@ -41,7 +41,7 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, listPr
 
     const filter = listProviders.find(item => item.value === validInt(provider));
 
-    onBulkForm({ providerId: provider, noCtaAssign: filter ? filter.idCtaCxp : '' });
+    onBulkForm({ providerId: provider, noCtaAssign: filter ? filter.payableCtaCode : '' });
   }
 
   const onTypeChange = e => {
