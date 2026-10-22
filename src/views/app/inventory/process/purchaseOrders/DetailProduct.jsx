@@ -4,105 +4,51 @@ import { InputField } from '@Components/inputFields'
 import { SimpleSelect } from '@Components/simpleSelect'
 import { Checkbox } from '@Components/checkbox'
 import { formatNumber, IntlMessages, validFloat, validInt } from '@Helpers/Utils'
-import { Button, Row } from 'reactstrap'
+import { Button, Input, InputGroup, Row } from 'reactstrap'
+import { InputLabel } from '@Components/inputLabel'
+import { calculateLine, validateLine, MAX_PRODUCT_CODE } from './purchaseOrderRules'
 
 const DetailProduct = ({productCode, nameProduct, marca, qty, price, subTotal, percentDiscount, discount, percentTax, tax, total,
   nameUM, undId, conversionFactor, unitOptions, isExonerated, onUnitChange, onExoneratedChange, onInputChangeDeta, fnViewProducts,
-  setBulkFormDeta, orderDetail, setOrderDetail, fnRecalculateTotals, formValidationDeta, isFormValidDeta, sendFormDeta, setSendFormDeta}) => {
+  setBulkFormDeta, orderDetail, setOrderDetail, fnRecalculateTotals, errorsDeta, setSendFormDeta}) => {
 
-  const {productCodeValid, qtyValid, priceValid, undIdValid} = formValidationDeta;
-
-  const onQtyChange = e =>{
-    const subtotal = validFloat(price) * e.target.value;
-    const discValue = (subtotal * validFloat(percentDiscount))/100;
-    const taxValue = ((subtotal-discValue) * validFloat(percentTax))/100;
-    const totalValue = subtotal - discValue + taxValue;
-
-    const newQty = {
-      qty: e.target.value,
-      subTotal: subtotal,
-      discount: discValue,
-      tax: taxValue,
-      total: totalValue
-    }
-    setBulkFormDeta(newQty);
+  // Los valores de la línea se recalculan con las mismas reglas del back (purchaseOrderRules.js) cada vez que cambia un dato.
+  const recalc = (changes) => {
+    const values = { qty, price, percentDiscount, percentTax, isExonerated, ...changes };
+    const { subTotal: newSubTotal, discount: newDiscount, tax: newTax, total: newTotal } = calculateLine(values);
+    setBulkFormDeta({ ...changes, subTotal: newSubTotal, discount: newDiscount, tax: newTax, total: newTotal });
   }
 
-  const onPriceChange = e =>{
-    const subtotal = validFloat(qty) * e.target.value;
-    const discValue = (subtotal * validFloat(percentDiscount))/100;
-    const taxValue = ((subtotal-discValue) * validFloat(percentTax))/100;
-    const totalValue = subtotal - discValue + taxValue;
-
-    const newPrice = {
-      price: e.target.value,
-      subTotal: subtotal,
-      discount: discValue,
-      tax: taxValue,
-      total: totalValue
-    }
-    setBulkFormDeta(newPrice);
-  }
-
-  const onDiscountChange = e =>{
-    const subtotal = validFloat(qty) * validFloat(price);
-    const discValue = (subtotal * validFloat(e.target.value))/100;
-    const taxValue = ((subtotal-discValue) * validFloat(percentTax))/100;
-    const totalValue = subtotal - discValue + taxValue;
-
-    const newDiscount = {
-      percentDiscount: e.target.value,
-      subTotal: subtotal,
-      discount: discValue,
-      tax: taxValue,
-      total: totalValue
-    }
-    setBulkFormDeta(newDiscount);
-  }
-
-  const onTaxChange = e =>{
-    const subtotal = validFloat(qty) * validFloat(price);
-    const discValue = (subtotal * validFloat(percentDiscount))/100;
-    const taxValue = ((subtotal-discValue) * validFloat(e.target.value))/100;
-    const totalValue = subtotal - discValue + taxValue;
-
-    const newTax = {
-      percentTax: e.target.value,
-      subTotal: subtotal,
-      discount: discValue,
-      tax: taxValue,
-      total: totalValue
-    }
-    setBulkFormDeta(newTax);
-  }
+  const onQtyChange = e => recalc({ qty: e.target.value });
+  const onPriceChange = e => recalc({ price: e.target.value });
+  const onDiscountChange = e => recalc({ percentDiscount: e.target.value });
+  const onTaxChange = e => recalc({ percentTax: e.target.value });
 
   const fnAddProduct = ()=>{
     setSendFormDeta(true);
-    if(!isFormValidDeta){
+    const currentLine = { productCode, undId, qty, price, percentDiscount, percentTax };
+    if(Object.keys(validateLine(currentLine)).length > 0){
       return;
     }
 
+    const values = calculateLine({ qty, price, percentDiscount, percentTax, isExonerated });
     const detail = {
       id: new Date().getTime(),
       productCode,
       nameProduct,
       marca,
       qty: validFloat(qty),
-      qtyReceibed: 0,
+      qtyReceived: 0,
       qtyRec: 0,
       qtyMissing: validFloat(qty),
       price: validFloat(price),
-      subTotal: validFloat(subTotal),
       percentDiscount: validFloat(percentDiscount),
-      discount: validFloat(discount),
-      percentTax: validFloat(percentTax),
-      tax: validFloat(tax),
-      total: validFloat(total),
+      ...values,
       nameUM,
       undId: validInt(undId),
       conversionFactor: validFloat(conversionFactor) || 1,
       // Legacy (tax_type): 1 = Exonerado (checkbox), no un tramo de impuesto derivado.
-      taxType: isExonerated ? 1 : 0
+      isExonerated: !!isExonerated
     }
 
     const newArray = [...orderDetail, detail];
@@ -138,17 +84,26 @@ const DetailProduct = ({productCode, nameProduct, marca, qty, price, subTotal, p
         <ContainerWithLabel label="page.purchaseOrders.title.addProducts">
           <Row>
             <Colxx xxs="12" xs="5" md="3" lg="2">
-              <InputField
-                name="productCode"
-                label='page.purchaseOrders.input.productCode'
-                value={productCode}
-                onChange={onInputChangeDeta}
-                type="text"
-                readOnly
-                onClick={fnViewProducts}
-                invalid={sendFormDeta && !!productCodeValid}
-                feedbackText={sendFormDeta && (productCodeValid || null)}
-              />
+              {/* Legacy: F1 abre el buscador de productos; aquí es un input con lupa a la derecha que abre el mismo buscador. */}
+              <InputLabel label='page.purchaseOrders.input.productCodeRequired' feedbackText={errorsDeta.productCode || null}>
+                <InputGroup size="sm">
+                  <Input
+                    bsSize="sm"
+                    name="productCode"
+                    id="productCode"
+                    value={productCode}
+                    type="text"
+                    readOnly
+                    maxLength={MAX_PRODUCT_CODE}
+                    onClick={fnViewProducts}
+                    invalid={!!errorsDeta.productCode}
+                    style={{ cursor: 'pointer', resize: 'none', boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)' }}
+                  />
+                  <Button color="secondary" outline onClick={fnViewProducts} title={IntlMessages("page.purchaseOrders.input.productCode")}>
+                    <i className="bi bi-search" />
+                  </Button>
+                </InputGroup>
+              </InputLabel>
             </Colxx>
             <Colxx xxs="12" xs="7" md="4" lg="3">
               <InputField
@@ -163,34 +118,34 @@ const DetailProduct = ({productCode, nameProduct, marca, qty, price, subTotal, p
             <Colxx xxs="12" xs="5" md="3" lg="2">
               <SimpleSelect
                 name="undId"
-                label='page.purchaseOrders.input.unit'
+                label='page.purchaseOrders.input.unitRequired'
                 value={undId}
                 onChange={onUnitChange}
                 options={unitOptions}
-                invalid={sendFormDeta && !!undIdValid}
-                feedbackText={sendFormDeta && (undIdValid || null)}
+                invalid={!!errorsDeta.undId}
+                feedbackText={errorsDeta.undId || null}
               />
             </Colxx>
             <Colxx xxs="12" xs="4" md="3" lg="2">
               <InputField
                 name="qty"
-                label='page.purchaseOrders.input.qty'
+                label='page.purchaseOrders.input.qtyRequired'
                 value={qty}
                 onChange={onQtyChange}
                 type="text"
-                invalid={sendFormDeta && !!qtyValid}
-                feedbackText={sendFormDeta && (qtyValid || null)}
+                invalid={!!errorsDeta.qty}
+                feedbackText={errorsDeta.qty || null}
               />
             </Colxx>
             <Colxx xxs="12" xs="4" md="3" lg="2">
               <InputField
                 name="price"
-                label='page.purchaseOrders.input.price'
+                label='page.purchaseOrders.input.priceRequired'
                 value={price}
                 onChange={onPriceChange}
                 type="text"
-                invalid={sendFormDeta && !!priceValid}
-                feedbackText={sendFormDeta && (priceValid || null)}
+                invalid={!!errorsDeta.price}
+                feedbackText={errorsDeta.price || null}
               />
             </Colxx>
             <Colxx xxs="12" xs="4" md="3" lg="2">
@@ -210,6 +165,8 @@ const DetailProduct = ({productCode, nameProduct, marca, qty, price, subTotal, p
                 value={percentDiscount}
                 onChange={onDiscountChange}
                 type="text"
+                invalid={!!errorsDeta.percentDiscount}
+                feedbackText={errorsDeta.percentDiscount || null}
               />
             </Colxx>
             <Colxx xxs="12" xs="4" md="3" lg="2">
@@ -229,6 +186,8 @@ const DetailProduct = ({productCode, nameProduct, marca, qty, price, subTotal, p
                 value={percentTax}
                 onChange={onTaxChange}
                 type="text"
+                invalid={!!errorsDeta.percentTax}
+                feedbackText={errorsDeta.percentTax || null}
               />
             </Colxx>
             <Colxx xxs="12" xs="4" md="3" lg="2">

@@ -1,6 +1,8 @@
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { RadioGroup } from '@Components/radioGroup'
-import { IntlMessages, validFloat } from '@Helpers/Utils'
+import { IntlMessages } from '@Helpers/Utils'
+import notification from '@Containers/ui/Notifications'
+import { applyManualDiscount } from './purchaseOrderRules'
 import { useForm } from '@Hooks'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { InputField } from '@Components/inputFields'
@@ -14,25 +16,16 @@ const ModalDiscounts = ({data, setOpen}) => {
 
   const {typeDiscount, valueDiscount} = formState;
 
+  // Legacy (Inv_OCDescMan): descuento a todo el detalle, por porcentaje o por valor; recalcula descuento, impuesto y total de
+  // cada línea con las reglas del back (purchaseOrderRules.js).
   const fnChangeDiscount = ()=>{
-    const sumSubtotal = orderDetail.map(item => validFloat(item.subTotal)).reduce((prev, curr) => prev + curr, 0);
-
-    let discPercent = 0;
-    if(typeDiscount === '2'){
-      discPercent = (validFloat(valueDiscount)/sumSubtotal)*100;
-    }else{
-      discPercent = valueDiscount;
+    const result = applyManualDiscount(orderDetail, { mode: String(typeDiscount) === '2' ? 'value' : 'percent', amount: valueDiscount });
+    if (result.error) {
+      notification('warning', result.error, 'alert.warning.title');
+      return;
     }
-
-    const newDiscount =  orderDetail.map((item)=>{
-      item.discount = (item.subTotal * validFloat(discPercent))/100
-      item.percentDiscount = validFloat(discPercent)
-      item.total = validFloat(item.subTotal) - ((item.subTotal * validFloat(discPercent))/100) + validFloat(item.tax)
-      return item;
-    });
-
-    setOrderDetail(newDiscount);
-    fnRecalculateTotals(newDiscount);
+    setOrderDetail(result.details);
+    fnRecalculateTotals(result.details);
     setOpen(false);
   }
 

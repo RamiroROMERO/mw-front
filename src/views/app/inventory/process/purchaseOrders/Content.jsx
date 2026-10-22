@@ -7,11 +7,10 @@ import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import notification from '@Containers/ui/Notifications';
 import ControlPanel from '@Components/controlPanel';
-import TableButtons from '@Components/tableButtons';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import Modal from "@Components/modal";
 import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
-import ModalViewOrders from './ModalViewOrders';
+import ModalSearchOrders from './ModalSearchOrders';
 import ModalDiscounts from './ModalDiscounts';
 import ModalProcessOrder from './ModalProcessOrder';
 import ModalViewDoctos from './ModalViewDoctos';
@@ -19,17 +18,18 @@ import FormOrder from './FormOrder';
 import DetailProduct from './DetailProduct';
 import DetailTable from './DetailTable';
 import FooterOrder from './FooterOrder';
+import {
+  calculateLine, calculateTotals, validateOrder, validateLine, buildOrderPayload, displayExpectedDate, lineFromServer
+} from './purchaseOrderRules';
 
 const PurchaseOrders = (props) => {
   const { setLoading } = props;
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
   const [listProviders, setListProviders] = useState([]);
   const [listPaymenTypes, setListPaymentTypes] = useState([]);
-  const [dataOrders, setDataOrders] = useState([]);
   const [orderDetail, setOrderDetail] = useState([]);
   const [listWorkOrders, setListWorkOrders] = useState([]);
   const [dataPurchases, setDataPurchases] = useState([]);
-  const [dataProducts, setDataProducts] = useState([]);
   const [listTypeDocument, setListTypeDocument] = useState([]);
   const [listLedgerAccounts, setListLedgerAccounts] = useState([]);
   const [openModalProducts, setOpenModalProducts] = useState(false);
@@ -42,20 +42,7 @@ const PurchaseOrders = (props) => {
   const [sendForm, setSendForm] = useState(false);
   const [sendFormDeta, setSendFormDeta] = useState(false);
 
-  const purchaseOrderValid = {
-    date: [(val) => val !== "", "msg.required.input.date"],
-    providerId: [(val) => validInt(val) > 0, "msg.required.select.provider"],
-    paymentTypeId: [(val) => validInt(val) > 0, "msg.required.select.paymentType"],
-  }
-
-  const purchaseOrderDetailValid = {
-    productCode: [(val) => val !== "", "msg.required.input.codeProduct"],
-    qty: [(val) => validFloat(val) > 0, "msg.required.input.qty"],
-    price: [(val) => validFloat(val) > 0, "msg.required.input.price"],
-    undId: [(val) => validInt(val) > 0, "msg.required.select.units"]
-  }
-
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
+  const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
     date: DateHelper.format(new Date()),
     providerId: 0,
@@ -67,17 +54,16 @@ const PurchaseOrders = (props) => {
     workOrderId: 0,
     notes: '',
     valueExonerated: 0,
-    valueExcent: 0,
+    valueExempt: 0,
     valueTaxed: 0,
     valueDiscount: 0,
     valueTax: 0,
     valueOthers: 0,
     valueTotal: 0,
     descriptionOthers: ''
-  }, purchaseOrderValid);
+  });
 
-  const { formState: formStateDeta, formValidation: formValidationDeta, isFormValid: isFormValidDeta, onInputChange:
-    onInputChangeDeta, onResetForm: onResetFormDeta, setBulkForm: setBulkFormDeta } = useForm({
+  const { formState: formStateDeta, onInputChange: onInputChangeDeta, onResetForm: onResetFormDeta, setBulkForm: setBulkFormDeta } = useForm({
       productCode: '',
       nameProduct: '',
       marca: '',
@@ -94,24 +80,23 @@ const PurchaseOrders = (props) => {
       conversionFactor: 1,
       unitOptions: [],
       isExonerated: false
-    }, purchaseOrderDetailValid);
+    });
 
   const { id, date, providerId, paymentTypeId, address, creditDays, expectedDate, applicantName, workOrderId, notes,
-    valueExonerated, valueExcent, valueTaxed, valueDiscount, valueTax, valueOthers, valueTotal, descriptionOthers } = formState;
+    valueExonerated, valueExempt, valueTaxed, valueDiscount, valueTax, valueOthers, valueTotal, descriptionOthers } = formState;
   const { productCode, nameProduct, marca, qty, price, subTotal, percentDiscount, discount, percentTax, tax, total, nameUM,
     undId, conversionFactor, unitOptions, isExonerated } = formStateDeta;
 
-  const fnViewOrderDetail = (orderId) => {
+  const errors = sendForm ? validateOrder(formState, orderDetail) : {};
+  const errorsDeta = sendFormDeta ? validateLine(formStateDeta) : {};
+
+  // `othersValue`: otros recargos de la orden que se está cargando (el estado del formulario aún trae los de la anterior).
+  const fnViewOrderDetail = (orderId, othersValue) => {
     setLoading(true);
     request.GET(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: orderId }), (resp) => {
-      const ordersDeta = resp.data.map((item) => {
-        item.nameProduct = item.productData.name
-        item.marca = item.productData.tradeMark
-        item.qtyRec = 0
-        return item;
-      });
+      const ordersDeta = resp.data.map(lineFromServer);
       setOrderDetail(ordersDeta);
-      fnRecalculateTotals(ordersDeta);
+      fnRecalculateTotals(ordersDeta, othersValue);
       setLoading(false);
     }, (err) => {
 
@@ -128,127 +113,44 @@ const PurchaseOrders = (props) => {
     setSendFormDeta(false);
   }
 
+  // El buscador (ModalSearchOrders) pide las órdenes por páginas con búsqueda en el servidor.
   const fnSearchPurchaseOrder = () => {
-    setLoading(true);
-    request.GET('inventory/process/purchaseOrders', (resp) => {
-      const orders = resp.data.map((item) => {
-        item.provider = item.providerData.name
-        item.address = item.providerData.address
-        item.total = formatNumber(item.valueTotal, '', 2)
-        return item;
-      });
-      setDataOrders(orders);
-      setOpenModalViewOrders(true);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
+    setOpenModalViewOrders(true);
   }
 
+  // Encabezado y detalle viajan juntos y se guardan en una transacción en el back, que además calcula los totales.
   const fnSavePurchaseOrder = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    const validation = validateOrder(formState, orderDetail);
+    if (Object.keys(validation).length > 0) {
+      if (validation.details) notification('warning', validation.details, 'alert.warning.title');
       return;
     }
 
-    if (orderDetail.length === 0) {
-      notification('warning', 'msg.required.select.product', 'alert.warning.title');
-      return;
+    const payload = buildOrderPayload(formState, orderDetail);
+    const printOrder = (orderId) => {
+      request.GETPdf('inventory/process/purchaseOrders/exportPDFOrder', { id: orderId, userName: userData.name }, 'Orden de Compra.pdf',
+        (err) => {
+
+          setLoading(false);
+        });
     }
 
-    // Legacy (btnSaveDocument.Click): red de seguridad adicional a la validación que ya
-    // bloquea agregar una línea con precio=0 — antes de guardar, vuelve a chequear que
-    // ninguna línea del detalle quedó con precio en cero.
-    if (orderDetail.some((item) => validFloat(item.price) === 0)) {
-      notification('warning', 'msg.purchaseOrder.priceZero', 'alert.warning.title');
-      return;
-    }
-
-    const newData = {
-      date,
-      providerId,
-      paymentTypeId,
-      typeId: 1,
-      applicantName,
-      notes,
-      expectedDate: expectedDate === '' ? '1900-01-01' : expectedDate,
-      creditDays,
-      workOrderId,
-      valueExcent,
-      valueTaxed,
-      valueDiscount,
-      valueTax,
-      valueOthers,
-      descriptionOthers,
-      valueTotal
-    }
-
-    orderDetail.map((item) => {
-      delete item.id;
-      return item;
-    });
-
+    setLoading(true);
     if (id && id > 0) {
-      setLoading(true);
-      request.PUT(`inventory/process/purchaseOrders/${id}`, newData, (resp) => {
+      request.PUT(`inventory/process/purchaseOrders/${id}`, payload, (resp) => {
+        fnViewOrderDetail(id, payload.valueOthers);
+        printOrder(id);
         setLoading(false);
-        // Eliminar productos
-        request.DELETE(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: id }), (resp2) => {
-          // guardar productos
-          orderDetail.forEach(item => {
-            const productDeta = {
-              purchaseOrderId: id,
-              ...item
-            }
-            setLoading(true);
-            request.POST('inventory/process/purchaseOrderDetail', productDeta, (resp3) => {
-              setLoading(false);
-            }, (err) => {
-
-              setLoading(false);
-            }, false);
-          });
-          // imprimir la orden de compra
-          request.GETPdf('inventory/process/purchaseOrders/exportPDFOrder', { id, userName: userData.name }, 'Orden de Compra.pdf',
-            (err) => {
-
-              setLoading(false);
-            });
-          setLoading(false);
-        }, (err) => {
-
-          setLoading(false);
-        }, false);
       }, (err) => {
 
         setLoading(false);
       });
     } else {
-      setLoading(true);
-      request.POST('inventory/process/purchaseOrders', newData, (resp) => {
+      request.POST('inventory/process/purchaseOrders', payload, (resp) => {
         onInputChange({ target: { name: 'id', value: resp.data.id } });
-        // guardar productos
-        orderDetail.forEach(item => {
-          const productDeta = {
-            purchaseOrderId: resp.data.id,
-            ...item
-          }
-          setLoading(true);
-          request.POST('inventory/process/purchaseOrderDetail', productDeta, (resp2) => {
-            setLoading(false);
-          }, (err) => {
-
-            setLoading(false);
-          }, false);
-        });
-        fnViewOrderDetail(resp.data.id);
-        // imprimir la orden de compra
-        request.GETPdf('inventory/process/purchaseOrders/exportPDFOrder', { id: resp.data.id, userName: userData.name }, 'Orden de Compra.pdf',
-          (err) => {
-
-            setLoading(false);
-          });
+        fnViewOrderDetail(resp.data.id, payload.valueOthers);
+        printOrder(resp.data.id);
         setLoading(false);
       }, (err) => {
 
@@ -280,22 +182,15 @@ const PurchaseOrders = (props) => {
     }
   }
 
+  // El back borra el detalle y la orden en una transacción y rechaza una orden con compras ligadas.
   const fnOkDeletePurchaseOrder = () => {
     setLoading(true);
     request.DELETE(`inventory/process/purchaseOrders/${id}`, (resp) => {
-      // eliminar detalle de la orden de compra
-      setLoading(true);
-      request.DELETE(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: id }), (resp2) => {
-        setOpenMsgDelete(false);
-        fnNewPurchaseOrder();
-        setLoading(false);
-      }, (err) => {
-
-        setLoading(false);
-      });
+      setOpenMsgDelete(false);
+      fnNewPurchaseOrder();
       setLoading(false);
     }, (err) => {
-
+      setOpenMsgDelete(false);
       setLoading(false);
     });
   }
@@ -336,12 +231,25 @@ const PurchaseOrders = (props) => {
     }
     const defaultUnit = options[0];
 
+    // El buscador compartido (ModalViewProd) entrega el producto tal cual viene del catálogo: se arman aquí los campos de la
+    // línea. El precio sugerido es el precio local medio del producto (como la lista anterior de esta pantalla); el legacy lo
+    // dejaba en blanco para digitarlo.
+    const price = validFloat(item.priceLocalMid);
+    const lineValues = calculateLine({ qty, price, percentDiscount, percentTax: item.percentTax, isExonerated: false });
     setBulkFormDeta({
-      ...item,
+      productCode: item.code,
+      nameProduct: item.name,
       marca: item.tradeMark,
+      price,
+      percentTax: lineValues.percentTax,
+      subTotal: lineValues.subTotal,
+      discount: lineValues.discount,
+      tax: lineValues.tax,
+      total: lineValues.total,
+      isExonerated: false,
       unitOptions: options,
       undId: defaultUnit?.id || 0,
-      nameUM: defaultUnit?.name || item.nameUM,
+      nameUM: defaultUnit?.name || item.submission || '',
       conversionFactor: item.packQty || 1
     });
     setOpenModalProducts(false);
@@ -369,39 +277,17 @@ const PurchaseOrders = (props) => {
     }
   }
 
-  // Legacy (fnCalculateTotals): suma el detalle completo cada vez (no acumula deltas) —
-  // Gravado = subtotales con impuesto != 0, Exento = subtotales sin impuesto y no
-  // exonerados, Exonerado = subtotales de líneas marcadas Exonerado (tax_type=1),
-  // independientemente del legacy no persiste "Exonerado" como columna propia del
-  // encabezado — se recalcula siempre desde el detalle, así que tampoco se envía al backend.
+  // Legacy (fnCalculateTotals): suma el detalle completo cada vez (no acumula deltas). Es una vista previa: el back recalcula
+  // todo al guardar con las mismas reglas (purchaseOrderRules.js). "Exonerado" no se guarda en la orden: se recalcula siempre
+  // del detalle.
   const fnRecalculateTotals = (details, othersValue = valueOthers) => {
-    const gravado = details
-      .filter((item) => !item.taxType && validFloat(item.tax) !== 0)
-      .reduce((sum, item) => sum + validFloat(item.subTotal), 0);
-    const exento = details
-      .filter((item) => !item.taxType && validFloat(item.tax) === 0)
-      .reduce((sum, item) => sum + validFloat(item.subTotal), 0);
-    const exonerado = details
-      .filter((item) => item.taxType)
-      .reduce((sum, item) => sum + validFloat(item.subTotal), 0);
-    const descuento = details.reduce((sum, item) => sum + validFloat(item.discount), 0);
-    const impuesto = details.reduce((sum, item) => sum + validFloat(item.tax), 0);
-    const total = exento + gravado + exonerado - descuento + impuesto + validFloat(othersValue);
-
-    setBulkForm({
-      valueExcent: exento,
-      valueTaxed: gravado,
-      valueExonerated: exonerado,
-      valueDiscount: descuento,
-      valueTax: impuesto,
-      valueOthers: othersValue,
-      valueTotal: total
-    });
+    // valueOthers se deja tal cual se escribe (no redondeado) para no cortar un decimal a medio teclear.
+    setBulkForm({ ...calculateTotals(details, othersValue), valueOthers: othersValue });
   }
 
   const fnViewOrder = (itemOrder) => {
-    setBulkForm(itemOrder);
-    fnViewOrderDetail(itemOrder.id);
+    setBulkForm({ ...itemOrder, expectedDate: displayExpectedDate(itemOrder.expectedDate) });
+    fnViewOrderDetail(itemOrder.id, itemOrder.valueOthers);
     fnGetDocuments(itemOrder.id);
     setOpenModalViewOrders(false);
   }
@@ -432,18 +318,15 @@ const PurchaseOrders = (props) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET(`admin/paymentTypes`, (resp) => {
+    // El back devuelve solo las formas de pago que acepta el guardado (uso 2 o 3 y no eliminadas).
+    request.GET('inventory/process/purchaseOrders/paymentTypes', (resp) => {
       const paymentMethods = resp.data.map((item) => {
         return {
           label: item.name,
-          value: item.id,
-          usageType: item.usageType
+          value: item.id
         }
       })
-      const filterPayments = paymentMethods.filter((item) => {
-        return item.usageType === 2 || item.usageType === 3
-      });
-      setListPaymentTypes(filterPayments);
+      setListPaymentTypes(paymentMethods);
       setLoading(false);
     }, (err) => {
 
@@ -462,28 +345,6 @@ const PurchaseOrders = (props) => {
         }
       });
       setListProviders(providers);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-    setLoading(true);
-    request.GET('inventory/settings/products?enableForPurchase=1', (resp) => {
-      const data = resp.data.map((item) => {
-        item.productCode = item.code
-        item.nameProduct = item.name
-        item.price = validFloat(item.priceLocalMid)
-        item.subTotal = validFloat(item.priceLocalMid)
-        item.tax = (validFloat(item.percentTax) * validFloat(item.priceLocalMid)) / 100
-        item.total = ((validFloat(item.percentTax) * validFloat(item.priceLocalMid)) / 100) + validFloat(item.priceLocalMid)
-        item.nameUM = item.submission
-        item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
-          <i className="medium-icon bi bi-square" />
-        item.presentation = item.submission
-        item.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
-        return item;
-      });
-      setDataProducts(data);
       setLoading(false);
     }, (err) => {
 
@@ -574,8 +435,7 @@ const PurchaseOrders = (props) => {
     listPaymenTypes,
     onInputChange,
     setBulkForm,
-    formValidation,
-    sendForm
+    errors
   }
 
   const propsToDetailProduct = {
@@ -603,9 +463,7 @@ const PurchaseOrders = (props) => {
     orderDetail,
     setOrderDetail,
     fnRecalculateTotals,
-    formValidationDeta,
-    isFormValidDeta,
-    sendFormDeta,
+    errorsDeta,
     setSendFormDeta
   }
 
@@ -620,7 +478,7 @@ const PurchaseOrders = (props) => {
     workOrderId,
     notes,
     valueExonerated,
-    valueExcent,
+    valueExempt,
     valueTaxed,
     valueDiscount,
     valueTax,
@@ -631,7 +489,8 @@ const PurchaseOrders = (props) => {
     orderDetail,
     onInputChange,
     setBulkForm,
-    fnRecalculateTotals
+    fnRecalculateTotals,
+    errors
   }
 
   const propsToModalViewProd = {
@@ -641,7 +500,6 @@ const PurchaseOrders = (props) => {
     setOpen: setOpenModalProducts,
     maxWidth: 'lg',
     data: {
-      dataProducts,
       // ModalViewProd espera `fnSelectItem` (ver src/views/app/settings/productsCatalog/
       // ModalViewProd.jsx) — faltaba, así que el botón "ver" del catálogo nunca
       // seleccionaba nada: agregar productos a la orden estaba roto siempre.
@@ -650,13 +508,12 @@ const PurchaseOrders = (props) => {
   }
 
   const propsToModalViewOrders = {
-    ModalContent: ModalViewOrders,
+    ModalContent: ModalSearchOrders,
     title: "page.purchaseOrders.modal.viewOrder.title",
     open: openModalViewOrders,
     setOpen: setOpenModalViewOrders,
     maxWidth: 'lg',
     data: {
-      dataOrders,
       fnViewOrder
     }
   }
