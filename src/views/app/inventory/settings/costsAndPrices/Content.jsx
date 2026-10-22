@@ -1,3 +1,4 @@
+import { useIntl } from 'react-intl';
 import { Card, CardBody, Row, Button, Input } from 'reactstrap';
 import { IntlMessages } from "@Helpers/Utils";
 import { Colxx } from '@Components/common/CustomBootstrap';
@@ -6,32 +7,45 @@ import { SimpleSelect } from '@Components/simpleSelect';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import ReactTable from '@Components/reactTable';
 import useCostsAndPrices from './useCostsAndPrices';
+import { MAX_DESCRIPTION, MAX_NAME } from './costsAndPricesRules';
 
-const CostsAndPrices = ({ setLoading }) => {
+const CostsAndPrices = ({ setLoading, canEditCosts = false }) => {
 
+  const intl = useIntl();
   const { dataFull, search, setSearch, listClassifications, listMeasurementUnits, listPackagingUnits, listMarks, listTaxPercent,
-    fnRowChange, fnSave, fnExport } = useCostsAndPrices({ setLoading });
+    rowErrors, fnRowChange, fnSave, fnExport } = useCostsAndPrices({ setLoading, canEditCosts });
 
-  const inputCell = (field) => function InputCell({ row }) {
-    return (
+  // Marca la celda con error (borde rojo y el motivo al pasar el mouse); los errores solo existen después de intentar guardar.
+  const errorOf = (row, field) => rowErrors[row.original.rowKey]?.[field];
+  const withError = (row, field, node) => {
+    const id = errorOf(row, field);
+    return id ? <div className="border border-danger rounded" title={intl.formatMessage({ id })}>{node}</div> : node;
+  };
+
+  const inputCell = (field, { maxLength, disabled = false } = {}) => function InputCell({ row }) {
+    return withError(row, field, (
       <Input
         bsSize="sm"
         type="text"
-        value={row.original[field]}
+        inputMode={maxLength ? undefined : 'decimal'}
+        maxLength={maxLength}
+        disabled={disabled}
+        invalid={!!errorOf(row, field)}
+        value={row.original[field] ?? ''}
         onChange={(e) => fnRowChange(row.original.rowKey, field, e.target.value)}
       />
-    );
+    ));
   };
 
   const searchSelectCell = (field, options) => function SearchSelectCell({ row }) {
-    return (
+    return withError(row, field, (
       <SearchSelect
         name={field}
         inputValue={row.original[field]}
         options={options}
         onChange={(e) => fnRowChange(row.original.rowKey, field, e.target.value)}
       />
-    );
+    ));
   };
 
   function TaxCell({ row }) {
@@ -45,14 +59,19 @@ const CostsAndPrices = ({ setLoading }) => {
   }
 
   function TaxPercentCell({ row }) {
-    return (
+    return withError(row, 'percentTax', (
       <SimpleSelect
         name="percentTax"
         value={row.original.percentTax}
         options={listTaxPercent}
         onChange={(e) => fnRowChange(row.original.rowKey, 'percentTax', e.target.value)}
       />
-    );
+    ));
+  }
+
+  // La unidad de salida de una distribución no se puede cambiar (SPEC v2-09-sr): se muestra como texto.
+  function OutputUnitCell({ row }) {
+    return <span>{String(row.original.undOutName || '').toUpperCase()}</span>;
   }
 
   const widthStyle = (px) => ({ headerStyle: { minWidth: `${px}px` }, style: { minWidth: `${px}px` } });
@@ -68,7 +87,8 @@ const CostsAndPrices = ({ setLoading }) => {
 
   const columns = [
     { header: IntlMessages("page.costsAndPrices.table.code"), accessorKey: "code", ...stickyStyle(CODE_WIDTH, 0) },
-    { header: IntlMessages("page.costsAndPrices.table.name"), accessorKey: "name", cell: inputCell('name'), ...stickyStyle(NAME_WIDTH, CODE_WIDTH) },
+    { header: IntlMessages("page.costsAndPrices.table.name"), accessorKey: "name", cell: inputCell('name', { maxLength: MAX_NAME }), ...stickyStyle(NAME_WIDTH, CODE_WIDTH) },
+    { header: IntlMessages("page.costsAndPrices.table.description"), accessorKey: "description", cell: inputCell('description', { maxLength: MAX_DESCRIPTION }), ...widthStyle(220) },
     { header: IntlMessages("page.costsAndPrices.table.trademark"), accessorKey: "tradeId", cell: searchSelectCell('tradeId', listMarks), ...widthStyle(240) },
     { header: IntlMessages("page.costsAndPrices.table.classification"), accessorKey: "typeId", cell: searchSelectCell('typeId', listClassifications), ...widthStyle(240) },
     { header: IntlMessages("page.costsAndPrices.table.packaging"), accessorKey: "packId", cell: searchSelectCell('packId', listPackagingUnits), ...widthStyle(240) },
@@ -76,8 +96,8 @@ const CostsAndPrices = ({ setLoading }) => {
     { header: IntlMessages("page.costsAndPrices.table.inputUnit"), accessorKey: "undinId", cell: searchSelectCell('undinId', listMeasurementUnits), ...widthStyle(240) },
     { header: IntlMessages("page.costsAndPrices.table.tax"), accessorKey: "paymentTax", cell: TaxCell, ...widthStyle(60) },
     { header: IntlMessages("page.costsAndPrices.table.taxPercent"), accessorKey: "percentTax", cell: TaxPercentCell, ...widthStyle(110) },
-    { header: IntlMessages("page.costsAndPrices.table.cost"), accessorKey: "costValue", cell: inputCell('costValue'), ...widthStyle(110) },
-    { header: IntlMessages("page.costsAndPrices.table.outputUnit"), accessorKey: "undoutId", cell: searchSelectCell('undoutId', listMeasurementUnits), ...widthStyle(240) },
+    { header: IntlMessages("page.costsAndPrices.table.cost"), accessorKey: "costValue", cell: inputCell('costValue', { disabled: !canEditCosts }), ...widthStyle(110) },
+    { header: IntlMessages("page.costsAndPrices.table.outputUnit"), accessorKey: "undOutName", cell: OutputUnitCell, ...widthStyle(140) },
     { header: IntlMessages("page.costsAndPrices.table.valChange"), accessorKey: "valChange", cell: inputCell('valChange'), ...widthStyle(110) },
     { header: IntlMessages("page.costsAndPrices.table.price1"), accessorKey: "localMinPrice", cell: inputCell('localMinPrice'), ...widthStyle(110) },
     { header: IntlMessages("page.costsAndPrices.table.price2"), accessorKey: "localMedPrice", cell: inputCell('localMedPrice'), ...widthStyle(110) },
@@ -107,6 +127,9 @@ const CostsAndPrices = ({ setLoading }) => {
                 <Button color="primary" onClick={fnSave}><i className="iconsminds-save" /> {IntlMessages("button.save")}</Button>
               </Colxx>
             </Row>
+            {!canEditCosts && (
+              <p className="text-muted mt-2 mb-0">{intl.formatMessage({ id: "page.costsAndPrices.msg.costReadOnly" })}</p>
+            )}
           </CardBody>
         </Card>
         <ReactTable
