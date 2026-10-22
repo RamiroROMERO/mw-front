@@ -1,38 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import notification from '@Containers/ui/Notifications';
 import { useForm } from '@Hooks/useForms';
-import { useExportExcel } from '@Hooks';
-import { request, buildUrl } from '@Helpers/core';
+import { request, buildUrl, notifyError } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import ModalBillingData from './ModalBillingData';
 import ModalViewProv from './ModalViewProv';
 import ModalAddBankAccount from './ModalAddBankAccount';
 import ModalUpdateAllAccounts from './ModalUpdateAllAccounts';
-
-// Cta. Flete y Cta. Otros Recargos NO son requeridas en el legacy (inv_providers.sc2,
-// btnSaveDocument.Click solo exige NumCCxP/NumCDes/NumCImp) — antes estaban acá como
-// requeridas por error, más estricto que el legacy.
-// `providerTypeId` (no `providerType`): debe coincidir exacto con el atributo del modelo
-// (database/invProcessProviders.js) — antes se llamaba `providerType`, un nombre que
-// getValuesPOST/PUT descartaba en silencio (nunca se guardaba el tipo real) y que
-// tampoco coincidía con `providerTypeId` que trae el GET, así que al cargar un proveedor
-// el select de Tipo de Proveedor quedaba en blanco aunque el registro sí tuviera tipo.
-const providersValid = {
-  providerTypeId: [(val) => validInt(val) > 0, "msg.required.select.typeProvider"],
-  dni: [(val) => val !== "", "msg.required.input.dni"],
-  name: [(val) => val !== "", "msg.required.input.name"],
-  phone: [(val) => val !== "", "msg.required.input.phone"],
-  email: [(val) => val !== "", "msg.required.input.email"],
-  idCtaCxp: [(val) => validInt(val) > 0, "msg.required.select.accounts"],
-  idCtaDes: [(val) => validInt(val) > 0, "msg.required.select.accounts"],
-  idCtaTax: [(val) => validInt(val) > 0, "msg.required.select.accounts"]
-}
+import { validateProvider, buildProviderPayload } from './providerRules';
 
 const companyData = JSON.parse(localStorage.getItem('mw_current_company'));
 
 export const useProviders = ({ setLoading }) => {
 
-  const { fnExport: fnExportExcel } = useExportExcel(setLoading);
   const [sendForm, setSendForm] = useState(false);
   const [openModalBankAccount, setOpenModalBankAccount] = useState(false);
   const [openModalViewProv, setOpenModalViewProv] = useState(false);
@@ -46,10 +26,12 @@ export const useProviders = ({ setLoading }) => {
   const [listBanks, setListBanks] = useState([]);
   const [dataProviders, setDataProviders] = useState([]);
   const [currentItemBankAccount, setCurrentItemBankAccount] = useState({});
-  const [currentItemProvider, setCurrentItemProvider] = useState({});
   const { isCoffeeControl, isHospitalControl } = companyData;
+  // Contabilidad activa (mw_setting.cont_menu): sin ella no se exigen ni se envían las cuentas contables. Mientras no se conoce se
+  // asume activa (el back decide); el valor real llega con admin/companyInternalSettings.
+  const [accountingActive, setAccountingActive] = useState(true);
 
-  const { formState, formValidation, isFormValid, setBulkForm, onResetForm, onInputChange } = useForm({
+  const { formState, setBulkForm, onResetForm, onInputChange } = useForm({
     id: 0,
     dni: '',
     name: '',
@@ -73,16 +55,19 @@ export const useProviders = ({ setLoading }) => {
     contactSalesPhone: '',
     contactLogistic: '',
     contactLogisticPhone: '',
-    idCtaCxp: 0,
-    idCtaDes: 0,
-    idCtaTax: 0,
-    idCtaFle: 0,
-    idCtaBonific: 0,
-    idCtaOthers: 0,
+    payableCtaCode: '',
+    discountCtaCode: '',
+    taxCtaCode: '',
+    freightCtaCode: '',
+    bonusCtaCode: '',
+    otherCtaCode: '',
     taxCertificateDateOut: '',
     percHosp: 0,
     percProv: 0
-  }, providersValid);
+  });
+
+  // Mismas reglas que el back (providerRules.js): errores por campo y sin llamar al back si alguna falla.
+  const errors = useMemo(() => validateProvider(formState, { accountingActive }), [formState, accountingActive]);
 
   const fnNewProvider = () => {
     onResetForm();
@@ -108,29 +93,21 @@ export const useProviders = ({ setLoading }) => {
 
   const fnSaveProvider = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    if (Object.keys(errors).length > 0) {
       return;
     }
 
+    // Los datos de facturación (CAI, rango y fecha límite) los guarda el modal "Info Fact.", como el legacy.
+    const payload = buildProviderPayload(formState, { accountingActive });
+    setLoading(true);
     if (formState.id > 0) {
-      // dateLimit NO va acá: lo maneja el modal "Info Fact." (ModalBillingData.jsx) por
-      // separado — el legacy tampoco lo toca en btnSaveDocument.Click. Mandarlo fijo en
-      // cada guardado general pisaba el vencimiento ya configurado ahí.
-      setLoading(true);
-      request.PUT(`inventory/process/providers/${formState.id}`, formState, (resp) => {
+      request.PUT(`inventory/process/providers/${formState.id}`, payload, (resp) => {
         setLoading(false);
       }, (err) => {
         setLoading(false);
       });
     } else {
-      // En alta, sí se manda el sentinel "sin vencimiento configurado" (mismo valor que
-      // usa el legacy como default de fábrica para date_limit).
-      const newData = {
-        ...formState,
-        dateLimit: "1900-01-01",
-      };
-      setLoading(true);
-      request.POST('inventory/process/providers', newData, (resp) => {
+      request.POST('inventory/process/providers', payload, (resp) => {
         onInputChange({ target: { name: 'id', value: resp.data.id } });
         setLoading(false);
       }, (err) => {
@@ -150,19 +127,23 @@ export const useProviders = ({ setLoading }) => {
   }
 
   const fnViewProvider = (item) => {
-    setBulkForm(item);
+    // 1900-01-01 es el "sin fecha" de la DB (legacy): el formulario lo muestra vacío.
+    const noDate = (value) => (value && !String(value).startsWith('1900-01-01') ? value : '');
+    setBulkForm({ ...item, taxCertificateDateOut: noDate(item.taxCertificateDateOut) });
     fnGetBankAccounts(item.id);
     setOpenModalViewProv(false);
-    setCurrentItemProvider(item);
   }
 
-  // Legacy Controlpanel21.OptPages.Page1.btnContainer.Click ("Exportar", icono Excel) —
-  // el Page1 del legacy no tiene un botón "Imprimir" propiamente dicho, solo este export.
-  // Se conecta acá al slot fnPrint del ControlPanel compartido (siempre rotulado
-  // "Imprimir" con ícono de impresora) porque es la única acción de "salida" que existe
-  // en esta pantalla — evita agregar un botón nuevo redundante junto al ya visible.
+  // Legacy btnContainer.Click ("Exportar", icono Excel): el Page1 del legacy no tiene un botón "Imprimir", solo este export. Se
+  // conecta al slot fnPrint del ControlPanel compartido. El back exporta lo guardado en la DB (no el formulario) y es un GET (solo
+  // lectura: no exige el permiso de crear). GETPdf no notifica por sí mismo: el error se avisa aquí.
   const fnPrintProvider = () => {
-    fnExportExcel('inventory/process/providers/exportXlsx', {}, 'ListadoProveedores.xlsx');
+    setLoading(true);
+    const stop = () => setLoading(false);
+    request.GETPdf('inventory/process/providers/export', {}, 'Listado de Proveedores.xlsx', (err) => {
+      stop();
+      notifyError(err, 'page.providers.msg.exportError');
+    }, 'GET', stop);
   }
 
   const fnDeleteProvider = () => {
@@ -174,10 +155,9 @@ export const useProviders = ({ setLoading }) => {
   const fnOkDeleteProvider = () => {
     setOpenMsgDeleteProv(false);
     setLoading(true);
-    // Borrado lógico (status:0), igual que el legacy (SET elimina=1) — un DELETE físico
-    // rompería el historial de compras/kardex que referencia este proveedor. Las cuentas
-    // bancarias del proveedor NO se tocan (el legacy tampoco las borra al eliminar).
-    request.PUT(`inventory/process/providers/${formState.id}`, { status: 0 }, (resp) => {
+    // Baja lógica con bloqueo por uso (elimina = 1): el back rechaza con su mensaje si el proveedor ya tiene documentos y entonces
+    // el formulario conserva el proveedor. Las cuentas bancarias no se tocan (el legacy tampoco).
+    request.DELETE(`inventory/process/providers/${formState.id}`, (resp) => {
       fnNewProvider();
       setLoading(false);
     }, (err) => {
@@ -191,12 +171,12 @@ export const useProviders = ({ setLoading }) => {
     });
     if (selectFilter.length > 0) {
       const newAccounts = {
-        idCtaCxp: selectFilter[0].idCtaCxp,
-        idCtaDes: selectFilter[0].idCtaDesc,
-        idCtaTax: selectFilter[0].idCtaIva,
-        idCtaFle: selectFilter[0].idCtaFlete,
-        idCtaBonific: selectFilter[0].idCtaBon,
-        idCtaOthers: selectFilter[0].idCtaOther
+        payableCtaCode: selectFilter[0].idCtaCxp,
+        discountCtaCode: selectFilter[0].idCtaDesc,
+        taxCtaCode: selectFilter[0].idCtaIva,
+        freightCtaCode: selectFilter[0].idCtaFlete,
+        bonusCtaCode: selectFilter[0].idCtaBon,
+        otherCtaCode: selectFilter[0].idCtaOther
       }
       setBulkForm(newAccounts);
     } else {
@@ -278,6 +258,12 @@ export const useProviders = ({ setLoading }) => {
 
       setLoading(false);
     });
+    if (companyData?.id) {
+      request.GET(`admin/companyInternalSettings?companyId=${companyData.id}`, (resp) => {
+        const [settings] = resp.data;
+        setAccountingActive(!!settings?.accountingMenu);
+      }, () => { });
+    }
     setLoading(true);
     request.GET('admin/bankList', (resp) => {
       const banks = resp.data.map((item) => {
@@ -376,7 +362,10 @@ export const useProviders = ({ setLoading }) => {
     setOpen: setOpenModalBillingData,
     maxWidth: 'md',
     data: {
-      currentItem: currentItemProvider,
+      // El formulario ya trae cai, rango y fecha límite del proveedor cargado; con uno recién guardado solo tiene el id.
+      currentItem: formState,
+      // Deja el formulario al día con lo guardado en "Info Fact." (el guardado general no manda esos campos).
+      onSaved: (saved) => setBulkForm(saved),
       setLoading
     }
   }
@@ -397,7 +386,8 @@ export const useProviders = ({ setLoading }) => {
   return {
     formState,
     onInputChange,
-    formValidation,
+    errors,
+    accountingActive,
     sendForm,
     propsToControlPanel,
     propsToModalBankAccount,

@@ -358,7 +358,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
         return {
           label: item.name,
           value: item.id,
-          idCtaCxp: item.idCtaCxp
+          payableCtaCode: item.payableCtaCode
         }
       });
       setListProviders(providers);

@@ -1,5 +1,5 @@
 import { Card, CardBody, Row, Form, Table, Button } from 'reactstrap';
-import { IntlMessages } from "@Helpers/Utils";
+import { useIntl } from "react-intl";
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { Checkbox } from '@Components/checkbox';
 import { SimpleSelect } from '@Components/simpleSelect';
@@ -11,11 +11,16 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import DateCalendar from '@Components/dateCalendar';
 import Modal from "@Components/modal";
 import { useProviders } from './useProviders';
+import { DNI_MAX, MAX_NAME, MAX_PHONE, MAX_EMAIL, MAX_CONTACT, MAX_CONTACT_PHONE } from './providerRules';
 
 const Providers = (props) => {
   const { setLoading } = props;
+  // useIntl se llama siempre y arriba: IntlMessages es un hook y, dentro del map de las cuentas bancarias, cambiaba el orden de los hooks
+  // al aparecer la primera fila.
+  const intl = useIntl();
+  const t = (id) => intl.formatMessage({ id });
 
-  const { formState, formValidation, onInputChange, sendForm, propsToControlPanel,
+  const { formState, errors, accountingActive, onInputChange, sendForm, propsToControlPanel,
     propsToModalBankAccount,
     propsToModalBillingData,
     propsToModalViewProv,
@@ -33,11 +38,10 @@ const Providers = (props) => {
 
   const { id, dni, name, providerTypeId, phone, email, address, paymentConditions, creditDays, shipDays, isInternational, isPettyCash,
     status, isProducer, isPartner, contactManager, contactManagerPhone, contactContab, contactContabPhone, contactSales, contactSalesPhone,
-    contactLogistic, contactLogisticPhone, idCtaCxp, idCtaDes, idCtaTax, idCtaFle, idCtaBonific, idCtaOthers, taxCertificateDateOut,
+    contactLogistic, contactLogisticPhone, payableCtaCode, discountCtaCode, taxCtaCode, freightCtaCode, bonusCtaCode, otherCtaCode, taxCertificateDateOut,
     percHosp, percProv } = formState;
 
-  const { providerTypeIdValid, dniValid, nameValid, phoneValid, emailValid, idCtaCxpValid, idCtaDesValid, idCtaTaxValid, idCtaFleValid,
-    idCtaOthersValid } = formValidation;
+  const showError = (field) => (sendForm && errors[field]) || null;
 
   return (
     <>
@@ -56,10 +60,10 @@ const Providers = (props) => {
                           name="providerTypeId"
                           value={providerTypeId}
                           onChange={onInputChange}
-                          label="page.providers.select.typeProvider"
+                          label="page.providers.select.typeProviderRequired"
                           options={listTypeProviders}
-                          invalid={sendForm && !!providerTypeIdValid}
-                          feedbackText={sendForm && (providerTypeIdValid || null)}
+                          invalid={sendForm && !!errors.providerTypeId}
+                          feedbackText={showError('providerTypeId')}
                         />
                       </Colxx>
                       <Colxx xxs="12" sm="6" md="12" lg="6">
@@ -68,9 +72,10 @@ const Providers = (props) => {
                           name="dni"
                           onChange={onInputChange}
                           type="text"
-                          label="page.providers.input.dni"
-                          invalid={sendForm && !!dniValid}
-                          feedbackText={sendForm && (dniValid || null)}
+                          label="page.providers.input.dniRequired"
+                          maxLength={DNI_MAX}
+                          invalid={sendForm && !!errors.dni}
+                          feedbackText={showError('dni')}
                         />
                       </Colxx>
                     </Row>
@@ -81,9 +86,10 @@ const Providers = (props) => {
                           name="name"
                           onChange={onInputChange}
                           type="text"
-                          label="page.providers.input.name"
-                          invalid={sendForm && !!nameValid}
-                          feedbackText={sendForm && (nameValid || null)}
+                          label="page.providers.input.nameRequired"
+                          maxLength={MAX_NAME}
+                          invalid={sendForm && !!errors.name}
+                          feedbackText={showError('name')}
                         />
                       </Colxx>
                     </Row>
@@ -94,9 +100,10 @@ const Providers = (props) => {
                           name="phone"
                           onChange={onInputChange}
                           type="text"
-                          label="page.providers.input.phone"
-                          invalid={sendForm && !!phoneValid}
-                          feedbackText={sendForm && (phoneValid || null)}
+                          label="page.providers.input.phoneRequired"
+                          maxLength={MAX_PHONE}
+                          invalid={sendForm && !!errors.phone}
+                          feedbackText={showError('phone')}
                         />
                       </Colxx>
                       <Colxx xxs="12" sm="7" md="12" lg="7">
@@ -105,9 +112,10 @@ const Providers = (props) => {
                           name="email"
                           onChange={onInputChange}
                           type="text"
-                          label="page.providers.input.email"
-                          invalid={sendForm && !!emailValid}
-                          feedbackText={sendForm && (emailValid || null)}
+                          label="page.providers.input.emailRequired"
+                          maxLength={MAX_EMAIL}
+                          invalid={sendForm && !!errors.email}
+                          feedbackText={showError('email')}
                         />
                       </Colxx>
                     </Row>
@@ -138,6 +146,8 @@ const Providers = (props) => {
                         <InputField
                           value={creditDays}
                           name="creditDays"
+                          invalid={sendForm && !!errors.creditDays}
+                          feedbackText={showError('creditDays')}
                           onChange={onInputChange}
                           type="text"
                           label="page.providers.input.creditDays"
@@ -147,6 +157,8 @@ const Providers = (props) => {
                         <InputField
                           value={shipDays}
                           name="shipDays"
+                          invalid={sendForm && !!errors.shipDays}
+                          feedbackText={showError('shipDays')}
                           onChange={onInputChange}
                           type="text"
                           label="page.providers.input.shipDays"
@@ -214,6 +226,8 @@ const Providers = (props) => {
                         <InputField
                           value={percHosp}
                           name="percHosp"
+                          invalid={sendForm && !!errors.percHosp}
+                          feedbackText={showError('percHosp')}
                           onChange={onInputChange}
                           type="text"
                           label="page.providers.input.percHosp"
@@ -223,6 +237,8 @@ const Providers = (props) => {
                         <InputField
                           value={percProv}
                           name="percProv"
+                          invalid={sendForm && !!errors.percProv}
+                          feedbackText={showError('percProv')}
                           onChange={onInputChange}
                           type="text"
                           label="page.providers.input.percProv"
@@ -237,6 +253,9 @@ const Providers = (props) => {
                               <InputField
                                 value={contactManager}
                                 name="contactManager"
+                                maxLength={MAX_CONTACT}
+                                invalid={sendForm && !!errors.contactManager}
+                                feedbackText={showError('contactManager')}
                                 onChange={onInputChange}
                                 type="text"
                                 label="page.providers.input.managementName"
@@ -246,6 +265,9 @@ const Providers = (props) => {
                               <InputField
                                 value={contactManagerPhone}
                                 name="contactManagerPhone"
+                                maxLength={MAX_CONTACT_PHONE}
+                                invalid={sendForm && !!errors.contactManagerPhone}
+                                feedbackText={showError('contactManagerPhone')}
                                 onChange={onInputChange}
                                 type="text"
                                 label="page.providers.input.phone"
@@ -257,6 +279,9 @@ const Providers = (props) => {
                               <InputField
                                 value={contactContab}
                                 name="contactContab"
+                                maxLength={MAX_CONTACT}
+                                invalid={sendForm && !!errors.contactContab}
+                                feedbackText={showError('contactContab')}
                                 onChange={onInputChange}
                                 type="text"
                                 label="page.providers.input.accountingName"
@@ -266,6 +291,9 @@ const Providers = (props) => {
                               <InputField
                                 value={contactContabPhone}
                                 name="contactContabPhone"
+                                maxLength={MAX_CONTACT_PHONE}
+                                invalid={sendForm && !!errors.contactContabPhone}
+                                feedbackText={showError('contactContabPhone')}
                                 onChange={onInputChange}
                                 type="text"
                                 label="page.providers.input.phone"
@@ -277,6 +305,9 @@ const Providers = (props) => {
                               <InputField
                                 value={contactSales}
                                 name="contactSales"
+                                maxLength={MAX_CONTACT}
+                                invalid={sendForm && !!errors.contactSales}
+                                feedbackText={showError('contactSales')}
                                 onChange={onInputChange}
                                 type="text"
                                 label="page.providers.input.salesName"
@@ -286,6 +317,9 @@ const Providers = (props) => {
                               <InputField
                                 value={contactSalesPhone}
                                 name="contactSalesPhone"
+                                maxLength={MAX_CONTACT_PHONE}
+                                invalid={sendForm && !!errors.contactSalesPhone}
+                                feedbackText={showError('contactSalesPhone')}
                                 onChange={onInputChange}
                                 type="text"
                                 label="page.providers.input.phone"
@@ -297,6 +331,9 @@ const Providers = (props) => {
                               <InputField
                                 value={contactLogistic}
                                 name="contactLogistic"
+                                maxLength={MAX_CONTACT}
+                                invalid={sendForm && !!errors.contactLogistic}
+                                feedbackText={showError('contactLogistic')}
                                 onChange={onInputChange}
                                 type="text"
                                 label="page.providers.input.logisticsName"
@@ -306,6 +343,9 @@ const Providers = (props) => {
                               <InputField
                                 value={contactLogisticPhone}
                                 name="contactLogisticPhone"
+                                maxLength={MAX_CONTACT_PHONE}
+                                invalid={sendForm && !!errors.contactLogisticPhone}
+                                feedbackText={showError('contactLogisticPhone')}
                                 onChange={onInputChange}
                                 type="text"
                                 label="page.providers.input.phone"
@@ -320,7 +360,7 @@ const Providers = (props) => {
                         <ContainerWithLabel label="page.providers.title.bankAccounts">
                           <Row className="mb-1">
                             <Colxx xxs="12" align="right">
-                              <Button type="button" className="btn-circle-table" color="primary" title={IntlMessages("button.new")}
+                              <Button type="button" className="btn-circle-table" color="primary" title={t("button.new")}
                                 onClick={() => { fnAddAccount(id) }}>
                                 <i className='bi bi-plus' />
                               </Button>
@@ -331,9 +371,9 @@ const Providers = (props) => {
                               <Table bordered hover>
                                 <thead>
                                   <tr>
-                                    <th>{IntlMessages("page.providers.table.column.bank")}</th>
-                                    <th>{IntlMessages("page.providers.table.column.account")}</th>
-                                    <th>{IntlMessages("table.column.options")}</th>
+                                    <th>{t("page.providers.table.column.bank")}</th>
+                                    <th>{t("page.providers.table.column.account")}</th>
+                                    <th>{t("table.column.options")}</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -343,11 +383,11 @@ const Providers = (props) => {
                                         <th scope="row">{item.bankName}</th>
                                         <td>{item.bankCtaCode}</td>
                                         <td className="text-end">
-                                          <Button type="button" className="btn-circle-table" color="warning" title={IntlMessages("button.edit")}
+                                          <Button type="button" className="btn-circle-table" color="warning" title={t("button.edit")}
                                             onClick={() => { fnEditAccount(item) }}>
                                             <i className='bi bi-pencil' />
                                           </Button>
-                                          <Button type="button" className="btn-circle-table" color="danger" title={IntlMessages("button.delete")}
+                                          <Button type="button" className="btn-circle-table" color="danger" title={t("button.delete")}
                                             onClick={() => { fnDeleteAccount(item) }}>
                                             <i className='bi bi-trash' />
                                           </Button>
@@ -370,48 +410,48 @@ const Providers = (props) => {
                       <Row>
                         <Colxx xxs="12" xs="6" md="12" lg={6}>
                           <SearchSelect
-                            label="page.providers.select.accountsPayable"
-                            name="idCtaCxp"
-                            inputValue={idCtaCxp}
+                            label={accountingActive ? "page.providers.select.accountsPayableRequired" : "page.providers.select.accountsPayable"}
+                            name="payableCtaCode"
+                            inputValue={payableCtaCode}
                             onChange={onInputChange}
                             options={listLedgerAccounts}
-                            invalid={sendForm && !!idCtaCxpValid}
-                            feedbackText={sendForm && (idCtaCxpValid || null)}
+                            invalid={sendForm && !!errors.payableCtaCode}
+                            feedbackText={showError('payableCtaCode')}
                           />
                         </Colxx>
                         <Colxx xxs="12" xs="6" md="12" lg={6}>
                           <SearchSelect
-                            label="page.providers.select.discountAccounts"
-                            name="idCtaDes"
-                            inputValue={idCtaDes}
+                            label={accountingActive ? "page.providers.select.discountAccountsRequired" : "page.providers.select.discountAccounts"}
+                            name="discountCtaCode"
+                            inputValue={discountCtaCode}
                             onChange={onInputChange}
                             options={listLedgerAccounts}
-                            invalid={sendForm && !!idCtaDesValid}
-                            feedbackText={sendForm && (idCtaDesValid || null)}
+                            invalid={sendForm && !!errors.discountCtaCode}
+                            feedbackText={showError('discountCtaCode')}
                           />
                         </Colxx>
                       </Row>
                       <Row>
                         <Colxx xxs="12" xs="6" md="12" lg={6}>
                           <SearchSelect
-                            label="page.providers.select.ivaAccounts"
-                            name="idCtaTax"
-                            inputValue={idCtaTax}
+                            label={accountingActive ? "page.providers.select.ivaAccountsRequired" : "page.providers.select.ivaAccounts"}
+                            name="taxCtaCode"
+                            inputValue={taxCtaCode}
                             onChange={onInputChange}
                             options={listLedgerAccounts}
-                            invalid={sendForm && !!idCtaTaxValid}
-                            feedbackText={sendForm && (idCtaTaxValid || null)}
+                            invalid={sendForm && !!errors.taxCtaCode}
+                            feedbackText={showError('taxCtaCode')}
                           />
                         </Colxx>
                         <Colxx xxs="12" xs="6" md="12" lg={6}>
                           <SearchSelect
                             label="page.providers.select.freightAccounts"
-                            name="idCtaFle"
-                            inputValue={idCtaFle}
+                            name="freightCtaCode"
+                            inputValue={freightCtaCode}
                             onChange={onInputChange}
                             options={listLedgerAccounts}
-                            invalid={sendForm && !!idCtaFleValid}
-                            feedbackText={sendForm && (idCtaFleValid || null)}
+                            invalid={sendForm && !!errors.freightCtaCode}
+                            feedbackText={showError('freightCtaCode')}
                           />
                         </Colxx>
                       </Row>
@@ -419,8 +459,8 @@ const Providers = (props) => {
                         <Colxx xxs="12" xs="6" md="12" lg={6}>
                           <SearchSelect
                             label="page.providers.select.bonusAccounts"
-                            name="idCtaBonific"
-                            inputValue={idCtaBonific}
+                            name="bonusCtaCode"
+                            inputValue={bonusCtaCode}
                             onChange={onInputChange}
                             options={listLedgerAccounts}
                           />
@@ -428,12 +468,12 @@ const Providers = (props) => {
                         <Colxx xxs="12" xs="6" md="12" lg={6}>
                           <SearchSelect
                             label="page.providers.select.otherSurcharges"
-                            name="idCtaOthers"
-                            inputValue={idCtaOthers}
+                            name="otherCtaCode"
+                            inputValue={otherCtaCode}
                             onChange={onInputChange}
                             options={listLedgerAccounts}
-                            invalid={sendForm && !!idCtaOthersValid}
-                            feedbackText={sendForm && (idCtaOthersValid || null)}
+                            invalid={sendForm && !!errors.otherCtaCode}
+                            feedbackText={showError('otherCtaCode')}
                           />
                         </Colxx>
                       </Row>

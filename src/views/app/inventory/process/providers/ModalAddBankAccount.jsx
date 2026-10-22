@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
-import { IntlMessages, validInt } from "@Helpers/Utils";
+import { IntlMessages } from "@Helpers/Utils";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import SearchSelect from "@Components/SearchSelect/SearchSelect";
 import { SimpleSelect } from "@Components/simpleSelect";
@@ -8,23 +8,17 @@ import { InputField } from "@Components/inputFields";
 import { Checkbox } from "@Components/checkbox";
 import { request } from '@Helpers/core';
 import { useForm } from "@Hooks";
+import {
+  validateBankAccount, buildBankAccountPayload, ACCOUNT_TYPE_OPTIONS, CLASSIFICATION_OPTIONS,
+  ACCOUNT_NUMBER_MAX, BENEFICIARY_MAX, BENEFICIARY_DNI_MAX, BENEFICIARY_EMAIL_MAX
+} from "./providerRules";
 
 const ModalAddBankAccount = (props) => {
   const { data, setOpen } = props;
   const { currentItem, setLoading, listBanks, fnGetBankAccounts, providerId } = data;
-  const listAccount = [{ id: 1, name: 'Cuenta de Ahorro' }, { id: 2, name: 'Cuenta de Cheques' }, { id: 3, name: 'Cuenta de Ahorro en Dolares' }, { id: 4, name: 'Cuenta de Cheques en Dolares' }];
-  const listAccount2 = [{ id: 1, name: 'CA' }, { id: 2, name: 'CC' }];
   const [sendForm, setSendForm] = useState(false);
 
-  const providersValid = {
-    bankName: [(val) => val !== "", "msg.required.select.bank"],
-    typeCtaName: [(val) => validInt(val) > 0, "msg.required.select.typeAccount"],
-    classificCta: [(val) => validInt(val) > 0, "msg.required.select.typeAccount"],
-    bankCtaCode: [(val) => val !== "", "msg.required.input.accountNum"],
-    beneficName: [(val) => val !== "", "msg.required.input.beneficiary"]
-  }
-
-  const { formState, formValidation, isFormValid, setBulkForm, onResetForm, onInputChange } = useForm({
+  const { formState, setBulkForm, onResetForm, onInputChange } = useForm({
     id: 0,
     isExterior: currentItem.isExterior ? currentItem.isExterior : false,
     status: currentItem.status ? currentItem.status : true,
@@ -35,11 +29,14 @@ const ModalAddBankAccount = (props) => {
     beneficName: currentItem.beneficName ? currentItem.beneficName : "",
     beneficDni: currentItem.beneficDni ? currentItem.beneficDni : "",
     beneficEmail: currentItem.beneficEmail ? currentItem.beneficEmail : ""
-  }, providersValid);
+  });
+
+  // Mismas reglas que el back (providerRules.js): errores por campo y sin llamar al back si alguna falla.
+  const errors = useMemo(() => validateBankAccount(formState), [formState]);
 
   const { id, isExterior, status, bankName, typeCtaName, classificCta, bankCtaCode, beneficName, beneficDni, beneficEmail } = formState;
 
-  const { bankNameValid, typeCtaNameValid, classificCtaValid, bankCtaCodeValid, beneficNameValid } = formValidation;
+  const showError = (field) => (sendForm && errors[field]) || null;
 
   const fnClearInputs = () => {
     onResetForm();
@@ -47,22 +44,11 @@ const ModalAddBankAccount = (props) => {
 
   const fnSaveBankAccount = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    if (Object.keys(errors).length > 0) {
       return;
     }
 
-    const newData = {
-      providerId,
-      classificCta,
-      typeCtaName,
-      bankName,
-      bankCtaCode,
-      beneficName,
-      beneficDni,
-      beneficEmail,
-      isExterior,
-      status
-    }
+    const newData = buildBankAccountPayload(formState, providerId);
 
     if (currentItem && currentItem.id > 0) {
       setLoading(true);
@@ -118,10 +104,10 @@ const ModalAddBankAccount = (props) => {
               name="bankName"
               onChange={onInputChange}
               inputValue={bankName}
-              label="page.providers.modal.addBankAccount.select.bankName"
+              label="page.providers.modal.addBankAccount.select.bankNameRequired"
               options={listBanks}
-              invalid={sendForm && !!bankNameValid}
-              feedbackText={sendForm && (bankNameValid || null)}
+              invalid={sendForm && !!errors.bankName}
+              feedbackText={showError('bankName')}
             />
           </Colxx>
         </Row>
@@ -131,10 +117,10 @@ const ModalAddBankAccount = (props) => {
               value={typeCtaName}
               name="typeCtaName"
               onChange={onInputChange}
-              options={listAccount}
-              label="page.providers.modal.addBankAccount.select.typeAccount"
-              invalid={sendForm && !!typeCtaNameValid}
-              feedbackText={sendForm && (typeCtaNameValid || null)}
+              options={ACCOUNT_TYPE_OPTIONS}
+              label="page.providers.modal.addBankAccount.select.typeAccountRequired"
+              invalid={sendForm && !!errors.typeCtaName}
+              feedbackText={showError('typeCtaName')}
             />
           </Colxx>
           <Colxx xxs="12" xs="5">
@@ -142,9 +128,9 @@ const ModalAddBankAccount = (props) => {
               value={classificCta}
               name="classificCta"
               onChange={onInputChange}
-              options={listAccount2}
-              invalid={sendForm && !!classificCtaValid}
-              feedbackText={sendForm && (classificCtaValid || null)}
+              options={CLASSIFICATION_OPTIONS}
+              invalid={sendForm && !!errors.classificCta}
+              feedbackText={showError('classificCta')}
             />
           </Colxx>
         </Row>
@@ -153,22 +139,24 @@ const ModalAddBankAccount = (props) => {
             <InputField
               value={bankCtaCode}
               name="bankCtaCode"
+              maxLength={ACCOUNT_NUMBER_MAX}
               onChange={onInputChange}
-              label="page.providers.modal.addBankAccount.input.accountNum"
+              label="page.providers.modal.addBankAccount.input.accountNumRequired"
               type="text"
-              invalid={sendForm && !!bankCtaCodeValid}
-              feedbackText={sendForm && (bankCtaCodeValid || null)}
+              invalid={sendForm && !!errors.bankCtaCode}
+              feedbackText={showError('bankCtaCode')}
             />
           </Colxx>
           <Colxx xxs="12" xs="7">
             <InputField
               value={beneficName}
               name="beneficName"
+              maxLength={BENEFICIARY_MAX}
               onChange={onInputChange}
               type="text"
-              label="page.providers.modal.addBankAccount.input.beneficiary"
-              invalid={sendForm && !!beneficNameValid}
-              feedbackText={sendForm && (beneficNameValid || null)}
+              label="page.providers.modal.addBankAccount.input.beneficiaryRequired"
+              invalid={sendForm && !!errors.beneficName}
+              feedbackText={showError('beneficName')}
             />
           </Colxx>
         </Row>
@@ -177,6 +165,9 @@ const ModalAddBankAccount = (props) => {
             <InputField
               value={beneficDni}
               name="beneficDni"
+              maxLength={BENEFICIARY_DNI_MAX}
+              invalid={sendForm && !!errors.beneficDni}
+              feedbackText={showError('beneficDni')}
               onChange={onInputChange}
               type="text"
               label="page.providers.modal.addBankAccount.input.rtn"
@@ -186,6 +177,9 @@ const ModalAddBankAccount = (props) => {
             <InputField
               value={beneficEmail}
               name="beneficEmail"
+              maxLength={BENEFICIARY_EMAIL_MAX}
+              invalid={sendForm && !!errors.beneficEmail}
+              feedbackText={showError('beneficEmail')}
               onChange={onInputChange}
               type="text"
               label="page.providers.modal.addBankAccount.input.email"

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
 import { IntlMessages } from "@Helpers/Utils";
 import { Colxx } from '@Components/common/CustomBootstrap';
@@ -7,45 +7,41 @@ import { InputField } from "@Components/inputFields";
 import { useForm } from "@Hooks";
 // import InputMask from 'react-input-mask';
 import DateCalendar from "@Components/dateCalendar";
+import { validateBillingData, buildBillingPayload } from "./providerRules";
+
+// 1900-01-01 es el "sin fecha" de la DB: se muestra vacío.
+const cleanDate = (value) => (value && !String(value).startsWith("1900-01-01") ? String(value).slice(0, 10) : "");
 
 const ModalBillingData = (props) => {
   const { data, setOpen } = props;
-  const { currentItem, setLoading } = data;
+  const { currentItem, setLoading, onSaved } = data;
   const [sendForm, setSendForm] = useState(false);
 
-  const billingDataValid = {
-    cai: [(val) => val.length > 0 && val.length < 38, "msg.required.input.cai"],
-    rangeIn: [(val) => val.length > 0 && val.length === 8, "msg.required.input.range"],
-    rangeOut: [(val) => val.length > 0 && val.length === 8, "msg.required.input.range"],
-    dateLimit: [(val) => val !== "", "msg.required.input.deadline"]
-  }
-
-  const { formState, formValidation, isFormValid, setBulkForm, onResetForm, onInputChange } = useForm({
+  const { formState, onInputChange } = useForm({
     id: 0,
     cai: currentItem.cai ? currentItem.cai : "",
-    rangeIn: currentItem.rangeIn ? currentItem.rangeIn : 0,
-    rangeOut: currentItem.rangeOut ? currentItem.rangeOut : 0,
-    dateLimit: currentItem.dateLimit ? currentItem.dateLimit : ""
-  }, billingDataValid);
+    rangeIn: Number(currentItem.rangeIn) > 0 ? currentItem.rangeIn : "",
+    rangeOut: Number(currentItem.rangeOut) > 0 ? currentItem.rangeOut : "",
+    dateLimit: cleanDate(currentItem.dateLimit)
+  });
 
-  const { id, cai, rangeIn, rangeOut, dateLimit } = formState;
+  // Mismas reglas que el back (providerRules.js, ProviderBillingDataDTO): errores por campo y sin llamar al back si alguna falla.
+  const errors = useMemo(() => validateBillingData(formState), [formState]);
 
-  const { caiValid, rangeInValid, rangeOutValid, dateLimitValid } = formValidation;
+  const { cai, rangeIn, rangeOut, dateLimit } = formState;
+
+  const showError = (field) => (sendForm && errors[field]) || null;
 
   const fnSaveBillingData = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    if (Object.keys(errors).length > 0) {
       return;
     }
 
-    const newData = {
-      cai,
-      rangeIn,
-      rangeOut,
-      dateLimit
-    }
     setLoading(true);
-    request.PUT(`inventory/process/providers/${currentItem.id}`, newData, (resp) => {
+    const payload = buildBillingPayload(formState);
+    request.PUT(`inventory/process/providers/${currentItem.id}/billingData`, payload, (resp) => {
+      if (onSaved) onSaved(payload);
       setOpen(false);
       setLoading(false);
     }, (err) => {
@@ -67,8 +63,8 @@ const ModalBillingData = (props) => {
               // tag={InputMask}
               type="text"
               label="page.providers.modal.billingData.input.cai"
-              invalid={sendForm && !!caiValid}
-              feedbackText={sendForm && (caiValid || null)}
+              invalid={sendForm && !!errors.cai}
+              feedbackText={showError('cai')}
             />
           </Colxx>
         </Row>
@@ -83,8 +79,8 @@ const ModalBillingData = (props) => {
               // tag={InputMask}
               type="text"
               label="page.providers.modal.billingData.input.initialRank"
-              invalid={sendForm && !!rangeInValid}
-              feedbackText={sendForm && (rangeInValid || null)}
+              invalid={sendForm && !!errors.rangeIn}
+              feedbackText={showError('rangeIn')}
             />
           </Colxx>
           <Colxx xxs="6">
@@ -97,8 +93,8 @@ const ModalBillingData = (props) => {
               // tag={InputMask}
               type="text"
               label="page.providers.modal.billingData.input.finalRank"
-              invalid={sendForm && !!rangeOutValid}
-              feedbackText={sendForm && (rangeOutValid || null)}
+              invalid={sendForm && !!errors.rangeOut}
+              feedbackText={showError('rangeOut')}
             />
           </Colxx>
         </Row>
@@ -109,8 +105,8 @@ const ModalBillingData = (props) => {
               label="page.providers.modal.billingData.input.deadline"
               onChange={onInputChange}
               name="dateLimit"
-              invalid={sendForm && !!dateLimitValid}
-              feedbackText={sendForm && (dateLimitValid || null)}
+              invalid={sendForm && !!errors.dateLimit}
+              feedbackText={showError('dateLimit')}
             />
           </Colxx>
         </Row>
