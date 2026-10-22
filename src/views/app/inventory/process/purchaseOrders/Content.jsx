@@ -3,6 +3,7 @@ import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { useForm } from '@Hooks';
 import { request, buildUrl } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import notification from '@Containers/ui/Notifications';
@@ -24,7 +25,6 @@ import {
 
 const PurchaseOrders = (props) => {
   const { setLoading } = props;
-  const userData = JSON.parse(localStorage.getItem('mw_current_user'));
   const [listProviders, setListProviders] = useState([]);
   const [listPaymenTypes, setListPaymentTypes] = useState([]);
   const [orderDetail, setOrderDetail] = useState([]);
@@ -128,13 +128,7 @@ const PurchaseOrders = (props) => {
     }
 
     const payload = buildOrderPayload(formState, orderDetail);
-    const printOrder = (orderId) => {
-      request.GETPdf('inventory/process/purchaseOrders/exportPDFOrder', { id: orderId, userName: userData.name }, 'Orden de Compra.pdf',
-        (err) => {
-
-          setLoading(false);
-        });
-    }
+    const printOrder = (orderId) => fnPrintDocument(orderId, 'Orden de Compra.pdf');
 
     setLoading(true);
     if (id && id > 0) {
@@ -159,15 +153,15 @@ const PurchaseOrders = (props) => {
     }
   }
 
-  const fnPrintPurchaseOrder = () => {
-    if (id > 0) {
-      request.GETPdf('inventory/process/purchaseOrders/exportPDFOrder', { id, userName: userData.name }, 'Orden de Compra.pdf',
-        (err) => {
+  // El back imprime lo GUARDADO por GET (la orden: `print`; la hoja de recepción: `receipt`).
+  const fnPrintDocument = (orderId, fileName, suffix) => printDocument({
+    path: 'inventory/process/purchaseOrders', id: orderId, fileName, suffix, setLoading
+  });
 
-          setLoading(false);
-        });
-    }
-  }
+  const fnPrintPurchaseOrder = () => fnPrintDocument(id, 'Orden de Compra.pdf');
+
+  // Legacy (Controlpanelbtn1, Inv_OC_receipt): hoja de recepción con cantidad, lote y vencimiento por producto.
+  const fnPrintReceipt = () => fnPrintDocument(id, 'Recepcion de Orden de Compra.pdf', 'receipt');
 
   const fnDeletePurchaseOrder = () => {
     if (id > 0) {
@@ -292,11 +286,13 @@ const PurchaseOrders = (props) => {
     setOpenModalViewOrders(false);
   }
 
+  // Legacy (btnContainer, Ver Doctos): las compras de la orden (inv_compras.codoc) y sus boletas de compra (inv_shopping_ticket.id_oc).
   const fnGetDocuments = (orderId) => {
     request.GET(buildUrl('inventory/process/purchases', { orderId }), (resp) => {
-      const purchase = resp.data.map((item) => {
+      const purchases = resp.data.map((item) => {
         return {
-          id: item.id,
+          id: `purchase-${item.id}`,
+          kind: 'purchase',
           documentCode: item.documentCode,
           documentId: item.documentId,
           orderId: item.orderId,
@@ -308,12 +304,41 @@ const PurchaseOrders = (props) => {
           total: formatNumber(item.total)
         }
       });
-      setDataPurchases(purchase);
+      setDataPurchases(purchases);
       setLoading(false);
+      fnGetTickets(orderId, purchases);
     }, (err) => {
 
       setLoading(false);
     });
+  }
+
+  // Las boletas no traen totales en su lista: se suman de su detalle (una consulta por boleta, normalmente 0 o 1).
+  const fnGetTickets = (orderId, purchases) => {
+    request.GET(buildUrl('inventory/process/ticketPurchase', { idOc: orderId }), (resp) => {
+      const tickets = resp.data || [];
+      if (tickets.length === 0) return;
+      Promise.all(tickets.map((ticket) => new Promise((resolve) => {
+        request.GET(`inventory/process/ticketPurchase/${ticket.id}/detail`, (respDeta) => {
+          const total = (respDeta.data || []).reduce((sum, line) => sum + validFloat(line.valueTotal1), 0);
+          resolve({
+            id: `ticket-${ticket.id}`,
+            kind: 'ticket',
+            documentCode: ticket.documentCode,
+            documentId: ticket.documentId,
+            orderId,
+            date: formatDate(ticket.date),
+            numCai: ticket.numberCAI,
+            subtotal: formatNumber(total),
+            discount: formatNumber(0),
+            tax: formatNumber(0),
+            total: formatNumber(total)
+          });
+        }, () => resolve(null), false);
+      }))).then((rows) => {
+        setDataPurchases([...purchases, ...rows.filter(Boolean)]);
+      });
+    }, () => { }, false);
   }
 
   useEffect(() => {
@@ -412,6 +437,11 @@ const PurchaseOrders = (props) => {
         title: "button.process",
         icon: "iconsminds-arrow-around",
         onClick: fnProcess
+      },
+      {
+        title: "button.receipt",
+        icon: "bi bi-box-seam",
+        onClick: fnPrintReceipt
       },
       {
         title: "button.viewDoctos",
