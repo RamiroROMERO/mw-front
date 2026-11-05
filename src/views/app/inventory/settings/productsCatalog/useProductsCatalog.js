@@ -139,7 +139,7 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
     fnLoadStock(item.code);
     request.GET(`inventory/settings/products/getLastPurchase/${item.code}`, res => {
       const { data } = res;
-      const purchaseData = { dateLastPurchase: data?.date ? formatDate(data.date) : '', provLastPurchase: data?.providerName || '', numLastPurchase: data?.numCai || '' }
+      const purchaseData = { dateLastPurchase: data?.date ? formatDate(data.date) : '', provLastPurchase: data?.providerName || '', numLastPurchase: data?.invoiceNumber || '' }
       setBulkForm(purchaseData);
     }, () => { });
   }

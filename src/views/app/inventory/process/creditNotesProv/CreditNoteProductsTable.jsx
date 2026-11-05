@@ -21,7 +21,7 @@ const CreditNoteProductsTable = (props) => {
         <Colxx xxs="12" sm="6" lg="8">
           {originPurchase && (
             <span>
-              <strong>{IntlMessages("page.creditNotesProv.input.originPurchase")}:</strong> {originPurchase.numCai}
+              <strong>{IntlMessages("page.creditNotesProv.input.originPurchase")}:</strong> {originPurchase.invoiceNumber}
             </span>
           )}
         </Colxx>

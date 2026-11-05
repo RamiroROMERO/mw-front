@@ -4937,7 +4937,29 @@ const esLang = {
   "page.depreciationApply.msg.applyConfirm": "¿Aplicar la depreciación?",
   "page.depreciationApply.msg.applyLegend": "Se generará una partida con {lines} líneas por un total de {total} hasta {month}.",
   "page.depreciationApply.msg.unapplyConfirm": "¿Desaplicar este lote?",
-  "page.depreciationApply.msg.unapplyLegend": "Se eliminará la partida {pda} de {month} y sus líneas volverán a Pendiente. No queda rastro del lote."
+  "page.depreciationApply.msg.unapplyLegend": "Se eliminará la partida {pda} de {month} y sus líneas volverán a Pendiente. No queda rastro del lote.",
+  "page.purchases.input.documentRequired": "Documento *",
+  "page.purchases.input.providerIdRequired": "Proveedor *",
+  "page.purchases.input.invoiceNumberRequired": "No. Factura *",
+  "page.purchases.input.storeIdRequired": "Almacén *",
+  "page.purchases.input.dateRequired": "Fecha *",
+  "page.purchases.input.productCodeRequired": "Código *",
+  "page.purchases.input.qtyRequired": "Cant. (ENT) *",
+  "page.purchases.input.priceRequired": "Precio (ENT) *",
+  "page.purchases.input.qtyBase": "Cant. base",
+  "page.purchases.select.paymentTypeIdRequired": "Tipo de Pago *",
+  "page.purchases.radio.typePurchaseRequired": "Tipo de Compra *",
+  "msg.purchase.invoiceNumber.required": "Por favor ingrese el número de factura!",
+  "msg.purchase.invoiceNumber.invalid": "El número de factura debe tener hasta 40 caracteres y terminar en un número mayor a cero",
+  "msg.purchase.date.future": "La fecha de la compra no puede ser futura",
+  "msg.purchase.invoiceNumber.suffixed": "El número de factura ya existía para este proveedor: se guardó con el sufijo asignado",
+  "msg.purchase.order.onlyNew": "Una orden de compra solo se puede cargar en una compra nueva",
+  "msg.question.replaceDetail.title": "Ya hay productos en la compra. ¿Desea reemplazarlos por los de la orden de compra?",
+  "msg.purchase.dateOut.required": "La fecha de vencimiento es requerida para compras a crédito",
+  "msg.purchase.dateOut.range": "El vencimiento no puede ser menor a la fecha de la factura",
+  "msg.purchase.percent.range": "El porcentaje debe estar entre 0 y 100",
+  "msg.purchase.line.exclusive": "Una línea no puede ser bonificación y exonerada a la vez",
+  "msg.purchase.maxLength": "El texto excede el largo permitido"
 };
 
 export default esLang;

@@ -6,13 +6,14 @@ import { formatNumber, IntlMessages } from '@Helpers/Utils'
 import { Checkbox } from '@Components/checkbox'
 import DateCalendar from '@Components/dateCalendar'
 import { useDetailProduct } from './useDetailProduct'
+import { packFactor, toBaseUnits } from './purchaseRules'
 
-const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, discountPercent, discount, taxPercent, tax, total,
-  lotCode, dateOutProd, isTaxFree, isBonus, previousCost, currentExistence, storeId, onInputChangeDeta, fnViewProducts,setBulkFormDeta, purchaseDetail, setPurchaseDetail, setBulkForm, formValidationDeta, isFormValidDeta, sendFormDeta,setSendFormDeta}) => {
+const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, discountPercent, discount, taxPercent, taxValue, total,
+  lotCode, dateOut, isExonerated, isBonus, packQty, previousCost, currentExistence, storeId, onInputChangeDeta, fnViewProducts,setBulkFormDeta, setPurchaseDetail, formValidationDeta, sendFormDeta,setSendFormDeta}) => {
 
-  const {productCodeValid, qtyValid, priceValid} = formValidationDeta;
+  const {productCodeValid, qtyValid, priceValid, discountPercentValid, taxPercentValid, lotCodeValid} = formValidationDeta;
 
-  const {onQtyChange, onPriceChange, onDiscountChange, onTaxChange, onIsTaxChange, onIsBonusChange, disabledIsTaxFree, disabledIsBonus, fnAddProduct} = useDetailProduct({idProd, productCode, nameProduct, qty, price, subTotal, discountPercent, discount, taxPercent, tax, total, lotCode, dateOutProd, isTaxFree, isBonus,setBulkFormDeta, purchaseDetail, setPurchaseDetail, setBulkForm, isFormValidDeta, setSendFormDeta});
+  const {onQtyChange, onPriceChange, onDiscountChange, onTaxChange, onIsExoneratedChange, onIsBonusChange, disabledIsExonerated, disabledIsBonus, fnAddProduct} = useDetailProduct({idProd, productCode, nameProduct, qty, price, subTotal, discountPercent, discount, taxPercent, taxValue, total, lotCode, dateOut, isExonerated, isBonus, packQty, setBulkFormDeta, setPurchaseDetail, setSendFormDeta});
 
   return (
     <Row>
@@ -24,7 +25,7 @@ const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, 
                 <Colxx xxs="12" xs="6" lg="4" xl="3">
                   <InputField
                     name="productCode"
-                    label='page.purchaseOrders.input.productCode'
+                    label='page.purchases.input.productCodeRequired'
                     value={productCode}
                     onChange={onInputChangeDeta}
                     type="text"
@@ -47,7 +48,7 @@ const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, 
                 <Colxx xxs="12" xs="4" lg="3" xl="2">
                   <InputField
                     name="qty"
-                    label='page.purchaseOrders.input.qty'
+                    label='page.purchases.input.qtyRequired'
                     value={qty}
                     onChange={onQtyChange}
                     type="text"
@@ -58,7 +59,7 @@ const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, 
                 <Colxx xxs="12" xs="4" lg="3" xl="2">
                   <InputField
                     name="price"
-                    label='page.purchaseOrders.input.price'
+                    label='page.purchases.input.priceRequired'
                     value={price}
                     onChange={onPriceChange}
                     type="text"
@@ -66,6 +67,18 @@ const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, 
                     feedbackText={sendFormDeta && (priceValid || null)}
                   />
                 </Colxx>
+                {packFactor({ packQty }) > 1 && (
+                  <Colxx xxs="12" xs="4" lg="3" xl="2">
+                    <InputField
+                      name="qtyBase"
+                      label='page.purchases.input.qtyBase'
+                      value={formatNumber(toBaseUnits({ qty, price, packQty }).qty)}
+                      onChange={onInputChangeDeta}
+                      type="text"
+                      disabled
+                    />
+                  </Colxx>
+                )}
                 <Colxx xxs="12" xs="4" lg="3" xl="2">
                   <InputField
                     name="subTotal"
@@ -83,6 +96,8 @@ const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, 
                     value={discountPercent}
                     onChange={onDiscountChange}
                     type="text"
+                    invalid={sendFormDeta && !!discountPercentValid}
+                    feedbackText={sendFormDeta && (discountPercentValid || null)}
                   />
                 </Colxx>
                 <Colxx xxs="12" xs="4" lg="3" xl="2">
@@ -102,13 +117,16 @@ const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, 
                     value={taxPercent}
                     onChange={onTaxChange}
                     type="text"
+                    disabled={isExonerated === true || isExonerated === 1}
+                    invalid={sendFormDeta && !!taxPercentValid}
+                    feedbackText={sendFormDeta && (taxPercentValid || null)}
                   />
                 </Colxx>
                 <Colxx xxs="12" xs="4" lg="3" xl="2">
                   <InputField
-                    name="tax"
+                    name="taxValue"
                     label='page.purchaseOrders.input.tax'
-                    value={formatNumber(tax)}
+                    value={formatNumber(taxValue)}
                     onChange={onInputChangeDeta}
                     type="text"
                     disabled
@@ -131,13 +149,16 @@ const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, 
                     value={lotCode}
                     onChange={onInputChangeDeta}
                     type="text"
+                    maxLength={20}
+                    invalid={sendFormDeta && !!lotCodeValid}
+                    feedbackText={sendFormDeta && (lotCodeValid || null)}
                   />
                 </Colxx>
                 <Colxx xxs="12" xs="8" lg="5" xl="4">
                   <DateCalendar
                     name="dateOut"
                     label="page.purchases.input.dateOutProd"
-                    value={dateOutProd}
+                    value={dateOut}
                     onChange={onInputChangeDeta}
                   />
                 </Colxx>
@@ -154,11 +175,11 @@ const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, 
                   <Row className='mb-2'>
                     <Colxx xxs="12">
                       <Checkbox
-                        name="isTaxFree"
+                        name="isExonerated"
                         label='page.purchases.check.exonerated'
-                        value={isTaxFree}
-                        onChange={onIsTaxChange}
-                        disabled={disabledIsTaxFree}
+                        value={isExonerated}
+                        onChange={onIsExoneratedChange}
+                        disabled={disabledIsExonerated}
                       />
                     </Colxx>
                     <Colxx xxs="12">

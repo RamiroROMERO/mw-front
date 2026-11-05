@@ -26,14 +26,14 @@ export const useOtherPurchases = ({ setLoading }) => {
     documentCode: [(val) => val !== "", "msg.required.select.typeDocument"],
     typeTax: [(val) => validInt(val) > 0, "msg.required.select.typeTax"],
     providerId: [(val) => validInt(val) > 0, "msg.required.select.provider"],
-    numCai: [(val) => val !== "", "msg.required.input.numInvoice"],
+    invoiceNumber: [(val) => val !== "", "msg.required.input.numInvoice"],
     date: [(val) => val !== "", "msg.required.input.date"],
     dateOut: [(val) => val !== "", "msg.required.input.date"],
     paymentTypeId: [(val) => validInt(val) > 0, "msg.required.select.paymentType"],
     typeFp: [(val) => validInt(val) > 0, "msg.required.select.typePurchase"],
-    noCtaExpense: [(val) => val !== "", "msg.required.select.noCtaExpense"],
+    expenseCtaCode: [(val) => val !== "", "msg.required.select.noCtaExpense"],
     description: [(val) => val !== "", "msg.required.input.description"],
-    nameRequire: [(val) => val !== "", "msg.required.input.name"],
+    requestedBy: [(val) => val !== "", "msg.required.input.name"],
     total: [(val) => validInt(val) > 0, "msg.required.input.total"],
   };
 
@@ -44,10 +44,10 @@ export const useOtherPurchases = ({ setLoading }) => {
     typeTax: 0,
     providerId: 0,
     paymentTypeId: 0,
-    orderId: 0,
-    workedId: 0,
+    purchaseOrderId: 0,
+    workOrderId: 0,
     cai: "",
-    numCai: "",
+    invoiceNumber: "",
     date: "",
     dateOut: "",
     typeFp: 0,
@@ -55,33 +55,33 @@ export const useOtherPurchases = ({ setLoading }) => {
     exemptedCertificate: "",
     exemptedNumber: "",
     exemptedRecord: "",
-    nameRequire: "",
-    noCtaExpense: "",
+    requestedBy: "",
+    expenseCtaCode: "",
     pdaNumber: 0,
     status: 0,
     subtotal: 0,
     discount: 0,
-    exonera: 0,
-    exent: 0,
-    gravado: 0,
+    valueExonerated: 0,
+    valueExempt: 0,
+    valueTaxable: 0,
     tax: 0,
     freight: 0,
     otherCharges: 0,
     total: 0
   }, purchasesValid);
 
-  const { id, typeTax, cai, numCai, providerId, pdaNumber, exonera, gravado, exent, discount, tax, freight, otherCharges } = formState;
+  const { id, typeTax, cai, invoiceNumber, providerId, pdaNumber, valueExonerated, valueTaxable, valueExempt, discount, tax, freight, otherCharges } = formState;
 
   const { openMsgAccountDocument, setOpenMsgAccountDocument, fnAccountDocument, fnOkAccountDocument } = useOtherPurchaseAccounting({ setLoading, id, setBulkForm: onBulkForm });
 
   // Legacy fncalculatetotal (líneas 1046-1059): Subtotal = Exonerado + Gravado + Exento (ambos
   // Numbox_hw2/hw7 son ReadOnly en el .sc2, calculados aquí, no editables por el usuario).
   useEffect(() => {
-    const subtotal = validFloat(exonera) + validFloat(gravado) + validFloat(exent);
+    const subtotal = validFloat(valueExonerated) + validFloat(valueTaxable) + validFloat(valueExempt);
     const total = subtotal - validFloat(discount) + validFloat(tax) + validFloat(freight) + validFloat(otherCharges);
     onBulkForm({ subtotal: Number(subtotal.toFixed(2)), total: Number(total.toFixed(2)) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exonera, gravado, exent, discount, tax, freight, otherCharges]);
+  }, [valueExonerated, valueTaxable, valueExempt, discount, tax, freight, otherCharges]);
 
   // Legacy Combobox_hw1.InteractiveChange (líneas 1595-1618): el CAI del proveedor solo es
   // obligatorio/editable cuando el tipo de documento fiscal seleccionado usa CAI.
@@ -137,7 +137,7 @@ export const useOtherPurchases = ({ setLoading }) => {
     // Legacy btnSaveDocument.Click (líneas 2139-2150): WHERE coddoc = numero AND codprov =
     // provider sobre cont_cxp, antes de crear/actualizar — evita registrar dos veces la misma
     // factura de un proveedor.
-    request.GET(buildUrl('accounting/process/accountsPayable', { documentCode: numCai, providerId }), (resp) => {
+    request.GET(buildUrl('accounting/process/accountsPayable', { documentCode: invoiceNumber, providerId }), (resp) => {
       if (Array.isArray(resp.data) && resp.data.length > 0) {
         notification('error', 'msg.error.purchase.documentAlreadyRegistered', 'alert.error.title');
         setLoading(false);

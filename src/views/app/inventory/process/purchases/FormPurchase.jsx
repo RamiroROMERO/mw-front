@@ -6,12 +6,15 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect'
 // import ReactInputMask from 'react-input-mask';
 import DateCalendar from '@Components/dateCalendar'
 import { RadioGroup } from '@Components/radioGroup'
+import { useIntl } from 'react-intl'
 import { validInt } from '@Helpers/Utils'
 
-const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, numCai, date, dateOut, nameRequire, orderId,
-  typeDocto, listDocuments, listStores, listProviders, listPaymentTypes, onInputChange, setBulkForm, formValidation, sendForm }) => {
+const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, invoiceNumber, date, dateOut, requestedBy, purchaseOrderId,
+  typeFp, listDocuments, listStores, listProviders, listPaymentTypes, onInputChange, setBulkForm, formValidation, sendForm }) => {
 
-  const { documentCodeValid, providerIdValid, caiValid, numCaiValid, dateValid, dateOutValid, typeDoctoValid } = formValidation;
+  const { documentCodeValid, providerIdValid, caiValid, invoiceNumberValid, storeIdValid, paymentTypeIdValid, dateValid, dateOutValid, typeFpValid } = formValidation;
+  const intl = useIntl();
+  const isCash = validInt(typeFp) === 1;
 
   const onProviderChange = e => {
     const filterProv = listProviders.find(item => item.value === validInt(e.target.value));
@@ -31,7 +34,7 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, n
           <Row>
             <Colxx xxs="12" md="6">
               <SearchSelect
-                label='page.purchases.input.document'
+                label='page.purchases.input.documentRequired'
                 name='documentCode'
                 inputValue={documentCode}
                 options={listDocuments}
@@ -42,7 +45,7 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, n
             </Colxx>
             <Colxx xxs="12" md="6">
               <SearchSelect
-                label='page.purchases.input.providerId'
+                label='page.purchases.input.providerIdRequired'
                 name='providerId'
                 inputValue={providerId}
                 options={listProviders}
@@ -60,23 +63,23 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, n
                 type="text"
                 mask="******-******-******-******-******-**"
                 maskChar=" "
-                // tag={ReactInputMask}
+                maxLength={50}
                 invalid={sendForm && !!caiValid}
                 feedbackText={sendForm && (caiValid || null)}
               />
             </Colxx>
             <Colxx xxs="12" md="6">
               <InputField
-                name="numCai"
-                label='page.purchases.input.numCai'
-                value={numCai}
+                name="invoiceNumber"
+                label='page.purchases.input.invoiceNumberRequired'
+                value={invoiceNumber}
                 onChange={onInputChange}
                 type="text"
                 mask="***-***-**-********"
                 maskChar=" "
-                // tag={ReactInputMask}
-                invalid={sendForm && !!numCaiValid}
-                feedbackText={sendForm && (numCaiValid || null)}
+                maxLength={40}
+                invalid={sendForm && !!invoiceNumberValid}
+                feedbackText={sendForm && (invoiceNumberValid || null)}
               />
             </Colxx>
           </Row>
@@ -84,28 +87,33 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, n
             <Colxx xxs="12" sm="6" xl="4">
               <SimpleSelect
                 name="storeId"
-                label="page.purchases.input.storeId"
+                label="page.purchases.input.storeIdRequired"
                 value={storeId}
                 onChange={onInputChange}
                 options={listStores}
+                invalid={sendForm && !!storeIdValid}
+                feedbackText={sendForm && (storeIdValid || null)}
               />
             </Colxx>
             <Colxx xxs="12" sm="6" xl="4">
               <SearchSelect
-                label='page.purchases.select.paymentTypeId'
+                label='page.purchases.select.paymentTypeIdRequired'
                 inputValue={paymentTypeId}
                 name='paymentTypeId'
                 options={listPaymentTypes}
                 onChange={onInputChange}
+                invalid={sendForm && !!paymentTypeIdValid}
+                feedbackText={sendForm && (paymentTypeIdValid || null)}
               />
             </Colxx>
             <Colxx xxs="12" sm="12" xl="4">
               <InputField
-                name="nameRequire"
+                name="requestedBy"
                 label='page.purchases.input.nameRequire'
-                value={nameRequire}
+                value={requestedBy}
                 onChange={onInputChange}
                 type="text"
+                maxLength={50}
               />
             </Colxx>
           </Row>
@@ -115,7 +123,7 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, n
             <Colxx xxs="12" xs="6" lg="12">
               <DateCalendar
                 name="date"
-                label="page.purchases.input.date"
+                label="page.purchases.input.dateRequired"
                 value={date}
                 onChange={onInputChange}
                 invalid={sendForm && !!dateValid}
@@ -128,30 +136,33 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, n
                 label="page.purchases.input.dateOut"
                 value={dateOut}
                 onChange={onInputChange}
+                disabled={isCash}
                 invalid={sendForm && !!dateOutValid}
                 feedbackText={sendForm && (dateOutValid || null)}
               />
             </Colxx>
             <Colxx xxs="12" xs="6" lg="12">
               <RadioGroup
-                label="page.purchases.radio.typePurchase"
-                name="typeDocto"
-                value={typeDocto}
+                label="page.purchases.radio.typePurchaseRequired"
+                name="typeFp"
+                value={typeFp}
                 onChange={onInputChange}
                 options={[
                   { id: 1, label: 'page.purchases.radio.cash' },
                   { id: 2, label: 'page.purchases.radio.credit' }
                 ]}
                 display='flex'
-                invalid={sendForm && !!typeDoctoValid}
-                feedbackText={sendForm && (typeDoctoValid || null)}
+                invalid={sendForm && !!typeFpValid}
+                feedbackText={sendForm && (typeFpValid || null)}
               />
+              {/* RadioGroup no pinta su feedbackText */}
+              {sendForm && typeFpValid && (<div className="invalid-feedback d-block mb-2">{intl.formatMessage({ id: typeFpValid })}</div>)}
             </Colxx>
             <Colxx xxs="12" xs="6" lg="12">
               <InputField
-                name="orderId"
+                name="purchaseOrderId"
                 label='page.purchases.input.orderId'
-                value={orderId}
+                value={purchaseOrderId}
                 onChange={onInputChange}
                 type="text"
                 disabled

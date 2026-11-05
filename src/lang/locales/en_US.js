@@ -4940,7 +4940,29 @@ const enLang = {
   "page.depreciationApply.msg.applyConfirm": "Apply the depreciation?",
   "page.depreciationApply.msg.applyLegend": "An entry with {lines} lines will be created for a total of {total} up to {month}.",
   "page.depreciationApply.msg.unapplyConfirm": "Unapply this batch?",
-  "page.depreciationApply.msg.unapplyLegend": "Entry {pda} of {month} will be deleted and its lines will go back to Pending. No trace of the batch is kept."
+  "page.depreciationApply.msg.unapplyLegend": "Entry {pda} of {month} will be deleted and its lines will go back to Pending. No trace of the batch is kept.",
+  "page.purchases.input.documentRequired": "Document *",
+  "page.purchases.input.providerIdRequired": "Provider *",
+  "page.purchases.input.invoiceNumberRequired": "Invoice Num. *",
+  "page.purchases.input.storeIdRequired": "Store *",
+  "page.purchases.input.dateRequired": "Date *",
+  "page.purchases.input.productCodeRequired": "Code *",
+  "page.purchases.input.qtyRequired": "Qty (ENT) *",
+  "page.purchases.input.priceRequired": "Price (ENT) *",
+  "page.purchases.input.qtyBase": "Base qty",
+  "page.purchases.select.paymentTypeIdRequired": "Payment Type *",
+  "page.purchases.radio.typePurchaseRequired": "Purchase Type *",
+  "msg.purchase.invoiceNumber.required": "Please enter the invoice number!",
+  "msg.purchase.invoiceNumber.invalid": "The invoice number must have up to 40 characters and end in a number greater than zero",
+  "msg.purchase.date.future": "The purchase date cannot be in the future",
+  "msg.purchase.invoiceNumber.suffixed": "The invoice number already existed for this provider: it was saved with the assigned suffix",
+  "msg.purchase.order.onlyNew": "A purchase order can only be loaded into a new purchase",
+  "msg.question.replaceDetail.title": "The purchase already has products. Do you want to replace them with the ones from the purchase order?",
+  "msg.purchase.dateOut.required": "The due date is required for credit purchases",
+  "msg.purchase.dateOut.range": "The due date cannot be earlier than the invoice date",
+  "msg.purchase.percent.range": "The percentage must be between 0 and 100",
+  "msg.purchase.line.exclusive": "A line cannot be a bonus and exonerated at the same time",
+  "msg.purchase.maxLength": "The text exceeds the allowed length"
 };
 
 export default enLang;

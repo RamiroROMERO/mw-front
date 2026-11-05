@@ -29,12 +29,12 @@ const ModalComplementaryInvoices = (props) => {
     title: "msg.question.cancel.document.title"
   }
 
-  const { documentCode, typeTax, providerId, cai, numCai, date, dateOut, paymentTypeId, typeFp,
-    description, noCtaExpense, subtotal, discount, exonera, exent, gravado, tax, freight, otherCharges, total,
+  const { documentCode, typeTax, providerId, cai, invoiceNumber, date, dateOut, paymentTypeId, typeFp,
+    description, expenseCtaCode, subtotal, discount, valueExonerated, valueExempt, valueTaxable, tax, freight, otherCharges, total,
     exemptedCertificate, exemptedNumber, exemptedRecord } = formStateComplementary;
 
-  const { documentCodeValid, typeTaxValid, providerIdValid, caiValid, numCaiValid, dateValid, dateOutValid,
-    paymentTypeIdValid, typeFpValid, descriptionValid, noCtaExpenseValid } = formValidationComplementary;
+  const { documentCodeValid, typeTaxValid, providerIdValid, caiValid, invoiceNumberValid, dateValid, dateOutValid,
+    paymentTypeIdValid, typeFpValid, descriptionValid, expenseCtaCodeValid } = formValidationComplementary;
 
   const propsToControlPanelComplementary = {
     fnNew: fnNewComplementary,
@@ -55,7 +55,7 @@ const ModalComplementaryInvoices = (props) => {
     title: '',
     columns: [
       { text: IntlMessages("page.purchases.modal.viewPurchases.table.date"), dataField: "dateIn", headerStyle: { width: "15%" } },
-      { text: IntlMessages("page.purchases.modal.viewPurchases.table.numCai"), dataField: "numCai", headerStyle: { width: "15%" } },
+      { text: IntlMessages("page.purchases.modal.viewPurchases.table.numCai"), dataField: "invoiceNumber", headerStyle: { width: "15%" } },
       { text: IntlMessages("page.purchases.modal.viewPurchases.table.provider"), dataField: "provider", headerStyle: { width: "35%" } },
       { text: IntlMessages("page.purchases.modal.viewPurchases.table.total"), dataField: "valueTotal", headerStyle: { width: "15%" }, style: { textAlign: 'right' } },
       { text: IntlMessages("page.purchases.modal.complementary.table.accounted"), dataField: "accounted", headerStyle: { width: "15%" } }
@@ -140,15 +140,15 @@ const ModalComplementaryInvoices = (props) => {
           </Colxx>
           <Colxx xxs="12" md="4">
             <InputField
-              name="numCai"
+              name="invoiceNumber"
               label='page.purchases.input.numCai'
-              value={numCai}
+              value={invoiceNumber}
               onChange={onInputChangeComplementary}
               type="text"
               mask="***-***-**-********"
               maskChar=" "
-              invalid={sendFormComplementary && !!numCaiValid}
-              feedbackText={sendFormComplementary && (numCaiValid || null)}
+              invalid={sendFormComplementary && !!invoiceNumberValid}
+              feedbackText={sendFormComplementary && (invoiceNumberValid || null)}
             />
           </Colxx>
           <Colxx xxs="12" md="4">
@@ -206,12 +206,12 @@ const ModalComplementaryInvoices = (props) => {
           <Colxx xxs="12">
             <SearchSelect
               label="page.purchases.select.accountExpense"
-              name="noCtaExpense"
-              inputValue={noCtaExpense}
+              name="expenseCtaCode"
+              inputValue={expenseCtaCode}
               options={listLedgerAccounts}
               onChange={onInputChangeComplementary}
-              invalid={sendFormComplementary && !!noCtaExpenseValid}
-              feedbackText={sendFormComplementary && (noCtaExpenseValid || null)}
+              invalid={sendFormComplementary && !!expenseCtaCodeValid}
+              feedbackText={sendFormComplementary && (expenseCtaCodeValid || null)}
             />
           </Colxx>
         </Row>
@@ -235,13 +235,13 @@ const ModalComplementaryInvoices = (props) => {
             <InputField label="page.purchases.table.discount" name="discount" value={discount} onChange={onInputChangeComplementary} type="number" />
           </Colxx>
           <Colxx xxs="12" xs="6" md="3">
-            <InputField label="page.purchases.table.exonerated" name="exonera" value={exonera} onChange={onInputChangeComplementary} type="number" />
+            <InputField label="page.purchases.table.exonerated" name="valueExonerated" value={valueExonerated} onChange={onInputChangeComplementary} type="number" />
           </Colxx>
           <Colxx xxs="12" xs="6" md="3">
-            <InputField label="page.purchases.table.exempt" name="exent" value={exent} onChange={onInputChangeComplementary} type="number" />
+            <InputField label="page.purchases.table.exempt" name="valueExempt" value={valueExempt} onChange={onInputChangeComplementary} type="number" />
           </Colxx>
           <Colxx xxs="12" xs="6" md="3">
-            <InputField label="page.purchases.table.taxed" name="gravado" value={gravado} onChange={onInputChangeComplementary} type="number" />
+            <InputField label="page.purchases.table.taxed" name="valueTaxable" value={valueTaxable} onChange={onInputChangeComplementary} type="number" />
           </Colxx>
           <Colxx xxs="12" xs="6" md="3">
             <InputField label="page.purchases.table.taxes" name="tax" value={tax} onChange={onInputChangeComplementary} type="number" />

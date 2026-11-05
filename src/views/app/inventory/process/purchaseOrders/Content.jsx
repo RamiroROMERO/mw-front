@@ -288,16 +288,16 @@ const PurchaseOrders = (props) => {
 
   // Legacy (btnContainer, Ver Doctos): las compras de la orden (inv_compras.codoc) y sus boletas de compra (inv_shopping_ticket.id_oc).
   const fnGetDocuments = (orderId) => {
-    request.GET(buildUrl('inventory/process/purchases', { orderId }), (resp) => {
+    request.GET(buildUrl('inventory/process/purchases', { purchaseOrderId: orderId }), (resp) => {
       const purchases = resp.data.map((item) => {
         return {
           id: `purchase-${item.id}`,
           kind: 'purchase',
           documentCode: item.documentCode,
           documentId: item.documentId,
-          orderId: item.orderId,
+          orderId: item.purchaseOrderId,
           date: formatDate(item.date),
-          numCai: item.numCai,
+          numCai: item.invoiceNumber,
           subtotal: formatNumber(item.subtotal),
           discount: formatNumber(item.discount),
           tax: formatNumber(item.tax),
@@ -569,10 +569,10 @@ const PurchaseOrders = (props) => {
     setOpen: setOpenModalProcess,
     maxWidth: "lg",
     data: {
-      orderId: id,
+      purchaseOrderId: id,
       providerId,
       paymentTypeId,
-      nameRequire: applicantName,
+      requestedBy: applicantName,
       description: notes,
       workOrderId,
       valueOthers,

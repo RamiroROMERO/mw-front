@@ -11,7 +11,7 @@ const ModalSeekOriginPurchase = ({ setOpen, data }) => {
     title: '',
     columns: [
       { text: IntlMessages("table.column.dateIn"), dataField: "date", headerStyle: { width: "15%" } },
-      { text: IntlMessages("table.column.invoice"), dataField: "numCai", headerStyle: { width: "45%" } },
+      { text: IntlMessages("table.column.invoice"), dataField: "invoiceNumber", headerStyle: { width: "45%" } },
       {
         text: IntlMessages("table.column.value"), dataField: "total", headerStyle: { width: "20%" }, style: { textAlign: 'right' },
         cell: ({ row }) => formatNumber(row.original.total)

@@ -1,22 +1,15 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { request, buildUrl } from '@Helpers/core';
-import { validFloat, validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks';
-import TableButtons from '@Components/tableButtons';
+import { calculatePurchaseLine, existenceInStore, lineFromProduct, lineFromServer, validateLine } from './purchaseRules';
 
 export const usePurchaseDeta = ({ setLoading, setPurchaseDetail }) => {
 
   const [openModalProducts, setOpenModalProducts] = useState(false);
-  const [dataProducts, setDataProducts] = useState([]);
+  // Almacén de la compra al abrir el modal: la existencia que se muestra es la de ese almacén.
+  const [productsStoreId, setProductsStoreId] = useState(0);
 
-  const purchaseDetaValid = {
-    productCode: [(val) => val !== "", "msg.required.input.codeProduct"],
-    qty: [(val) => validInt(val) > 0, "msg.required.input.qty"],
-    price: [(val) => validInt(val) > 0, "msg.required.input.price"]
-  }
-
-  const { formState: formStateDeta, formValidation: formValidationDeta, isFormValid: isFormValidDeta, onInputChange:
-    onInputChangeDeta, onResetForm: onResetFormDeta, setBulkForm: setBulkFormDeta } = useForm({
+  const { formState: formStateDeta, onInputChange: onInputChangeDeta, onResetForm: onResetFormDeta, setBulkForm: setBulkFormDeta } = useForm({
       idProd: 0,
       productCode: '',
       nameProduct: '',
@@ -26,25 +19,27 @@ export const usePurchaseDeta = ({ setLoading, setPurchaseDetail }) => {
       discountPercent: 0,
       discount: 0,
       taxPercent: 0,
-      tax: 0,
+      taxValue: 0,
       total: 0,
       isBonus: 0,
-      isTaxFree: 0,
+      isExonerated: 0,
       lotCode: '',
       dateOut: '',
       nameUM: '',
+      packQty: 1,
       previousCost: 0,
       currentExistence: 0
-    }, purchaseDetaValid);
+    }, {});
+
+  // Las reglas de la línea viven en purchaseRules.js (mismas del PurchaseDetailDTO del back).
+  const lineErrors = useMemo(() => validateLine(formStateDeta), [formStateDeta]);
+  const formValidationDeta = useMemo(() => Object.fromEntries(Object.entries(lineErrors).map(([field, message]) => [`${field}Valid`, message])), [lineErrors]);
+  const isFormValidDeta = Object.keys(lineErrors).length === 0;
 
   const fnGetDataDetail = (purchaseId) => {
     setLoading(true);
     request.GET(buildUrl('inventory/process/purchaseDetail', { purchaseId }), (resp) => {
-      const purchaseDeta = resp.data.map((item) => {
-        item.nameProduct = item.productData.name
-        item.subTotal = item.subtotal
-        return item;
-      });
+      const purchaseDeta = resp.data.map(lineFromServer);
       setPurchaseDetail(purchaseDeta);
       setLoading(false);
     }, (err) => {
@@ -53,41 +48,23 @@ export const usePurchaseDeta = ({ setLoading, setPurchaseDetail }) => {
     });
   }
 
+  // El modal es el catálogo de productos (ModalViewProd): llega una fila del catálogo, no de existencias.
   const fnSelectProduct = (item) => {
-    setBulkFormDeta(item);
+    const line = lineFromProduct(item);
+    setBulkFormDeta({ ...line, ...calculatePurchaseLine(line) });
     setOpenModalProducts(false);
+    // La existencia del almacén se pide aparte (una sola consulta por el producto elegido).
+    request.GET(`inventory/settings/products/getStock/${encodeURIComponent(item.code)}`, (resp) => {
+      setBulkFormDeta({ currentExistence: existenceInStore(resp.data, productsStoreId) });
+    }, () => { });
   }
 
   const fnViewProducts = (idStore) => {
-    setLoading(true);
-    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId: idStore }), (resp) => {
-      const data = resp.data.map((item) => {
-        item.code = item.productCode
-        item.nameProduct = item.name
-        item.price = validFloat(item.priceLocalMid)
-        item.subTotal = validFloat(item.priceLocalMid)
-        item.taxPercent = item.percentTax
-        item.tax = (validFloat(item.percentTax) * validFloat(item.priceLocalMid)) / 100
-        item.total = ((validFloat(item.percentTax) * validFloat(item.priceLocalMid)) / 100) + validFloat(item.priceLocalMid)
-        item.nameUM = item.inputUnit
-        item.previousCost = item.costValue
-        item.currentExistence = item.stockQty
-        item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
-          <i className="medium-icon bi bi-square" />
-        item.presentation = item.inputUnit
-        item.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
-        return item;
-      });
-      setDataProducts(data);
-      setOpenModalProducts(true);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
+    setProductsStoreId(idStore);
+    setOpenModalProducts(true);
   }
 
   return {
-    formStateDeta, formValidationDeta, isFormValidDeta, onInputChangeDeta, onResetFormDeta, setBulkFormDeta, fnSelectProduct, openModalProducts, setOpenModalProducts, fnViewProducts, dataProducts, fnGetDataDetail
+    formStateDeta, formValidationDeta, isFormValidDeta, onInputChangeDeta, onResetFormDeta, setBulkFormDeta, fnSelectProduct, openModalProducts, setOpenModalProducts, fnViewProducts, fnGetDataDetail
   }
 }

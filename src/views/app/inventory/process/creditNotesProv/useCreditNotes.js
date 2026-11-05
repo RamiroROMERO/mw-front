@@ -231,7 +231,7 @@ export const useCreditNotes = ({ setLoading }) => {
         const taxPercent = validFloat(item.taxPercent);
         const subtotal = validFloat(item.subtotal);
         const discountValue = validFloat(item.discount);
-        const taxValue = validFloat(item.tax);
+        const taxValue = validFloat(item.taxValue);
         return {
           id: item.id,
           cpaId: item.id,
@@ -254,8 +254,8 @@ export const useCreditNotes = ({ setLoading }) => {
       });
       setDetail2(lines);
       recalcTotalFromDetail2(lines);
-      setOriginPurchase({ id: purchase.id, numCai: purchase.numCai, date: purchase.date });
-      setBulkForm({ invoCode: purchase.numCai });
+      setOriginPurchase({ id: purchase.id, invoiceNumber: purchase.invoiceNumber, date: purchase.date });
+      setBulkForm({ invoCode: purchase.invoiceNumber });
       setOpenModalSeekOrigin(false);
       setLoading(false);
     }, () => { setLoading(false); });
@@ -364,7 +364,7 @@ export const useCreditNotes = ({ setLoading }) => {
         });
         setDetail2(lines);
         setDetail1([]);
-        setOriginPurchase(item.invoCode ? { numCai: item.invoCode } : null);
+        setOriginPurchase(item.invoCode ? { invoiceNumber: item.invoCode } : null);
         setLoading(false);
       }, () => { setLoading(false); });
     } else {
@@ -428,7 +428,7 @@ export const useCreditNotes = ({ setLoading }) => {
       currenId,
       cai,
       numberCAI,
-      invoCode: isReturn ? (originPurchase ? originPurchase.numCai : '') : '',
+      invoCode: isReturn ? (originPurchase ? originPurchase.invoiceNumber : '') : '',
       isMixed: isMixed ? 1 : 0
     }
 
