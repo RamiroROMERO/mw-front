@@ -1,13 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import notification from '@Containers/ui/Notifications';
 import { useForm } from '@Hooks';
 import { request, buildUrl } from '@Helpers/core';
-import { formatDate, formatNumber, validFloat, validInt } from '@Helpers/Utils';
+import { formatDate, formatNumber, validFloat } from '@Helpers/Utils';
 import { usePurchaseFormLists } from './usePurchaseFormLists';
 import { usePurchaseOrders } from './usePurchaseOrders';
 import { usePurchaseApplyInventory } from './usePurchaseApplyInventory';
 import { usePurchaseAccounting } from './usePurchaseAccounting';
 import { usePurchaseComplementary } from './usePurchaseComplementary';
+import { buildPurchasePayload, calculateTotals, CASH, formFromSaved, invoiceNumberChanged, validateHeader } from './purchaseRules';
 
 export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setPurchaseDetail }) => {
 
@@ -21,40 +22,31 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
   const [sendForm, setSendForm] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
-  const purchasesValid = {
-    documentCode: [(val) => val !== "", "msg.required.select.typeDocument"],
-    providerId: [(val) => validInt(val) > 0, "msg.required.select.provider"],
-    cai: [(val) => val !== "", "msg.required.input.numInvoice"],
-    numCai: [(val) => val !== "", "msg.required.input.numInvoice"],
-    date: [(val) => val !== "", "msg.required.input.date"],
-    dateOut: [(val) => val !== "", "msg.required.input.date"],
-    typeDocto: [(val) => validInt(val) > 0, "msg.required.select.typePurchase"]
-  };
-
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
+  // Las reglas del encabezado viven en purchaseRules.js (mismas del PurchaseDTO del back); useForm solo guarda el estado.
+  const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
     documentCode: '',
     documentId: 0,
     date: '',
     providerId: 0,
     cai: '',
-    numCai: '',
+    invoiceNumber: '',
     storeId: 0,
     valueSubtotal: 0,
     valueDiscount: 0,
-    exonera: 0,
-    exent: 0,
-    gravado: 0,
+    valueExonerated: 0,
+    valueExempt: 0,
+    valueTaxable: 0,
     valueTax: 0,
     freight: 0,
     otherCharges: 0,
     valueTotal: 0,
-    typeDocto: 0,
+    typeFp: 0,
     dateOut: '',
     paymentTypeId: 0,
-    noCtaExpense: '',
-    orderId: 0,
-    nameRequire: '',
+    expenseCtaCode: '',
+    purchaseOrderId: 0,
+    requestedBy: '',
     description: '',
     providerType: 0,
     bonification: 0,
@@ -65,14 +57,32 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     importTicket: '',
     importCif: 0,
     importDai: 0,
-    importSelect: 0
-  }, purchasesValid);
+    importSelectiveTax: 0
+  }, {});
 
-  const { id, documentCode, documentId, storeId, providerId, paymentTypeId, cai, numCai, date, dateOut, nameRequire, orderId, typeDocto, valueSubtotal, valueDiscount, exent, exonera, gravado, valueTax, freight, otherCharges, valueTotal, providerType, description, noCtaExpense, exemptedCertificate, exemptedNumber, exemptedRecord, importNumberDua, importTicket, importCif, importDai, importSelect } = formState;
+  const { id, providerId, date, dateOut, typeFp, freight, otherCharges, valueTotal } = formState;
 
-  const { dataOrders, openModalViewOrders, setOpenModalViewOrders, fnViewPurchaseOrders, fnViewOrder } = usePurchaseOrders({
+  const headerErrors = useMemo(() => validateHeader(formState), [formState]);
+  const formValidation = useMemo(() => Object.fromEntries(Object.entries(headerErrors).map(([field, message]) => [`${field}Valid`, message])), [headerErrors]);
+  const isFormValid = Object.keys(headerErrors).length === 0;
+
+  // Los totales salen siempre del detalle completo (altas, ediciones, bajas, compras cargadas y órdenes importadas).
+  useEffect(() => {
+    setBulkForm(calculateTotals(purchaseDetail, { freight, otherCharges }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [purchaseDetail, freight, otherCharges]);
+
+  // En Contado el vencimiento es la fecha de la factura y el campo queda deshabilitado.
+  useEffect(() => {
+    if (Number(typeFp) === CASH && dateOut !== date) setBulkForm({ dateOut: date });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeFp, date]);
+
+  const { dataOrders, openModalViewOrders, setOpenModalViewOrders, fnViewPurchaseOrders, fnViewOrder, openMsgReplaceDetail, setOpenMsgReplaceDetail, fnOkReplaceDetail } = usePurchaseOrders({
     setLoading,
     providerId,
+    purchaseId: id,
+    purchaseDetail,
     setPurchaseDetail,
     setBulkForm
   });
@@ -119,117 +129,29 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     if (!isFormValid) {
       return;
     }
-    if (valueTotal === 0) {
+    if (purchaseDetail.length === 0 || validFloat(valueTotal) === 0) {
       notification('warning', 'msg.required.input.totalOrderProcess', 'alert.warning.title');
       return;
     }
 
-    const newPurchase = {
-      documentCode,
-      documentId,
-      date,
-      providerId,
-      cai,
-      numCai,
-      storeId,
-      subtotal: valueSubtotal,
-      discount: valueDiscount,
-      exonera,
-      exent,
-      gravado,
-      tax: valueTax,
-      freight,
-      otherCharges,
-      total: valueTotal,
-      typeDocto,
-      dateOut,
-      paymentTypeId,
-      noCtaExpense,
-      orderId,
-      nameRequire,
-      description,
-      providerType,
-      exemptedCertificate,
-      exemptedNumber,
-      exemptedRecord,
-      importNumberDua,
-      importTicket,
-      importCif,
-      importDai,
-      importSelect
-    }
-
-    purchaseDetail.map((item) => {
-      delete item.productData;
-      return item;
-    });
-
-    if (id === 0) {
-      // Generar documento
-      setLoading(true);
-      request.POST('admin/documents/getCurrentNumber', { code: documentCode }, (resp4) => {
-        newPurchase.documentId = resp4.data.codeInt;
-        setSendForm(false);
-        setLoading(true);
-        request.POST('inventory/process/purchases', newPurchase, (resp) => {
-          setBulkForm({ documentId: resp4.data.codeInt, id: resp.data.id });
-          // guardar detalle de la compra
-          purchaseDetail.forEach(item => {
-            const detailPurchase = {
-              purchaseId: resp.data.id,
-              ...item,
-              subtotal: item.subTotal
-            }
-            setLoading(true);
-            request.POST('inventory/process/purchaseDetail', detailPurchase, () => {
-              setLoading(false);
-            }, (err) => {
-
-              setLoading(false);
-            }, false);
-            setLoading(true);
-          });
-          setLoading(false);
-        }, (err) => {
-
-          setLoading(false);
-        });
-      }, (err) => {
-
-        setLoading(false);
-      });
+    // Un solo POST o PUT con la cabecera y las líneas: el back calcula los importes, asigna el correlativo y el N° de factura final
+    // (puede llevar el sufijo -1, -2 si el proveedor ya lo usó) y devuelve los totales. Una compra con error no queda a medias.
+    const isNew = id === 0;
+    const payload = buildPurchasePayload(formState, purchaseDetail, { isNew });
+    const onSaved = (resp) => {
+      const saved = resp.data;
+      setBulkForm(formFromSaved(saved));
+      if (invoiceNumberChanged(formState.invoiceNumber, saved.invoiceNumber)) {
+        notification('warning', 'msg.purchase.invoiceNumber.suffixed', 'alert.warning.title');
+      }
+      setSendForm(false);
+      setLoading(false);
+    };
+    setLoading(true);
+    if (isNew) {
+      request.POST('inventory/process/purchases', payload, onSaved, () => { setLoading(false); });
     } else {
-      setLoading(true);
-      request.PUT(`inventory/process/purchases/${id}`, newPurchase, () => {
-        setLoading(false);
-        setSendForm(false);
-        // Eliminar detalle de la compra
-        request.DELETE(buildUrl('inventory/process/purchaseDetail', { purchaseId: id }), () => {
-          // guardar detalle de la compra
-          purchaseDetail.forEach(item => {
-            const detailPurchase = {
-              purchaseId: id,
-              ...item,
-              subtotal: item.subTotal
-            }
-            setLoading(true);
-            request.POST('inventory/process/purchaseDetail', detailPurchase, () => {
-              setLoading(false);
-            }, (err) => {
-
-              setLoading(false);
-            }, false);
-            setLoading(true);
-          });
-          setLoading(false);
-        }, (err) => {
-
-          setLoading(false);
-        }, false);
-      }, (err) => {
-
-        setLoading(false);
-      });
+      request.PUT(`inventory/process/purchases/${id}`, payload, onSaved, () => { setLoading(false); });
     }
   }
 
@@ -350,6 +272,9 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     openModalViewOrders,
     setOpenModalViewOrders,
     fnViewOrder,
+    openMsgReplaceDetail,
+    setOpenMsgReplaceDetail,
+    fnOkReplaceDetail,
     openModalApplyInventory,
     setOpenModalApplyInventory,
     applyInventoryRows,

@@ -8,7 +8,7 @@ import { IntlMessages } from '@Helpers/Utils';
 // resto del documento al hacer Guardar (no disparan cálculo propio).
 const ModalImportation = (props) => {
   const { data, setOpen } = props;
-  const { importNumberDua, importTicket, importCif, importDai, importSelect, onInputChange } = data;
+  const { importNumberDua, importTicket, importCif, importDai, importSelectiveTax, onInputChange } = data;
 
   return (
     <>
@@ -31,8 +31,8 @@ const ModalImportation = (props) => {
               value={importDai} onChange={onInputChange} type="text" />
           </Colxx>
           <Colxx xxs="12" sm="4">
-            <InputField name="importSelect" label="page.purchases.input.importSelect"
-              value={importSelect} onChange={onInputChange} type="text" />
+            <InputField name="importSelectiveTax" label="page.purchases.input.importSelect"
+              value={importSelectiveTax} onChange={onInputChange} type="text" />
           </Colxx>
         </Row>
       </ModalBody>

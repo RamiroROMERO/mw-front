@@ -20,9 +20,9 @@ const OtherPurchases = (props) => {
     openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument
   } = useOtherPurchases({ setLoading });
 
-  const { documentCode, documentId, typeTax, date, dateOut, typeFp, orderId, workedId, providerId, paymentTypeId, cai, numCai, description, noCtaExpense, exemptedCertificate, exemptedNumber, exemptedRecord, subtotal, discount, exonera, exent, gravado, tax, freight, otherCharges, total, nameRequire } = formState;
+  const { documentCode, documentId, typeTax, date, dateOut, typeFp, purchaseOrderId, workOrderId, providerId, paymentTypeId, cai, invoiceNumber, description, expenseCtaCode, exemptedCertificate, exemptedNumber, exemptedRecord, subtotal, discount, valueExonerated, valueExempt, valueTaxable, tax, freight, otherCharges, total, requestedBy } = formState;
 
-  const { documentCodeValid, typeTaxValid, dateValid, dateOutValid, typeFpValid, providerIdValid, paymentTypeIdValid, numCaiValid, noCtaExpenseValid, descriptionValid, nameRequireValid, totalValid } = formValidation;
+  const { documentCodeValid, typeTaxValid, dateValid, dateOutValid, typeFpValid, providerIdValid, paymentTypeIdValid, invoiceNumberValid, expenseCtaCodeValid, descriptionValid, requestedByValid, totalValid } = formValidation;
 
   const propsToModalPurchases = {
     ModalContent: ModalViewPurchases,
@@ -111,8 +111,8 @@ const OtherPurchases = (props) => {
                     <Colxx xxs={12} md={6} xl={2}>
                       <InputField
                         label="page.purchases.input.orderId"
-                        name="orderId"
-                        value={orderId}
+                        name="purchaseOrderId"
+                        value={purchaseOrderId}
                         disabled
                       />
                     </Colxx>
@@ -133,13 +133,13 @@ const OtherPurchases = (props) => {
                     </Colxx>
                     <Colxx xxs="12" xl="4">
                       <InputField
-                        name="numCai"
+                        name="invoiceNumber"
                         label='page.purchases.input.numCai'
-                        value={numCai}
+                        value={invoiceNumber}
                         onChange={onInputChange}
                         type="text"
-                        invalid={sendForm && !!numCaiValid}
-                        feedbackText={sendForm && (numCaiValid || null)}
+                        invalid={sendForm && !!invoiceNumberValid}
+                        feedbackText={sendForm && (invoiceNumberValid || null)}
                       />
                     </Colxx>
                   </Row>
@@ -160,19 +160,19 @@ const OtherPurchases = (props) => {
                     <Colxx xxs={12} md={6} >
                       <SearchSelect
                         label="page.purchases.select.accountExpense"
-                        name="noCtaExpense"
-                        inputValue={noCtaExpense}
+                        name="expenseCtaCode"
+                        inputValue={expenseCtaCode}
                         options={listLedgerAccounts}
                         onChange={onInputChange}
-                        invalid={sendForm && !!noCtaExpenseValid}
-                        feedbackText={sendForm && (noCtaExpenseValid || null)}
+                        invalid={sendForm && !!expenseCtaCodeValid}
+                        feedbackText={sendForm && (expenseCtaCodeValid || null)}
                       />
                     </Colxx>
                     <Colxx xxs={12} md={6} >
                       <SearchSelect
                         label="select.workOrderId"
-                        name="workedId"
-                        inputValue={workedId}
+                        name="workOrderId"
+                        inputValue={workOrderId}
                         options={listWorkOrders}
                         onChange={onInputChange}
                       />
@@ -226,18 +226,18 @@ const OtherPurchases = (props) => {
                     </Colxx>
                     <Colxx xxs={12} xs={6} md={4}>
                       <InputField
-                        label="input.exonerated"
-                        name="exonera"
-                        value={exonera}
+                        label="input.valueExoneratedted"
+                        name="valueExonerated"
+                        value={valueExonerated}
                         onChange={onInputChange}
                         type="number"
                       />
                     </Colxx>
                     <Colxx xxs={12} xs={6} md={4}>
                       <InputField
-                        label="input.exent"
-                        name="exent"
-                        value={exent}
+                        label="input.valueExempt"
+                        name="valueExempt"
+                        value={valueExempt}
                         onChange={onInputChange}
                         type="number"
                       />
@@ -245,8 +245,8 @@ const OtherPurchases = (props) => {
                     <Colxx xxs={12} xs={6} md={4}>
                       <InputField
                         label="input.taxed"
-                        name="gravado"
-                        value={gravado}
+                        name="valueTaxable"
+                        value={valueTaxable}
                         onChange={onInputChange}
                         type="number"
                       />
@@ -295,11 +295,11 @@ const OtherPurchases = (props) => {
                     <Colxx xxs={12}>
                       <InputField
                         label="page.purchases.input.nameRequire"
-                        name="nameRequire"
-                        value={nameRequire}
+                        name="requestedBy"
+                        value={requestedBy}
                         onChange={onInputChange}
-                        invalid={sendForm && !!nameRequireValid}
-                        feedbackText={sendForm && (nameRequireValid || null)}
+                        invalid={sendForm && !!requestedByValid}
+                        feedbackText={sendForm && (requestedByValid || null)}
                       />
                     </Colxx>
                   </Row>

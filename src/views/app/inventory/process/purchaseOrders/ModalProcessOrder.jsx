@@ -10,9 +10,10 @@ import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import DateCalendar from '@Components/dateCalendar'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { request } from '@Helpers/core';
+import { buildProcessOrderPayload } from '../purchases/purchaseRules';
 
 const ModalProcessOrder = ({ data, setOpen }) => {
-  const { orderId, providerId, paymentTypeId, nameRequire, description, listTypeDocument, listProviders, listLedgerAccounts,
+  const { purchaseOrderId, providerId, paymentTypeId, requestedBy, description, listTypeDocument, listProviders, listLedgerAccounts,
     orderDetail, setOrderDetail, setLoading, workOrderId, listWorkOrders, valueOthers, fnGetDocuments, fnViewOrderDetail } = data;
   const [dataProducts, setDataProducts] = useState([]);
   const [sendForm, setSendForm] = useState(false);
@@ -24,13 +25,13 @@ const ModalProcessOrder = ({ data, setOpen }) => {
   const purchaseOrdersValid = {
     documentCode: [(val) => val !== "", "msg.required.input.codeProduct"],
     cai: [(val) => val !== "", "msg.required.input.numInvoice"],
-    numCai: [(val) => val !== "", "msg.required.input.numInvoice"],
+    invoiceNumber: [(val) => val !== "", "msg.required.input.numInvoice"],
     date: [(val) => val !== "", "msg.required.input.date"],
     dateOut: [(val) => val !== "", "msg.required.input.date"],
     idProvider: [(val) => validInt(val) > 0, "msg.required.select.provider"],
-    typeDocto: [(val) => validInt(val) > 0, "msg.required.select.typePurchase"],
+    typeFp: [(val) => validInt(val) > 0, "msg.required.select.typePurchase"],
     total: [(val) => validInt(val) > 0, "msg.required.input.totalOrderProcess"],
-    noCtaExpense: [(val) => val !== "", "msg.required.select.noCtaExpense"]
+    expenseCtaCode: [(val) => val !== "", "msg.required.select.noCtaExpense"]
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
@@ -39,28 +40,28 @@ const ModalProcessOrder = ({ data, setOpen }) => {
     documentId: 0,
     idProvider: providerId,
     cai: filterProv[0].cai !== '' ? filterProv[0].cai : '',
-    numCai: '',
+    invoiceNumber: '',
     providerType: filterProv[0].providerType ? filterProv[0].providerType : 0,
     date: '',
     dateOut: '',
-    noCtaExpense: '',
+    expenseCtaCode: '',
     subTotal: 0,
-    exent: 0,
-    gravado: 0,
-    exonera: 0,
+    valueExempt: 0,
+    valueTaxable: 0,
+    valueExonerated: 0,
     discount: 0,
     tax: 0,
     otherCharges: validFloat(valueOthers),
     freight: 0,
     total: 0,
-    typeDocto: 0,
+    typeFp: 0,
   }, purchaseOrdersValid);
 
-  const { id, documentCode, documentId, idProvider, providerType, cai, numCai, date, dateOut, noCtaExpense, subTotal, exent, gravado, exonera,
-    discount, tax, otherCharges, freight, total, typeDocto } = formState;
+  const { id, documentCode, idProvider, providerType, cai, invoiceNumber, date, dateOut, expenseCtaCode, subTotal, valueExempt, valueTaxable, valueExonerated,
+    discount, tax, otherCharges, freight, total, typeFp } = formState;
 
-  const { documentCodeValid, caiValid, numCaiValid, dateValid, dateOutValid, idProviderValid, typeDoctoValid, totalValid,
-    noCtaExpenseValid } = formValidation;
+  const { documentCodeValid, caiValid, invoiceNumberValid, dateValid, dateOutValid, idProviderValid, typeFpValid, totalValid,
+    expenseCtaCodeValid } = formValidation;
 
   const [table, setTable] = useState({
     title: "",
@@ -151,112 +152,58 @@ const ModalProcessOrder = ({ data, setOpen }) => {
       return;
     }
 
-    const newPurchase = {
+    // Una sola llamada: el back crea la compra (cerrada y sin almacén), calcula los importes y suma lo recibido a la orden en la misma
+    // transacción, así que ya no se actualiza la orden línea por línea.
+    const newPurchase = buildProcessOrderPayload({
       documentCode,
-      documentId,
       date,
       providerId: idProvider,
       cai,
-      numCai,
-      subtotal: subTotal,
-      discount,
-      exent,
-      gravado,
-      tax,
-      freight,
-      otherCharges,
-      total,
-      typeDocto,
+      invoiceNumber,
+      typeFp,
       dateOut,
       paymentTypeId,
-      noCtaExpense,
-      orderId,
-      nameRequire,
+      freight,
+      otherCharges,
+      purchaseOrderId,
+      requestedBy,
       description,
       providerType
-    }
-    // Generar documento
+    }, dataProducts);
+
+    setSendForm(false);
     setLoading(true);
-    request.POST('admin/documents/getCurrentNumber', { code: documentCode }, (resp4) => {
-      newPurchase.documentId = resp4.data.codeInt;
-      onInputChange({ target: { name: 'documentId', value: resp4.data.codeInt } });
-      setSendForm(false);
-      setLoading(true);
-      request.POST('inventory/process/purchases', newPurchase, (resp) => {
-        // guardar detalle de la compra
-        dataProducts.forEach(item => {
-          if (item.qtyRec > 0) {
-            const detailPurchase = {
-              date,
-              purchaseId: resp.data.id,
-              productCode: item.productCode,
-              // Lo recibido ahora (legacy: Cant = CantR), no lo pedido.
-              qty: validFloat(item.qtyRec),
-              price: validFloat(item.price),
-              subtotal: validFloat(item.subTotal),
-              discountPercent: validFloat(item.discountPercent),
-              discount: validFloat(item.discount),
-              taxPercent: validFloat(item.taxPercent),
-              tax: validFloat(item.tax),
-              total: validFloat(item.total),
-              isTaxFree: item.isTaxFree,
-              dateOut
-            }
-            setLoading(true);
-            request.POST('inventory/process/purchaseDetail', detailPurchase, (resp2) => {
-              fnGetDocuments(orderId);
-              setLoading(false);
-            }, (err) => {
-
-              setLoading(false);
-            }, false);
-            setLoading(true);
-            // actualizar las cantidades en el detalle de la orden de compra
-            const updateOrder = {
-              // Acumulado recibido de la línea; el back calcula el faltante (cantidad - recibido).
-              qtyReceived: item.qtyRec + item.qtyReceived
-            }
-            setLoading(true);
-            request.PUT(`inventory/process/purchaseOrderDetail/${item.id}`, updateOrder, (resp5) => {
-              fnViewOrderDetail(orderId);
-              setLoading(false);
-            }, (err) => {
-
-              setLoading(false);
-            });
-          }
-          setOpen(false);
-        });
-        if (validInt(workOrderId) > 0) {
-          // guardar detalle de orden de trabajo si existe
-          const detailWorkOrder = {
-            fatherId: workOrderId,
-            providerId: idProvider,
-            documentId: resp4.data.codeInt,
-            documentCode,
-            date,
-            subtotal: subTotal,
-            discount,
-            valGrav: gravado,
-            valExent: exent,
-            valTax: tax,
-            valOthers: otherCharges + freight,
-            total
-          }
-          request.POST('accounting/process/workOrderDetail', detailWorkOrder, (resp3) => {
-            setLoading(false)
-          }, (err) => {
-
-            setLoading(false);
-          }, false);
+    request.POST('inventory/process/purchases', newPurchase, (resp) => {
+      const saved = resp.data;
+      onInputChange({ target: { name: 'documentId', value: saved.documentId } });
+      fnGetDocuments(purchaseOrderId);
+      fnViewOrderDetail(purchaseOrderId);
+      setOpen(false);
+      if (validInt(workOrderId) > 0) {
+        // guardar detalle de orden de trabajo si existe
+        const detailWorkOrder = {
+          fatherId: workOrderId,
+          providerId: idProvider,
+          documentId: saved.documentId,
+          documentCode,
+          date,
+          subtotal: subTotal,
+          discount,
+          valGrav: valueTaxable,
+          valExent: valueExempt,
+          valTax: tax,
+          valOthers: otherCharges + freight,
+          total
         }
+        request.POST('accounting/process/workOrderDetail', detailWorkOrder, () => {
+          setLoading(false)
+        }, () => {
+          setLoading(false);
+        }, false);
+      } else {
         setLoading(false);
-      }, (err) => {
-
-        setLoading(false);
-      });
-    }, (err) => {
-
+      }
+    }, () => {
       setLoading(false);
     });
   }
@@ -282,26 +229,25 @@ const ModalProcessOrder = ({ data, setOpen }) => {
         discountPercent: validFloat(item.percentDiscount),
         taxPercent: validFloat(item.percentTax),
         discount: discountProd,
-        exent: exemptValue,
-        gravado: taxedValue,
+        valueExempt: exemptValue,
+        valueTaxable: taxedValue,
         tax: taxProd,
         total: totalProd,
-        // Legacy: la columna tax_type del detalle de la compra es el "Exonerado" de la orden, no el exento.
-        isExonerated: !!item.isExonerated,
-        isTaxFree: item.isExonerated ? 1 : 0
+        // Legacy: la columna tax_type del detalle de la compra es el "Exonerado" de la orden, no el valueExempto.
+        isExonerated: !!item.isExonerated
       }
     });
     const sumSubtotal = newDetail.map(item => validFloat(item.subTotal)).reduce((prev, curr) => prev + curr, 0);
     const sumDiscount = newDetail.map(item => validFloat(item.discount)).reduce((prev, curr) => prev + curr, 0);
-    const sumExent = newDetail.map(item => validFloat(item.exent)).reduce((prev, curr) => prev + curr, 0);
-    const sumGravado = newDetail.map(item => validFloat(item.gravado)).reduce((prev, curr) => prev + curr, 0);
+    const sumExent = newDetail.map(item => validFloat(item.valueExempt)).reduce((prev, curr) => prev + curr, 0);
+    const sumGravado = newDetail.map(item => validFloat(item.valueTaxable)).reduce((prev, curr) => prev + curr, 0);
     const sumTaxes = newDetail.map(item => validFloat(item.tax)).reduce((prev, curr) => prev + curr, 0);
     const sumTotal = newDetail.map(item => validFloat(item.total)).reduce((prev, curr) => prev + curr, 0);
 
     const newValues = {
       subTotal: sumSubtotal,
-      exent: sumExent,
-      gravado: sumGravado,
+      valueExempt: sumExent,
+      valueTaxable: sumGravado,
       discount: sumDiscount,
       tax: sumTaxes,
       total: sumTotal + validFloat(freight) + validFloat(otherCharges)
@@ -311,7 +257,7 @@ const ModalProcessOrder = ({ data, setOpen }) => {
       const filterWorkOrder = listWorkOrders.filter((item) => {
         return item.value === validInt(workOrderId);
       });
-      newValues.noCtaExpense = filterWorkOrder[0].idCtaCont;
+      newValues.expenseCtaCode = filterWorkOrder[0].idCtaCont;
     }
 
     setDataProducts(newDetail);
@@ -362,16 +308,16 @@ const ModalProcessOrder = ({ data, setOpen }) => {
               </Colxx>
               <Colxx xxs="12">
                 <InputField
-                  name="numCai"
+                  name="invoiceNumber"
                   label='page.purchaseOrders.modal.process.input.numCai'
-                  value={numCai}
+                  value={invoiceNumber}
                   onChange={onInputChange}
                   type="text"
                   mask="***-***-**-********"
                   maskChar=" "
                   // tag={ReactInputMask}
-                  invalid={sendForm && !!numCaiValid}
-                  feedbackText={sendForm && (numCaiValid || null)}
+                  invalid={sendForm && !!invoiceNumberValid}
+                  feedbackText={sendForm && (invoiceNumberValid || null)}
                 />
               </Colxx>
               <Colxx xxs="12" md="6">
@@ -399,12 +345,12 @@ const ModalProcessOrder = ({ data, setOpen }) => {
               <Colxx xxs="12">
                 <SearchSelect
                   label='page.purchaseOrders.modal.process.input.noCtaExpense'
-                  name="noCtaExpense"
-                  inputValue={noCtaExpense}
+                  name="expenseCtaCode"
+                  inputValue={expenseCtaCode}
                   options={listLedgerAccounts}
                   onChange={onInputChange}
-                  invalid={sendForm && !!noCtaExpenseValid}
-                  feedbackText={sendForm && (noCtaExpenseValid || null)}
+                  invalid={sendForm && !!expenseCtaCodeValid}
+                  feedbackText={sendForm && (expenseCtaCodeValid || null)}
                 />
               </Colxx>
             </Row>
@@ -413,9 +359,9 @@ const ModalProcessOrder = ({ data, setOpen }) => {
             <Row>
               <Colxx xxs="12" xs="6">
                 <InputField
-                  name="exent"
+                  name="valueExempt"
                   label='page.purchaseOrders.input.valueExempt'
-                  value={exent}
+                  value={valueExempt}
                   onChange={onInputChange}
                   type="text"
                   disabled
@@ -423,9 +369,9 @@ const ModalProcessOrder = ({ data, setOpen }) => {
               </Colxx>
               <Colxx xxs="12" xs="6">
                 <InputField
-                  name="gravado"
+                  name="valueTaxable"
                   label='page.purchaseOrders.input.valueTaxed'
-                  value={gravado}
+                  value={valueTaxable}
                   onChange={onInputChange}
                   type="text"
                   disabled
@@ -433,9 +379,9 @@ const ModalProcessOrder = ({ data, setOpen }) => {
               </Colxx>
               <Colxx xxs="12" xs="6">
                 <InputField
-                  name="exonera"
+                  name="valueExonerated"
                   label='page.purchaseOrders.input.valueExonerated'
-                  value={exonera}
+                  value={valueExonerated}
                   onChange={onInputChange}
                   type="text"
                   disabled
@@ -496,16 +442,16 @@ const ModalProcessOrder = ({ data, setOpen }) => {
               <Colxx xxs="12">
                 <RadioGroup
                   label="page.purchaseOrders.modal.process.radio.typePurchase"
-                  name="typeDocto"
-                  value={typeDocto}
+                  name="typeFp"
+                  value={typeFp}
                   onChange={onInputChange}
                   options={[
                     { id: 1, label: 'page.purchaseOrders.modal.process.radio.cash' },
                     { id: 2, label: 'page.purchaseOrders.modal.process.radio.credit' }
                   ]}
                   display='flex'
-                  invalid={sendForm && !!typeDoctoValid}
-                  feedbackText={sendForm && (typeDoctoValid || null)}
+                  invalid={sendForm && !!typeFpValid}
+                  feedbackText={sendForm && (typeFpValid || null)}
                 />
               </Colxx>
             </Row>

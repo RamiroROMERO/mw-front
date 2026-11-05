@@ -22,16 +22,16 @@ const Purchases = (props) => {
   const { setLoading } = props;
   const [purchaseDetail, setPurchaseDetail] = useState([]);
 
-  const { formStateDeta, formValidationDeta, isFormValidDeta, onInputChangeDeta, onResetFormDeta, setBulkFormDeta, openModalProducts, fnGetDataDetail, setOpenModalProducts, dataProducts, fnViewProducts, fnSelectProduct } = usePurchaseDeta({ setLoading, setPurchaseDetail })
+  const { formStateDeta, formValidationDeta, isFormValidDeta, onInputChangeDeta, onResetFormDeta, setBulkFormDeta, openModalProducts, fnGetDataDetail, setOpenModalProducts, fnViewProducts, fnSelectProduct } = usePurchaseDeta({ setLoading, setPurchaseDetail })
 
-  const { listDocuments, listPaymentTypes, listProviders, listStores, propsToControlPanel, openModalPurchases, setOpenModalPurchases, openMsgCancelPurchase, setOpenMsgCancelPurchase, fnOkCancelPurchase, sendForm, formState, formValidation, onInputChange, setBulkForm, dataPurchases, sendFormDeta, setSendFormDeta, dataOrders, openModalViewOrders, setOpenModalViewOrders, fnViewOrder, openModalApplyInventory, setOpenModalApplyInventory, applyInventoryRows, fnUpdateApplyInventoryRow, fnConfirmApplyInventory, openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument, openModalExonerated, setOpenModalExonerated, openModalImportation, setOpenModalImportation, propsToComplementary } = usePurchases({ setLoading, onResetFormDeta, purchaseDetail, setPurchaseDetail })
+  const { listDocuments, listPaymentTypes, listProviders, listStores, propsToControlPanel, openModalPurchases, setOpenModalPurchases, openMsgCancelPurchase, setOpenMsgCancelPurchase, fnOkCancelPurchase, sendForm, formState, formValidation, onInputChange, setBulkForm, dataPurchases, sendFormDeta, setSendFormDeta, dataOrders, openModalViewOrders, setOpenModalViewOrders, fnViewOrder, openMsgReplaceDetail, setOpenMsgReplaceDetail, fnOkReplaceDetail, openModalApplyInventory, setOpenModalApplyInventory, applyInventoryRows, fnUpdateApplyInventoryRow, fnConfirmApplyInventory, openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument, openModalExonerated, setOpenModalExonerated, openModalImportation, setOpenModalImportation, propsToComplementary } = usePurchases({ setLoading, onResetFormDeta, purchaseDetail, setPurchaseDetail })
 
-  const { id, documentCode, storeId, providerId, paymentTypeId, cai, numCai, date, dateOut, nameRequire, orderId,
-    typeDocto, valueSubtotal, valueDiscount, exent, exonera, gravado, valueTax, freight, otherCharges, valueTotal, bonification,
-    exemptedCertificate, exemptedNumber, exemptedRecord, importNumberDua, importTicket, importCif, importDai, importSelect } = formState;
+  const { documentCode, storeId, providerId, paymentTypeId, cai, invoiceNumber, date, dateOut, requestedBy, purchaseOrderId,
+    typeFp, valueSubtotal, valueDiscount, valueExempt, valueExonerated, valueTaxable, valueTax, freight, otherCharges, valueTotal, bonification,
+    exemptedCertificate, exemptedNumber, exemptedRecord, importNumberDua, importTicket, importCif, importDai, importSelectiveTax } = formState;
 
-  const { idProd, productCode, nameProduct, qty, price, subTotal, discountPercent, discount, taxPercent, tax, total, nameUM, lotCode,
-    dateOut: dateOutProd, isTaxFree, isBonus, previousCost, currentExistence } = formStateDeta;
+  const { idProd, productCode, nameProduct, qty, price, subTotal, discountPercent, discount, taxPercent, taxValue, total, nameUM, packQty, lotCode,
+    dateOut: dateOutDeta, isExonerated, isBonus, previousCost, currentExistence } = formStateDeta;
 
   const propsToFormPurchase = {
     documentCode,
@@ -39,12 +39,12 @@ const Purchases = (props) => {
     providerId,
     paymentTypeId,
     cai,
-    numCai,
+    invoiceNumber,
     date,
     dateOut,
-    nameRequire,
-    orderId,
-    typeDocto,
+    requestedBy,
+    purchaseOrderId,
+    typeFp,
     listDocuments,
     listStores,
     listProviders,
@@ -65,12 +65,13 @@ const Purchases = (props) => {
     discountPercent,
     discount,
     taxPercent,
-    tax,
+    taxValue,
     total,
     nameUM,
+    packQty,
     lotCode,
-    dateOutProd,
-    isTaxFree,
+    dateOut: dateOutDeta,
+    isExonerated,
     isBonus,
     previousCost,
     currentExistence,
@@ -90,9 +91,9 @@ const Purchases = (props) => {
   const propsToTotals = {
     valueSubtotal,
     valueDiscount,
-    exent,
-    exonera,
-    gravado,
+    valueExempt,
+    valueExonerated,
+    valueTaxable,
     valueTax,
     freight,
     otherCharges,
@@ -114,7 +115,6 @@ const Purchases = (props) => {
     setOpen: setOpenModalProducts,
     maxWidth: 'lg',
     data: {
-      dataProducts,
       // ModalViewProd espera `fnSelectItem` (ver src/views/app/settings/productsCatalog/
       // ModalViewProd.jsx) — faltaba, así que el botón "ver" del catálogo nunca
       // seleccionaba nada: agregar productos a la compra estaba roto siempre.
@@ -185,7 +185,7 @@ const Purchases = (props) => {
       importTicket,
       importCif,
       importDai,
-      importSelect,
+      importSelectiveTax,
       onInputChange
     }
   }
@@ -204,6 +204,13 @@ const Purchases = (props) => {
     setOpen: setOpenMsgCancelPurchase,
     fnOnOk: fnOkCancelPurchase,
     title: "msg.question.cancel.document.title"
+  }
+
+  const propsToMsgReplaceDetail = {
+    open: openMsgReplaceDetail,
+    setOpen: setOpenMsgReplaceDetail,
+    fnOnOk: fnOkReplaceDetail,
+    title: "msg.question.replaceDetail.title"
   }
 
   const propsToMsgAccountDocument = {
@@ -238,6 +245,7 @@ const Purchases = (props) => {
       <Modal {...propsToModalComplementary} />
       <Confirmation {...propsToMsgCancelPurchase} />
       <Confirmation {...propsToMsgAccountDocument} />
+      <Confirmation {...propsToMsgReplaceDetail} />
     </>
   );
 }

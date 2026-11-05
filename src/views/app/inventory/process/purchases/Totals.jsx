@@ -2,7 +2,7 @@ import { Row, Table } from 'reactstrap'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { formatNumber, IntlMessages } from '@Helpers/Utils'
 
-const Totals = ({valueSubtotal, valueDiscount, exent, exonera, gravado, valueTax, freight, otherCharges, valueTotal, bonification}) => {
+const Totals = ({valueSubtotal, valueDiscount, valueExempt, valueExonerated, valueTaxable, valueTax, freight, otherCharges, valueTotal, bonification}) => {
   return (
     <Row className='mt-3'>
       <Colxx xxs="12">
@@ -25,9 +25,9 @@ const Totals = ({valueSubtotal, valueDiscount, exent, exonera, gravado, valueTax
             <tr>
               <td align='right'>{formatNumber(valueSubtotal)}</td>
               <td className = 'd-sm-none-table-cell' align='right'>{formatNumber(valueDiscount)}</td>
-              <td className = 'd-md-none-table-cell' align='right'>{formatNumber(exent)}</td>
-              <td className = 'd-md-none-table-cell' align='right'>{formatNumber(exonera)}</td>
-              <td className = 'd-md-none-table-cell' align='right'>{formatNumber(gravado)}</td>
+              <td className = 'd-md-none-table-cell' align='right'>{formatNumber(valueExempt)}</td>
+              <td className = 'd-md-none-table-cell' align='right'>{formatNumber(valueExonerated)}</td>
+              <td className = 'd-md-none-table-cell' align='right'>{formatNumber(valueTaxable)}</td>
               <td align='right'>{formatNumber(valueTax)}</td>
               <td className = 'd-sm-none-table-cell' align='right'>{formatNumber(freight)}</td>
               <td className = 'd-sm-none-table-cell' align='right'>{formatNumber(otherCharges)}</td>

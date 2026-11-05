@@ -43,7 +43,7 @@ const DetailTable = ({purchaseDetail, setPurchaseDetail, setBulkForm, setBulkFor
                   <td className = 'd-xs-none-table-cell' align='right'>{formatNumber(item.price)}</td>
                   <td className = 'd-md-none-table-cell' align='right'>{formatNumber(item.subTotal)}</td>
                   <td className = 'd-xs-none-table-cell' align='right'>{formatNumber(item.discount)}</td>
-                  <td className = 'd-md-none-table-cell' align='right'>{formatNumber(item.tax)}</td>
+                  <td className = 'd-md-none-table-cell' align='right'>{formatNumber(item.taxValue)}</td>
                   <td align='right'>{formatNumber(item.total)}</td>
                   <td align='right'>
                     <Button type="button" className="btn-circle-table" color="outline-warning" title="Editar"

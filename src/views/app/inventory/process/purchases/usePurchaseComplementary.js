@@ -24,13 +24,13 @@ export const usePurchaseComplementary = ({ setLoading, fatherId, listProviders, 
     documentCode: [(val) => val !== "", "msg.required.select.typeDocument"],
     typeTax: [(val) => validInt(val) > 0, "msg.required.select.typeTax"],
     providerId: [(val) => validInt(val) > 0, "msg.required.select.provider"],
-    numCai: [(val) => val !== "", "msg.required.input.numInvoice"],
+    invoiceNumber: [(val) => val !== "", "msg.required.input.numInvoice"],
     date: [(val) => val !== "", "msg.required.input.date"],
     dateOut: [(val) => val !== "", "msg.required.input.date"],
     paymentTypeId: [(val) => validInt(val) > 0, "msg.required.select.paymentType"],
     typeFp: [(val) => validInt(val) > 0, "msg.required.select.typePurchase"],
     description: [(val) => val !== "", "msg.required.input.description"],
-    noCtaExpense: [(val) => val !== "", "msg.required.select.noCtaExpense"]
+    expenseCtaCode: [(val) => val !== "", "msg.required.select.noCtaExpense"]
   };
 
   const initialComplementary = {
@@ -42,18 +42,18 @@ export const usePurchaseComplementary = ({ setLoading, fatherId, listProviders, 
     typeTax: 0,
     providerId: 0,
     cai: '',
-    numCai: '',
+    invoiceNumber: '',
     date: '',
     dateOut: '',
     paymentTypeId: 0,
     typeFp: 0,
     description: '',
-    noCtaExpense: '',
+    expenseCtaCode: '',
     subtotal: 0,
     discount: 0,
-    exonera: 0,
-    exent: 0,
-    gravado: 0,
+    valueExonerated: 0,
+    valueExempt: 0,
+    valueTaxable: 0,
     tax: 0,
     freight: 0,
     otherCharges: 0,
@@ -67,15 +67,15 @@ export const usePurchaseComplementary = ({ setLoading, fatherId, listProviders, 
     onInputChange: onInputChangeComplementary, onResetForm: onResetFormComplementary, setBulkForm: setBulkFormComplementary
   } = useForm(initialComplementary, complementaryValid);
 
-  const { id: idComplementary, total: totalComplementary, exonera, exent, gravado, tax, freight, otherCharges, numCai: numCaiComplementary, providerId: providerIdComplementary, pdaNumber: pdaNumberComplementary } = formStateComplementary;
+  const { id: idComplementary, total: totalComplementary, valueExonerated, valueExempt, valueTaxable, tax, freight, otherCharges, invoiceNumber: invoiceNumberComplementary, providerId: providerIdComplementary, pdaNumber: pdaNumberComplementary } = formStateComplementary;
 
   // Legacy fnCalculateTotal: Total = Exonerado + Exento + Gravado + Impuesto + Flete + Otros Recargos
   // (no incluye Subtotal ni Descuento — ese monto ya queda repartido entre Exento/Gravado).
   useEffect(() => {
-    const total = validFloat(exonera) + validFloat(exent) + validFloat(gravado) + validFloat(tax) + validFloat(freight) + validFloat(otherCharges);
+    const total = validFloat(valueExonerated) + validFloat(valueExempt) + validFloat(valueTaxable) + validFloat(tax) + validFloat(freight) + validFloat(otherCharges);
     setBulkFormComplementary({ total: Number(total.toFixed(2)) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exonera, exent, gravado, tax, freight, otherCharges]);
+  }, [valueExonerated, valueExempt, valueTaxable, tax, freight, otherCharges]);
 
   const fnLoadComplementaryLists = () => {
     request.GET('admin/documents?status=1&useInv=1&useTaxDocument=0', (resp) => {
@@ -151,7 +151,7 @@ export const usePurchaseComplementary = ({ setLoading, fatherId, listProviders, 
     setLoading(true);
     // Legacy: WHERE coddoc = numero AND codprov = provider sobre cont_cxp, antes de crear/actualizar
     // el registro — evita registrar dos veces la misma factura de un proveedor.
-    request.GET(buildUrl('accounting/process/accountsPayable', { documentCode: numCaiComplementary, providerId: providerIdComplementary }), (resp) => {
+    request.GET(buildUrl('accounting/process/accountsPayable', { documentCode: invoiceNumberComplementary, providerId: providerIdComplementary }), (resp) => {
       if (Array.isArray(resp.data) && resp.data.length > 0) {
         notification('error', 'msg.error.purchase.documentAlreadyRegistered', 'alert.error.title');
         setLoading(false);

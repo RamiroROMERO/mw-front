@@ -4,7 +4,7 @@ import { InputField } from '@Components/inputFields';
 import { IntlMessages } from '@Helpers/Utils';
 
 // Legacy inv_compras_dataex.sc2 ("Datos de Exoneración"): constancia, orden y registro SAG
-// de la exoneración fiscal de la compra — campos de solo referencia/documentación, no
+// de la valueExoneratedción fiscal de la compra — campos de solo referencia/documentación, no
 // disparan ningún cálculo; se guardan junto con el resto del documento al hacer Guardar.
 const ModalExonerated = (props) => {
   const { data, setOpen } = props;

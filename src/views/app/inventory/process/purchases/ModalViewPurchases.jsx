@@ -28,7 +28,7 @@ const ModalViewPurchases = ({setOpen, data}) => {
       },
       {
         text: IntlMessages("page.purchases.modal.viewPurchases.table.numCai"),
-        dataField: "numCai",
+        dataField: "invoiceNumber",
         headerStyle: {width: "15%"}
       },
       {
