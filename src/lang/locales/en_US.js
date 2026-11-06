@@ -4986,7 +4986,30 @@ const enLang = {
   "msg.purchase.dateOut.range": "The due date cannot be earlier than the invoice date",
   "msg.purchase.percent.range": "The percentage must be between 0 and 100",
   "msg.purchase.line.exclusive": "A line cannot be a bonus and exonerated at the same time",
-  "msg.purchase.maxLength": "The text exceeds the allowed length"
+  "msg.purchase.maxLength": "The text exceeds the allowed length",
+  "menu.purchaseReceipts": "Receipt Validation",
+  "page.purchaseReceipts.hint": "Search for a purchase already applied to inventory to record what was actually received.",
+  "page.purchaseReceipts.document": "Document",
+  "page.purchaseReceipts.invoice": "Invoice",
+  "page.purchaseReceipts.date": "Date",
+  "page.purchaseReceipts.provider": "Provider",
+  "page.purchaseReceipts.status.validated": "Receipts validated",
+  "page.purchaseReceipts.status.fromOrder": "Adds to the purchase order",
+  "page.purchaseReceipts.noRows": "The purchase has no stock movements: apply it to inventory first.",
+  "page.purchaseReceipts.table.product": "Product",
+  "page.purchaseReceipts.table.name": "Name",
+  "page.purchaseReceipts.table.bonus": "Bonus",
+  "page.purchaseReceipts.table.lot": "Lot",
+  "page.purchaseReceipts.table.purchased": "Purchased",
+  "page.purchaseReceipts.table.received": "Received",
+  "page.purchaseReceipts.table.expiration": "Expiration",
+  "page.purchaseReceipts.legend.zero": "Received is 0",
+  "page.purchaseReceipts.legend.differs": "Differs from purchased",
+  "page.purchaseReceipts.msg.selectPurchase": "Search for a purchase to validate its receipts",
+  "page.purchaseReceipts.msg.confirmSave": "Save the receipts? The purchase stock and, if it applies, the purchase order will be updated",
+  "page.purchaseReceipts.error.noChanges": "There are no changes to save",
+  "page.purchaseReceipts.error.qtyInvalid": "The received quantity of product {product} must be a number greater than or equal to zero with at most 5 decimals",
+  "page.purchaseReceipts.error.dateInvalid": "The expiration of product {product} is not a valid date"
 };
 
 export default enLang;

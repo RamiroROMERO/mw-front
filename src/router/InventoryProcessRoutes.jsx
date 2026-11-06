@@ -6,6 +6,7 @@ const InventoryProcess = React.lazy(() => import('@Views/app/inventory/process')
 const Providers = React.lazy(() => import('@Views/app/inventory/process/providers'));
 const PurchaseOrders = React.lazy(() => import('@Views/app/inventory/process/purchaseOrders'));
 const Purchases = React.lazy(() => import('@Views/app/inventory/process/purchases'));
+const PurchaseReceipts = React.lazy(() => import('@Views/app/inventory/process/purchaseReceipts'));
 const OtherPurchases = React.lazy(() => import('@Views/app/inventory/process/otherPurchases'));
 const FuelPurchases = React.lazy(() => import('@Views/app/inventory/process/fuelPurchases'));
 const TicketPurchase = React.lazy(() => import('@Views/app/inventory/process/ticketPurchase'));
@@ -38,6 +39,10 @@ const InventoryProcessRoutes = (props) => {
       index
       path="/purchases"
       element={<Purchases setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
+    <Route
+      index
+      path="/purchaseReceipts"
+      element={<PurchaseReceipts setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
       path="/otherPurchases"

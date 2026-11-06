@@ -4983,7 +4983,30 @@ const esLang = {
   "msg.purchase.dateOut.range": "El vencimiento no puede ser menor a la fecha de la factura",
   "msg.purchase.percent.range": "El porcentaje debe estar entre 0 y 100",
   "msg.purchase.line.exclusive": "Una línea no puede ser bonificación y exonerada a la vez",
-  "msg.purchase.maxLength": "El texto excede el largo permitido"
+  "msg.purchase.maxLength": "El texto excede el largo permitido",
+  "menu.purchaseReceipts": "Validación de Ingresos",
+  "page.purchaseReceipts.hint": "Busque una compra ya aplicada a inventario para registrar lo realmente recibido.",
+  "page.purchaseReceipts.document": "Documento",
+  "page.purchaseReceipts.invoice": "Factura",
+  "page.purchaseReceipts.date": "Fecha",
+  "page.purchaseReceipts.provider": "Proveedor",
+  "page.purchaseReceipts.status.validated": "Ingresos validados",
+  "page.purchaseReceipts.status.fromOrder": "Suma a la orden de compra",
+  "page.purchaseReceipts.noRows": "La compra no tiene movimientos de kardex: aplíquela a inventario primero.",
+  "page.purchaseReceipts.table.product": "Producto",
+  "page.purchaseReceipts.table.name": "Nombre",
+  "page.purchaseReceipts.table.bonus": "Bonif.",
+  "page.purchaseReceipts.table.lot": "Lote",
+  "page.purchaseReceipts.table.purchased": "Comprada",
+  "page.purchaseReceipts.table.received": "Recibida",
+  "page.purchaseReceipts.table.expiration": "Vencimiento",
+  "page.purchaseReceipts.legend.zero": "Recibida en 0",
+  "page.purchaseReceipts.legend.differs": "Difiere de lo comprado",
+  "page.purchaseReceipts.msg.selectPurchase": "Busque una compra para validar sus ingresos",
+  "page.purchaseReceipts.msg.confirmSave": "¿Guardar los ingresos? Se actualizarán las existencias de la compra y, si aplica, la orden de compra",
+  "page.purchaseReceipts.error.noChanges": "No hay cambios que guardar",
+  "page.purchaseReceipts.error.qtyInvalid": "La cantidad recibida del producto {product} debe ser un número mayor o igual a cero con máximo 5 decimales",
+  "page.purchaseReceipts.error.dateInvalid": "El vencimiento del producto {product} no es una fecha válida"
 };
 
 export default esLang;

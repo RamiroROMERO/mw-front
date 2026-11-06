@@ -467,6 +467,11 @@ const data = [
             to: `${adminRoot}/inventory/process/purchases`,
           },
           {
+            icon: 'bi bi-clipboard-check',
+            label: 'menu.purchaseReceipts',
+            to: `${adminRoot}/inventory/process/purchaseReceipts`,
+          },
+          {
             icon: 'bi bi-cart-plus',
             label: 'menu.otherPurchases',
             to: `${adminRoot}/inventory/process/otherPurchases`,
