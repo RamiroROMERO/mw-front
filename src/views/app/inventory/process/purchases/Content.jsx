@@ -14,6 +14,7 @@ import { usePurchases } from './usePurchases';
 import { usePurchaseDeta } from './usePurchaseDeta';
 import ModalViewOrders from '../purchaseOrders/ModalViewOrders';
 import ModalApplyInventory from './ModalApplyInventory';
+import ModalDistAdvance from './ModalDistAdvance';
 import ModalExonerated from './ModalExonerated';
 import ModalImportation from './ModalImportation';
 import ModalComplementaryInvoices from './ModalComplementaryInvoices';
@@ -24,7 +25,7 @@ const Purchases = (props) => {
 
   const { formStateDeta, formValidationDeta, isFormValidDeta, onInputChangeDeta, onResetFormDeta, setBulkFormDeta, openModalProducts, fnGetDataDetail, setOpenModalProducts, fnViewProducts, fnSelectProduct } = usePurchaseDeta({ setLoading, setPurchaseDetail })
 
-  const { listDocuments, listPaymentTypes, listProviders, listStores, propsToControlPanel, openModalPurchases, setOpenModalPurchases, openMsgCancelPurchase, setOpenMsgCancelPurchase, fnOkCancelPurchase, sendForm, formState, formValidation, onInputChange, setBulkForm, dataPurchases, sendFormDeta, setSendFormDeta, dataOrders, openModalViewOrders, setOpenModalViewOrders, fnViewOrder, openMsgReplaceDetail, setOpenMsgReplaceDetail, fnOkReplaceDetail, openModalApplyInventory, setOpenModalApplyInventory, applyInventoryRows, fnUpdateApplyInventoryRow, fnConfirmApplyInventory, openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument, openModalExonerated, setOpenModalExonerated, openModalImportation, setOpenModalImportation, propsToComplementary } = usePurchases({ setLoading, onResetFormDeta, purchaseDetail, setPurchaseDetail })
+  const { listDocuments, listPaymentTypes, listProviders, listStores, propsToControlPanel, openModalPurchases, setOpenModalPurchases, openMsgCancelPurchase, setOpenMsgCancelPurchase, fnOkCancelPurchase, sendForm, formState, formValidation, onInputChange, setBulkForm, dataPurchases, sendFormDeta, setSendFormDeta, dataOrders, openModalViewOrders, setOpenModalViewOrders, fnViewOrder, openMsgReplaceDetail, setOpenMsgReplaceDetail, fnOkReplaceDetail, openModalApplyInventory, setOpenModalApplyInventory, applyInventoryRows, fnUpdateApplyInventoryRow, fnConfirmApplyInventory, openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument, openModalExonerated, setOpenModalExonerated, openModalImportation, setOpenModalImportation, propsToComplementary, propsToAdvances } = usePurchases({ setLoading, onResetFormDeta, purchaseDetail, setPurchaseDetail })
 
   const { documentCode, storeId, providerId, paymentTypeId, cai, invoiceNumber, date, dateOut, requestedBy, purchaseOrderId,
     typeFp, valueSubtotal, valueDiscount, valueExempt, valueExonerated, valueTaxable, valueTax, freight, otherCharges, valueTotal, bonification,
@@ -199,6 +200,31 @@ const Purchases = (props) => {
     data: propsToComplementary
   }
 
+  const providerName = listProviders.find((item) => Number(item.value) === Number(providerId))?.label || '';
+
+  const propsToModalDistAdvance = {
+    ModalContent: ModalDistAdvance,
+    title: "page.purchases.modal.distAdvance.title",
+    open: propsToAdvances.openModal,
+    setOpen: propsToAdvances.setOpenModal,
+    maxWidth: 'lg',
+    data: {
+      preview: propsToAdvances.preview,
+      rows: propsToAdvances.rows,
+      providerName,
+      fnChangeAmount: propsToAdvances.fnChangeAmount,
+      fnDistribute: propsToAdvances.fnDistribute,
+      fnAskUndo: propsToAdvances.fnAskUndo
+    }
+  }
+
+  const propsToMsgUndoAdvance = {
+    open: propsToAdvances.openMsgUndo,
+    setOpen: propsToAdvances.setOpenMsgUndo,
+    fnOnOk: propsToAdvances.fnOkUndo,
+    title: "msg.question.undoAdvance.title"
+  }
+
   const propsToMsgCancelPurchase = {
     open: openMsgCancelPurchase,
     setOpen: setOpenMsgCancelPurchase,
@@ -243,8 +269,10 @@ const Purchases = (props) => {
       <Modal {...propsToModalExonerated} />
       <Modal {...propsToModalImportation} />
       <Modal {...propsToModalComplementary} />
+      <Modal {...propsToModalDistAdvance} />
       <Confirmation {...propsToMsgCancelPurchase} />
       <Confirmation {...propsToMsgAccountDocument} />
+      <Confirmation {...propsToMsgUndoAdvance} />
       <Confirmation {...propsToMsgReplaceDetail} />
     </>
   );
