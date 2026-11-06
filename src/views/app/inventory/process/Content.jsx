@@ -172,6 +172,17 @@ const Process = (props) => {
         { replace: true }
       );
     }
+  },
+  {
+    id: 16,
+    icon: "large-icon bi bi-clipboard-check",
+    title: "menu.purchaseReceipts",
+    fnOnclick: () => {
+      history(
+        `${adminRoot}/inventory/process/purchaseReceipts`,
+        { replace: true }
+      );
+    }
   }
   ]
   return (
