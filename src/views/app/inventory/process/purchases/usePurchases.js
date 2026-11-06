@@ -7,8 +7,10 @@ import { usePurchaseFormLists } from './usePurchaseFormLists';
 import { usePurchaseOrders } from './usePurchaseOrders';
 import { usePurchaseApplyInventory } from './usePurchaseApplyInventory';
 import { usePurchaseAccounting } from './usePurchaseAccounting';
+import { usePurchaseAdvances } from './usePurchaseAdvances';
 import { usePurchaseComplementary } from './usePurchaseComplementary';
 import { buildPurchasePayload, calculateTotals, CASH, formFromSaved, invoiceNumberChanged, validateHeader } from './purchaseRules';
+import { distributionStatus } from './purchaseAdvanceRules';
 
 export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setPurchaseDetail }) => {
 
@@ -25,6 +27,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
   // Las reglas del encabezado viven en purchaseRules.js (mismas del PurchaseDTO del back); useForm solo guarda el estado.
   const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     id: 0,
+    pdaNumber: 0,
     documentCode: '',
     documentId: 0,
     date: '',
@@ -60,7 +63,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     importSelectiveTax: 0
   }, {});
 
-  const { id, providerId, date, dateOut, typeFp, freight, otherCharges, valueTotal } = formState;
+  const { id, pdaNumber, providerId, date, dateOut, typeFp, freight, otherCharges, valueTotal } = formState;
 
   const headerErrors = useMemo(() => validateHeader(formState), [formState]);
   const formValidation = useMemo(() => Object.fromEntries(Object.entries(headerErrors).map(([field, message]) => [`${field}Valid`, message])), [headerErrors]);
@@ -90,7 +93,17 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
   const { openModalApplyInventory, setOpenModalApplyInventory, applyInventoryRows, fnApplyInventory,
     fnUpdateApplyInventoryRow, fnConfirmApplyInventory } = usePurchaseApplyInventory({ setLoading, id });
 
-  const { openMsgAccountDocument, setOpenMsgAccountDocument, fnAccountDocument, fnOkAccountDocument } = usePurchaseAccounting({ setLoading, id });
+  // Distribuir anticipos (SPEC v2-24-sr): botón de la barra y oferta tras contabilizar.
+  const propsToAdvances = usePurchaseAdvances({ setLoading, purchase: { id, pdaNumber } });
+
+  const { openMsgAccountDocument, setOpenMsgAccountDocument, fnAccountDocument, fnOkAccountDocument } = usePurchaseAccounting({
+    setLoading,
+    id,
+    onAccounted: (data) => {
+      setBulkForm({ pdaNumber: data?.numberPDA || 0 });
+      propsToAdvances.fnOffer(id);
+    }
+  });
 
   const propsToComplementary = usePurchaseComplementary({ setLoading, fatherId: id, listProviders, listPaymentTypes });
   const { fnComplementaryInvoices } = propsToComplementary;
@@ -220,6 +233,12 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
         onClick: fnAccountDocument
       },
       {
+        title: "button.distAdvance",
+        icon: "bi bi-cash-stack",
+        onClick: propsToAdvances.fnOpen,
+        disabled: distributionStatus({ id, pdaNumber }) !== 'ok'
+      },
+      {
         title: "button.exonerated",
         icon: "bi bi-list-check",
         onClick: fnExonerated
@@ -287,6 +306,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     setOpenModalExonerated,
     openModalImportation,
     setOpenModalImportation,
-    propsToComplementary
+    propsToComplementary,
+    propsToAdvances
   };
 }

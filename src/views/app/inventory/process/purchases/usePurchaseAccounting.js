@@ -6,7 +6,8 @@ import { request } from '@Helpers/core';
 // genera la partida contable (Cont_PDA/Cont_PDA1) de la compra usando las cuentas configuradas
 // en el proveedor y el almacén. Extraído de usePurchases.js siguiendo el mismo patrón que
 // usePurchaseApplyInventory.js.
-export const usePurchaseAccounting = ({ setLoading, id }) => {
+// `onAccounted(data)` (opcional) se llama con la respuesta del back al contabilizar (SPEC v2-24-sr: actualiza el número de partida y ofrece distribuir anticipos).
+export const usePurchaseAccounting = ({ setLoading, id, onAccounted }) => {
   const [openMsgAccountDocument, setOpenMsgAccountDocument] = useState(false);
 
   const fnAccountDocument = () => {
@@ -19,10 +20,11 @@ export const usePurchaseAccounting = ({ setLoading, id }) => {
 
   const fnOkAccountDocument = () => {
     setLoading(true);
-    request.POST(`inventory/process/purchases/${id}/accountDocument`, {}, () => {
+    request.POST(`inventory/process/purchases/${id}/accountDocument`, {}, (resp) => {
       notification('success', 'msg.success.accountDocument', 'alert.success.title');
       setOpenMsgAccountDocument(false);
       setLoading(false);
+      if (onAccounted) onAccounted(resp?.data);
     }, (resp) => {
       const messageKey = resp?.messages?.[0]?.message || 'msg.save.record.error';
       notification('error', messageKey, 'alert.error.title');
