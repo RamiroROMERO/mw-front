@@ -9,7 +9,8 @@ import { buildApplyPayload } from './applyPricesRules';
 // variante multi-unidad, ver inv_prod_dist/sgh_empresas.vprod_many), y al aceptar regenera
 // kardex + CxP. SPEC v2-27-sr: el back recalcula el costo y valida las distribuciones; del modal solo viajan los precios nuevos.
 // Extraído de usePurchases.js para que ese hook no crezca más.
-export const usePurchaseApplyInventory = ({ setLoading, id }) => {
+// `onApplied` (SPEC v2-29-sr): avisa que la compra quedó aplicada a inventario, para que la pantalla vuelva a pedir su estado.
+export const usePurchaseApplyInventory = ({ setLoading, id, onApplied }) => {
   const [openModalApplyInventory, setOpenModalApplyInventory] = useState(false);
   const [applyInventoryRows, setApplyInventoryRows] = useState([]);
 
@@ -38,6 +39,7 @@ export const usePurchaseApplyInventory = ({ setLoading, id }) => {
       notification('success', 'msg.success.applyInventory', 'alert.success.title');
       setOpenModalApplyInventory(false);
       setLoading(false);
+      if (onApplied) onApplied();
     }, () => {
       setLoading(false);
     });

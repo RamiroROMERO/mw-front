@@ -18,6 +18,7 @@ import ModalDistAdvance from './ModalDistAdvance';
 import ModalExonerated from './ModalExonerated';
 import ModalImportation from './ModalImportation';
 import ModalComplementaryInvoices from './ModalComplementaryInvoices';
+import ProcessedNotice from './ProcessedNotice';
 
 const Purchases = (props) => {
   const { setLoading } = props;
@@ -25,7 +26,7 @@ const Purchases = (props) => {
 
   const { formStateDeta, formValidationDeta, isFormValidDeta, onInputChangeDeta, onResetFormDeta, setBulkFormDeta, openModalProducts, fnGetDataDetail, setOpenModalProducts, fnViewProducts, fnSelectProduct } = usePurchaseDeta({ setLoading, setPurchaseDetail })
 
-  const { listDocuments, listPaymentTypes, listProviders, listStores, propsToControlPanel, openModalPurchases, setOpenModalPurchases, openMsgCancelPurchase, setOpenMsgCancelPurchase, fnOkCancelPurchase, sendForm, formState, formValidation, onInputChange, setBulkForm, dataPurchases, sendFormDeta, setSendFormDeta, dataOrders, openModalViewOrders, setOpenModalViewOrders, fnViewOrder, openMsgReplaceDetail, setOpenMsgReplaceDetail, fnOkReplaceDetail, openModalApplyInventory, setOpenModalApplyInventory, applyInventoryRows, fnUpdateApplyInventoryRow, fnConfirmApplyInventory, openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument, openModalExonerated, setOpenModalExonerated, openModalImportation, setOpenModalImportation, propsToComplementary, propsToAdvances } = usePurchases({ setLoading, onResetFormDeta, purchaseDetail, setPurchaseDetail })
+  const { listDocuments, listPaymentTypes, listProviders, listStores, propsToControlPanel, openModalPurchases, setOpenModalPurchases, openMsgCancelPurchase, setOpenMsgCancelPurchase, fnOkCancelPurchase, sendForm, formState, formValidation, onInputChange, setBulkForm, dataPurchases, sendFormDeta, setSendFormDeta, dataOrders, openModalViewOrders, setOpenModalViewOrders, fnViewOrder, openMsgReplaceDetail, setOpenMsgReplaceDetail, fnOkReplaceDetail, openModalApplyInventory, setOpenModalApplyInventory, applyInventoryRows, fnUpdateApplyInventoryRow, fnConfirmApplyInventory, openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument, openModalExonerated, setOpenModalExonerated, openModalImportation, setOpenModalImportation, propsToComplementary, propsToAdvances, processing } = usePurchases({ setLoading, onResetFormDeta, purchaseDetail, setPurchaseDetail })
 
   const { documentCode, storeId, providerId, paymentTypeId, cai, invoiceNumber, date, dateOut, requestedBy, purchaseOrderId,
     typeFp, valueSubtotal, valueDiscount, valueExempt, valueExonerated, valueTaxable, valueTax, freight, otherCharges, valueTotal, bonification,
@@ -53,7 +54,8 @@ const Purchases = (props) => {
     onInputChange,
     setBulkForm,
     formValidation,
-    sendForm
+    sendForm,
+    processing
   }
 
   const propsToDetailProduct = {
@@ -86,7 +88,8 @@ const Purchases = (props) => {
     formValidationDeta,
     isFormValidDeta,
     sendFormDeta,
-    setSendFormDeta
+    setSendFormDeta,
+    isProcessed: processing.isProcessed
   }
 
   const propsToTotals = {
@@ -106,7 +109,8 @@ const Purchases = (props) => {
     purchaseDetail,
     setPurchaseDetail,
     setBulkForm,
-    setBulkFormDeta
+    setBulkFormDeta,
+    locked: processing.isProcessed
   }
 
   const propsToModalViewProd = {
@@ -254,6 +258,7 @@ const Purchases = (props) => {
             <CardBody>
               <ControlPanel {...propsToControlPanel} />
               <Separator className="mt-2 mb-5" />
+              {processing.isProcessed && <ProcessedNotice reasons={processing.reasons} />}
               <FormPurchase {...propsToFormPurchase} />
               <DetailProduct {...propsToDetailProduct} />
               <DetailTable {...propsToDetailTable} />

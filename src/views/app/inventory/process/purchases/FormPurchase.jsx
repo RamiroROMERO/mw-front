@@ -8,13 +8,16 @@ import DateCalendar from '@Components/dateCalendar'
 import { RadioGroup } from '@Components/radioGroup'
 import { useIntl } from 'react-intl'
 import { validInt } from '@Helpers/Utils'
+import { isFieldLocked } from './purchaseProcessingRules'
 
 const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, invoiceNumber, date, dateOut, requestedBy, purchaseOrderId,
-  typeFp, listDocuments, listStores, listProviders, listPaymentTypes, onInputChange, setBulkForm, formValidation, sendForm }) => {
+  typeFp, listDocuments, listStores, listProviders, listPaymentTypes, onInputChange, setBulkForm, formValidation, sendForm, processing }) => {
 
   const { documentCodeValid, providerIdValid, caiValid, invoiceNumberValid, storeIdValid, paymentTypeIdValid, dateValid, dateOutValid, typeFpValid } = formValidation;
   const intl = useIntl();
   const isCash = validInt(typeFp) === 1;
+  // SPEC v2-29-sr: en una compra procesada los campos contables se deshabilitan; quedan editables el CAI y el solicitante.
+  const locked = (field) => isFieldLocked(processing, field);
 
   const onProviderChange = e => {
     const filterProv = listProviders.find(item => item.value === validInt(e.target.value));
@@ -50,6 +53,7 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, i
                 inputValue={providerId}
                 options={listProviders}
                 onChange={onProviderChange}
+                isDisabled={locked('providerId')}
                 invalid={sendForm && !!providerIdValid}
                 feedbackText={sendForm && (providerIdValid || null)}
               />
@@ -78,6 +82,7 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, i
                 mask="***-***-**-********"
                 maskChar=" "
                 maxLength={40}
+                disabled={locked('invoiceNumber')}
                 invalid={sendForm && !!invoiceNumberValid}
                 feedbackText={sendForm && (invoiceNumberValid || null)}
               />
@@ -91,6 +96,7 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, i
                 value={storeId}
                 onChange={onInputChange}
                 options={listStores}
+                disabled={locked('storeId')}
                 invalid={sendForm && !!storeIdValid}
                 feedbackText={sendForm && (storeIdValid || null)}
               />
@@ -102,6 +108,7 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, i
                 name='paymentTypeId'
                 options={listPaymentTypes}
                 onChange={onInputChange}
+                isDisabled={locked('paymentTypeId')}
                 invalid={sendForm && !!paymentTypeIdValid}
                 feedbackText={sendForm && (paymentTypeIdValid || null)}
               />
@@ -126,6 +133,7 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, i
                 label="page.purchases.input.dateRequired"
                 value={date}
                 onChange={onInputChange}
+                disabled={locked('date')}
                 invalid={sendForm && !!dateValid}
                 feedbackText={sendForm && (dateValid || null)}
               />
@@ -136,7 +144,7 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, i
                 label="page.purchases.input.dateOut"
                 value={dateOut}
                 onChange={onInputChange}
-                disabled={isCash}
+                disabled={isCash || locked('dateOut')}
                 invalid={sendForm && !!dateOutValid}
                 feedbackText={sendForm && (dateOutValid || null)}
               />
@@ -148,8 +156,8 @@ const FormPurchase = ({ documentCode, storeId, providerId, paymentTypeId, cai, i
                 value={typeFp}
                 onChange={onInputChange}
                 options={[
-                  { id: 1, label: 'page.purchases.radio.cash' },
-                  { id: 2, label: 'page.purchases.radio.credit' }
+                  { id: 1, label: 'page.purchases.radio.cash', disabled: locked('typeFp') },
+                  { id: 2, label: 'page.purchases.radio.credit', disabled: locked('typeFp') }
                 ]}
                 display='flex'
                 invalid={sendForm && !!typeFpValid}
