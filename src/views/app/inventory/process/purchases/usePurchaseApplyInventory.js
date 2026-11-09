@@ -2,11 +2,13 @@ import { useState } from 'react';
 import notification from '@Containers/ui/Notifications';
 import { request } from '@Helpers/core';
 import { validFloat } from '@Helpers/Utils';
+import { buildApplyPayload } from './applyPricesRules';
 
 // Legacy Controlpanel21.OptPages.Page1.btnGenAuxiliar.Click ("Aplic. Inv."): recalcula el
 // costo prorrateado por línea, abre la modal de Actualizar Precios de Venta (siempre la
 // variante multi-unidad, ver inv_prod_dist/sgh_empresas.vprod_many), y al aceptar regenera
-// kardex + CxP. Extraído de usePurchases.js para que ese hook no crezca más.
+// kardex + CxP. SPEC v2-27-sr: el back recalcula el costo y valida las distribuciones; del modal solo viajan los precios nuevos.
+// Extraído de usePurchases.js para que ese hook no crezca más.
 export const usePurchaseApplyInventory = ({ setLoading, id }) => {
   const [openModalApplyInventory, setOpenModalApplyInventory] = useState(false);
   const [applyInventoryRows, setApplyInventoryRows] = useState([]);
@@ -32,7 +34,7 @@ export const usePurchaseApplyInventory = ({ setLoading, id }) => {
 
   const fnConfirmApplyInventory = () => {
     setLoading(true);
-    request.POST(`inventory/process/purchases/${id}/applyInventory`, { priceRows: applyInventoryRows }, () => {
+    request.POST(`inventory/process/purchases/${id}/applyInventory`, buildApplyPayload(applyInventoryRows), () => {
       notification('success', 'msg.success.applyInventory', 'alert.success.title');
       setOpenModalApplyInventory(false);
       setLoading(false);
