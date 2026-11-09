@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import notification from '@Containers/ui/Notifications';
 import { useForm } from '@Hooks';
 import { request, buildUrl } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 import { formatDate, formatNumber, validFloat } from '@Helpers/Utils';
 import { usePurchaseFormLists } from './usePurchaseFormLists';
 import { usePurchaseOrders } from './usePurchaseOrders';
@@ -22,7 +23,6 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
   const [openModalImportation, setOpenModalImportation] = useState(false);
   const [sendFormDeta, setSendFormDeta] = useState(false);
   const [sendForm, setSendForm] = useState(false);
-  const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
   // Las reglas del encabezado viven en purchaseRules.js (mismas del PurchaseDTO del back); useForm solo guarda el estado.
   const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
@@ -168,17 +168,14 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     }
   }
 
+  // SPEC v2-28-sr: se imprime lo GUARDADO en DB por GET; sin compra guardada avisa "guarde primero" sin llamar al back.
   const fnPrintPurchase = () => {
-    if (id > 0) {
-      const dataPrint = {
-        id,
-        userName: userData.name
-      }
-      request.GETPdf('inventory/process/purchases/exportPDFPurchase', dataPrint, 'Compra de Inventario.pdf', (err) => {
-
-        setLoading(false);
-      });
-    }
+    printDocument({
+      path: 'inventory/process/purchases',
+      id,
+      fileName: 'Compra de Inventario.pdf',
+      setLoading
+    });
   }
 
   const fnCancelPurchase = () => {
