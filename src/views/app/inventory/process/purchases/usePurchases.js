@@ -9,6 +9,7 @@ import { usePurchaseOrders } from './usePurchaseOrders';
 import { usePurchaseApplyInventory } from './usePurchaseApplyInventory';
 import { usePurchaseAccounting } from './usePurchaseAccounting';
 import { usePurchaseAdvances } from './usePurchaseAdvances';
+import { usePurchaseProcessing } from './usePurchaseProcessing';
 import { usePurchaseComplementary } from './usePurchaseComplementary';
 import { buildPurchasePayload, calculateTotals, CASH, formFromSaved, invoiceNumberChanged, validateHeader } from './purchaseRules';
 import { distributionStatus } from './purchaseAdvanceRules';
@@ -65,6 +66,9 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
 
   const { id, pdaNumber, providerId, date, dateOut, typeFp, freight, otherCharges, valueTotal } = formState;
 
+  // SPEC v2-29-sr: una compra contabilizada, aplicada a inventario o con CxP no admite cambios contables (el back los rechaza).
+  const { processing, refresh: refreshProcessing } = usePurchaseProcessing({ id, pdaNumber });
+
   const headerErrors = useMemo(() => validateHeader(formState), [formState]);
   const formValidation = useMemo(() => Object.fromEntries(Object.entries(headerErrors).map(([field, message]) => [`${field}Valid`, message])), [headerErrors]);
   const isFormValid = Object.keys(headerErrors).length === 0;
@@ -91,7 +95,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
   });
 
   const { openModalApplyInventory, setOpenModalApplyInventory, applyInventoryRows, fnApplyInventory,
-    fnUpdateApplyInventoryRow, fnConfirmApplyInventory } = usePurchaseApplyInventory({ setLoading, id });
+    fnUpdateApplyInventoryRow, fnConfirmApplyInventory } = usePurchaseApplyInventory({ setLoading, id, onApplied: refreshProcessing });
 
   // Distribuir anticipos (SPEC v2-24-sr): botón de la barra y oferta tras contabilizar.
   const propsToAdvances = usePurchaseAdvances({ setLoading, purchase: { id, pdaNumber } });
@@ -253,7 +257,8 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
       {
         title: "button.viewPurchaseOrders",
         icon: "bi bi-file-earmark-text",
-        onClick: fnViewPurchaseOrders
+        onClick: fnViewPurchaseOrders,
+        disabled: processing.isProcessed
       },
       {
         title: "button.reportPurchases",
@@ -304,6 +309,7 @@ export const usePurchases = ({ setLoading, onResetFormDeta, purchaseDetail, setP
     openModalImportation,
     setOpenModalImportation,
     propsToComplementary,
-    propsToAdvances
+    propsToAdvances,
+    processing
   };
 }

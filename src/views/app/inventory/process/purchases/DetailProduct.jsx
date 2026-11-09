@@ -9,7 +9,7 @@ import { useDetailProduct } from './useDetailProduct'
 import { packFactor, toBaseUnits } from './purchaseRules'
 
 const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, discountPercent, discount, taxPercent, taxValue, total,
-  lotCode, dateOut, isExonerated, isBonus, packQty, previousCost, currentExistence, storeId, onInputChangeDeta, fnViewProducts,setBulkFormDeta, setPurchaseDetail, formValidationDeta, sendFormDeta,setSendFormDeta}) => {
+  lotCode, dateOut, isExonerated, isBonus, packQty, previousCost, currentExistence, storeId, onInputChangeDeta, fnViewProducts,setBulkFormDeta, setPurchaseDetail, formValidationDeta, sendFormDeta,setSendFormDeta, isProcessed = false}) => {
 
   const {productCodeValid, qtyValid, priceValid, discountPercentValid, taxPercentValid, lotCodeValid} = formValidationDeta;
 
@@ -19,6 +19,8 @@ const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, 
     <Row>
       <Colxx xxs="12">
         <ContainerWithLabel label="page.purchaseOrders.title.addProducts">
+          {/* SPEC v2-29-sr: en una compra procesada no se agregan ni cambian líneas (el back lo rechaza). */}
+          <fieldset disabled={isProcessed} className="border-0 p-0 m-0" style={{ minWidth: 0 }}>
           <Row>
             <Colxx xxs="12" md="8" lg="10">
               <Row>
@@ -220,6 +222,7 @@ const DetailProduct = ({idProd, productCode, nameProduct, qty, price, subTotal, 
               </Row>
             </Colxx>
           </Row>
+          </fieldset>
         </ContainerWithLabel>
       </Colxx>
     </Row>

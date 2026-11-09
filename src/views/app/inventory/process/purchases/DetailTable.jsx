@@ -4,7 +4,7 @@ import { formatNumber, IntlMessages } from '@Helpers/Utils'
 import Confirmation from '@Containers/ui/confirmationMsg';
 import useDetailTable from './useDetailTable';
 
-const DetailTable = ({purchaseDetail, setPurchaseDetail, setBulkForm, setBulkFormDeta}) => {
+const DetailTable = ({purchaseDetail, setPurchaseDetail, setBulkForm, setBulkFormDeta, locked = false}) => {
 
   const {openMsgDelete, setOpenMsgDelete, fnEditProduct, fnDeleteProduct, fnDeleteOkProduct} = useDetailTable({purchaseDetail, setPurchaseDetail, setBulkForm, setBulkFormDeta});
 
@@ -46,6 +46,7 @@ const DetailTable = ({purchaseDetail, setPurchaseDetail, setBulkForm, setBulkFor
                   <td className = 'd-md-none-table-cell' align='right'>{formatNumber(item.taxValue)}</td>
                   <td align='right'>{formatNumber(item.total)}</td>
                   <td align='right'>
+                    {!locked && (<>
                     <Button type="button" className="btn-circle-table" color="outline-warning" title="Editar"
                       onClick={() => {fnEditProduct(item)}} key={`button1-${idx}`}>
                       <i className='bi bi-pencil' />
@@ -54,6 +55,7 @@ const DetailTable = ({purchaseDetail, setPurchaseDetail, setBulkForm, setBulkFor
                       onClick={() => {fnDeleteProduct(item)}} key={`button2-${idx}`}>
                       <i className='bi bi-trash' />
                     </Button>
+                    </>)}
                   </td>
                 </tr>
               );
