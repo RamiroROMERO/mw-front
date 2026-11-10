@@ -5015,7 +5015,21 @@ const esLang = {
   "page.purchaseReceipts.msg.confirmSave": "¿Guardar los ingresos? Se actualizarán las existencias de la compra y, si aplica, la orden de compra",
   "page.purchaseReceipts.error.noChanges": "No hay cambios que guardar",
   "page.purchaseReceipts.error.qtyInvalid": "La cantidad recibida del producto {product} debe ser un número mayor o igual a cero con máximo 5 decimales",
-  "page.purchaseReceipts.error.dateInvalid": "El vencimiento del producto {product} no es una fecha válida"
+  "page.purchaseReceipts.error.dateInvalid": "El vencimiento del producto {product} no es una fecha válida",
+  "page.otherPurchases.validation.tooLong": "El texto excede el máximo de caracteres permitido",
+  "page.otherPurchases.validation.dateFuture": "La fecha del documento no puede ser futura",
+  "page.otherPurchases.validation.dateOutBeforeDate": "El vencimiento no puede ser menor a la fecha del documento",
+  "page.otherPurchases.validation.negative": "Ingrese un importe numérico mayor o igual a cero",
+  "page.otherPurchases.providerType": "Tipo de proveedor",
+  "page.otherPurchases.providerType.supplier": "Proveedor",
+  "page.otherPurchases.providerType.creditor": "Acreedor",
+  "page.otherPurchases.paymentStatus.paid": "Pagada",
+  "page.otherPurchases.paymentStatus.pending": "Pendiente de pago",
+  "page.otherPurchases.locked.notice": "Esta factura ya tiene {reasons}. No se pueden cambiar el proveedor, el número de factura, las fechas, la forma de pago ni los importes; sí la cuenta de gasto, la descripción, el solicitante, el CAI, los datos del SAR y la orden de trabajo.",
+  "page.otherPurchases.locked.noticeNoReasons": "Esta factura tiene pagos o anticipos. No se pueden cambiar el proveedor, el número de factura, las fechas, la forma de pago ni los importes.",
+  "page.otherPurchases.locked.reason.payments": "pagos aplicados",
+  "page.otherPurchases.locked.reason.advances": "anticipos distribuidos",
+  "page.otherPurchases.pending.notice": "Cambió la cuenta de gasto de un documento ya contabilizado: guardar no regenera la partida, quedan cambios pendientes de contabilizar."
 };
 
 export default esLang;
