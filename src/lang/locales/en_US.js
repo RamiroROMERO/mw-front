@@ -5018,7 +5018,21 @@ const enLang = {
   "page.purchaseReceipts.msg.confirmSave": "Save the receipts? The purchase stock and, if it applies, the purchase order will be updated",
   "page.purchaseReceipts.error.noChanges": "There are no changes to save",
   "page.purchaseReceipts.error.qtyInvalid": "The received quantity of product {product} must be a number greater than or equal to zero with at most 5 decimals",
-  "page.purchaseReceipts.error.dateInvalid": "The expiration of product {product} is not a valid date"
+  "page.purchaseReceipts.error.dateInvalid": "The expiration of product {product} is not a valid date",
+  "page.otherPurchases.validation.tooLong": "The text exceeds the maximum number of characters allowed",
+  "page.otherPurchases.validation.dateFuture": "The document date cannot be in the future",
+  "page.otherPurchases.validation.dateOutBeforeDate": "The due date cannot be earlier than the document date",
+  "page.otherPurchases.validation.negative": "Enter a numeric amount greater than or equal to zero",
+  "page.otherPurchases.providerType": "Provider type",
+  "page.otherPurchases.providerType.supplier": "Supplier",
+  "page.otherPurchases.providerType.creditor": "Creditor",
+  "page.otherPurchases.paymentStatus.paid": "Paid",
+  "page.otherPurchases.paymentStatus.pending": "Pending payment",
+  "page.otherPurchases.locked.notice": "This invoice already has {reasons}. The provider, invoice number, dates, payment type and amounts cannot be changed; the expense account, description, applicant, CAI, SAR data and work order can.",
+  "page.otherPurchases.locked.noticeNoReasons": "This invoice has payments or advances. The provider, invoice number, dates, payment type and amounts cannot be changed.",
+  "page.otherPurchases.locked.reason.payments": "payments applied",
+  "page.otherPurchases.locked.reason.advances": "advances distributed",
+  "page.otherPurchases.pending.notice": "The expense account of an already posted document changed: saving does not regenerate the journal entry, so there are changes pending to post."
 };
 
 export default enLang;

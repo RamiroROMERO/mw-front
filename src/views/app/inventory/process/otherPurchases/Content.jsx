@@ -9,32 +9,38 @@ import ControlPanel from '@Components/controlPanel';
 import { Separator } from '@Components/common/CustomBootstrap';
 import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
-import ModalViewPurchases from '../purchases/ModalViewPurchases';
+import ModalSearchOtherPurchases from './ModalSearchOtherPurchases';
+import OtherPurchaseNotices from './OtherPurchaseNotices';
+import { CASH, MAX, localToday } from './otherPurchaseRules';
 
 const OtherPurchases = (props) => {
   const { setLoading } = props;
   const {
-    listDocuments, listTaxStatNames, listProviders, listPaymentTypes, listLedgerAccounts, listWorkOrders, caiRequired,
-    formState, formValidation, onInputChange, sendForm, propsToControlPanel, openSearch, setOpenSearch, dataPurchases, setBulkForm,
+    listDocuments, listTaxStatNames, listProviders, listPaymentTypes, listLedgerAccounts, listWorkOrders,
+    formState, formValidation, onInputChange, sendForm, propsToControlPanel, openSearch, setOpenSearch, fnLoadDocument,
+    editLock, locked, paymentStatus, pendingAccounting,
     openMsgCancelDocument, setOpenMsgCancelDocument, fnOkCancelDocument,
     openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument
   } = useOtherPurchases({ setLoading });
 
-  const { documentCode, documentId, typeTax, date, dateOut, typeFp, purchaseOrderId, workOrderId, providerId, paymentTypeId, cai, invoiceNumber, description, expenseCtaCode, exemptedCertificate, exemptedNumber, exemptedRecord, subtotal, discount, valueExonerated, valueExempt, valueTaxable, tax, freight, otherCharges, total, requestedBy } = formState;
+  const { id, documentCode, documentId, typeTax, date, dateOut, typeFp, providerType, purchaseOrderId, workOrderId, providerId, paymentTypeId, cai, invoiceNumber, description, expenseCtaCode, exemptedCertificate, exemptedNumber, exemptedRecord, subtotal, discount, valueExonerated, valueExempt, valueTaxable, tax, freight, otherCharges, total, requestedBy } = formState;
 
   const { documentCodeValid, typeTaxValid, dateValid, dateOutValid, typeFpValid, providerIdValid, paymentTypeIdValid, invoiceNumberValid, expenseCtaCodeValid, descriptionValid, requestedByValid, totalValid } = formValidation;
+  // Máximos de los textos (los del DTO del back) y errores por campo, solo tras intentar guardar.
+  const showError = (valid) => sendForm && (valid || null);
+  const maxOf = (field) => MAX[field];
+  const caiValid = formValidation.caiValid;
+  const amountValid = (field) => showError(formValidation[`${field}Valid`]);
+  // Con Contado en un documento nuevo el vencimiento es la fecha del documento.
+  const dueDateDisabled = locked('dateOut') || (Number(id) === 0 && Number(typeFp) === CASH);
 
   const propsToModalPurchases = {
-    ModalContent: ModalViewPurchases,
+    ModalContent: ModalSearchOtherPurchases,
     title: "page.purchases.modal.viewPurchases.title",
     open: openSearch,
     setOpen: setOpenSearch,
     maxWidth: 'lg',
-    data: {
-      dataPurchases,
-      setBulkForm,
-      fnGetDataDetail: () => { }
-    }
+    data: { fnLoadDocument }
   }
 
   const propsToMsgCancelDocument = {
@@ -51,6 +57,22 @@ const OtherPurchases = (props) => {
     title: "msg.question.accountDocument.title"
   }
 
+  const amountField = (name, label, value) => (
+    <Colxx xxs={12} xs={6} md={4}>
+      <InputField
+        label={label}
+        name={name}
+        value={value}
+        onChange={onInputChange}
+        type="number"
+        min="0"
+        disabled={locked(name)}
+        invalid={sendForm && !!formValidation[`${name}Valid`]}
+        feedbackText={amountValid(name)}
+      />
+    </Colxx>
+  );
+
   return (
     <>
       <Row>
@@ -59,6 +81,7 @@ const OtherPurchases = (props) => {
             <CardBody>
               <ControlPanel {...propsToControlPanel} />
               <Separator className="mt-2 mb-5" />
+              <OtherPurchaseNotices editLock={editLock} pendingAccounting={pendingAccounting} paymentStatus={paymentStatus} />
               <Row>
                 <Colxx xxs={12} md={8} lg={9} className="order-xs-2 order-lg-1">
                   <Row>
@@ -70,7 +93,7 @@ const OtherPurchases = (props) => {
                         options={listTaxStatNames}
                         onChange={onInputChange}
                         invalid={sendForm && !!typeTaxValid}
-                        feedbackText={sendForm && (typeTaxValid || null)}
+                        feedbackText={showError(typeTaxValid)}
                       />
                     </Colxx>
                     <Colxx xxs={12} sm={6} >
@@ -80,8 +103,9 @@ const OtherPurchases = (props) => {
                         inputValue={documentCode}
                         options={listDocuments}
                         onChange={onInputChange}
+                        isDisabled={Number(id) > 0}
                         invalid={sendForm && !!documentCodeValid}
-                        feedbackText={sendForm && (documentCodeValid || null)}
+                        feedbackText={showError(documentCodeValid)}
                       />
                     </Colxx>
                   </Row>
@@ -93,8 +117,9 @@ const OtherPurchases = (props) => {
                         inputValue={providerId}
                         options={listProviders}
                         onChange={onInputChange}
+                        isDisabled={locked('providerId')}
                         invalid={sendForm && !!providerIdValid}
-                        feedbackText={sendForm && (providerIdValid || null)}
+                        feedbackText={showError(providerIdValid)}
                       />
                     </Colxx>
                     <Colxx xxs={12} md={6} xl={5}>
@@ -104,8 +129,9 @@ const OtherPurchases = (props) => {
                         inputValue={paymentTypeId}
                         options={listPaymentTypes}
                         onChange={onInputChange}
+                        isDisabled={locked('paymentTypeId')}
                         invalid={sendForm && !!paymentTypeIdValid}
-                        feedbackText={sendForm && (paymentTypeIdValid || null)}
+                        feedbackText={showError(paymentTypeIdValid)}
                       />
                     </Colxx>
                     <Colxx xxs={12} md={6} xl={2}>
@@ -114,6 +140,21 @@ const OtherPurchases = (props) => {
                         name="purchaseOrderId"
                         value={purchaseOrderId}
                         disabled
+                      />
+                    </Colxx>
+                  </Row>
+                  <Row>
+                    <Colxx xxs={12} md={6}>
+                      <RadioGroup
+                        label="page.otherPurchases.providerType"
+                        name="providerType"
+                        value={providerType}
+                        onChange={onInputChange}
+                        options={[
+                          { id: 1, label: 'page.otherPurchases.providerType.supplier', disabled: locked('providerId') },
+                          { id: 2, label: 'page.otherPurchases.providerType.creditor', disabled: locked('providerId') }
+                        ]}
+                        display='flex'
                       />
                     </Colxx>
                   </Row>
@@ -126,9 +167,10 @@ const OtherPurchases = (props) => {
                         value={cai}
                         onChange={onInputChange}
                         type="text"
-                        disabled={!caiRequired}
                         mask="******-******-******-******-******-**"
                         maskChar=" "
+                        invalid={sendForm && !!caiValid}
+                        feedbackText={showError(caiValid)}
                       />
                     </Colxx>
                     <Colxx xxs="12" xl="4">
@@ -138,8 +180,10 @@ const OtherPurchases = (props) => {
                         value={invoiceNumber}
                         onChange={onInputChange}
                         type="text"
+                        maxLength={maxOf('invoiceNumber')}
+                        disabled={locked('invoiceNumber')}
                         invalid={sendForm && !!invoiceNumberValid}
-                        feedbackText={sendForm && (invoiceNumberValid || null)}
+                        feedbackText={showError(invoiceNumberValid)}
                       />
                     </Colxx>
                   </Row>
@@ -151,8 +195,9 @@ const OtherPurchases = (props) => {
                         value={description}
                         onChange={onInputChange}
                         type="textarea"
+                        maxLength={maxOf('description')}
                         invalid={sendForm && !!descriptionValid}
-                        feedbackText={sendForm && (descriptionValid || null)}
+                        feedbackText={showError(descriptionValid)}
                       />
                     </Colxx>
                   </Row>
@@ -165,7 +210,7 @@ const OtherPurchases = (props) => {
                         options={listLedgerAccounts}
                         onChange={onInputChange}
                         invalid={sendForm && !!expenseCtaCodeValid}
-                        feedbackText={sendForm && (expenseCtaCodeValid || null)}
+                        feedbackText={showError(expenseCtaCodeValid)}
                       />
                     </Colxx>
                     <Colxx xxs={12} md={6} >
@@ -185,6 +230,7 @@ const OtherPurchases = (props) => {
                         name="exemptedNumber"
                         value={exemptedNumber}
                         onChange={onInputChange}
+                        maxLength={maxOf('exemptedNumber')}
                       />
                     </Colxx>
                     <Colxx xxs={12} md={4}>
@@ -193,6 +239,7 @@ const OtherPurchases = (props) => {
                         name="exemptedCertificate"
                         value={exemptedCertificate}
                         onChange={onInputChange}
+                        maxLength={maxOf('exemptedCertificate')}
                       />
                     </Colxx>
                     <Colxx xxs={12} md={4}>
@@ -201,6 +248,7 @@ const OtherPurchases = (props) => {
                         name="exemptedRecord"
                         value={exemptedRecord}
                         onChange={onInputChange}
+                        maxLength={maxOf('exemptedRecord')}
                       />
                     </Colxx>
                   </Row>
@@ -215,69 +263,13 @@ const OtherPurchases = (props) => {
                         disabled
                       />
                     </Colxx>
-                    <Colxx xxs={12} xs={6} md={4}>
-                      <InputField
-                        label="input.discount"
-                        name="discount"
-                        value={discount}
-                        onChange={onInputChange}
-                        type="number"
-                      />
-                    </Colxx>
-                    <Colxx xxs={12} xs={6} md={4}>
-                      <InputField
-                        label="input.valueExoneratedted"
-                        name="valueExonerated"
-                        value={valueExonerated}
-                        onChange={onInputChange}
-                        type="number"
-                      />
-                    </Colxx>
-                    <Colxx xxs={12} xs={6} md={4}>
-                      <InputField
-                        label="input.valueExempt"
-                        name="valueExempt"
-                        value={valueExempt}
-                        onChange={onInputChange}
-                        type="number"
-                      />
-                    </Colxx>
-                    <Colxx xxs={12} xs={6} md={4}>
-                      <InputField
-                        label="input.taxed"
-                        name="valueTaxable"
-                        value={valueTaxable}
-                        onChange={onInputChange}
-                        type="number"
-                      />
-                    </Colxx>
-                    <Colxx xxs={12} xs={6} md={4}>
-                      <InputField
-                        label="input.tax"
-                        name="tax"
-                        value={tax}
-                        onChange={onInputChange}
-                        type="number"
-                      />
-                    </Colxx>
-                    <Colxx xxs={12} xs={6} md={4}>
-                      <InputField
-                        label="input.flete"
-                        name="freight"
-                        value={freight}
-                        onChange={onInputChange}
-                        type="number"
-                      />
-                    </Colxx>
-                    <Colxx xxs={12} xs={6} md={4}>
-                      <InputField
-                        label="input.otherCharges"
-                        name="otherCharges"
-                        value={otherCharges}
-                        onChange={onInputChange}
-                        type="number"
-                      />
-                    </Colxx>
+                    {amountField('discount', 'input.discount', discount)}
+                    {amountField('valueExonerated', 'input.valueExoneratedted', valueExonerated)}
+                    {amountField('valueExempt', 'input.valueExempt', valueExempt)}
+                    {amountField('valueTaxable', 'input.taxed', valueTaxable)}
+                    {amountField('tax', 'input.tax', tax)}
+                    {amountField('freight', 'input.flete', freight)}
+                    {amountField('otherCharges', 'input.otherCharges', otherCharges)}
                     <Colxx xxs={12} xs={6} md={4}>
                       <InputField
                         label="input.total"
@@ -286,7 +278,7 @@ const OtherPurchases = (props) => {
                         type="number"
                         disabled
                         invalid={sendForm && !!totalValid}
-                        feedbackText={sendForm && (totalValid || null)}
+                        feedbackText={showError(totalValid)}
                       />
                     </Colxx>
                   </Row>
@@ -298,8 +290,9 @@ const OtherPurchases = (props) => {
                         name="requestedBy"
                         value={requestedBy}
                         onChange={onInputChange}
+                        maxLength={maxOf('requestedBy')}
                         invalid={sendForm && !!requestedByValid}
-                        feedbackText={sendForm && (requestedByValid || null)}
+                        feedbackText={showError(requestedByValid)}
                       />
                     </Colxx>
                   </Row>
@@ -312,8 +305,10 @@ const OtherPurchases = (props) => {
                         label="pages.input.date"
                         value={date}
                         onChange={onInputChange}
+                        maxDate={new Date(`${localToday()}T12:00:00`)}
+                        disabled={locked('date')}
                         invalid={sendForm && !!dateValid}
-                        feedbackText={sendForm && (dateValid || null)}
+                        feedbackText={showError(dateValid)}
                       />
                     </Colxx>
                     <Colxx xxs={12} sm={6} lg={12}>
@@ -322,8 +317,9 @@ const OtherPurchases = (props) => {
                         label="pages.input.dateOut"
                         value={dateOut}
                         onChange={onInputChange}
+                        disabled={dueDateDisabled}
                         invalid={sendForm && !!dateOutValid}
-                        feedbackText={sendForm && (dateOutValid || null)}
+                        feedbackText={showError(dateOutValid)}
                       />
                     </Colxx>
                     <Colxx xxs="12" sm={6} lg={12}>
@@ -333,12 +329,12 @@ const OtherPurchases = (props) => {
                         value={typeFp}
                         onChange={onInputChange}
                         options={[
-                          { id: 1, label: 'page.purchases.radio.cash' },
-                          { id: 2, label: 'page.purchases.radio.credit' }
+                          { id: 1, label: 'page.purchases.radio.cash', disabled: locked('typeFp') },
+                          { id: 2, label: 'page.purchases.radio.credit', disabled: locked('typeFp') }
                         ]}
                         display='flex'
                         invalid={sendForm && !!typeFpValid}
-                        feedbackText={sendForm && (typeFpValid || null)}
+                        feedbackText={showError(typeFpValid)}
                       />
                     </Colxx>
                     <Colxx xxs={12} sm={6} lg={12}>

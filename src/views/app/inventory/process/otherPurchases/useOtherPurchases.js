@@ -1,13 +1,19 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useForm } from '@Hooks';
-import { request, buildUrl } from '@Helpers/core';
+import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
-import { formatDate, formatNumber, validInt, validFloat } from '@Helpers/Utils';
+import { validInt } from '@Helpers/Utils';
 import { useOtherPurchaseAccounting } from './useOtherPurchaseAccounting';
+import {
+  AMOUNT_FIELDS, INITIAL_FORM, NOT_LOCKED, buildPayload, calculateTotals, dueDateFor, formFromDocument, hasPendingAccounting,
+  isFieldLocked, normalizeEditLock, validateOtherPurchase
+} from './otherPurchaseRules';
 
-// Legacy inv_compras_others.sc2 ("Facturas de Costos y Gastos"): documento de gasto (isExpense=1)
-// independiente, sin líneas de producto — reutiliza el mismo backend de Compras
-// (modules/inventory/purchases/) que ya soporta la rama isExpense en Contabilizar/Anular.
+const OTHER_PURCHASES_URL = 'inventory/process/otherPurchases';
+
+// Legacy inv_compras_others.sc2 ("Facturas de Costos y Gastos"): documento de gasto (isExpense=1) independiente, sin líneas de
+// producto. SPEC v2-30-sr: se guarda en su propio módulo del back (un solo POST o PUT en una transacción, con el correlativo, el
+// período, las cuentas bloqueadas y la auditoría). Contabilizar y Anular siguen usando las rutas de Compras (spec B).
 export const useOtherPurchases = ({ setLoading }) => {
 
   const [listDocuments, setListDocuments] = useState([]);
@@ -16,169 +22,116 @@ export const useOtherPurchases = ({ setLoading }) => {
   const [listPaymentTypes, setListPaymentTypes] = useState([]);
   const [listLedgerAccounts, setListLedgerAccounts] = useState([]);
   const [listWorkOrders, setListWorkOrders] = useState([]);
-  const [caiRequired, setCaiRequired] = useState(false);
   const [sendForm, setSendForm] = useState(false)
   const [openSearch, setOpenSearch] = useState(false);
-  const [dataPurchases, setDataPurchases] = useState([])
   const [openMsgCancelDocument, setOpenMsgCancelDocument] = useState(false);
+  // Estado que calcula el back para el documento cargado: bloqueo financiero (pagos o anticipos) y estado de pago de la CxP.
+  const [editLock, setEditLock] = useState(NOT_LOCKED);
+  const [paymentStatus, setPaymentStatus] = useState(null);
+  // Cuenta de gasto de la partida: guardar no regenera la partida, así que si la cuenta cambia queda pendiente de contabilizar.
+  const [postedAccountCode, setPostedAccountCode] = useState('');
+  const savedAccountCode = useRef('');
 
-  const purchasesValid = {
-    documentCode: [(val) => val !== "", "msg.required.select.typeDocument"],
-    typeTax: [(val) => validInt(val) > 0, "msg.required.select.typeTax"],
-    providerId: [(val) => validInt(val) > 0, "msg.required.select.provider"],
-    invoiceNumber: [(val) => val !== "", "msg.required.input.numInvoice"],
-    date: [(val) => val !== "", "msg.required.input.date"],
-    dateOut: [(val) => val !== "", "msg.required.input.date"],
-    paymentTypeId: [(val) => validInt(val) > 0, "msg.required.select.paymentType"],
-    typeFp: [(val) => validInt(val) > 0, "msg.required.select.typePurchase"],
-    expenseCtaCode: [(val) => val !== "", "msg.required.select.noCtaExpense"],
-    description: [(val) => val !== "", "msg.required.input.description"],
-    requestedBy: [(val) => val !== "", "msg.required.input.name"],
-    total: [(val) => validInt(val) > 0, "msg.required.input.total"],
+  const { formState, onInputChange, onBulkForm, onResetForm } = useForm({ ...INITIAL_FORM }, {});
+
+  const { id, typeFp, date, pdaNumber, expenseCtaCode } = formState;
+
+  // Validación local (mismas reglas que el DTO del back). Se muestra por campo tras intentar guardar.
+  const errors = useMemo(() => validateOtherPurchase(formState), [formState]);
+  const formValidation = useMemo(
+    () => Object.fromEntries(Object.entries(errors).map(([field, messageId]) => [`${field}Valid`, messageId])),
+    [errors]
+  );
+
+  const onAccounted = (data) => {
+    onBulkForm(data);
+    if (validInt(data.pdaNumber) > 0) setPostedAccountCode(savedAccountCode.current);
   };
+  const { openMsgAccountDocument, setOpenMsgAccountDocument, fnAccountDocument, fnOkAccountDocument } = useOtherPurchaseAccounting({ setLoading, id, setBulkForm: onAccounted });
 
-  const { formState, formValidation, isFormValid, onInputChange, onBulkForm, onResetForm } = useForm({
-    id: 0,
-    documentCode: "",
-    documentId: 0,
-    typeTax: 0,
-    providerId: 0,
-    paymentTypeId: 0,
-    purchaseOrderId: 0,
-    workOrderId: 0,
-    cai: "",
-    invoiceNumber: "",
-    date: "",
-    dateOut: "",
-    typeFp: 0,
-    description: "",
-    exemptedCertificate: "",
-    exemptedNumber: "",
-    exemptedRecord: "",
-    requestedBy: "",
-    expenseCtaCode: "",
-    pdaNumber: 0,
-    status: 0,
-    subtotal: 0,
-    discount: 0,
-    valueExonerated: 0,
-    valueExempt: 0,
-    valueTaxable: 0,
-    tax: 0,
-    freight: 0,
-    otherCharges: 0,
-    total: 0
-  }, purchasesValid);
+  // Subtotal y total salen de los importes (legacy fncalculatetotal) y solo se recalculan cuando el usuario cambia un importe:
+  // al cargar un documento histórico se respetan los valores guardados.
+  const onAmountChange = ({ target }) => {
+    const { name, value } = target;
+    onBulkForm({ [name]: value, ...calculateTotals({ ...formState, [name]: value }) });
+  };
+  const handleInputChange = (event) => (AMOUNT_FIELDS.includes(event.target.name) ? onAmountChange(event) : onInputChange(event));
 
-  const { id, typeTax, cai, invoiceNumber, providerId, pdaNumber, valueExonerated, valueTaxable, valueExempt, discount, tax, freight, otherCharges } = formState;
-
-  const { openMsgAccountDocument, setOpenMsgAccountDocument, fnAccountDocument, fnOkAccountDocument } = useOtherPurchaseAccounting({ setLoading, id, setBulkForm: onBulkForm });
-
-  // Legacy fncalculatetotal (líneas 1046-1059): Subtotal = Exonerado + Gravado + Exento (ambos
-  // Numbox_hw2/hw7 son ReadOnly en el .sc2, calculados aquí, no editables por el usuario).
+  // El back exige vencimiento >= fecha en Contado y Crédito; en un documento nuevo de Contado es la fecha del documento.
   useEffect(() => {
-    const subtotal = validFloat(valueExonerated) + validFloat(valueTaxable) + validFloat(valueExempt);
-    const total = subtotal - validFloat(discount) + validFloat(tax) + validFloat(freight) + validFloat(otherCharges);
-    onBulkForm({ subtotal: Number(subtotal.toFixed(2)), total: Number(total.toFixed(2)) });
+    const dateOut = dueDateFor({ id, typeFp, date, dateOut: formState.dateOut });
+    if (dateOut !== formState.dateOut) onBulkForm({ dateOut });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [valueExonerated, valueTaxable, valueExempt, discount, tax, freight, otherCharges]);
+  }, [id, typeFp, date]);
 
-  // Legacy Combobox_hw1.InteractiveChange (líneas 1595-1618): el CAI del proveedor solo es
-  // obligatorio/editable cuando el tipo de documento fiscal seleccionado usa CAI.
-  useEffect(() => {
-    const selected = listTaxStatNames.find((item) => Number(item.value) === Number(typeTax));
-    setCaiRequired(!!selected?.useCai);
-  }, [typeTax, listTaxStatNames]);
+  const locked = (field) => isFieldLocked(editLock, field);
+  const pendingAccounting = hasPendingAccounting({ pdaNumber, expenseCtaCode, postedAccountCode });
 
   const fnNewDocument = () => {
     setSendForm(false);
+    setEditLock(NOT_LOCKED);
+    setPaymentStatus(null);
+    setPostedAccountCode('');
+    savedAccountCode.current = '';
     onResetForm();
   }
 
-  const fnSearchDocument = () => {
+  // Carga el documento guardado (el listado solo trae un resumen): trae también el estado de pago y el bloqueo de edición.
+  const fnLoadDocument = (row) => {
     setLoading(true);
-    request.GET("inventory/process/purchases?isExpense=1",
-      (resp) => {
-        const purchases = resp.data.map((item) => {
-          item.provider = item.providerData?.name || '';
-          item.dateIn = formatDate(item.date)
-          item.valueTotal = formatNumber(item.total)
-          item.valueSubtotal = formatNumber(item.subtotal)
-          item.valueDiscount = formatNumber(item.discount)
-          item.valueTax = formatNumber(item.tax)
-          return item;
-        });
-        setDataPurchases(purchases);
-        setOpenSearch(true);
-        setLoading(false);
-      }, () => {
-        setLoading(false);
-      })
+    request.GET(`${OTHER_PURCHASES_URL}/${row.id}`, (resp) => {
+      const form = formFromDocument(resp.data);
+      onBulkForm(form);
+      setEditLock(normalizeEditLock(resp.data?.editLock));
+      setPaymentStatus(resp.data?.paymentStatus ?? null);
+      savedAccountCode.current = form.expenseCtaCode;
+      setPostedAccountCode(form.expenseCtaCode);
+      setSendForm(false);
+      setOpenSearch(false);
+      setLoading(false);
+    }, () => {
+      setLoading(false);
+    });
   }
 
+  // El buscador (ModalSearchOtherPurchases) pide los documentos por páginas con búsqueda en el servidor.
+  const fnSearchDocument = () => {
+    setOpenSearch(true);
+  }
+
+  // Un solo POST o PUT: el back valida, numera, calcula la factura final y audita en una transacción.
   const fnSaveDocument = () => {
     setSendForm(true);
-    if (validInt(pdaNumber) > 0) {
-      notification('error', 'msg.error.purchase.alreadyAccounted', 'alert.error.title');
-      return;
-    }
-    if (!isFormValid) {
-      return;
-    }
-    if (caiRequired && cai === "") {
-      notification('error', 'msg.required.input.numInvoice', 'alert.error.title');
+    if (Object.keys(errors).length > 0) {
       return;
     }
 
-    const payload = { ...formState, isExpense: 1, providerType: 1 };
-    delete payload.id;
-
+    const payload = buildPayload(formState);
     setLoading(true)
-    // Legacy btnSaveDocument.Click (líneas 2139-2150): WHERE coddoc = numero AND codprov =
-    // provider sobre cont_cxp, antes de crear/actualizar — evita registrar dos veces la misma
-    // factura de un proveedor.
-    request.GET(buildUrl('accounting/process/accountsPayable', { documentCode: invoiceNumber, providerId }), (resp) => {
-      if (Array.isArray(resp.data) && resp.data.length > 0) {
-        notification('error', 'msg.error.purchase.documentAlreadyRegistered', 'alert.error.title');
-        setLoading(false);
-        return;
-      }
-
-      const fnPersist = (finalPayload) => {
-        if (validInt(id) === 0) {
-          request.POST("inventory/process/purchases", finalPayload,
-            (resp2) => {
-              onBulkForm({ id: resp2.data.id, documentId: finalPayload.documentId });
-              notification('success', 'msg.success.save', 'alert.success.title');
-              setLoading(false);
-            },
-            () => {
-              setLoading(false);
-            },
-            true);
-        } else {
-          request.PUT(`inventory/process/purchases/${validInt(id)}`, finalPayload,
-            () => {
-              notification('success', 'msg.success.save', 'alert.success.title');
-              setLoading(false);
-            },
-            () => {
-              setLoading(false);
-            },
-            true);
-        }
-      }
-
-      // Legacy oDocto = Thisform.Crudvfp1.fnGendoctofiscal(cDocument), línea 2216: genera el
-      // número de documento fiscal interno al crear.
-      if (validInt(id) === 0) {
-        request.POST('admin/documents/getCurrentNumber', { code: payload.documentCode }, (resp3) => {
-          fnPersist({ ...payload, documentId: resp3.data.codeInt });
-        }, () => { setLoading(false); });
-      } else {
-        fnPersist(payload);
-      }
-    }, () => { setLoading(false); });
+    if (validInt(id) === 0) {
+      request.POST(OTHER_PURCHASES_URL, payload,
+        (resp) => {
+          onBulkForm({ id: resp.data.id, documentId: resp.data.documentId });
+          savedAccountCode.current = payload.expenseCtaCode;
+          notification('success', 'msg.success.save', 'alert.success.title');
+          setLoading(false);
+        },
+        () => {
+          setLoading(false);
+        },
+        true);
+    } else {
+      request.PUT(`${OTHER_PURCHASES_URL}/${validInt(id)}`, payload,
+        () => {
+          savedAccountCode.current = payload.expenseCtaCode;
+          notification('success', 'msg.success.save', 'alert.success.title');
+          setLoading(false);
+        },
+        () => {
+          setLoading(false);
+        },
+        true);
+    }
   }
 
   const fnCancelDocument = () => {
@@ -221,7 +174,7 @@ export const useOtherPurchases = ({ setLoading }) => {
 
     setLoading(true);
     // Legacy getDocumentList("cur_doctos","AND use_inv = 1 AND usacai = 0"), línea 1520: solo
-    // documentos que NO usan CAI nativo (el CAI de esta pantalla lo decide typeTax, no el documento).
+    // documentos que NO usan CAI nativo (el CAI de esta pantalla es opcional).
     request.GET('admin/documents?status=1&useInv=1&useTaxDocument=0', (resp) => {
       const documents = resp.data.map((item) => {
         return {
@@ -307,17 +260,18 @@ export const useOtherPurchases = ({ setLoading }) => {
     listPaymentTypes,
     listLedgerAccounts,
     listWorkOrders,
-    caiRequired,
     formState,
     formValidation,
-    isFormValid,
-    onInputChange,
-    setBulkForm: onBulkForm,
+    onInputChange: handleInputChange,
     sendForm,
     propsToControlPanel,
     openSearch,
     setOpenSearch,
-    dataPurchases,
+    fnLoadDocument,
+    editLock,
+    locked,
+    paymentStatus,
+    pendingAccounting,
     openMsgCancelDocument,
     setOpenMsgCancelDocument,
     fnOkCancelDocument,
