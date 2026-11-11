@@ -142,9 +142,19 @@ export const lockReasonIds = (reasons = []) => LOCK_REASONS
   .map((reason) => `page.otherPurchases.locked.reason.${reason}`);
 
 // Aviso "cambios pendientes de contabilizar": el documento ya tiene partida y la cuenta de gasto del formulario no es la de la
-// partida. El guardado no regenera la partida (eso es el botón Contabilizar).
+// partida. El guardado no regenera la partida (eso es el botón Re-contabilizar, que quita el aviso al terminar).
 export const hasPendingAccounting = ({ pdaNumber, expenseCtaCode, postedAccountCode }) => Number(pdaNumber) > 0
   && text(postedAccountCode) !== '' && text(expenseCtaCode) !== text(postedAccountCode);
+
+// SPEC v2-31-sr: qué hace el botón de contabilizar. Sin documento guardado no hay nada que contabilizar; sin partida es la primera
+// contabilización; con partida (`pdaNumber` > 0) es "Re-contabilizar" y regenera la misma partida. Siempre pide confirmación.
+export const accountingAction = ({ id, pdaNumber } = {}) => {
+  if (!(Number(id) > 0)) return { mode: 'none', buttonId: 'button.count', confirmId: 'msg.question.accountDocument.title' };
+  if (Number(pdaNumber) > 0) {
+    return { mode: 'reaccount', buttonId: 'page.otherPurchases.button.reaccount', confirmId: 'page.otherPurchases.msg.reaccount.title' };
+  }
+  return { mode: 'account', buttonId: 'button.count', confirmId: 'msg.question.accountDocument.title' };
+};
 
 export const paymentStatusId = (status) => (['paid', 'pending'].includes(status) ? `page.otherPurchases.paymentStatus.${status}` : null);
 

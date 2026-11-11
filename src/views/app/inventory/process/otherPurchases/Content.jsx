@@ -20,7 +20,7 @@ const OtherPurchases = (props) => {
     formState, formValidation, onInputChange, sendForm, propsToControlPanel, openSearch, setOpenSearch, fnLoadDocument,
     editLock, locked, paymentStatus, pendingAccounting,
     openMsgCancelDocument, setOpenMsgCancelDocument, fnOkCancelDocument,
-    openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument
+    openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument, accountConfirmId
   } = useOtherPurchases({ setLoading });
 
   const { id, documentCode, documentId, typeTax, date, dateOut, typeFp, providerType, purchaseOrderId, workOrderId, providerId, paymentTypeId, cai, invoiceNumber, description, expenseCtaCode, exemptedCertificate, exemptedNumber, exemptedRecord, subtotal, discount, valueExonerated, valueExempt, valueTaxable, tax, freight, otherCharges, total, requestedBy } = formState;
@@ -54,7 +54,7 @@ const OtherPurchases = (props) => {
     open: openMsgAccountDocument,
     setOpen: setOpenMsgAccountDocument,
     fnOnOk: fnOkAccountDocument,
-    title: "msg.question.accountDocument.title"
+    title: accountConfirmId
   }
 
   const amountField = (name, label, value) => (

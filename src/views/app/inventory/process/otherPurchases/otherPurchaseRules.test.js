@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import {
-  AMOUNT_FIELDS, INITIAL_FORM, LOCKABLE_FIELDS, MAX, NOT_LOCKED, buildPayload, calculateTotals, dueDateFor, formFromDocument,
+  AMOUNT_FIELDS, INITIAL_FORM, accountingAction, LOCKABLE_FIELDS, MAX, NOT_LOCKED, buildPayload, calculateTotals, dueDateFor, formFromDocument,
   hasPendingAccounting, isFieldLocked, localToday, lockReasonIds, normalizeEditLock, paymentStatusId, validateOtherPurchase
 } from './otherPurchaseRules';
 
@@ -223,5 +223,24 @@ describe('utilidades', () => {
 
   test('localToday usa el calendario local', () => {
     expect(localToday(new Date(2026, 7, 5, 23, 59))).toBe('2026-08-05');
+  });
+});
+
+describe('accountingAction (SPEC v2-31-sr): qué botón y qué confirmación corresponden', () => {
+  test('sin documento guardado no hay nada que contabilizar', () => {
+    [{ id: 0, pdaNumber: 0 }, { id: '0' }, {}, undefined, { id: null }].forEach((args) => expect(accountingAction(args).mode).toBe('none'));
+  });
+
+  test('sin partida es la primera contabilización con el texto de siempre', () => {
+    expect(accountingAction({ id: 7, pdaNumber: 0 })).toEqual({ mode: 'account', buttonId: 'button.count', confirmId: 'msg.question.accountDocument.title' });
+    expect(accountingAction({ id: 7 }).mode).toBe('account');
+    expect(accountingAction({ id: '7', pdaNumber: '0' }).mode).toBe('account');
+  });
+
+  test('con partida el botón se llama "Re-contabilizar" y la confirmación avisa que se regenera', () => {
+    expect(accountingAction({ id: 7, pdaNumber: 321 })).toEqual({
+      mode: 'reaccount', buttonId: 'page.otherPurchases.button.reaccount', confirmId: 'page.otherPurchases.msg.reaccount.title'
+    });
+    expect(accountingAction({ id: '7', pdaNumber: '321' }).mode).toBe('reaccount');
   });
 });
