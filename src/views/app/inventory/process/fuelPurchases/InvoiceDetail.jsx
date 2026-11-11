@@ -7,16 +7,17 @@ import DateCalendar from '@Components/dateCalendar'
 // import ReactInputMask from 'react-input-mask';
 import { useInvoiceDetail } from './useInvoiceDetail'
 
-const InvoiceDetail = ({ formState, listDocuments, listProviders, listPaymentTypes, listAccounts, onInputChange, onBulkForm, formValidation, sendForm }) => {
+const InvoiceDetail = ({ formState, listDocuments, listProviders, listPaymentTypes, listAccounts, onInputChange, onBulkForm, formValidation, sendForm, processed }) => {
 
-  const { documentId, invoiceDate, invoiceExp, providerId, invoiceCode, paymentTypeId, ctaExpenseId, valSubtotal, valDiscount, valTax, valTotal, notes } = formState;
+  const { documentTypeId, invoiceDate, dueDate, providerId, invoiceNumber, paymentTypeId, expenseCtaCode, subtotal, discount, tax, total, notes } = formState;
 
-  const { onSubtotalChange, onTaxChange, onDiscountChange } = useInvoiceDetail({ onBulkForm, valTax, valDiscount, valSubtotal });
+  const { onSubtotalChange, onTaxChange, onDiscountChange } = useInvoiceDetail({ onBulkForm, tax, discount, subtotal });
 
-  const { documentIdValid, providerIdValid, invoiceCodeValid, paymentTypeIdValid, ctaExpenseIdValid, valTotalValid } = formValidation;
+  const { documentTypeIdValid, providerIdValid, invoiceNumberValid, paymentTypeIdValid, expenseCtaCodeValid, invoiceDateValid, dueDateValid, subtotalValid, discountValid, taxValid, totalValid } = formValidation;
 
   return (
     <>
+      <fieldset disabled={processed} className="border-0 p-0 m-0" style={{ minWidth: 0 }}>
       <Row>
         <Colxx xxs="12">
           <ContainerWithLabel label="page.fuelPurchases.title.invoiceDetail">
@@ -25,18 +26,18 @@ const InvoiceDetail = ({ formState, listDocuments, listProviders, listPaymentTyp
                 <Row>
                   <Colxx xxs="12" xl="6">
                     <SearchSelect
-                      label='select.documentId'
-                      name='documentId'
-                      inputValue={documentId}
+                      label='page.fuelPurchases.label.documentRequired'
+                      name='documentTypeId'
+                      inputValue={documentTypeId}
                       options={listDocuments}
                       onChange={onInputChange}
-                      invalid={sendForm && !!documentIdValid}
-                      feedbackText={sendForm && (documentIdValid || null)}
+                      invalid={sendForm && !!documentTypeIdValid}
+                      feedbackText={sendForm && (documentTypeIdValid || null)}
                     />
                   </Colxx>
                   <Colxx xxs="12" xl="6">
                     <SearchSelect
-                      label='select.providerId'
+                      label='page.fuelPurchases.label.providerRequired'
                       name='providerId'
                       inputValue={providerId}
                       options={listProviders}
@@ -47,21 +48,22 @@ const InvoiceDetail = ({ formState, listDocuments, listProviders, listPaymentTyp
                   </Colxx>
                   <Colxx xxs="12" xl="6">
                     <InputField
-                      name="invoiceCode"
-                      label='input.numInvoice'
-                      value={invoiceCode}
+                      name="invoiceNumber"
+                      label='page.fuelPurchases.label.numInvoiceRequired'
+                      value={invoiceNumber}
                       onChange={onInputChange}
                       type="text"
                       mask="***-***-**-********"
                       maskChar=" "
+                      maxLength={20}
                       // tag={ReactInputMask}
-                      invalid={sendForm && !!invoiceCodeValid}
-                      feedbackText={sendForm && (invoiceCodeValid || null)}
+                      invalid={sendForm && !!invoiceNumberValid}
+                      feedbackText={sendForm && (invoiceNumberValid || null)}
                     />
                   </Colxx>
                   <Colxx xxs="12" xl="6">
                     <SearchSelect
-                      label='select.paymentMethod'
+                      label='page.fuelPurchases.label.paymentMethodRequired'
                       name='paymentTypeId'
                       inputValue={paymentTypeId}
                       options={listPaymentTypes}
@@ -72,13 +74,13 @@ const InvoiceDetail = ({ formState, listDocuments, listProviders, listPaymentTyp
                   </Colxx>
                   <Colxx xxs="12">
                     <SearchSelect
-                      label='select.accountId'
-                      name='ctaExpenseId'
-                      inputValue={ctaExpenseId}
+                      label='page.fuelPurchases.label.accountRequired'
+                      name='expenseCtaCode'
+                      inputValue={expenseCtaCode}
                       options={listAccounts}
                       onChange={onInputChange}
-                      invalid={sendForm && !!ctaExpenseIdValid}
-                      feedbackText={sendForm && (ctaExpenseIdValid || null)}
+                      invalid={sendForm && !!expenseCtaCodeValid}
+                      feedbackText={sendForm && (expenseCtaCodeValid || null)}
                     />
                   </Colxx>
                 </Row>
@@ -88,56 +90,66 @@ const InvoiceDetail = ({ formState, listDocuments, listProviders, listPaymentTyp
                   <Colxx xxs="12" xs="6" sm="12" lg="6">
                     <DateCalendar
                       name="invoiceDate"
-                      label="select.dateInvoice"
+                      label="page.fuelPurchases.label.dateInvoiceRequired"
                       value={invoiceDate}
                       onChange={onInputChange}
+                      invalid={sendForm && !!invoiceDateValid}
+                      feedbackText={sendForm && (invoiceDateValid || null)}
                     />
                   </Colxx>
                   <Colxx xxs="12" xs="6" sm="12" lg="6">
                     <DateCalendar
-                      name="invoiceExp"
-                      label="select.dateExpiration"
-                      value={invoiceExp}
+                      name="dueDate"
+                      label="page.fuelPurchases.label.dateExpirationRequired"
+                      value={dueDate}
                       onChange={onInputChange}
+                      invalid={sendForm && !!dueDateValid}
+                      feedbackText={sendForm && (dueDateValid || null)}
                     />
                   </Colxx>
                   <Colxx xxs="12" xs="6" sm="12" lg="6" xl="4">
                     <InputField
-                      name="valSubtotal"
+                      name="subtotal"
                       label='input.subtotal'
-                      value={valSubtotal}
+                      value={subtotal}
                       onChange={onSubtotalChange}
                       type="text"
+                      invalid={sendForm && !!subtotalValid}
+                      feedbackText={sendForm && (subtotalValid || null)}
                     />
                   </Colxx>
                   <Colxx xxs="12" xs="6" sm="12" lg="6" xl="4">
                     <InputField
-                      name="valDiscount"
+                      name="discount"
                       label='input.discount'
-                      value={valDiscount}
+                      value={discount}
                       onChange={onDiscountChange}
                       type="text"
+                      invalid={sendForm && !!discountValid}
+                      feedbackText={sendForm && (discountValid || null)}
                     />
                   </Colxx>
                   <Colxx xxs="12" xs="6" sm="12" lg="6" xl="4">
                     <InputField
-                      name="valTax"
+                      name="tax"
                       label='input.tax'
-                      value={valTax}
+                      value={tax}
                       onChange={onTaxChange}
                       type="text"
+                      invalid={sendForm && !!taxValid}
+                      feedbackText={sendForm && (taxValid || null)}
                     />
                   </Colxx>
                   <Colxx xxs="12" xs="6" sm="12" lg="6" xl="4">
                     <InputField
-                      name="valTotal"
+                      name="total"
                       label='input.total'
-                      value={valTotal}
+                      value={total}
                       onChange={onInputChange}
                       type="text"
                       disabled
-                      invalid={sendForm && !!valTotalValid}
-                      feedbackText={sendForm && (valTotalValid || null)}
+                      invalid={sendForm && !!totalValid}
+                      feedbackText={sendForm && (totalValid || null)}
                     />
                   </Colxx>
                 </Row>
@@ -146,6 +158,7 @@ const InvoiceDetail = ({ formState, listDocuments, listProviders, listPaymentTyp
           </ContainerWithLabel>
         </Colxx>
       </Row>
+      </fieldset>
       <Row>
         <Colxx xxs="12">
           <InputField

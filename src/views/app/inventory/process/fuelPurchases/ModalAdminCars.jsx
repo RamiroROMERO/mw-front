@@ -49,6 +49,7 @@ const ModalAdminCars = ({setOpen, data}) => {
                   value={code}
                   onChange={onInputChange}
                   type="text"
+                  maxLength={10}
                   invalid={sendForm && !!codeValid}
                   feedbackText={sendForm && (codeValid || null)}
                 />

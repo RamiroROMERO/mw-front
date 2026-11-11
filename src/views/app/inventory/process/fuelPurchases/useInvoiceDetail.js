@@ -1,26 +1,26 @@
 import { validFloat } from '@Helpers/Utils';
 
-export const useInvoiceDetail = ({ onBulkForm, valTax, valDiscount, valSubtotal }) => {
+export const useInvoiceDetail = ({ onBulkForm, tax, discount, subtotal }) => {
 
   const onSubtotalChange = e => {
     const newSubtotal = e.target.value;
 
-    const newTotal = validFloat(newSubtotal) + validFloat(valTax) - validFloat(valDiscount);
-    onBulkForm({ valSubtotal: newSubtotal, valTotal: newTotal });
+    const newTotal = validFloat(newSubtotal) + validFloat(tax) - validFloat(discount);
+    onBulkForm({ subtotal: newSubtotal, total: newTotal });
   }
 
   const onTaxChange = e => {
     const newTax = e.target.value;
 
-    const newTotal = validFloat(valSubtotal) + validFloat(newTax) - validFloat(valDiscount);
-    onBulkForm({ valTax: newTax, valTotal: newTotal });
+    const newTotal = validFloat(subtotal) + validFloat(newTax) - validFloat(discount);
+    onBulkForm({ tax: newTax, total: newTotal });
   }
 
   const onDiscountChange = e => {
     const newDiscount = e.target.value;
 
-    const newTotal = validFloat(valSubtotal) + validFloat(valTax) - validFloat(newDiscount);
-    onBulkForm({ valDiscount: newDiscount, valTotal: newTotal });
+    const newTotal = validFloat(subtotal) + validFloat(tax) - validFloat(newDiscount);
+    onBulkForm({ discount: newDiscount, total: newTotal });
   }
 
   return (

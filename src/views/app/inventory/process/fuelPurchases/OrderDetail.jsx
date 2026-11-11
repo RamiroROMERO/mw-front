@@ -6,15 +6,16 @@ import DateCalendar from '@Components/dateCalendar'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { useOrderDetail } from './useOrderDetail'
 
-const OrderDetail = ({formState, listCars, listDrivers, listStores, listProducts, onInputChange, onBulkForm, formValidation, sendForm}) => {
+const OrderDetail = ({formState, listCars, listDrivers, listStores, listProducts, onInputChange, onBulkForm, formValidation, sendForm, processed}) => {
 
-  const {date, qtyKM, orderNumber, machineId, plate, driverId, concept, storeId, productId, qtyGasDessel, qtyGasGasoline, qtyGasOil, qtyGasOthers} = formState;
+  const {date, kilometers, orderNumber, machineId, plate, driverId, concept, storeId, productCode, qtyDiesel, qtyGasoline, qtyOil, qtyOthers} = formState;
 
   const {listFilterProducts, onStoreChange, onMachineChange} = useOrderDetail({onBulkForm, listProducts, listCars});
 
-  const {dateValid, machineIdValid, driverIdValid, conceptValid} = formValidation;
+  const {dateValid, machineIdValid, driverIdValid, conceptValid, kilometersValid, orderNumberValid, qtyDieselValid, qtyGasolineValid, qtyOilValid, qtyOthersValid, productCodeValid} = formValidation;
 
   return (
+    <fieldset disabled={processed} className="border-0 p-0 m-0" style={{ minWidth: 0 }}>
     <Row>
       <Colxx xxs="12">
         <ContainerWithLabel label="page.fuelPurchases.title.orderDetail">
@@ -24,7 +25,7 @@ const OrderDetail = ({formState, listCars, listDrivers, listStores, listProducts
                 <Colxx xxs="12" xs="8" lg="4">
                   <DateCalendar
                     name="date"
-                    label="select.date"
+                    label="page.fuelPurchases.label.dateRequired"
                     value={date}
                     onChange={onInputChange}
                     invalid={sendForm && !!dateValid}
@@ -33,16 +34,18 @@ const OrderDetail = ({formState, listCars, listDrivers, listStores, listProducts
                 </Colxx>
                 <Colxx xxs="12" xs="4" lg="3">
                   <InputField
-                    name="qtyKM"
+                    name="kilometers"
                     label='input.kilometers'
-                    value={qtyKM}
+                    value={kilometers}
                     onChange={onInputChange}
                     type="text"
+                    invalid={sendForm && !!kilometersValid}
+                    feedbackText={sendForm && (kilometersValid || null)}
                   />
                 </Colxx>
                 <Colxx xxs="12" xs="8" lg="5">
                   <SearchSelect
-                    label='select.carId'
+                    label='page.fuelPurchases.label.carRequired'
                     name='machineId'
                     inputValue={machineId}
                     options={listCars}
@@ -63,7 +66,7 @@ const OrderDetail = ({formState, listCars, listDrivers, listStores, listProducts
                 </Colxx>
                 <Colxx xxs="12" xs="12" lg="8" xl="4">
                   <SearchSelect
-                    label='select.driverId'
+                    label='page.fuelPurchases.label.driverRequired'
                     name='driverId'
                     inputValue={driverId}
                     options={listDrivers}
@@ -75,10 +78,11 @@ const OrderDetail = ({formState, listCars, listDrivers, listStores, listProducts
                 <Colxx xxs="12" xs="12" lg="12" xl="5">
                   <InputField
                     name="concept"
-                    label='input.concept'
+                    label='page.fuelPurchases.label.conceptRequired'
                     value={concept}
                     onChange={onInputChange}
                     type="text"
+                    maxLength={80}
                     invalid={sendForm && !!conceptValid}
                     feedbackText={sendForm && (conceptValid || null)}
                   />
@@ -95,10 +99,12 @@ const OrderDetail = ({formState, listCars, listDrivers, listStores, listProducts
                 <Colxx xxs="12" xs="12" lg="6">
                   <SearchSelect
                     label='select.productId'
-                    name='productId'
-                    inputValue={productId}
+                    name='productCode'
+                    inputValue={productCode}
                     options={listFilterProducts}
                     onChange={onInputChange}
+                    invalid={sendForm && !!productCodeValid}
+                    feedbackText={sendForm && (productCodeValid || null)}
                   />
                 </Colxx>
               </Row>
@@ -112,44 +118,54 @@ const OrderDetail = ({formState, listCars, listDrivers, listStores, listProducts
                     value={orderNumber}
                     onChange={onInputChange}
                     type="text"
+                    invalid={sendForm && !!orderNumberValid}
+                    feedbackText={sendForm && (orderNumberValid || null)}
                   />
                 </Colxx>
               </Row>
               <Row>
                 <Colxx xxs="12" xs="4" sm="12" xl="6">
                   <InputField
-                    name="qtyGasDessel"
+                    name="qtyDiesel"
                     label='input.diesel'
-                    value={qtyGasDessel}
+                    value={qtyDiesel}
                     onChange={onInputChange}
                     type="text"
+                    invalid={sendForm && !!qtyDieselValid}
+                    feedbackText={sendForm && (qtyDieselValid || null)}
                   />
                 </Colxx>
                 <Colxx xxs="12" xs="4" sm="12" xl="6">
                   <InputField
-                    name="qtyGasGasoline"
+                    name="qtyGasoline"
                     label='input.fuel'
-                    value={qtyGasGasoline}
+                    value={qtyGasoline}
                     onChange={onInputChange}
                     type="text"
+                    invalid={sendForm && !!qtyGasolineValid}
+                    feedbackText={sendForm && (qtyGasolineValid || null)}
                   />
                 </Colxx>
                 <Colxx xxs="12" xs="4" sm="12" xl="6">
                   <InputField
-                    name="qtyGasOil"
+                    name="qtyOil"
                     label='input.oil'
-                    value={qtyGasOil}
+                    value={qtyOil}
                     onChange={onInputChange}
                     type="text"
+                    invalid={sendForm && !!qtyOilValid}
+                    feedbackText={sendForm && (qtyOilValid || null)}
                   />
                 </Colxx>
                 <Colxx xxs="12" xs="4" sm="12" xl="6">
                   <InputField
-                    name="qtyGasOthers"
+                    name="qtyOthers"
                     label='input.others'
-                    value={qtyGasOthers}
+                    value={qtyOthers}
                     onChange={onInputChange}
                     type="text"
+                    invalid={sendForm && !!qtyOthersValid}
+                    feedbackText={sendForm && (qtyOthersValid || null)}
                   />
                 </Colxx>
               </Row>
@@ -158,6 +174,7 @@ const OrderDetail = ({formState, listCars, listDrivers, listStores, listProducts
         </ContainerWithLabel>
       </Colxx>
     </Row>
+    </fieldset>
   )
 }
 

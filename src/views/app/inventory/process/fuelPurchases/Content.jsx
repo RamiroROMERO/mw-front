@@ -10,10 +10,11 @@ import InvoiceDetail from './InvoiceDetail';
 import ModalAdminCars from './ModalAdminCars';
 import ModalAdminDrivers from './ModalAdminDrivers';
 import ModalViewFuelPurchases from './ModalViewFuelPurchases';
+import ProcessedNotice from './ProcessedNotice';
 
 const FuelPurchases = ({ setLoading }) => {
 
-  const { propsToControlPanel, formState, listCars, listDrivers, listStores, listProducts, listDocuments, listProviders, listPaymentTypes, listAccounts, onInputChange, onBulkForm, formValidation, sendForm, openModalAdminCars, setOpenModalAdminCars, openModalAdminDrivers, setOpenModalAdminDrivers, fnGetDataCars, fnGetDataDrivers, dataCars, dataDrivers, dataFuelPurchases, openModalFuelPurchases, setOpenModalFuelPurchases, openMsgQuestion, setOpenMsgQuestion, fnOkDeleteFuelPurchase, openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument, onResetForm } = useFuelPurchase({ setLoading });
+  const { propsToControlPanel, formState, listCars, listDrivers, listStores, listProducts, listDocuments, listProviders, listPaymentTypes, listAccounts, onInputChange, onBulkForm, formValidation, sendForm, openModalAdminCars, setOpenModalAdminCars, openModalAdminDrivers, setOpenModalAdminDrivers, fnGetDataCars, fnGetDataDrivers, dataCars, dataDrivers, dataFuelPurchases, openModalFuelPurchases, setOpenModalFuelPurchases, openMsgQuestion, setOpenMsgQuestion, fnOkDeleteFuelPurchase, openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument, onResetForm, processed } = useFuelPurchase({ setLoading });
 
   const propsToOrderDetail = {
     formState,
@@ -24,7 +25,8 @@ const FuelPurchases = ({ setLoading }) => {
     onInputChange,
     onBulkForm,
     formValidation,
-    sendForm
+    sendForm,
+    processed
   }
 
   const propsToInvoiceDetail = {
@@ -36,7 +38,8 @@ const FuelPurchases = ({ setLoading }) => {
     onInputChange,
     onBulkForm,
     formValidation,
-    sendForm
+    sendForm,
+    processed
   }
 
   const propsToModalAdminCars = {
@@ -73,6 +76,7 @@ const FuelPurchases = ({ setLoading }) => {
     maxWidth: 'lg',
     data: {
       dataFuelPurchases,
+      listDocuments,
       onBulkForm
     }
   }
@@ -99,6 +103,7 @@ const FuelPurchases = ({ setLoading }) => {
             <CardBody>
               <ControlPanel {...propsToControlPanel} />
               <Separator className="mt-2 mb-5" />
+              <ProcessedNotice processed={processed} pdaNumber={formState.pdaNumber} />
               <OrderDetail {...propsToOrderDetail} />
               <InvoiceDetail {...propsToInvoiceDetail} />
             </CardBody>

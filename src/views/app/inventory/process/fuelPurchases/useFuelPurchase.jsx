@@ -1,8 +1,9 @@
 import createNotification from '@Containers/ui/Notifications';
-import { request, buildUrl } from '@Helpers/core';
+import { request, notifyError } from '@Helpers/core';
 import { formatNumber, validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { buildSavePayload, isProcessed, toFormValidation, validateFuelPurchase } from './fuelPurchaseRules'
 
 export const useFuelPurchase = ({ setLoading }) => {
   const [listCars, setListCars] = useState([]);
@@ -24,52 +25,41 @@ export const useFuelPurchase = ({ setLoading }) => {
   const [openMsgAccountDocument, setOpenMsgAccountDocument] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
-  const fuelPurchaseValid = {
-    date: [(val) => val !== "", "msg.required.input.date"],
-    machineId: [(val) => validInt(val) > 0, "msg.required.select.carId"],
-    driverId: [(val) => validInt(val) > 0, "msg.required.select.driverId"],
-    concept: [(val) => val !== "", "msg.required.input.concept"],
-    documentId: [(val) => validInt(val) > 0, "msg.required.select.typeDocument"],
-    providerId: [(val) => validInt(val) > 0, "msg.required.select.provider"],
-    // Legacy: Len(cNumFac) < 19 es error (exige exactamente 19, el largo del mask
-    // ***-***-**-********) y Rat('.',cNumFac) > 0 rechaza puntos.
-    invoiceCode: [(val) => val.length === 19 && !val.includes('.'), "msg.required.input.numInvoice"],
-    paymentTypeId: [(val) => validInt(val) > 0, "msg.required.select.paymentMethod"],
-    ctaExpenseId: [(val) => validInt(val) > 0, "msg.required.input.account"],
-    valTotal: [(val) => validInt(val) > 0, "msg.required.input.totalInvoice"]
-  }
-
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
+  const { formState, onInputChange, onResetForm, onBulkForm } = useForm({
     id: 0,
-    documentId: 0,
+    documentTypeId: 0,
     date: '',
     orderNumber: 0,
     machineId: 0,
     plate: '',
     driverId: 0,
-    qtyKM: 0,
+    kilometers: 0,
     concept: '',
-    qtyGasDessel: 0,
-    qtyGasGasoline: 0,
-    qtyGasOil: 0,
-    qtyGasOthers: 0,
+    qtyDiesel: 0,
+    qtyGasoline: 0,
+    qtyOil: 0,
+    qtyOthers: 0,
     providerId: 0,
     storeId: 0,
-    productId: '',
-    invoiceCode: '',
+    productCode: '',
+    invoiceNumber: '',
     invoiceDate: '',
-    invoiceExp: '',
+    dueDate: '',
     paymentTypeId: 0,
-    ctaExpenseId: 0,
-    valSubtotal: 0,
-    valDiscount: 0,
-    valTax: 0,
-    valTotal: 0,
+    expenseCtaCode: '',
+    subtotal: 0,
+    discount: 0,
+    tax: 0,
+    total: 0,
     pdaNumber: 0,
     notes: ''
-  }, fuelPurchaseValid);
+  });
 
-  const { id, documentId, date, orderNumber, machineId, driverId, qtyKM, concept, qtyGasDessel, qtyGasGasoline, qtyGasOil, qtyGasOthers, providerId, storeId, productId, invoiceCode, invoiceDate, invoiceExp, paymentTypeId, ctaExpenseId, valSubtotal, valDiscount, valTax, valTotal, pdaNumber, notes } = formState;
+  // Las mismas reglas del DTO del back (fuelPurchaseRules.js); se muestran por campo al intentar guardar.
+  const fieldErrors = useMemo(() => validateFuelPurchase(formState), [formState]);
+  const formValidation = useMemo(() => toFormValidation(fieldErrors), [fieldErrors]);
+
+  const { id, documentTypeId } = formState;
 
   const fnNewFuelPurchase = () => {
     onResetForm();
@@ -80,8 +70,8 @@ export const useFuelPurchase = ({ setLoading }) => {
     setLoading(true);
     request.GET(`inventory/process/purchaseGas`, (resp) => {
       const purchases = resp.data.map((item) => {
-        item.driver = item.gasDriver.name
-        item.valueTotal = formatNumber(item.valTotal, '', 2)
+        item.driver = item.driverData?.name ?? ''
+        item.valueTotal = formatNumber(item.total, '', 2)
         return item;
       });
       setdataFuelPurchases(purchases);
@@ -93,92 +83,42 @@ export const useFuelPurchase = ({ setLoading }) => {
     });
   }
 
+  // Una orden procesada (con partida) solo admite cambiar las observaciones; el back decide (purchaseGas.locked.processed) y el
+  // duplicado de proveedor + factura lo valida él también. Los rechazos los muestra request.POST/PUT con su mensaje real.
+  const processed = isProcessed(formState);
+
   const fnSaveFuelPurchase = () => {
     setSendForm(true);
 
-    // Legacy btnSaveDocument.Click: "Esta Orden ya fue Procesada y no se Puede Hacer
-    // Cambios en el Documento" — bloquea edición una vez contabilizado.
-    if (validInt(pdaNumber) > 0) {
-      createNotification('error', 'msg.error.purchase.alreadyAccounted', 'alert.error.title');
-      return;
-    }
-
-    if (!isFormValid) {
-      return;
-    }
-
-    if (validInt(qtyGasDessel) === 0 && validInt(qtyGasGasoline) === 0 && validInt(qtyGasOil) === 0 && validInt(qtyGasOthers) === 0) {
-      createNotification('warning', 'msg.required.input.fuel', 'alert.warning.title');
-      return;
-    }
-
-    const filterDocs = listDocuments.find(item => item.value === documentId);
-    const documentCode = filterDocs ? filterDocs.code : "";
-
-    const newData = {
-      documentCode,
-      documentId,
-      date,
-      orderNumber,
-      machineId,
-      driverId,
-      qtyKM,
-      concept,
-      qtyGasDessel,
-      qtyGasGasoline,
-      qtyGasOil,
-      qtyGasOthers,
-      providerId,
-      storeId,
-      productCode: productId,
-      invoiceCode,
-      invoiceDate: invoiceDate !== "" ? invoiceDate : "1900-01-01",
-      invoiceExp: invoiceExp !== "" ? invoiceExp : "1900-01-01",
-      paymentTypeId,
-      ctaExpenseId,
-      valSubtotal,
-      valDiscount,
-      valTax,
-      valTotal,
-      pdaNumber,
-      notes
-    }
-
-    const fnPersist = () => {
-      if (id === 0) {
-        setLoading(true);
-        request.POST('inventory/process/purchaseGas', newData, (resp) => {
-          onInputChange({ target: { name: 'id', value: resp.data.id } });
-          setSendForm(false);
-          setLoading(false);
-        }, (err) => {
-          setLoading(false);
-        });
-      } else {
-        setLoading(true);
-        request.PUT(`inventory/process/purchaseGas/${id}`, newData, () => {
-          setSendForm(false);
-          setLoading(false);
-        }, (err) => {
-          setLoading(false);
-        });
+    // Falta de combustible no tiene campo propio: se avisa aparte, como en el legacy ("Falta Tipo de Combustible").
+    // Con la orden procesada solo viajan las observaciones, así que no se validan los demás campos.
+    if (!processed) {
+      if (fieldErrors.qtyDiesel) createNotification('warning', fieldErrors.qtyDiesel, 'alert.warning.title');
+      if (Object.keys(fieldErrors).length > 0) {
+        return;
       }
     }
 
-    // Legacy btnSaveDocument.Click: valida que la factura no esté ya registrada
-    // (WHERE CodProv = nCodProv AND NumFac = cNumFac sobre Cont_Combustible), solo al crear.
+    const filterDocs = listDocuments.find(item => item.value === documentTypeId);
+    const documentCode = filterDocs ? filterDocs.code : "";
+    const newData = buildSavePayload(formState, documentCode);
+
+    setLoading(true);
     if (id === 0) {
-      setLoading(true);
-      request.GET(buildUrl('inventory/process/purchaseGas', { providerId, invoiceCode }), (resp) => {
+      request.POST('inventory/process/purchaseGas', newData, (resp) => {
+        onInputChange({ target: { name: 'id', value: resp.data.id } });
+        setSendForm(false);
         setLoading(false);
-        if (Array.isArray(resp.data) && resp.data.length > 0) {
-          createNotification('error', 'msg.error.purchase.documentAlreadyRegistered', 'alert.error.title');
-          return;
-        }
-        fnPersist();
-      }, () => { setLoading(false); });
+      }, () => {
+        setLoading(false);
+      });
     } else {
-      fnPersist();
+      request.PUT(`inventory/process/purchaseGas/${id}`, newData, () => {
+        setSendForm(false);
+        setLoading(false);
+      }, () => {
+        setLoading(false);
+      });
     }
   }
 
@@ -203,12 +143,15 @@ export const useFuelPurchase = ({ setLoading }) => {
   const fnOkDeleteFuelPurchase = () => {
     setOpenMsgQuestion(false);
     setLoading(true);
-    request.POST(`inventory/process/purchaseGas/${id}/cancel`, {}, () => {
+    // SPEC v2-33-sr: DELETE con confirmación. Un rechazo del back (pagos aplicados, período cerrado) muestra su mensaje real y la
+    // orden se queda en pantalla.
+    request.DELETE(`inventory/process/purchaseGas/${id}`, () => {
+      createNotification('success', 'msg.delete.record', 'alert.success.title');
       onResetForm();
+      setSendForm(false);
       setLoading(false);
     }, (resp) => {
-      const messageKey = resp?.messages?.[0]?.message || 'msg.save.record.error';
-      createNotification('error', messageKey, 'alert.error.title');
+      notifyError(resp, 'msg.delete.record.error');
       setLoading(false);
     }, false);
   }
@@ -232,8 +175,7 @@ export const useFuelPurchase = ({ setLoading }) => {
       createNotification('success', 'msg.success.accountDocument', 'alert.success.title');
       setLoading(false);
     }, (resp) => {
-      const messageKey = resp?.messages?.[0]?.message || 'msg.save.record.error';
-      createNotification('error', messageKey, 'alert.error.title');
+      notifyError(resp, 'msg.save.record.error');
       setLoading(false);
     }, false);
   }
@@ -469,6 +411,7 @@ export const useFuelPurchase = ({ setLoading }) => {
       openMsgAccountDocument,
       setOpenMsgAccountDocument,
       fnOkAccountDocument,
+      processed,
       onResetForm
     }
   )
