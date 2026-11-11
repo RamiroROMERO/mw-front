@@ -5032,7 +5032,9 @@ const enLang = {
   "page.otherPurchases.locked.noticeNoReasons": "This invoice has payments or advances. The provider, invoice number, dates, payment type and amounts cannot be changed.",
   "page.otherPurchases.locked.reason.payments": "payments applied",
   "page.otherPurchases.locked.reason.advances": "advances distributed",
-  "page.otherPurchases.pending.notice": "The expense account of an already posted document changed: saving does not regenerate the journal entry, so there are changes pending to post."
+  "page.otherPurchases.pending.notice": "The expense account of an already posted document changed: saving does not regenerate the journal entry. Use Re-post to update it.",
+  "page.otherPurchases.button.reaccount": "Re-post",
+  "page.otherPurchases.msg.reaccount.title": "Are you sure you want to re-post this document? Its journal entry will be regenerated with the same number."
 };
 
 export default enLang;

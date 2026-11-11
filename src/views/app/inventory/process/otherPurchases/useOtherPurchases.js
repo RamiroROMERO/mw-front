@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useForm } from '@Hooks';
-import { request } from '@Helpers/core';
+import { request, notifyError } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 import { validInt } from '@Helpers/Utils';
 import { useOtherPurchaseAccounting } from './useOtherPurchaseAccounting';
@@ -13,7 +13,7 @@ const OTHER_PURCHASES_URL = 'inventory/process/otherPurchases';
 
 // Legacy inv_compras_others.sc2 ("Facturas de Costos y Gastos"): documento de gasto (isExpense=1) independiente, sin líneas de
 // producto. SPEC v2-30-sr: se guarda en su propio módulo del back (un solo POST o PUT en una transacción, con el correlativo, el
-// período, las cuentas bloqueadas y la auditoría). Contabilizar y Anular siguen usando las rutas de Compras (spec B).
+// período, las cuentas bloqueadas y la auditoría). SPEC v2-31-sr: Contabilizar, Re-contabilizar y Anular también tienen ruta propia.
 export const useOtherPurchases = ({ setLoading }) => {
 
   const [listDocuments, setListDocuments] = useState([]);
@@ -47,7 +47,9 @@ export const useOtherPurchases = ({ setLoading }) => {
     onBulkForm(data);
     if (validInt(data.pdaNumber) > 0) setPostedAccountCode(savedAccountCode.current);
   };
-  const { openMsgAccountDocument, setOpenMsgAccountDocument, fnAccountDocument, fnOkAccountDocument } = useOtherPurchaseAccounting({ setLoading, id, setBulkForm: onAccounted });
+  const {
+    openMsgAccountDocument, setOpenMsgAccountDocument, fnAccountDocument, fnOkAccountDocument, accountButtonId, accountConfirmId
+  } = useOtherPurchaseAccounting({ setLoading, id, pdaNumber, setBulkForm: onAccounted });
 
   // Subtotal y total salen de los importes (legacy fncalculatetotal) y solo se recalculan cuando el usuario cambia un importe:
   // al cargar un documento histórico se respetan los valores guardados.
@@ -139,16 +141,17 @@ export const useOtherPurchases = ({ setLoading }) => {
     setOpenMsgCancelDocument(true);
   }
 
+  // SPEC v2-31-sr: DELETE del módulo (exige fn_delete y 11.01.007). Un rechazo (pagos, anticipos, período cerrado) muestra el mensaje
+  // real del back y el documento se queda en pantalla.
   const fnOkCancelDocument = () => {
     setLoading(true);
-    request.POST(`inventory/process/purchases/${id}/cancel`, {}, () => {
+    request.DELETE(`${OTHER_PURCHASES_URL}/${validInt(id)}`, () => {
       notification('success', 'msg.success.cancelPurchase', 'alert.success.title');
       setOpenMsgCancelDocument(false);
       setLoading(false);
       fnNewDocument();
     }, (resp) => {
-      const messageKey = resp?.messages?.[0]?.message || 'msg.save.record.error';
-      notification('error', messageKey, 'alert.error.title');
+      notifyError(resp, 'msg.delete.record.error');
       setOpenMsgCancelDocument(false);
       setLoading(false);
     }, false);
@@ -161,7 +164,7 @@ export const useOtherPurchases = ({ setLoading }) => {
     fnCancel: fnCancelDocument,
     buttonsHome: [
       {
-        title: "button.count",
+        title: accountButtonId,
         icon: "bi bi-journal-check",
         onClick: fnAccountDocument
       },
@@ -277,6 +280,7 @@ export const useOtherPurchases = ({ setLoading }) => {
     fnOkCancelDocument,
     openMsgAccountDocument,
     setOpenMsgAccountDocument,
-    fnOkAccountDocument
+    fnOkAccountDocument,
+    accountConfirmId
   }
 }

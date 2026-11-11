@@ -162,6 +162,8 @@
     "otherPurchase.provider.invalid",
     "otherPurchase.total.mismatch",
     "otherPurchase.useModule",
+    "otherPurchase.void.hasAdvances",
+    "otherPurchase.void.hasPayments",
     "otherPurchase.workOrder.invalid",
     "pagination.invalid",
     "paymentMethods.required",

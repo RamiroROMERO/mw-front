@@ -5029,7 +5029,9 @@ const esLang = {
   "page.otherPurchases.locked.noticeNoReasons": "Esta factura tiene pagos o anticipos. No se pueden cambiar el proveedor, el número de factura, las fechas, la forma de pago ni los importes.",
   "page.otherPurchases.locked.reason.payments": "pagos aplicados",
   "page.otherPurchases.locked.reason.advances": "anticipos distribuidos",
-  "page.otherPurchases.pending.notice": "Cambió la cuenta de gasto de un documento ya contabilizado: guardar no regenera la partida, quedan cambios pendientes de contabilizar."
+  "page.otherPurchases.pending.notice": "Cambió la cuenta de gasto de un documento ya contabilizado: guardar no regenera la partida. Use Re-contabilizar para actualizarla.",
+  "page.otherPurchases.button.reaccount": "Re-contabilizar",
+  "page.otherPurchases.msg.reaccount.title": "¿Está seguro que desea re-contabilizar este documento? Se regenerará su partida contable con el mismo número."
 };
 
 export default esLang;
