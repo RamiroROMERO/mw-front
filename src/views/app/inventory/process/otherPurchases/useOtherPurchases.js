@@ -3,10 +3,11 @@ import { useForm } from '@Hooks';
 import { request, notifyError } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 import { validInt } from '@Helpers/Utils';
+import { printDocument } from '@Helpers/printDocument';
 import { useOtherPurchaseAccounting } from './useOtherPurchaseAccounting';
 import {
   AMOUNT_FIELDS, INITIAL_FORM, NOT_LOCKED, buildPayload, calculateTotals, dueDateFor, formFromDocument, hasPendingAccounting,
-  isFieldLocked, normalizeEditLock, validateOtherPurchase
+  isFieldLocked, normalizeEditLock, printOptions, validateOtherPurchase
 } from './otherPurchaseRules';
 
 const OTHER_PURCHASES_URL = 'inventory/process/otherPurchases';
@@ -157,10 +158,16 @@ export const useOtherPurchases = ({ setLoading }) => {
     }, false);
   }
 
+  // SPEC v2-32-sr: se imprime lo GUARDADO en DB por GET; sin factura guardada avisa "guarde primero" sin llamar al back.
+  const fnPrintDocument = () => {
+    printDocument({ ...printOptions(id), setLoading });
+  }
+
   const propsToControlPanel = {
     fnNew: fnNewDocument,
     fnSearch: fnSearchDocument,
     fnSave: fnSaveDocument,
+    fnPrint: fnPrintDocument,
     fnCancel: fnCancelDocument,
     buttonsHome: [
       {

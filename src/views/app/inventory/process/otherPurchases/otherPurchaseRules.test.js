@@ -1,8 +1,10 @@
 import { describe, expect, test } from 'vitest';
 import {
   AMOUNT_FIELDS, INITIAL_FORM, accountingAction, LOCKABLE_FIELDS, MAX, NOT_LOCKED, buildPayload, calculateTotals, dueDateFor, formFromDocument,
-  hasPendingAccounting, isFieldLocked, localToday, lockReasonIds, normalizeEditLock, paymentStatusId, validateOtherPurchase
+  hasPendingAccounting, isFieldLocked, localToday, lockReasonIds, normalizeEditLock, paymentStatusId, printOptions, PRINT_FILE_NAME,
+  PRINT_PATH, validateOtherPurchase
 } from './otherPurchaseRules';
+import { buildPrintRequest, canPrint } from '@Helpers/printDocument';
 
 const TODAY = '2026-08-20';
 const valid = () => ({
@@ -242,5 +244,23 @@ describe('accountingAction (SPEC v2-31-sr): qué botón y qué confirmación cor
       mode: 'reaccount', buttonId: 'page.otherPurchases.button.reaccount', confirmId: 'page.otherPurchases.msg.reaccount.title'
     });
     expect(accountingAction({ id: '7', pdaNumber: '321' }).mode).toBe('reaccount');
+  });
+});
+
+describe('impresión (SPEC v2-32-sr)', () => {
+  test('imprime por GET a inventory/process/otherPurchases/:id/print, sin cuerpo ni parámetros', () => {
+    expect(PRINT_PATH).toBe('inventory/process/otherPurchases');
+    expect(buildPrintRequest(printOptions(812))).toEqual({ url: 'inventory/process/otherPurchases/812/print', params: undefined });
+  });
+
+  test('el archivo se llama Factura de Costos y Gastos.pdf', () => {
+    expect(PRINT_FILE_NAME).toBe('Factura de Costos y Gastos.pdf');
+    expect(printOptions(812)).toEqual({ path: PRINT_PATH, id: 812, fileName: PRINT_FILE_NAME });
+  });
+
+  test('una factura nueva sin guardar (id 0) no se puede imprimir: avisa "guarde primero" sin llamar al back', () => {
+    expect(canPrint(INITIAL_FORM.id)).toBe(false);
+    expect(canPrint(0)).toBe(false);
+    expect(canPrint(812)).toBe(true);
   });
 });
