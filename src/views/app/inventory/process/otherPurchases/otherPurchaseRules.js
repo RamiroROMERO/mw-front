@@ -160,3 +160,9 @@ export const paymentStatusId = (status) => (['paid', 'pending'].includes(status)
 
 // Con Contado en un documento nuevo el vencimiento es la fecha del documento (el back exige vencimiento >= fecha en ambos tipos).
 export const dueDateFor = ({ id, typeFp, date, dateOut }) => (Number(id) === 0 && Number(typeFp) === CASH ? date : dateOut);
+
+// SPEC v2-32-sr: la impresión es un GET sin cuerpo a `<ruta>/:id/print` y el back imprime lo GUARDADO (el formato lo elige por
+// `pdaNumber`). Aquí solo se fijan la ruta y el nombre del archivo; el aviso de "guarde primero" lo da `printDocument`.
+export const PRINT_PATH = 'inventory/process/otherPurchases';
+export const PRINT_FILE_NAME = 'Factura de Costos y Gastos.pdf';
+export const printOptions = (id) => ({ path: PRINT_PATH, id, fileName: PRINT_FILE_NAME });
