@@ -8,10 +8,10 @@ export const useAdminCars = ({ setLoading, fnGetDataCars, dataCars }) => {
   const [openMsgDeleteCar, setOpenMsgDeleteCar] = useState(false);
 
   const validCars = {
-    name: [(val) => val !== "", "msg.required.input.name"],
-    code: [(val) => val !== "", "msg.required.input.plate"],
-    internalCode: [(val) => val !== "", "msg.required.input.code"],
-    typeGas: [(val) => validInt(val) > 0, "msg.required.select.fuelType"]
+    name: [(val) => val !== "" && val.length <= 50, "msg.required.input.name"],
+    code: [(val) => String(val ?? '').length <= 10, "page.fuelPurchases.error.tooLong"],
+    internalCode: [(val) => val !== "" && val.length <= 10, "msg.required.input.code"],
+    typeGas: [(val) => [1, 2].includes(validInt(val)), "msg.required.select.fuelType"]
   }
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({

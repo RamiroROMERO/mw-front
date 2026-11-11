@@ -23,7 +23,7 @@ export const useOrderDetail = ({ onBulkForm, listProducts, listCars }) => {
 
     const filterMachine = listCars.find(item => item.value === machine);
 
-    onBulkForm({ machineId: machine, plate: filterMachine.code });
+    onBulkForm({ machineId: machine, plate: filterMachine?.code ?? '' });
   }
 
   useEffect(() => {

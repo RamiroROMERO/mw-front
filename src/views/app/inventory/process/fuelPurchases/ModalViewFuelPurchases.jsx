@@ -3,13 +3,13 @@ import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { IntlMessages } from '@Helpers/Utils'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import ReactTable from '@Components/reactTable'
+import { formFromPurchase } from './fuelPurchaseRules'
 
 const ModalViewFuelPurchases = ({setOpen, data}) => {
-  const {dataFuelPurchases, onBulkForm} = data;
+  const {dataFuelPurchases, listDocuments, onBulkForm} = data;
 
   const fnViewPurchase = (item)=>{
-    item.plate = item.gasMachine?item.gasMachine.code:''
-    onBulkForm(item);
+    onBulkForm(formFromPurchase(item, listDocuments));
     setOpen(false);
   }
 
@@ -28,7 +28,7 @@ const ModalViewFuelPurchases = ({setOpen, data}) => {
       },
       {
         text: IntlMessages("table.column.noInvoice"),
-        dataField: "invoiceCode",
+        dataField: "invoiceNumber",
         headerStyle: {width: "15%"}
       },
       {

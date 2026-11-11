@@ -8,7 +8,7 @@ export const useAdminDrivers = ({ setLoading, fnGetDataDrivers, dataDrivers }) =
   const [openMsgDeleteDriver, setOpenMsgDeleteDriver] = useState(false);
 
   const validDrivers = {
-    name: [(val) => val !== "", "msg.required.input.name"],
+    name: [(val) => val !== "" && val.length <= 50, "msg.required.input.name"],
     code: [(val) => val !== "", "msg.required.input.code"]
   }
 
