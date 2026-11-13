@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { buildPayload, buildSavePayload, calculateTotal, formFromPurchase, isProcessed, toFormValidation, validateFuelPurchase } from './fuelPurchaseRules';
+import { buildPayload, buildSavePayload, calculateTotal, formFromPurchase, isProcessed, PRINT_FILE_NAME, PRINT_PATH, printOptions, toFormValidation, validateFuelPurchase } from './fuelPurchaseRules';
+import { buildPrintRequest, canPrint } from '@Helpers/printDocument';
 
 const TODAY = '2026-11-11';
 const VALID = {
@@ -143,5 +144,22 @@ describe('orden procesada (SPEC v2-33-sr)', () => {
   test('el cuerpo nunca incluye total, pdaNumber, state ni documentId', () => {
     const payload = buildSavePayload({ ...VALID, pdaNumber: 0, total: 1, state: 1, documentId: 9 }, 'CMB');
     ['total', 'pdaNumber', 'state', 'documentId'].forEach((field) => expect(payload).not.toHaveProperty(field));
+  });
+});
+
+describe('impresión (SPEC v2-34-sr)', () => {
+  test('imprime por GET a inventory/process/purchaseGas/:id/print, sin cuerpo ni parámetros', () => {
+    expect(PRINT_PATH).toBe('inventory/process/purchaseGas');
+    expect(buildPrintRequest(printOptions(812))).toEqual({ url: 'inventory/process/purchaseGas/812/print', params: undefined });
+  });
+
+  test('el archivo se llama Orden de Combustible.pdf', () => {
+    expect(PRINT_FILE_NAME).toBe('Orden de Combustible.pdf');
+    expect(printOptions(812)).toEqual({ path: PRINT_PATH, id: 812, fileName: PRINT_FILE_NAME });
+  });
+
+  test('una orden nueva sin guardar (id 0) no se puede imprimir: avisa "guarde primero" sin llamar al back', () => {
+    expect(canPrint(0)).toBe(false);
+    expect(canPrint(812)).toBe(true);
   });
 });
