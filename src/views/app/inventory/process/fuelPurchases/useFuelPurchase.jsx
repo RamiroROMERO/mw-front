@@ -1,9 +1,10 @@
 import createNotification from '@Containers/ui/Notifications';
 import { request, notifyError } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 import { formatNumber, validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks'
 import { useEffect, useMemo, useState } from 'react'
-import { buildSavePayload, isProcessed, toFormValidation, validateFuelPurchase } from './fuelPurchaseRules'
+import { buildSavePayload, isProcessed, printOptions, toFormValidation, validateFuelPurchase } from './fuelPurchaseRules'
 
 export const useFuelPurchase = ({ setLoading }) => {
   const [listCars, setListCars] = useState([]);
@@ -23,7 +24,6 @@ export const useFuelPurchase = ({ setLoading }) => {
   const [openModalFuelPurchases, setOpenModalFuelPurchases] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [openMsgAccountDocument, setOpenMsgAccountDocument] = useState(false);
-  const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
   const { formState, onInputChange, onResetForm, onBulkForm } = useForm({
     id: 0,
@@ -122,16 +122,9 @@ export const useFuelPurchase = ({ setLoading }) => {
     }
   }
 
+  // SPEC v2-34-sr: GET sin cuerpo; sin orden guardada avisa "guarde primero" y no llama al back.
   const fnPrintFuelPurchase = () => {
-    if (id > 0) {
-      const dataPrint = {
-        id,
-        userName: userData.name
-      }
-      request.GETPdf('inventory/process/purchaseGas/exportPDFPurchase', dataPrint, 'Orden de Combustible.pdf', (err) => {
-        setLoading(false);
-      });
-    }
+    printDocument({ ...printOptions(id), setLoading });
   }
 
   const fnDeleteFuelPurchase = () => {

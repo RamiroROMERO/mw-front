@@ -162,3 +162,9 @@ export const isProcessed = (form = {}) => Number(form.pdaNumber) > 0;
 export const buildSavePayload = (form = {}, documentCode = '') => (
   isProcessed(form) ? { notes: form.notes ?? '' } : buildPayload(form, documentCode)
 );
+
+// SPEC v2-34-sr: la impresión es un GET sin cuerpo a `<ruta>/:id/print` y el back imprime lo GUARDADO. Aquí solo se fijan la ruta
+// y el nombre del archivo; el aviso de "guarde primero" lo da `printDocument`.
+export const PRINT_PATH = 'inventory/process/purchaseGas';
+export const PRINT_FILE_NAME = 'Orden de Combustible.pdf';
+export const printOptions = (id) => ({ path: PRINT_PATH, id, fileName: PRINT_FILE_NAME });
