@@ -24,6 +24,7 @@ export const useFuelPurchase = ({ setLoading }) => {
   const [openModalFuelPurchases, setOpenModalFuelPurchases] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [openMsgAccountDocument, setOpenMsgAccountDocument] = useState(false);
+  const [openModalReport, setOpenModalReport] = useState(false);
 
   const { formState, onInputChange, onResetForm, onBulkForm } = useForm({
     id: 0,
@@ -181,7 +182,8 @@ export const useFuelPurchase = ({ setLoading }) => {
     setOpenModalAdminDrivers(true);
   }
 
-  const fnReport = () => { }
+  // SPEC v2-35-sr: listado por rango de fechas (PDF o Excel) desde lo guardado; no depende de la orden cargada.
+  const fnReport = () => setOpenModalReport(true);
 
   const fnGlobalReport = () => { }
 
@@ -358,7 +360,7 @@ export const useFuelPurchase = ({ setLoading }) => {
         onClick: fnAdminDrivers
       },
       {
-        title: "button.report",
+        title: "page.fuelPurchases.button.report",
         icon: "bi bi-file-earmark-binary",
         onClick: fnReport
       },
@@ -405,7 +407,9 @@ export const useFuelPurchase = ({ setLoading }) => {
       setOpenMsgAccountDocument,
       fnOkAccountDocument,
       processed,
-      onResetForm
+      onResetForm,
+      openModalReport,
+      setOpenModalReport
     }
   )
 }
