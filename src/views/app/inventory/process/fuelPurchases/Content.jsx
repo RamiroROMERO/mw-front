@@ -10,11 +10,12 @@ import InvoiceDetail from './InvoiceDetail';
 import ModalAdminCars from './ModalAdminCars';
 import ModalAdminDrivers from './ModalAdminDrivers';
 import ModalViewFuelPurchases from './ModalViewFuelPurchases';
+import ModalFuelPurchaseReport from './ModalFuelPurchaseReport';
 import ProcessedNotice from './ProcessedNotice';
 
 const FuelPurchases = ({ setLoading }) => {
 
-  const { propsToControlPanel, formState, listCars, listDrivers, listStores, listProducts, listDocuments, listProviders, listPaymentTypes, listAccounts, onInputChange, onBulkForm, formValidation, sendForm, openModalAdminCars, setOpenModalAdminCars, openModalAdminDrivers, setOpenModalAdminDrivers, fnGetDataCars, fnGetDataDrivers, dataCars, dataDrivers, dataFuelPurchases, openModalFuelPurchases, setOpenModalFuelPurchases, openMsgQuestion, setOpenMsgQuestion, fnOkDeleteFuelPurchase, openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument, onResetForm, processed } = useFuelPurchase({ setLoading });
+  const { propsToControlPanel, formState, listCars, listDrivers, listStores, listProducts, listDocuments, listProviders, listPaymentTypes, listAccounts, onInputChange, onBulkForm, formValidation, sendForm, openModalAdminCars, setOpenModalAdminCars, openModalAdminDrivers, setOpenModalAdminDrivers, fnGetDataCars, fnGetDataDrivers, dataCars, dataDrivers, dataFuelPurchases, openModalFuelPurchases, setOpenModalFuelPurchases, openMsgQuestion, setOpenMsgQuestion, fnOkDeleteFuelPurchase, openMsgAccountDocument, setOpenMsgAccountDocument, fnOkAccountDocument, onResetForm, processed, openModalReport, setOpenModalReport } = useFuelPurchase({ setLoading });
 
   const propsToOrderDetail = {
     formState,
@@ -81,6 +82,15 @@ const FuelPurchases = ({ setLoading }) => {
     }
   }
 
+  const propsToModalReport = {
+    ModalContent: ModalFuelPurchaseReport,
+    title: "page.fuelPurchases.modal.report.title",
+    open: openModalReport,
+    setOpen: setOpenModalReport,
+    maxWidth: "md",
+    data: {}
+  }
+
   const propsToMsgDelete = {
     open: openMsgQuestion,
     setOpen: setOpenMsgQuestion,
@@ -113,6 +123,7 @@ const FuelPurchases = ({ setLoading }) => {
       <Modal {...propsToModalAdminCars} />
       <Modal {...propsToModalAdminDrivers} />
       <Modal {...propsToModalViewFuelPurchases} />
+      <Modal {...propsToModalReport} />
       <Confirmation {...propsToMsgDelete} />
       <Confirmation {...propsToMsgAccountDocument} />
     </>
