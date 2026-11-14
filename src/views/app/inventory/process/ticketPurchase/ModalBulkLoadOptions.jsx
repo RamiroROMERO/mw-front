@@ -5,18 +5,23 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { Checkbox } from '@Components/checkbox'
 import { IntlMessages } from '@Helpers/Utils'
 
-// Legacy Controlpanel21.OptPages.Page1.Controlpanelbtn1.Click (líneas 1849-1913): antes de
-// traer las líneas de la Orden de Compra pide Almacén+Cuenta Contable+"Aplica a Inventario"
-// para aplicarlos uniformemente a todas las líneas que se importen.
+// Legacy Controlpanel21.OptPages.Page1.Controlpanelbtn1.Click (líneas 1849-1913): antes de traer las líneas de la Orden de Compra pide
+// Almacén + Cuenta Contable + "Aplica a Inventario" para aplicarlos uniformemente a todas las líneas que se importen (solo con
+// Contabilidad activa: sin ella este modal no se abre). Con "Aplica a Inventario" el almacén es obligatorio, como en cada línea.
 const ModalBulkLoadOptions = ({ data, setOpen }) => {
   const { listStores, listAccounts, fnConfirmBulkLoad } = data;
 
   const [storeId, setStoreId] = useState(0);
-  const [accountId, setAccountId] = useState(0);
+  const [expenseCtaCode, setExpenseCtaCode] = useState('');
   const [toInventory, setToInventory] = useState(false);
+  const [sendForm, setSendForm] = useState(false);
+
+  const storeMissing = toInventory && !(Number(storeId) > 0);
 
   const fnContinue = () => {
-    fnConfirmBulkLoad({ storeId, accountId, toInventory });
+    setSendForm(true);
+    if (storeMissing) return;
+    fnConfirmBulkLoad({ storeId: toInventory ? storeId : 0, expenseCtaCode: expenseCtaCode === '0' ? '' : expenseCtaCode, toInventory });
   }
 
   return (
@@ -33,15 +38,17 @@ const ModalBulkLoadOptions = ({ data, setOpen }) => {
               inputValue={storeId}
               options={listStores}
               onChange={(e) => setStoreId(e.target.value)}
+              invalid={sendForm && storeMissing}
+              feedbackText={sendForm && storeMissing ? 'page.ticketPurchase.error.storeToInventory' : undefined}
             />
           </Colxx>
           <Colxx xxs="12" sm="6">
             <SearchSelect
               label="select.accountId"
-              name="accountId"
-              inputValue={accountId}
+              name="expenseCtaCode"
+              inputValue={expenseCtaCode}
               options={listAccounts}
-              onChange={(e) => setAccountId(e.target.value)}
+              onChange={(e) => setExpenseCtaCode(e.target.value)}
             />
           </Colxx>
           <Colxx xxs="12">

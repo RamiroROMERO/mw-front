@@ -53,7 +53,7 @@ const InventoryProcessRoutes = (props) => {
       element={<FuelPurchases setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
-      path="/ticketPurchases"
+      path="/ticketPurchase"
       element={<TicketPurchase setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index

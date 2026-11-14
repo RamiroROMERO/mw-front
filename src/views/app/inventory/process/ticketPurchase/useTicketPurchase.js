@@ -1,10 +1,19 @@
+import { useEffect, useMemo, useState } from "react";
+import { useIntl } from "react-intl";
 import createNotification from "@Containers/ui/Notifications";
-import { request, buildUrl } from "@Helpers/core";
+import { request, buildUrl, notifyError } from "@Helpers/core";
 import { formatDate, validInt } from "@Helpers/Utils";
 import { useForm } from "@Hooks"
-import { useEffect, useState } from "react";
+import {
+  buildPayload, emptyForm, formFromTicket, isProcessed, lineFromOrder, lineFromServer, sumTotals, toFormValidation, validateHeader, validateLines
+} from "./ticketPurchaseRules";
 
-export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, onResetFormDeta }) => {
+const MAX_LINE_ERRORS = 5;
+// El combo solo ofrece lo que el back acepta: un registro inactivo (status 0 o false) se omite.
+const isActive = (item) => item.status === undefined || item.status === null || (item.status !== false && Number(item.status) !== 0);
+
+export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, onResetFormDeta, accountingActive }) => {
+  const intl = useIntl();
 
   const [listDocuments, setListDocuments] = useState([]);
   const [listProviders, setListProviders] = useState([]);
@@ -20,52 +29,22 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
   const [openMsgCancelDocument, setOpenMsgCancelDocument] = useState(false);
   const [openModalSettings, setOpenModalSettings] = useState(false);
   const [openModalBulkLoad, setOpenModalBulkLoad] = useState(false);
-  const [bulkLoadOptions, setBulkLoadOptions] = useState({ storeId: 0, accountId: 0, toInventory: false });
+  const [bulkLoadOptions, setBulkLoadOptions] = useState({ storeId: 0, expenseCtaCode: '', toInventory: false });
 
-  const validTicket = {
-    documentCode: [(val) => val !== "", "msg.required.select.typeDocument"],
-    providerId: [(val) => validInt(val) > 0, "msg.required.select.provider"],
-    date: [(val) => val !== "", "msg.required.input.date"],
-    paymentTypeId: [(val) => validInt(val) > 0, "msg.required.select.paymentMethod"],
-    valueTotal: [(val) => validInt(val) > 0, "msg.required.input.total"]
-  }
+  const { formState, onInputChange, onBulkForm } = useForm(emptyForm());
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
-    id: 0,
-    documentCode: '',
-    documentId: 0,
-    date: '',
-    purchaseOrder: 0,
-    providerId: 0,
-    paymentTypeId: 0,
-    valueTotal: 0,
-    notes: '',
-    pdaNumber: 0,
-    numberCAI: '',
-    status: true
-  }, validTicket);
+  const { id, providerId, pdaNumber } = formState;
+  const processed = isProcessed(formState);
 
-  const { id, documentCode, providerId, paymentTypeId, date, purchaseOrder, notes, pdaNumber } = formState;
+  // Mismas reglas que el back (ticketPurchaseRules.js): errores por campo y sin llamar al back si alguna falla.
+  const headerErrors = useMemo(() => validateHeader(formState), [formState]);
+  const formValidation = useMemo(() => toFormValidation(headerErrors), [headerErrors]);
 
   const fnNewDocument = () => {
-    onResetForm();
+    onBulkForm(emptyForm());
     onResetFormDeta();
     setSendForm(false);
     setTicketDetail([]);
-  }
-
-  const fnMapDetailFromServer = (rows) => {
-    return rows.map((item) => ({
-      id: item.id,
-      productCode: item.productCode,
-      nameProduct: item.name,
-      qty: item.quantity,
-      price: item.price,
-      total: item.valueTotal1,
-      accountId: item.contCta,
-      toInventory: validInt(item.sendInv) === 1,
-      storeId: item.storeId
-    }));
   }
 
   const fnSearchDocument = () => {
@@ -86,32 +65,32 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
   const fnViewTicket = (item) => {
     setLoading(true);
     request.GET(`inventory/process/ticketPurchase/${item.id}/detail`, (resp) => {
-      setTicketDetail(fnMapDetailFromServer(resp.data));
-      onBulkForm({
-        id: item.id,
-        documentCode: item.documentCode,
-        documentId: item.documentId,
-        date: item.date,
-        purchaseOrder: item.idOc,
-        providerId: item.providerId,
-        paymentTypeId: item.paymentTypeId,
-        notes: item.notes || '',
-        pdaNumber: item.pdaNumber,
-        numberCAI: item.numberCAI,
-        valueTotal: resp.data.reduce((sum, line) => sum + Number(line.valueTotal1 || 0), 0)
-      });
+      const lines = resp.data.map(lineFromServer);
+      setTicketDetail(lines);
+      onBulkForm(formFromTicket(item, lines));
+      setSendForm(false);
       setOpenModalViewTickets(false);
       setLoading(false);
     }, () => { setLoading(false); });
   }
 
+  // Un texto por línea con error ("Línea 2: ..."), hasta MAX_LINE_ERRORS, para el aviso de guardado.
+  const linesErrorText = (lineErrors) => {
+    const rows = lineErrors.slice(0, MAX_LINE_ERRORS).map(({ index, errors }) => intl.formatMessage(
+      { id: 'page.ticketPurchase.error.line' },
+      { number: index, message: intl.formatMessage({ id: Object.values(errors)[0] }) }
+    ));
+    if (lineErrors.length > MAX_LINE_ERRORS) rows.push('…');
+    return rows.join('\n');
+  }
+
   const fnSaveDocument = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    if (Object.keys(headerErrors).length > 0) {
       return;
     }
 
-    if (validInt(pdaNumber) > 0) {
+    if (processed) {
       createNotification('error', 'msg.error.ticketPurchase.already.processed', 'alert.error.title');
       return;
     }
@@ -121,18 +100,13 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       return;
     }
 
-    const detail = ticketDetail.map((line) => ({
-      productCode: line.productCode,
-      name: line.nameProduct,
-      quantity: line.qty,
-      price: line.price,
-      valueTotal1: line.total,
-      storeId: line.storeId || 0,
-      contCta: line.accountId,
-      sendInv: line.toInventory ? 1 : 0
-    }));
+    const lineErrors = validateLines(ticketDetail, { accountingActive });
+    if (lineErrors.length > 0) {
+      createNotification('warning', { text: linesErrorText(lineErrors) }, 'alert.warning.title');
+      return;
+    }
 
-    const payload = { date, providerId, paymentTypeId, documentCode, idOc: purchaseOrder || 0, notes, detail };
+    const payload = buildPayload(formState, ticketDetail, { accountingActive });
 
     setLoading(true);
     if (validInt(id) === 0) {
@@ -149,6 +123,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
     }
   }
 
+  // Impresión, Reporte y Exportar: sin función (el legacy los tiene; quedan para sus specs, ver Fase 4 de la revisión).
   const fnPrintDocument = () => { }
 
   const fnAccountDocument = () => {
@@ -156,7 +131,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       createNotification('warning', 'msg.required.saveDocument', 'alert.warning.title');
       return;
     }
-    if (validInt(pdaNumber) > 0) {
+    if (processed) {
       createNotification('error', 'msg.error.ticketPurchase.already.processed', 'alert.error.title');
       return;
     }
@@ -170,9 +145,9 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       createNotification('success', 'msg.success.accountDocument', 'alert.success.title');
       setOpenMsgAccountDocument(false);
       setLoading(false);
-    }, (resp) => {
-      const messageKey = resp?.messages?.[0]?.message || 'msg.save.record.error';
-      createNotification('error', messageKey, 'alert.error.title');
+    }, (err) => {
+      // El back responde con la descripción real del rechazo (cuenta del proveedor, total en cero, pagos aplicados...).
+      notifyError(err, 'msg.save.record.error');
       setOpenMsgAccountDocument(false);
       setLoading(false);
     }, false);
@@ -190,9 +165,8 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       setOpenMsgCancelDocument(false);
       setLoading(false);
       fnNewDocument();
-    }, (resp) => {
-      const messageKey = resp?.messages?.[0]?.message || 'msg.save.record.error';
-      createNotification('error', messageKey, 'alert.error.title');
+    }, (err) => {
+      notifyError(err, 'msg.save.record.error');
       setOpenMsgCancelDocument(false);
       setLoading(false);
     }, false);
@@ -205,17 +179,6 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
   const fnReport = () => { }
 
   const fnExport = () => { }
-
-  // Legacy Controlpanel21.OptPages.Page1.Controlpanelbtn1.Click (líneas 1849-1913): antes de
-  // traer las líneas de la Orden de Compra, pide Almacén+Cuenta Contable+"Aplica a Inventario"
-  // y los aplica uniformemente a TODAS las líneas importadas.
-  const fnViewPurchaseOrders = () => {
-    if (validInt(providerId) === 0) {
-      createNotification('warning', 'msg.error.ticketPurchase.selectProviderFirst', 'alert.warning.title');
-      return;
-    }
-    setOpenModalBulkLoad(true);
-  }
 
   const fnConfirmBulkLoad = (options) => {
     setBulkLoadOptions(options);
@@ -233,23 +196,30 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
     }, () => { setLoading(false); });
   }
 
+  // Legacy Controlpanel21.OptPages.Page1.Controlpanelbtn1.Click (líneas 1849-1913): antes de traer las líneas de la Orden de Compra, pide
+  // Almacén + Cuenta Contable + "Aplica a Inventario" (solo con Contabilidad activa) y los aplica a TODAS las líneas importadas.
+  const fnViewPurchaseOrders = () => {
+    if (processed) {
+      createNotification('error', 'msg.error.ticketPurchase.already.processed', 'alert.error.title');
+      return;
+    }
+    if (validInt(providerId) === 0) {
+      createNotification('warning', 'msg.error.ticketPurchase.selectProviderFirst', 'alert.warning.title');
+      return;
+    }
+    if (accountingActive) {
+      setOpenModalBulkLoad(true);
+    } else {
+      fnConfirmBulkLoad({ storeId: 0, expenseCtaCode: '', toInventory: false });
+    }
+  }
+
   const fnViewOrder = (item) => {
     setLoading(true);
     request.GET(buildUrl('inventory/process/purchaseOrderDetail', { purchaseOrderId: item.id }), (resp) => {
-      const ordersDeta = resp.data.map((line) => ({
-        id: line.id,
-        productCode: line.productCode,
-        nameProduct: line.productData?.name || '',
-        qty: line.qty,
-        price: line.price,
-        total: line.total,
-        storeId: bulkLoadOptions.storeId,
-        accountId: bulkLoadOptions.accountId,
-        toInventory: bulkLoadOptions.toInventory
-      }));
-      setTicketDetail(ordersDeta);
-      const valueTotal = ordersDeta.reduce((sum, line) => sum + Number(line.total || 0), 0);
-      onBulkForm({ purchaseOrder: item.id, valueTotal });
+      const lines = resp.data.map((line) => lineFromOrder(line, bulkLoadOptions));
+      setTicketDetail(lines);
+      onBulkForm({ purchaseOrderId: item.id, valueTotal: sumTotals(lines) });
       setOpenModalViewOrders(false);
       setLoading(false);
     }, () => { setLoading(false); });
@@ -267,14 +237,13 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       });
       setListDocuments(documents);
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
 
     setLoading(true);
     request.GET(`inventory/process/providers`, (resp) => {
-      const providers = resp.data.map((item) => {
+      const providers = resp.data.filter(isActive).map((item) => {
         return {
           label: item.name,
           value: item.id
@@ -282,8 +251,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       });
       setListProviders(providers);
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
 
@@ -301,8 +269,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       });
       setListPaymentTypes(filterPayments);
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
 
@@ -316,14 +283,13 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       });
       setListAccounts(account);
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
 
     setLoading(true);
     request.GET('inventory/settings/stores?type=1', (resp) => {
-      const stores = resp.data.map((item) => {
+      const stores = resp.data.filter(isActive).map((item) => {
         return {
           label: item.name,
           value: item.id
@@ -331,8 +297,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       });
       setListStores(stores);
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
   }, []);
@@ -344,11 +309,12 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
     fnPrint: fnPrintDocument,
     fnCancel: fnCancelDocument,
     buttonsHome: [
-      {
+      // Contabilizar (kardex, CxP y partida) solo existe con Contabilidad activa, igual que en el legacy.
+      ...(accountingActive ? [{
         title: "button.count",
         icon: "bi bi-journal-check",
         onClick: fnAccountDocument
-      },
+      }] : []),
       {
         title: "button.viewPurchaseOrders",
         icon: "bi bi-file-earmark-text",
@@ -390,6 +356,8 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       onBulkForm,
       sendForm,
       formValidation,
+      processed,
+      pdaNumber,
       openModalViewTicket,
       setOpenModalViewTickets,
       openModalViewOrders,

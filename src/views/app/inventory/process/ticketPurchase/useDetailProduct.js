@@ -1,50 +1,31 @@
-import { validFloat, validInt } from '@Helpers/Utils';
-import { useState } from 'react'
+import { applyAccountToAll, asNumber, calculateLineTotal, lineTotalOrZero, sumTotals } from './ticketPurchaseRules';
 
-export const useDetailProduct = ({ onBulkFormDeta, idProd, productCode, nameProduct, price, qty, total, accountId, toInventory, storeId, ticketDetail, setTicketDetail, onBulkForm, setSendFormDeta, isFormValidDeta }) => {
+// Líneas del grid. Todo se arma con las reglas puras (total en centavos, sin ruido de coma flotante) y sin mutar el estado.
+export const useDetailProduct = ({
+  formStateDeta, onBulkFormDeta, onResetFormDeta, onBulkForm, ticketDetail, setTicketDetail, isFormValidDeta, setSendFormDeta, accountingActive
+}) => {
+  const { idProd, productCode, nameProduct, qty, price, expenseCtaCode, toInventory, storeId } = formStateDeta;
 
-  const [showStores, setShowStores] = useState('none');
+  // El almacén solo se pide con "Al Inventario" y Contabilidad activa.
+  const showStores = accountingActive && toInventory ? 'block' : 'none';
 
-  const onQtyChange = e => {
-    const totalValue = validFloat(price) * e.target.value;
+  // El total en pantalla es round2(cantidad × precio): 0 mientras falte alguno de los dos.
+  const onQtyChange = (e) => onBulkFormDeta({ qty: e.target.value, total: lineTotalOrZero(e.target.value, price) });
 
-    const newQty = {
-      qty: e.target.value,
-      total: totalValue
-    }
-    onBulkFormDeta(newQty);
+  const onPriceChange = (e) => onBulkFormDeta({ price: e.target.value, total: lineTotalOrZero(qty, e.target.value) });
+
+  const onToInventoryChange = (e) => {
+    const checked = e.target.checked;
+    onBulkFormDeta({ toInventory: checked, ...(checked ? {} : { storeId: 0 }) });
   }
 
-  const onPriceChange = e => {
-    const totalValue = e.target.value * validFloat(qty);
-
-    const newPrice = {
-      price: e.target.value,
-      total: totalValue
-    }
-    onBulkFormDeta(newPrice);
-  }
-
-  const onToInventoryChange = e => {
-    const inventory = e.target.checked;
-
-    if (validInt(inventory) === 1 || inventory === true) {
-      setShowStores("block");
-    } else {
-      setShowStores("none");
-    }
-
-    onBulkFormDeta({ toInventory: inventory });
-  }
-
-  // "Aplicar a todos los items": sobreescribe la cuenta contable seleccionada en TODAS las
-  // líneas ya agregadas al grid (bulk-edit en memoria, sin tocar el backend hasta Guardar).
+  // "Aplicar a todos los items": sobreescribe la cuenta contable seleccionada en TODAS las líneas ya agregadas al grid (en memoria, sin
+  // tocar el backend hasta Guardar).
   const fnApplyAccount = () => {
-    if (validInt(accountId) === 0 || !ticketDetail || ticketDetail.length === 0) {
+    if (!String(expenseCtaCode ?? '').trim() || String(expenseCtaCode) === '0' || !ticketDetail || ticketDetail.length === 0) {
       return;
     }
-    const updated = ticketDetail.map((item) => ({ ...item, accountId }));
-    setTicketDetail(updated);
+    setTicketDetail(applyAccountToAll(ticketDetail, expenseCtaCode));
   }
 
   const fnAddProduct = () => {
@@ -53,63 +34,29 @@ export const useDetailProduct = ({ onBulkFormDeta, idProd, productCode, nameProd
       return;
     }
 
-    const detail = {
-      id: new Date().getTime(),
-      productCode,
-      nameProduct,
-      qty: validFloat(qty),
-      price: validFloat(price),
-      total: validFloat(total),
-      accountId,
-      toInventory,
-      storeId
-    }
+    const quantity = asNumber(qty);
+    const unitPrice = asNumber(price);
+    const line = {
+      id: idProd > 0 ? idProd : new Date().getTime(),
+      productCode: String(productCode ?? '').trim(),
+      nameProduct: String(nameProduct ?? '').trim(),
+      qty: quantity,
+      price: unitPrice,
+      total: calculateLineTotal(quantity, unitPrice),
+      expenseCtaCode: String(expenseCtaCode ?? '').trim(),
+      toInventory: !!toInventory,
+      storeId: toInventory ? asNumber(storeId) || 0 : 0
+    };
 
-    if (idProd > 0) {
-      ticketDetail.map((item) => {
-        if (item.id === idProd) {
-          item.qty = validFloat(qty)
-          item.price = validFloat(price)
-          item.total = validFloat(total)
-          item.accountId = accountId
-          item.toInventory = toInventory
-          item.storeId = storeId
-        }
-        return item;
-      });
-    } else {
-      setTicketDetail(current => [...current, detail]);
-    }
+    const newLines = idProd > 0
+      ? ticketDetail.map((item) => (item.id === idProd ? line : item))
+      : [...ticketDetail, line];
 
-    const sumTotal = ticketDetail.map(item => {
-      const totalVal = validFloat(item.total);
-      return totalVal;
-    }).reduce((prev, curr) => prev + curr, 0);
-
-    let valueTotal = 0;
-
-    if (idProd > 0) {
-      valueTotal = sumTotal;
-    } else {
-      valueTotal = validFloat(total) + sumTotal;
-    }
-
-    onBulkForm({ valueTotal });
+    setTicketDetail(newLines);
+    onBulkForm({ valueTotal: sumTotals(newLines) });
 
     // limpiar inputs para agregar otro producto
-    const cleanProd = {
-      idProd: 0,
-      productCode: '',
-      nameProduct: '',
-      qty: 1,
-      price: 0,
-      total: 0,
-      accountId: 0,
-      toInventory: 0,
-      storeId: 0
-    }
-
-    onBulkFormDeta(cleanProd);
+    onResetFormDeta();
     setSendFormDeta(false);
   }
 

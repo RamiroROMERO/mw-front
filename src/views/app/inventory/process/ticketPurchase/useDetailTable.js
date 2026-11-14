@@ -1,14 +1,14 @@
-import { validFloat } from '@Helpers/Utils';
 import { useState } from 'react'
+import { sumTotals } from './ticketPurchaseRules';
 
 export const useDetailTable = ({ ticketDetail, setTicketDetail, onBulkForm, onBulkFormDeta }) => {
 
   const [dataItem, setDataItem] = useState({});
   const [openMsgDelete, setOpenMsgDelete] = useState(false);
 
+  // Carga la línea en el formulario de arriba para editarla (sin mutar la línea del grid).
   const fnEditProduct = (itemProd) => {
-    itemProd.idProd = itemProd.id
-    onBulkFormDeta(itemProd);
+    onBulkFormDeta({ ...itemProd, idProd: itemProd.id });
   }
 
   const fnDeleteProduct = (itemProd) => {
@@ -19,13 +19,7 @@ export const useDetailTable = ({ ticketDetail, setTicketDetail, onBulkForm, onBu
   const fnDeleteOkProduct = () => {
     const newArray = ticketDetail.filter((item) => item.id !== dataItem.id);
     setTicketDetail(newArray);
-
-    const sumTotal = newArray.map(item => {
-      const totalVal = validFloat(item.total);
-      return totalVal;
-    }).reduce((prev, curr) => prev + curr, 0);
-
-    onBulkForm({ valueTotal: sumTotal });
+    onBulkForm({ valueTotal: sumTotals(newArray) });
     setOpenMsgDelete(false);
   }
 

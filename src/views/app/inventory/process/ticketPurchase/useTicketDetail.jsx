@@ -1,61 +1,29 @@
-import TableButtons from '@Components/tableButtons';
-import { request } from '@Helpers/core';
-import { validFloat, validInt } from '@Helpers/Utils';
+import { useMemo, useState } from 'react';
 import { useForm } from '@Hooks'
-import { useState } from 'react';
+import { emptyLine, toFormValidation, validateLine } from './ticketPurchaseRules';
 
-export const useTicketDetail = ({ setLoading }) => {
-  const [dataProducts, setDataProducts] = useState([]);
+// Formulario "agregar producto" de la boleta. Las reglas son las de ticketPurchaseRules.js (las mismas del DTO del back): errores por campo
+// y la línea no se agrega mientras alguno falle. El catálogo de productos (ModalViewProd) trae sus propias filas por páginas: ya no se
+// descarga todo el stock para abrir el buscador.
+export const useTicketDetail = ({ accountingActive }) => {
   const [openModalProducts, setOpenModalProducts] = useState(false);
   const [sendFormDeta, setSendFormDeta] = useState(false);
 
-  const validDetail = {
-    productCode: [(val) => val !== "", "msg.required.input.codeProduct"],
-    qty: [(val) => validInt(val) > 0, "msg.required.input.qty"],
-    price: [(val) => validInt(val) > 0, "msg.required.input.price"],
-    accountId: [(val) => validInt(val) > 0, "msg.required.input.account"]
-  }
+  const { formState: formStateDeta, onInputChange: onInputChangeDeta, onResetForm: onResetFormDeta, onBulkForm: onBulkFormDeta } = useForm(emptyLine());
 
-  const { formState: formStateDeta, formValidation: formValidationDeta, isFormValid: isFormValidDeta, onInputChange: onInputChangeDeta, onResetForm: onResetFormDeta, onBulkForm: onBulkFormDeta } = useForm({
-    idProd: 0,
-    productCode: '',
-    nameProduct: '',
-    qty: 1,
-    price: 0,
-    total: 0,
-    accountId: 0,
-    toInventory: 0,
-    storeId: 0
-  }, validDetail);
+  const errorsDeta = useMemo(() => validateLine(formStateDeta, { accountingActive }), [formStateDeta, accountingActive]);
+  const formValidationDeta = useMemo(() => toFormValidation(errorsDeta), [errorsDeta]);
+  const isFormValidDeta = Object.keys(errorsDeta).length === 0;
 
+  const fnViewProducts = () => setOpenModalProducts(true);
+
+  // La fila es la del catálogo (`code`, `name`): se llena el código y el nombre; el nombre sigue editable (hay boletas de texto libre).
   const fnSelectProduct = (item) => {
-    onBulkFormDeta(item);
+    onBulkFormDeta({ productCode: item.code ?? '', nameProduct: item.name ?? '' });
     setOpenModalProducts(false);
   }
 
-  const fnViewProducts = () => {
-    setLoading(true);
-    request.GET(`inventory/process/stocks/getStocks`, (resp) => {
-      const data = resp.data.map((item) => {
-        item.code = item.productCode
-        item.nameProduct = item.name
-        item.price = validFloat(item.priceLocalMid)
-        item.total = ((validFloat(item.percentTax) * validFloat(item.priceLocalMid)) / 100) + validFloat(item.priceLocalMid)
-        item.nameUM = item.inputUnit
-        item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
-          <i className="medium-icon bi bi-square" />
-        item.presentation = item.inputUnit
-        item.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
-        return item;
-      });
-      setDataProducts(data);
-      setOpenModalProducts(true);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-  }
+  const fnClearProduct = () => onBulkFormDeta({ productCode: '' });
 
   return (
     {
@@ -63,9 +31,9 @@ export const useTicketDetail = ({ setLoading }) => {
       onInputChangeDeta,
       fnViewProducts,
       fnSelectProduct,
+      fnClearProduct,
       openModalProducts,
       setOpenModalProducts,
-      dataProducts,
       onBulkFormDeta,
       sendFormDeta,
       setSendFormDeta,
