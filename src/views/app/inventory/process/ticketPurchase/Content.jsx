@@ -7,6 +7,7 @@ import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
 import ModalViewOrders from '../purchaseOrders/ModalViewOrders';
+import { useAccountingActive } from './useAccountingActive';
 import { useTicketPurchase } from './useTicketPurchase';
 import { useTicketDetail } from './useTicketDetail';
 import DetailProduct from './DetailProduct';
@@ -18,16 +19,21 @@ import ModalBulkLoadOptions from './ModalBulkLoadOptions';
 
 const TicketPurchase = ({ setLoading }) => {
   const [ticketDetail, setTicketDetail] = useState([]);
+  // Contabilidad activa (mw_setting.cont_menu): sin ella no hay almacén, cuenta, "Al Inventario" ni Contabilizar (igual que el legacy).
+  const accountingActive = useAccountingActive();
 
-  const { formStateDeta, onInputChangeDeta, openModalProducts, setOpenModalProducts, fnViewProducts, fnSelectProduct, dataProducts, onBulkFormDeta, sendFormDeta, setSendFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTicketDetail({ setLoading });
+  const {
+    formStateDeta, onInputChangeDeta, openModalProducts, setOpenModalProducts, fnViewProducts, fnSelectProduct, fnClearProduct, onBulkFormDeta,
+    sendFormDeta, setSendFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta
+  } = useTicketDetail({ accountingActive });
 
   const {
     propsToControlPanel, formState, onInputChange, listDocuments, listProviders, listPaymentTypes, listAccounts, listStores,
-    onBulkForm, sendForm, formValidation, openModalViewTicket, setOpenModalViewTickets, dataOrders, dataTickets,
+    onBulkForm, sendForm, formValidation, processed, openModalViewTicket, setOpenModalViewTickets, dataOrders, dataTickets,
     openModalViewOrders, setOpenModalViewOrders, fnViewOrder, fnViewTicket, openMsgAccountDocument, setOpenMsgAccountDocument,
     fnOkAccountDocument, openMsgCancelDocument, setOpenMsgCancelDocument, fnOkCancelDocument, openModalSettings,
     setOpenModalSettings, openModalBulkLoad, setOpenModalBulkLoad, fnConfirmBulkLoad
-  } = useTicketPurchase({ setLoading, setTicketDetail, ticketDetail, onResetFormDeta });
+  } = useTicketPurchase({ setLoading, setTicketDetail, ticketDetail, onResetFormDeta, accountingActive });
 
   const propToFormTicket = {
     ...formState,
@@ -36,7 +42,8 @@ const TicketPurchase = ({ setLoading }) => {
     listProviders,
     listPaymentTypes,
     sendForm,
-    formValidation
+    formValidation,
+    processed
   }
 
   const propsToDetailProduct = {
@@ -45,14 +52,18 @@ const TicketPurchase = ({ setLoading }) => {
     listAccounts,
     listStores,
     fnViewProducts,
+    fnClearProduct,
     onBulkFormDeta,
+    onResetFormDeta,
     onBulkForm,
     ticketDetail,
     setTicketDetail,
     sendFormDeta,
     setSendFormDeta,
     formValidationDeta,
-    isFormValidDeta
+    isFormValidDeta,
+    accountingActive,
+    processed
   }
 
   const propsToDetailTable = {
@@ -62,10 +73,10 @@ const TicketPurchase = ({ setLoading }) => {
     setTicketDetail,
     onBulkForm,
     onBulkFormDeta,
-    sendForm,
-    formValidation
+    processed
   }
 
+  // ModalViewProd pide el catálogo por páginas (con búsqueda en el servidor) y entrega la fila elegida a `fnSelectItem`.
   const propsToModalViewProd = {
     ModalContent: ModalViewProd,
     title: "page.productsCatalog.modal.viewProduct.title",
@@ -73,7 +84,6 @@ const TicketPurchase = ({ setLoading }) => {
     setOpen: setOpenModalProducts,
     maxWidth: 'lg',
     data: {
-      dataProducts,
       fnSelectItem: fnSelectProduct
     }
   }
