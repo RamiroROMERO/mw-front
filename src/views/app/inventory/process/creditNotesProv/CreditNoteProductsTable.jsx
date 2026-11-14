@@ -1,12 +1,15 @@
 import { Row, Form, Button, Table, Input } from 'reactstrap';
-import { IntlMessages, formatNumber } from '@Helpers/Utils';
+import { useIntl } from 'react-intl';
+import { formatNumber } from '@Helpers/Utils';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 
 const CreditNoteProductsTable = (props) => {
+  const intl = useIntl();
+  const t = (id) => intl.formatMessage({ id });
   const { detail2, originPurchase, fnSeekOriginPurchase, onChangeDetail2Qty, fnDeleteDetail2Row, disabled } = props;
 
-  const total = detail2.reduce((sum, item) => sum + Number(item.totalReturn || 0), 0);
+  const total = detail2.reduce((sum, item) => sum + Number(item.total || 0), 0);
 
   return (
     <Form>
@@ -14,14 +17,14 @@ const CreditNoteProductsTable = (props) => {
         <Colxx xxs="12" sm="6" lg="4">
           {!disabled && (
             <Button color="primary" onClick={fnSeekOriginPurchase}>
-              <i className="bi bi-file-earmark-post" /> {IntlMessages("button.selectInvoice")}
+              <i className="bi bi-file-earmark-post" /> {t("button.selectInvoice")}
             </Button>
           )}
         </Colxx>
         <Colxx xxs="12" sm="6" lg="8">
           {originPurchase && (
             <span>
-              <strong>{IntlMessages("page.creditNotesProv.input.originPurchase")}:</strong> {originPurchase.invoiceNumber}
+              <strong>{t("page.creditNotesProv.input.originPurchase")}:</strong> {originPurchase.invoiceNumber}
             </span>
           )}
         </Colxx>
@@ -32,15 +35,15 @@ const CreditNoteProductsTable = (props) => {
             <Table bordered hover size="sm">
               <thead>
                 <tr>
-                  <th>{IntlMessages("table.column.code")}</th>
-                  <th>{IntlMessages("table.column.description")}</th>
-                  <th>{IntlMessages("table.column.qty")}</th>
-                  <th>{IntlMessages("table.column.qtyReturn")}</th>
-                  <th>{IntlMessages("input.subtotal")}</th>
-                  <th>{IntlMessages("input.discount")}</th>
-                  <th>{IntlMessages("input.tax")}</th>
-                  <th>{IntlMessages("table.column.total")}</th>
-                  {!disabled && <th>{IntlMessages("table.column.options")}</th>}
+                  <th>{t("table.column.code")}</th>
+                  <th>{t("table.column.description")}</th>
+                  <th>{t("table.column.qty")}</th>
+                  <th>{t("table.column.qtyReturn")}</th>
+                  <th>{t("input.subtotal")}</th>
+                  <th>{t("input.discount")}</th>
+                  <th>{t("input.tax")}</th>
+                  <th>{t("table.column.total")}</th>
+                  {!disabled && <th>{t("table.column.options")}</th>}
                 </tr>
               </thead>
               <tbody>
@@ -57,7 +60,7 @@ const CreditNoteProductsTable = (props) => {
                     <td align="right">{formatNumber(item.subtotal)}</td>
                     <td align="right">{formatNumber(item.discountValue)}</td>
                     <td align="right">{formatNumber(item.taxValue)}</td>
-                    <td align="right">{formatNumber(item.totalReturn)}</td>
+                    <td align="right">{formatNumber(item.total)}</td>
                     {!disabled && (
                       <td align="right">
                         <Button type="button" className="btn-circle-table" color="outline-danger" title="Eliminar" onClick={() => fnDeleteDetail2Row(item.id)}>
@@ -70,7 +73,7 @@ const CreditNoteProductsTable = (props) => {
               </tbody>
               <tfoot>
                 <tr>
-                  <th colSpan={7} align="right">{IntlMessages("input.total")}</th>
+                  <th colSpan={7} align="right">{t("input.total")}</th>
                   <th align="right">{formatNumber(total, "L.")}</th>
                   {!disabled && <th />}
                 </tr>

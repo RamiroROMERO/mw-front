@@ -18,7 +18,7 @@ const ModalSeekCreditNotesProv = ({ setOpen, data }) => {
     ...item,
     providerName: item.providerData ? item.providerData.name : '',
     typeName: IntlMessages(TYPE_LABELS[item.typeId] || ''),
-    mixedName: IntlMessages(Number(item.isMixed) === 1 ? 'option.yes' : 'option.no')
+    mixedName: IntlMessages(item.isMixed ? 'option.yes' : 'option.no')
   }));
 
   const [table] = useState({

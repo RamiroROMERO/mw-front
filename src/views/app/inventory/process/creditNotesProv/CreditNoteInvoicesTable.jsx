@@ -1,17 +1,20 @@
 import { Row, Form, Button, Table, Input } from 'reactstrap';
-import { IntlMessages, formatNumber } from '@Helpers/Utils';
+import { useIntl } from 'react-intl';
+import { formatNumber } from '@Helpers/Utils';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { InputField } from '@Components/inputFields';
 import { SimpleSelect } from '@Components/simpleSelect';
 
 const CreditNoteInvoicesTable = (props) => {
+  const intl = useIntl();
+  const t = (id) => intl.formatMessage({ id });
   const {
-    detail1, discountPercent, accCode, listAccounts, onInputChange,
+    detail1, discountPercent, accCode, accCodeError, listAccounts, onInputChange,
     fnAddInvoices, onChangeDetail1Row, fnApplyPercentToAll, fnDeleteDetail1Row, disabled
   } = props;
 
-  const total = detail1.reduce((sum, item) => sum + Number(item.valuePayment || 0), 0);
+  const total = detail1.reduce((sum, item) => sum + Number(item.appliedValue || 0), 0);
 
   return (
     <Form>
@@ -19,7 +22,7 @@ const CreditNoteInvoicesTable = (props) => {
         <Colxx xxs="12" sm="6" lg="8">
           {!disabled && (
             <Button color="primary" onClick={fnAddInvoices}>
-              <i className="bi bi-plus" /> {IntlMessages("button.addInvoice")}
+              <i className="bi bi-plus" /> {t("button.addInvoice")}
             </Button>
           )}
         </Colxx>
@@ -36,7 +39,7 @@ const CreditNoteInvoicesTable = (props) => {
             </Colxx>
             <Colxx xxs="5" sm="3" lg="2" className="mb-3">
               <Button color="secondary" onClick={fnApplyPercentToAll}>
-                <i className="bi bi-check" /> {IntlMessages("button.apply")}
+                <i className="bi bi-check" /> {t("button.apply")}
               </Button>
             </Colxx>
           </>
@@ -48,19 +51,19 @@ const CreditNoteInvoicesTable = (props) => {
             <Table bordered hover size="sm">
               <thead>
                 <tr>
-                  <th>{IntlMessages("table.column.date")}</th>
-                  <th>{IntlMessages("table.column.invoice")}</th>
-                  <th>{IntlMessages("table.column.balance")}</th>
-                  <th>{IntlMessages("table.column.percent")}</th>
-                  <th>{IntlMessages("table.column.valueToApply")}</th>
-                  {!disabled && <th>{IntlMessages("table.column.options")}</th>}
+                  <th>{t("table.column.date")}</th>
+                  <th>{t("table.column.invoice")}</th>
+                  <th>{t("table.column.balance")}</th>
+                  <th>{t("table.column.percent")}</th>
+                  <th>{t("table.column.valueToApply")}</th>
+                  {!disabled && <th>{t("table.column.options")}</th>}
                 </tr>
               </thead>
               <tbody>
                 {detail1.map((item, idx) => (
                   <tr key={idx}>
-                    <td>{item.dateDocument}</td>
-                    <td>{item.cpaCode}</td>
+                    <td>{item.invoiceDate}</td>
+                    <td>{item.invoiceNumber}</td>
                     <td align="right">{formatNumber(item.balance)}</td>
                     <td align="right">
                       {disabled ? formatNumber(item.percent) : (
@@ -68,8 +71,8 @@ const CreditNoteInvoicesTable = (props) => {
                       )}
                     </td>
                     <td align="right">
-                      {disabled ? formatNumber(item.valuePayment) : (
-                        <Input bsSize="sm" type="text" value={item.valuePayment} onChange={(e) => onChangeDetail1Row(item.id, 'valuePayment', e.target.value)} />
+                      {disabled ? formatNumber(item.appliedValue) : (
+                        <Input bsSize="sm" type="text" value={item.appliedValue} onChange={(e) => onChangeDetail1Row(item.id, 'appliedValue', e.target.value)} />
                       )}
                     </td>
                     {!disabled && (
@@ -84,7 +87,7 @@ const CreditNoteInvoicesTable = (props) => {
               </tbody>
               <tfoot>
                 <tr>
-                  <th colSpan={4} align="right">{IntlMessages("input.total")}</th>
+                  <th colSpan={4} align="right">{t("input.total")}</th>
                   <th align="right">{formatNumber(total, "L.")}</th>
                   {!disabled && <th />}
                 </tr>
@@ -102,6 +105,8 @@ const CreditNoteInvoicesTable = (props) => {
             options={listAccounts}
             onChange={onInputChange}
             disabled={disabled}
+            invalid={!!accCodeError}
+            feedbackText={accCodeError || null}
           />
         </Colxx>
       </Row>

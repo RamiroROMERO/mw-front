@@ -14,7 +14,7 @@ import { useCreditNotes } from './useCreditNotes';
 
 const CreditNotesProv = ({ setLoading }) => {
   const {
-    formState, formValidation, onInputChange, sendForm,
+    formState, errors, onInputChange, sendForm,
     listDocuments, listProviders, listAccounts,
     detail1, detail2, originPurchase,
     onProviderChange, onTypeChange,
@@ -26,6 +26,7 @@ const CreditNotesProv = ({ setLoading }) => {
     openModalSeekCreditNotes, setOpenModalSeekCreditNotes, fnViewCreditNote,
     openModalVoid, setOpenModalVoid, fnVoidCreditNote,
     openMsgProcess, setOpenMsgProcess, fnProcessCreditNote,
+    openMsgRepost, setOpenMsgRepost, fnRepostCreditNote,
     propsToControlPanel
   } = useCreditNotes({ setLoading });
 
@@ -38,7 +39,7 @@ const CreditNotesProv = ({ setLoading }) => {
     onInputChange,
     onProviderChange,
     onTypeChange,
-    formValidation,
+    errors,
     sendForm,
     disabled,
     isVoided
@@ -48,6 +49,7 @@ const CreditNotesProv = ({ setLoading }) => {
     detail1,
     discountPercent: formState.discountPercent,
     accCode,
+    accCodeError: sendForm ? errors.accCode : null,
     listAccounts,
     onInputChange,
     fnAddInvoices,
@@ -122,6 +124,13 @@ const CreditNotesProv = ({ setLoading }) => {
     title: "msg.question.processCreditNote.title"
   }
 
+  const propsToMsgRepost = {
+    open: openMsgRepost,
+    setOpen: setOpenMsgRepost,
+    fnOnOk: fnRepostCreditNote,
+    title: "page.creditNotesProv.msg.question.repost.title"
+  }
+
   return (
     <>
       <Row>
@@ -144,6 +153,7 @@ const CreditNotesProv = ({ setLoading }) => {
       <Modal {...propsToModalSeekCreditNotes} />
       <Modal {...propsToModalVoid} />
       <Confirmation {...propsToMsgProcess} />
+      <Confirmation {...propsToMsgRepost} />
     </>
   );
 }

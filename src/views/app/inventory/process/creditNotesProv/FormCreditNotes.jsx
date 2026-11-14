@@ -7,19 +7,24 @@ import { InputField } from '@Components/inputFields';
 import { Checkbox } from '@Components/checkbox';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import DateCalendar from '@Components/dateCalendar';
-import { IntlMessages } from '@Helpers/Utils';
+import { useIntl } from 'react-intl';
 import { TYPE_OTHER } from './useCreditNotes';
 
 const FormCreditNotes = (props) => {
+  const intl = useIntl();
+  const t = (id) => intl.formatMessage({ id });
   const {
-    documentCode, documentId, cai, numberCAI, date, providerId, providerRtn, providerName, typeId, typeOther, name,
+    documentCode, documentId, cai, numberCAI, date, providerId, providerRtn, providerName, typeId, typeOther, description,
     valueLps, docValueUSD, exchangeRate, currenId, pdaNumber, isMixed,
     listDocuments, listProviders,
     onInputChange, onProviderChange, onTypeChange,
-    formValidation, sendForm, disabled, isVoided
+    errors, sendForm, disabled, isVoided
   } = props;
 
-  const { documentCodeValid, providerIdValid, caiValid, numberCAIValid } = formValidation;
+  const documentCodeValid = errors.documentCode;
+  const providerIdValid = errors.providerId;
+  const caiValid = errors.cai;
+  const numberCAIValid = errors.numberCAI;
 
   return (
     <Form>
@@ -101,8 +106,8 @@ const FormCreditNotes = (props) => {
           <Row>
             <Colxx xxs="12">
               <InputField
-                value={name}
-                name="name"
+                value={description}
+                name="description"
                 onChange={onInputChange}
                 type="textarea"
                 label="input.observations"
@@ -206,14 +211,14 @@ const FormCreditNotes = (props) => {
             {isVoided && (
               <Colxx xxs="12">
                 <span className="text-danger fw-bold">
-                  <i className="bi bi-x-octagon-fill" /> {IntlMessages("page.creditNotesProv.status.voided")}
+                  <i className="bi bi-x-octagon-fill" /> {t("page.creditNotesProv.status.voided")}
                 </span>
               </Colxx>
             )}
             {!isVoided && pdaNumber > 0 && (
               <Colxx xxs="12">
                 <span className="text-success">
-                  <i className="bi bi-check-circle-fill" /> {IntlMessages("page.creditNotesProv.status.processed")} #{pdaNumber}
+                  <i className="bi bi-check-circle-fill" /> {t("page.creditNotesProv.status.processed")} #{pdaNumber}
                 </span>
               </Colxx>
             )}

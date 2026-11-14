@@ -1,115 +1,105 @@
-import { useEffect, useState } from 'react';
-import { request, buildUrl } from '@Helpers/core';
-import { getErrorCode } from '@Helpers/errorMessage';
+import { useEffect, useMemo, useState } from 'react';
+import { request, buildUrl, notifyError } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
-import { validFloat, validInt } from '@Helpers/Utils';
+import { validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
+import {
+  TYPE_DISCOUNT, TYPE_CANCEL, TYPE_RETURN, TYPE_OTHER, validateNote, buildPayload, noteState, normalizeNote, buildInvoiceLine, buildReturnLinesFromPurchase,
+  setReturnQty, sumApplied, sumReturn, appliedFromPercent, percentFromApplied, isReturnType
+} from './creditNoteRules';
 
-export const TYPE_DISCOUNT = 1;
-export const TYPE_CANCEL = 2;
-export const TYPE_RETURN = 3;
-export const TYPE_OTHER = 4;
+export { TYPE_DISCOUNT, TYPE_CANCEL, TYPE_RETURN, TYPE_OTHER };
 
-const creditNoteValid = {
-  documentCode: [(val) => val !== '', 'msg.required.select.typeDocument'],
-  providerId: [(val) => validInt(val) > 0, 'msg.required.select.provider'],
-  cai: [(val) => val !== '', 'msg.required.input.code'],
-  numberCAI: [(val) => val !== '', 'msg.required.input.code']
-}
+const DEFAULT_DOCUMENT = 'NCP';
 
+const INITIAL_FORM = {
+  id: 0,
+  documentCode: '',
+  documentId: 0,
+  cai: '',
+  numberCAI: '',
+  date: DateHelper.format(new Date()),
+  providerId: 0,
+  providerRtn: '',
+  providerName: '',
+  typeId: TYPE_DISCOUNT,
+  typeOther: '',
+  description: '',
+  valueLps: 0,
+  docValueUSD: 0,
+  exchangeRate: 1,
+  discountPercent: 0,
+  accCode: '',
+  currenId: 1,
+  originInvoiceNumber: '',
+  pdaNumber: 0,
+  status: 1,
+  // Una nota nueva es una nota normal; la mixta es una casilla explícita.
+  isMixed: false
+};
+
+// Notas de crédito de proveedores. El back calcula los importes y guarda la nota y su detalle en una sola transacción (un POST o
+// un PUT); el front arma las líneas, valida los campos sin llamar al back y muestra el mensaje real de cualquier rechazo.
 export const useCreditNotes = ({ setLoading }) => {
   const [listDocuments, setListDocuments] = useState([]);
   const [listProviders, setListProviders] = useState([]);
   const [listAccounts, setListAccounts] = useState([]);
-  const [detail1, setDetail1] = useState([]); // compras aplicadas (tipos 1/2/4)
-  const [detail2, setDetail2] = useState([]); // productos devueltos (tipo 3)
-  const [originPurchase, setOriginPurchase] = useState(null); // compra origen (tipo 3)
+  const [detail1, setDetail1] = useState([]); // compras aplicadas (descuento, anulación y otros)
+  const [detail2, setDetail2] = useState([]); // productos devueltos (devolución)
+  const [originPurchase, setOriginPurchase] = useState(null); // compra origen (devolución)
   const [sendForm, setSendForm] = useState(false);
   const [openModalAddInvoices, setOpenModalAddInvoices] = useState(false);
   const [openModalSeekOrigin, setOpenModalSeekOrigin] = useState(false);
   const [openModalSeekCreditNotes, setOpenModalSeekCreditNotes] = useState(false);
   const [openModalVoid, setOpenModalVoid] = useState(false);
   const [openMsgProcess, setOpenMsgProcess] = useState(false);
+  const [openMsgRepost, setOpenMsgRepost] = useState(false);
   const [dataCreditNotes, setDataCreditNotes] = useState([]);
+  // NCP (Notas de Crédito de Proveedores) es el documento de esta pantalla: una nota nueva arranca con él si existe.
+  const [defaultDocument, setDefaultDocument] = useState('');
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
-    id: 0,
-    documentCode: '',
-    documentId: 0,
-    cai: '',
-    numberCAI: '',
-    date: DateHelper.format(new Date()),
-    providerId: 0,
-    providerRtn: '',
-    providerName: '',
-    typeId: TYPE_DISCOUNT,
-    typeOther: '',
-    name: '',
-    valueLps: 0,
-    docValueUSD: 0,
-    exchangeRate: 1,
-    discountPercent: 0,
-    accCode: '',
-    currenId: 1,
-    invoCode: '',
-    pdaNumber: 0,
-    status: 1,
-    // La mayoría de notas reales de esta pantalla son "Mixtas" (is_mixed=1 en BD:
-    // 306 de 310 registros existentes) — se deja marcada por defecto.
-    isMixed: true
-  }, creditNoteValid);
+  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm(INITIAL_FORM, {});
 
-  const { id, documentCode, providerId, typeId, pdaNumber, status } = formState;
-
-  const isProcessed = validInt(pdaNumber) > 0;
-  const isVoided = validInt(status) === 0;
-  const isSaved = validInt(id) > 0;
-  const isReturn = validInt(typeId) === TYPE_RETURN;
-  const disabled = isProcessed || isVoided;
+  const { id, providerId, typeId, pdaNumber, status } = formState;
+  const state = noteState({ id, pdaNumber, status });
+  const isReturn = isReturnType(typeId);
+  const disabled = state.locked;
+  const errors = useMemo(() => validateNote(formState, { invoices: detail1, products: detail2 }), [formState, detail1, detail2]);
 
   useEffect(() => {
     setLoading(true);
-    request.GET('admin/documents?status=1&useInv=1&useTaxDocument=1', (resp) => {
-      const documents = resp.data.map((item) => ({
-        id: item.code,
-        code: item.code,
-        name: `${item.code} | ${item.name}`
-      }));
+    request.GET('admin/documents?status=1&useInv=1', (resp) => {
+      const documents = resp.data.map((item) => ({ id: item.code, code: item.code, name: `${item.code} | ${item.name}` }));
       setListDocuments(documents);
+      if (documents.some((item) => item.code === DEFAULT_DOCUMENT)) {
+        setDefaultDocument(DEFAULT_DOCUMENT);
+        setBulkForm({ documentCode: DEFAULT_DOCUMENT });
+      }
       setLoading(false);
     }, () => { setLoading(false); });
 
     request.GET('inventory/process/providers', (resp) => {
-      const providers = resp.data.map((item) => ({
-        id: item.id,
-        label: item.name,
-        value: item.id,
-        rtn: item.dni,
-        name: item.name
-      }));
-      setListProviders(providers);
+      setListProviders(resp.data.map((item) => ({ id: item.id, label: item.name, value: item.id, rtn: item.dni, name: item.name })));
     }, () => { });
 
     request.GET('accounting/settings/accountants/getSL', (resp) => {
-      const accounts = resp.data.map((item) => ({
-        id: item.cta,
-        code: item.cta,
-        name: `${item.cta} - ${item.nombre}`
-      }));
-      setListAccounts(accounts);
+      setListAccounts(resp.data.map((item) => ({ id: item.cta, code: item.cta, name: `${item.cta} - ${item.nombre}` })));
     }, () => { });
   }, []);
+
+  const setTotal = (value) => setBulkForm({ valueLps: value });
 
   const onProviderChange = (e) => {
     const idProv = e.target.value;
     const found = listProviders.find((item) => item.id === idProv);
-    setBulkForm({ providerId: idProv, providerRtn: found ? found.rtn : '', providerName: found ? found.name : '' });
+    setDetail1([]);
+    setDetail2([]);
+    setOriginPurchase(null);
+    setBulkForm({ providerId: idProv, providerRtn: found ? found.rtn : '', providerName: found ? found.name : '', originInvoiceNumber: '', valueLps: 0 });
   }
 
-  // Igual que el legacy: cambiar el tipo alterna la pestaña activa y descarta el detalle
-  // de la pestaña que deja de aplicar, para no guardar líneas huérfanas de un tipo que ya
-  // no corresponde.
+  // Igual que el legacy: cambiar el tipo descarta el detalle del tipo que deja de aplicar.
   const onTypeChange = (e) => {
     const newType = validInt(e.target.value);
     if (newType === TYPE_RETURN) {
@@ -117,20 +107,12 @@ export const useCreditNotes = ({ setLoading }) => {
     } else {
       setDetail2([]);
       setOriginPurchase(null);
-      setBulkForm({ invoCode: '' });
+      setBulkForm({ originInvoiceNumber: '' });
     }
     setBulkForm({ typeId: newType, valueLps: 0 });
   }
 
-  const recalcTotalFromDetail1 = (rows) => {
-    const sum = rows.reduce((acc, item) => acc + validFloat(item.valuePayment), 0);
-    setBulkForm({ valueLps: sum });
-  }
-  const recalcTotalFromDetail2 = (rows) => {
-    const sum = rows.reduce((acc, item) => acc + validFloat(item.totalReturn), 0);
-    setBulkForm({ valueLps: sum });
-  }
-
+  // ---- Descuento, anulación y otros: compras aplicadas ----
   const fnAddInvoices = () => {
     if (validInt(providerId) === 0) {
       notification('warning', 'msg.required.select.provider', 'alert.warning.title');
@@ -138,75 +120,45 @@ export const useCreditNotes = ({ setLoading }) => {
     }
     setLoading(true);
     request.GET(buildUrl('accounting/process/accountsPayable/findPendingByProvider', { providerId }), (resp) => {
-      const existingCodes = detail1.map((item) => item.cpaCode);
-      const pending = resp.data
-        .filter((item) => !existingCodes.includes(item.documentCode))
-        .map((item) => ({
-          cxpId: item.id,
-          date: item.date,
-          documentCode: item.documentCode,
-          balance: validFloat(item.balance)
-        }));
-      setDataCreditNotes(pending);
+      const existing = detail1.map((item) => item.invoiceNumber);
+      setDataCreditNotes(resp.data
+        .filter((item) => !existing.includes(item.documentCode))
+        .map((item) => ({ cxpId: item.id, date: item.date, documentCode: item.documentCode, balance: Number(item.balance) || 0 })));
       setOpenModalAddInvoices(true);
       setLoading(false);
     }, () => { setLoading(false); });
   }
 
   const fnConfirmAddInvoices = (selectedRows) => {
-    const newRows = selectedRows.map((item) => ({
-      id: new Date().getTime() + Math.random(),
-      cxpId: item.cxpId,
-      dateDocument: item.date,
-      cpaCode: item.documentCode,
-      cpaCai: '',
-      cpaOc: '',
-      balance: item.balance,
-      percent: 100,
-      valuePayment: item.balance
-    }));
-    const merged = [...detail1, ...newRows];
+    const merged = [...detail1, ...selectedRows.map(buildInvoiceLine)];
     setDetail1(merged);
-    recalcTotalFromDetail1(merged);
+    setTotal(sumApplied(merged));
     setOpenModalAddInvoices(false);
   }
 
   const onChangeDetail1Row = (rowId, field, value) => {
     const updated = detail1.map((item) => {
       if (item.id !== rowId) return item;
-      if (field === 'percent') {
-        const percent = validFloat(value);
-        return { ...item, percent, valuePayment: validFloat((percent * item.balance) / 100) };
-      }
-      if (field === 'valuePayment') {
-        const valuePayment = validFloat(value);
-        const percent = item.balance > 0 ? validFloat((valuePayment * 100) / item.balance) : 0;
-        return { ...item, valuePayment, percent };
-      }
-      return item;
+      if (field === 'percent') return { ...item, percent: value, appliedValue: appliedFromPercent(value, item.balance) };
+      return { ...item, appliedValue: value, percent: percentFromApplied(value, item.balance) };
     });
     setDetail1(updated);
-    recalcTotalFromDetail1(updated);
+    setTotal(sumApplied(updated));
   }
 
   const fnApplyPercentToAll = () => {
-    const { discountPercent } = formState;
-    const percent = validFloat(discountPercent);
-    const updated = detail1.map((item) => ({
-      ...item,
-      percent,
-      valuePayment: validFloat((percent * item.balance) / 100)
-    }));
+    const updated = detail1.map((item) => ({ ...item, percent: formState.discountPercent, appliedValue: appliedFromPercent(formState.discountPercent, item.balance) }));
     setDetail1(updated);
-    recalcTotalFromDetail1(updated);
+    setTotal(sumApplied(updated));
   }
 
   const fnDeleteDetail1Row = (rowId) => {
     const updated = detail1.filter((item) => item.id !== rowId);
     setDetail1(updated);
-    recalcTotalFromDetail1(updated);
+    setTotal(sumApplied(updated));
   }
 
+  // ---- Devolución: compra origen y productos ----
   const fnSeekOriginPurchase = () => {
     if (validInt(providerId) === 0) {
       notification('warning', 'msg.required.select.provider', 'alert.warning.title');
@@ -214,81 +166,58 @@ export const useCreditNotes = ({ setLoading }) => {
     }
     setLoading(true);
     request.GET(buildUrl('inventory/process/purchases', { providerId }), (resp) => {
-      const purchases = resp.data.filter((item) => validInt(item.pdaNumber) > 0 && validInt(item.status) !== 0);
-      setDataCreditNotes(purchases);
+      setDataCreditNotes(resp.data.filter((item) => validInt(item.pdaNumber) > 0 && validInt(item.status) !== 0));
       setOpenModalSeekOrigin(true);
       setLoading(false);
     }, () => { setLoading(false); });
   }
 
-  const fnSelectOriginPurchase = (purchase) => {
-    setLoading(true);
+  // Líneas de la compra origen; `saved` (opcional) son las cantidades ya guardadas de una nota que se vuelve a abrir.
+  const loadPurchaseLines = (purchase, saved, done) => {
     request.GET(buildUrl('inventory/process/purchaseDetail', { purchaseId: purchase.id }), (resp) => {
-      const lines = resp.data.map((item) => {
-        const qty = validFloat(item.qty);
-        const price = validFloat(item.price);
-        const discountPercent = validFloat(item.discountPercent);
-        const taxPercent = validFloat(item.taxPercent);
-        const subtotal = validFloat(item.subtotal);
-        const discountValue = validFloat(item.discount);
-        const taxValue = validFloat(item.taxValue);
-        return {
-          id: item.id,
-          cpaId: item.id,
-          productCode: item.productCode,
-          description: item.productData ? item.productData.name : item.productCode,
-          qty,
-          qtyReturn: qty,
-          price,
-          discountPercent,
-          taxPercent,
-          cost: price,
-          storeId: item.storeId,
-          productLot: item.lotCode,
-          dateOut: item.dateOut,
-          subtotal,
-          discountValue,
-          taxValue,
-          totalReturn: validFloat(item.total)
-        }
-      });
-      setDetail2(lines);
-      recalcTotalFromDetail2(lines);
-      setOriginPurchase({ id: purchase.id, invoiceNumber: purchase.invoiceNumber, date: purchase.date });
-      setBulkForm({ invoCode: purchase.invoiceNumber });
-      setOpenModalSeekOrigin(false);
-      setLoading(false);
+      let lines = buildReturnLinesFromPurchase(resp.data);
+      if (saved) {
+        lines = lines.map((line) => {
+          const found = saved.find((item) => item.productCode === line.productCode);
+          return setReturnQty(line, found ? found.qtyReturn : 0);
+        });
+      }
+      done(lines);
     }, () => { setLoading(false); });
   }
 
-  const onChangeDetail2Qty = (rowId, value) => {
-    const updated = detail2.map((item) => {
-      if (item.id !== rowId) return item;
-      let qtyReturn = validFloat(value);
-      if (qtyReturn > item.qty) qtyReturn = item.qty;
-      if (qtyReturn < 0) qtyReturn = 0;
-      const subtotal = validFloat(qtyReturn * item.price);
-      const discountValue = validFloat((item.discountPercent * subtotal) / 100);
-      const taxValue = validFloat((item.taxPercent * (subtotal - discountValue)) / 100);
-      const totalReturn = validFloat((subtotal - discountValue) + taxValue);
-      return { ...item, qtyReturn, subtotal, discountValue, taxValue, totalReturn };
+  const fnSelectOriginPurchase = (purchase) => {
+    setLoading(true);
+    loadPurchaseLines(purchase, null, (lines) => {
+      setDetail2(lines);
+      setTotal(sumReturn(lines));
+      setOriginPurchase({ id: purchase.id, invoiceNumber: purchase.invoiceNumber, date: purchase.date });
+      setBulkForm({ originInvoiceNumber: purchase.invoiceNumber });
+      setOpenModalSeekOrigin(false);
+      setLoading(false);
     });
+  }
+
+  const onChangeDetail2Qty = (rowId, value) => {
+    const updated = detail2.map((item) => (item.id === rowId ? setReturnQty(item, value) : item));
     setDetail2(updated);
-    recalcTotalFromDetail2(updated);
+    setTotal(sumReturn(updated));
   }
 
   const fnDeleteDetail2Row = (rowId) => {
     const updated = detail2.filter((item) => item.id !== rowId);
     setDetail2(updated);
-    recalcTotalFromDetail2(updated);
+    setTotal(sumReturn(updated));
     if (updated.length === 0) {
       setOriginPurchase(null);
-      setBulkForm({ invoCode: '' });
+      setBulkForm({ originInvoiceNumber: '' });
     }
   }
 
+  // ---- Nota: nueva, buscar, ver ----
   const fnNewCreditNote = () => {
     onResetForm();
+    if (defaultDocument) setBulkForm({ documentCode: defaultDocument });
     setDetail1([]);
     setDetail2([]);
     setOriginPurchase(null);
@@ -304,234 +233,133 @@ export const useCreditNotes = ({ setLoading }) => {
     }, () => { setLoading(false); });
   }
 
-  const fnViewCreditNote = (item) => {
-    setOpenModalSeekCreditNotes(false);
+  // La nota con su detalle (un solo GET). Una devolución sin contabilizar vuelve a leer las líneas de su compra origen para poder
+  // seguir editando las cantidades (hasta lo comprado); una contabilizada o anulada muestra lo guardado.
+  const loadNote = (noteId) => {
     setLoading(true);
-    setBulkForm({
-      id: item.id,
-      documentCode: item.documentCode,
-      documentId: item.documentId,
-      cai: item.cai,
-      numberCAI: item.numberCAI,
-      date: item.date,
-      providerId: item.providerId,
-      providerRtn: item.providerData ? item.providerData.dni : '',
-      providerName: item.providerData ? item.providerData.name : '',
-      typeId: item.typeId,
-      typeOther: item.typeOther,
-      name: item.name,
-      valueLps: item.valueLps,
-      docValueUSD: item.docValueUSD,
-      exchangeRate: item.exchangeRate,
-      discountPercent: 0,
-      accCode: item.accCode,
-      currenId: item.currenId,
-      invoCode: item.invoCode,
-      pdaNumber: item.pdaNumber,
-      status: item.status,
-      isMixed: validInt(item.isMixed) === 1
-    });
+    request.GET(`inventory/process/creditNotes/${noteId}`, (resp) => {
+      const note = resp.data;
+      const { invoices, products } = normalizeNote(note);
+      setBulkForm({
+        id: note.id,
+        documentCode: note.documentCode,
+        documentId: note.documentId,
+        cai: note.cai,
+        numberCAI: note.numberCAI,
+        date: note.date,
+        providerId: note.providerId,
+        providerRtn: note.providerData ? note.providerData.dni : '',
+        providerName: note.providerData ? note.providerData.name : '',
+        typeId: note.typeId,
+        typeOther: note.typeOther,
+        description: note.description || '',
+        valueLps: note.valueLps,
+        docValueUSD: note.docValueUSD,
+        exchangeRate: note.exchangeRate,
+        discountPercent: 0,
+        accCode: note.accCode,
+        currenId: note.currenId,
+        originInvoiceNumber: note.originInvoiceNumber,
+        pdaNumber: note.pdaNumber,
+        status: note.status,
+        isMixed: Boolean(note.isMixed)
+      });
 
-    if (validInt(item.typeId) === TYPE_RETURN) {
-      request.GET(buildUrl('inventory/process/creditNoteProducts', { fatherId: item.id }), (resp) => {
-        const lines = resp.data.map((line) => {
-          const qty = validFloat(line.quantity);
-          const subtotal = validFloat(line.subtotal);
-          const discountValue = validFloat(line.discountValue);
-          const taxValue = validFloat(line.taxValue);
-          // El detalle guardado no persiste price/discountPercent/taxPercent (solo los
-          // valores ya calculados) — se re-derivan para poder seguir editando la cantidad
-          // a devolver sin perder la proporción de descuento/impuesto original.
-          return {
-            id: line.id,
-            cpaId: line.cpaId,
-            productCode: line.productCode,
-            description: line.productData ? line.productData.name : line.productCode,
-            qty,
-            qtyReturn: qty,
-            price: qty > 0 ? subtotal / qty : 0,
-            discountPercent: subtotal > 0 ? (discountValue * 100) / subtotal : 0,
-            taxPercent: (subtotal - discountValue) > 0 ? (taxValue * 100) / (subtotal - discountValue) : 0,
-            cost: validFloat(line.cost),
-            storeId: line.storeId,
-            productLot: line.productLot,
-            dateOut: line.dateOut,
-            subtotal,
-            discountValue,
-            taxValue,
-            totalReturn: validFloat(line.valueTotal1)
-          };
-        });
-        setDetail2(lines);
+      if (isReturnType(note.typeId)) {
         setDetail1([]);
-        setOriginPurchase(item.invoCode ? { invoiceNumber: item.invoCode } : null);
-        setLoading(false);
-      }, () => { setLoading(false); });
-    } else {
-      request.GET(buildUrl('inventory/process/creditNoteInvoices', { fatherId: item.id }), (resp) => {
-        const lines = resp.data.map((line) => ({
-          id: line.id,
-          cxpId: line.cxpId,
-          dateDocument: line.dateDocument,
-          cpaCode: line.cpaCode,
-          cpaCai: line.cpaCai,
-          cpaOc: line.cpaOc,
-          balance: validFloat(line.cpaVal),
-          percent: validFloat(line.percent),
-          valuePayment: validFloat(line.valuePayment)
-        }));
-        setDetail1(lines);
+        setOriginPurchase(note.originInvoiceNumber ? { invoiceNumber: note.originInvoiceNumber } : null);
+        const locked = validInt(note.pdaNumber) > 0 || validInt(note.status) === 0;
+        if (locked || !note.originInvoiceNumber) {
+          setDetail2(products);
+          setLoading(false);
+          return;
+        }
+        request.GET(buildUrl('inventory/process/purchases', { providerId: note.providerId, invoiceNumber: note.originInvoiceNumber }), (purchases) => {
+          const purchase = (purchases.data || [])[0];
+          if (!purchase) {
+            setDetail2(products);
+            setLoading(false);
+            return;
+          }
+          loadPurchaseLines(purchase, products, (lines) => {
+            setDetail2(lines);
+            setOriginPurchase({ id: purchase.id, invoiceNumber: purchase.invoiceNumber, date: purchase.date });
+            setLoading(false);
+          });
+        }, () => { setDetail2(products); setLoading(false); });
+      } else {
+        setDetail1(invoices);
         setDetail2([]);
         setOriginPurchase(null);
         setLoading(false);
-      }, () => { setLoading(false); });
-    }
+      }
+    }, () => { setLoading(false); });
   }
 
+  const fnViewCreditNote = (item) => {
+    setOpenModalSeekCreditNotes(false);
+    loadNote(item.id);
+  }
+
+  // ---- Guardar: un solo POST o PUT con la cabecera y el detalle ----
   const fnSaveCreditNote = () => {
     setSendForm(true);
-    if (!isFormValid) return;
-
-    const { date, typeOther, name, valueLps, docValueUSD, exchangeRate, accCode, currenId, cai, numberCAI, isMixed } = formState;
-
-    if (validFloat(valueLps) <= 0) {
-      notification('warning', 'msg.error.invalidValue', 'alert.warning.title');
+    if (Object.keys(errors).length > 0) {
+      if (errors.detail) notification('warning', errors.detail, 'alert.warning.title');
+      else if (errors.accCode) notification('warning', errors.accCode, 'alert.warning.title');
       return;
     }
-    if (isReturn) {
-      if (detail2.filter((item) => validFloat(item.qtyReturn) > 0).length === 0) {
-        notification('warning', 'msg.required.select.originInvoice', 'alert.warning.title');
-        return;
-      }
-    } else {
-      if (detail1.length === 0) {
-        notification('warning', 'msg.required.select.invoiceToApply', 'alert.warning.title');
-        return;
-      }
-      if (!accCode) {
-        notification('warning', 'msg.required.select.account', 'alert.warning.title');
-        return;
-      }
-    }
 
-    const newData = {
-      documentCode,
-      date,
-      providerId,
-      typeId,
-      typeOther,
-      name,
-      valueLps,
-      docValueUSD,
-      exchangeRate,
-      accCode: !isReturn ? accCode : '',
-      currenId,
-      cai,
-      numberCAI,
-      invoCode: isReturn ? (originPurchase ? originPurchase.invoiceNumber : '') : '',
-      isMixed: isMixed ? 1 : 0
-    }
+    const body = buildPayload(formState, { invoices: detail1, products: detail2 });
+    const onSaved = (resp) => {
+      notification('success', 'msg.success.save', 'alert.success.title');
+      loadNote(resp.data.id); // muestra lo que calculó y guardó el back
+    };
+    const onFailed = (err) => {
+      notifyError(err, 'msg.save.record.error');
+      setLoading(false);
+    };
 
     setLoading(true);
-    const afterSaveHeader = (noteId) => {
-      // El DELETE previo (limpiar detalle viejo antes de reinsertar) devuelve 404
-      // "delete.not.found" cuando no había filas que borrar — el caso normal en el primer
-      // Guardar de una nota nueva. No es un error real: se continúa igual hacia el insert
-      // tanto si el DELETE tuvo éxito como si no encontró nada que borrar.
-      const insertDetail = () => {
-        if (isReturn) {
-          const rows = detail2.filter((item) => validFloat(item.qtyReturn) > 0).map((item) => ({
-            fatherId: noteId,
-            cpaId: item.cpaId,
-            productCode: item.productCode,
-            quantity: item.qtyReturn,
-            subtotal: item.subtotal,
-            discountValue: item.discountValue,
-            taxValue: item.taxValue,
-            valueTotal1: item.totalReturn,
-            storeId: item.storeId,
-            cost: item.cost,
-            productLot: item.productLot,
-            dateOut: item.dateOut
-          }));
-          request.POST('inventory/process/creditNoteProducts/createMany', rows, () => {
-            notification('success', 'msg.success.save', 'alert.success.title');
-            setLoading(false);
-          }, () => { setLoading(false); });
-        } else {
-          const rows = detail1.map((item) => ({
-            fatherId: noteId,
-            dateDocument: item.dateDocument,
-            providerId,
-            cpaCode: item.cpaCode,
-            cpaCai: item.cpaCai,
-            cpaOc: item.cpaOc,
-            cpaVal: item.balance,
-            percent: item.percent,
-            valuePayment: item.valuePayment
-          }));
-          request.POST('inventory/process/creditNoteInvoices/createMany', rows, () => {
-            notification('success', 'msg.success.save', 'alert.success.title');
-            setLoading(false);
-          }, () => { setLoading(false); });
-        }
-      }
-      request.DELETE(buildUrl('inventory/process/creditNoteInvoices', { fatherId: noteId }), () => {
-        request.DELETE(buildUrl('inventory/process/creditNoteProducts', { fatherId: noteId }), insertDetail, insertDetail, false);
-      }, () => {
-        request.DELETE(buildUrl('inventory/process/creditNoteProducts', { fatherId: noteId }), insertDetail, insertDetail, false);
-      }, false);
-    }
-
-    if (id > 0) {
-      request.PUT(`inventory/process/creditNotes/${id}`, newData, () => {
-        afterSaveHeader(id);
-      }, () => { setLoading(false); });
-    } else {
-      request.POST('inventory/process/creditNotes', newData, (resp) => {
-        onInputChange({ target: { name: 'id', value: resp.data.id } });
-        afterSaveHeader(resp.data.id);
-      }, () => { setLoading(false); });
-    }
+    if (id > 0) request.PUT(`inventory/process/creditNotes/${id}`, body, onSaved, onFailed, false);
+    else request.POST('inventory/process/creditNotes', body, onSaved, onFailed, false);
   }
 
+  // ---- Contabilizar, re-contabilizar y anular ----
   const fnAskProcess = () => {
-    if (id === 0) return;
-    setOpenMsgProcess(true);
+    if (state.canProcess) setOpenMsgProcess(true);
+  }
+  const fnAskRepost = () => {
+    if (state.canRepost) setOpenMsgRepost(true);
   }
 
-  const fnProcessCreditNote = () => {
+  const processNote = (successKey) => {
     setOpenMsgProcess(false);
+    setOpenMsgRepost(false);
     setLoading(true);
-    request.POST(`inventory/process/creditNotes/process/${id}`, {}, (resp) => {
-      setBulkForm({ pdaNumber: resp.data.numberPDA, documentId: resp.data.documentId || formState.documentId });
-      notification('success', 'msg.success.processDocument', 'alert.success.title');
-      setLoading(false);
+    request.POST(`inventory/process/creditNotes/process/${id}`, {}, () => {
+      notification('success', successKey, 'alert.success.title');
+      loadNote(id);
     }, (err) => {
-      const errorCode = getErrorCode(err);
-      if (errorCode) {
-        notification('error', `msg.error.creditNote.${errorCode}`, 'alert.error.title');
-      } else {
-        notification('error', 'msg.error.processDocument', 'alert.error.title');
-      }
+      notifyError(err, 'msg.error.processDocument');
       setLoading(false);
-    });
+    }, false);
   }
+  const fnProcessCreditNote = () => processNote('msg.success.processDocument');
+  const fnRepostCreditNote = () => processNote('page.creditNotesProv.msg.success.repost');
 
   const fnAskVoid = () => {
-    if (id === 0 || !isProcessed) return;
-    setOpenModalVoid(true);
+    if (state.canVoid) setOpenModalVoid(true);
   }
 
   const fnVoidCreditNote = (reason) => {
     setLoading(true);
     request.DELETE(buildUrl(`inventory/process/creditNotes/void/${id}`, { reason }), () => {
       setOpenModalVoid(false);
-      fnNewCreditNote();
       notification('success', 'msg.success.voidCreditNote', 'alert.success.title');
-      setLoading(false);
-    }, () => {
-      notification('error', 'msg.delete.record.error', 'alert.error.title');
+      loadNote(id);
+    }, (err) => {
+      notifyError(err, 'msg.delete.record.error');
       setLoading(false);
     }, false);
   }
@@ -541,31 +369,37 @@ export const useCreditNotes = ({ setLoading }) => {
     fnSearch: fnSearchCreditNotes,
     fnSave: !disabled ? fnSaveCreditNote : null,
     fnPrint: null,
-    fnCancel: isProcessed && !isVoided ? fnAskVoid : null,
+    fnCancel: state.canVoid ? fnAskVoid : null,
     buttonsHome: [
-      {
+      ...(state.canProcess ? [{
         title: 'button.count',
         icon: 'bi bi-journal-check',
-        onClick: isSaved && !isProcessed ? fnAskProcess : () => { }
-      }
+        onClick: fnAskProcess
+      }] : []),
+      ...(state.canRepost ? [{
+        title: 'page.creditNotesProv.button.repost',
+        icon: 'bi bi-arrow-repeat',
+        onClick: fnAskRepost
+      }] : [])
     ],
     buttonsOptions: [],
     buttonsAdmin: []
   }
 
   return {
-    formState, formValidation, onInputChange, setBulkForm, sendForm,
+    formState, formValidation, isFormValid, onInputChange, setBulkForm, sendForm, errors,
     listDocuments, listProviders, listAccounts,
     detail1, detail2, originPurchase,
     onProviderChange, onTypeChange,
     fnAddInvoices, onChangeDetail1Row, fnApplyPercentToAll, fnDeleteDetail1Row,
     fnSeekOriginPurchase, onChangeDetail2Qty, fnDeleteDetail2Row,
-    isProcessed, isVoided, isSaved, isReturn, disabled,
+    isProcessed: state.processed, isVoided: state.voided, isSaved: state.saved, isReturn, disabled,
     openModalAddInvoices, setOpenModalAddInvoices, dataCreditNotes, fnConfirmAddInvoices,
     openModalSeekOrigin, setOpenModalSeekOrigin, fnSelectOriginPurchase,
     openModalSeekCreditNotes, setOpenModalSeekCreditNotes, fnViewCreditNote,
     openModalVoid, setOpenModalVoid, fnVoidCreditNote,
     openMsgProcess, setOpenMsgProcess, fnProcessCreditNote,
+    openMsgRepost, setOpenMsgRepost, fnRepostCreditNote,
     propsToControlPanel
   }
 }
