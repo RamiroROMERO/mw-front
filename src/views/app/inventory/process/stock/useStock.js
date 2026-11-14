@@ -1,104 +1,102 @@
-import { request } from '@Helpers/core';
-import { useForm } from '@Hooks'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { request, buildUrl, notifyError } from '@Helpers/core';
+import { useForm } from '@Hooks';
+import { useProductOptions } from '@Views/app/inventory/settings/productsCatalog/useProductOptions';
+import { withSelectedOption } from '@Views/app/inventory/settings/productsCatalog/pagingRules';
+import { KARDEX_PATH, EMPTY_KARDEX, todayText, validateKardexFilter, buildKardexParams, normalizeKardex, buildSummary } from './kardexRules';
 
+// Detalle de kardex de un producto en un almacén (equivale a "Ver Detalle" de inv_kardex.sc2). Solo lectura: lo calcula el back.
+// Los reportes, la impresión y el Excel del detalle son specs aparte y todavía no están en la pantalla.
 export const useStock = ({ setLoading }) => {
   const [listStores, setListStores] = useState([]);
-  const [listProducts, setListProducts] = useState([]);
-  const [dataProducts, setDataProducts] = useState([]);
-  const [openModalStockReport, setOpenModalStockReport] = useState(false);
-  const [openModalPrintMovement, setOpenModalPrintMovement] = useState(false);
+  const [kardex, setKardex] = useState({ ...EMPTY_KARDEX, rows: [] });
+  const [sendForm, setSendForm] = useState(false);
+  const [selectedLabel, setSelectedLabel] = useState(null);
+  const latestRequest = useRef(0);
+  const { options: productOptions, onInputChange: onProductSearch } = useProductOptions();
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
+  const today = useMemo(() => todayText(), []);
+  const { formState, onInputChange, onBulkForm } = useForm({
     storeId: 0,
-    productId: 0,
-    dateStart: '',
-    dateEnd: '',
-    inputUnit: '',
-    outputUnit: ''
+    productCode: '',
+    dateStart: today,
+    dateEnd: today
   });
 
-  const fnViewDetail = () => { }
-
-  const fnPrintDetail = () => { }
-
-  const fnMovementByProduct = () => {
-    setOpenModalPrintMovement(true);
-  }
-
-  const fnStockReport = () => {
-    setOpenModalStockReport(true);
-  }
+  const errors = useMemo(() => validateKardexFilter(formState), [formState]);
+  const summary = useMemo(() => buildSummary(kardex), [kardex]);
+  // El valor elegido tiene que seguir en el combo aunque la búsqueda actual no lo traiga.
+  const listProducts = useMemo(
+    () => withSelectedOption(productOptions, formState.productCode, selectedLabel ? [selectedLabel] : []),
+    [productOptions, formState.productCode, selectedLabel]
+  );
 
   useEffect(() => {
-    setLoading(true);
-    request.GET(`inventory/process/stocks/getStocks`, (resp) => {
-      const products = resp.data.map((item) => {
-        item.label = item.name
-        item.value = item.id
-        return item;
-      });
-      setListProducts(products);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-    setLoading(true);
     request.GET('inventory/settings/stores?type=1', (resp) => {
-      const stores = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id
-        }
-      });
-      setListStores(stores);
+      setListStores((resp.data || []).map((item) => ({ label: item.name, value: item.id })));
+    }, () => { });
+  }, []);
+
+  // Cambiar el almacén, el producto o las fechas deja de mostrar un detalle que ya no corresponde al filtro.
+  const clearDetail = () => {
+    latestRequest.current += 1; // una respuesta que esté en camino ya no se muestra
+    setKardex({ ...EMPTY_KARDEX, rows: [] });
+  };
+
+  const onFilterChange = (e) => {
+    clearDetail();
+    onInputChange(e);
+  };
+
+  const onProductChange = (e) => {
+    const value = e.target.value;
+    const option = listProducts.find((item) => item.value === value);
+    setSelectedLabel(option || null);
+    clearDetail();
+    onBulkForm({ productCode: value === '0' || value === undefined || value === null ? '' : value });
+  };
+
+  const fnViewDetail = () => {
+    setSendForm(true);
+    if (Object.keys(errors).length > 0) return; // el back vuelve a validar todo, pero así no se llama a algo ya rechazado
+    latestRequest.current += 1;
+    const requestId = latestRequest.current;
+    setLoading(true);
+    request.GET(buildUrl(KARDEX_PATH, buildKardexParams(formState)), (resp) => {
+      if (requestId !== latestRequest.current) return;
+      setKardex(normalizeKardex(resp?.data));
       setLoading(false);
     }, (err) => {
-
+      if (requestId !== latestRequest.current) return;
+      setKardex({ ...EMPTY_KARDEX, rows: [] });
       setLoading(false);
+      notifyError(err, 'page.stock.msg.loadError');
     });
-  }, []);
+  };
 
   const propsToControlPanel = {
     buttonsHome: [
       {
-        title: "button.viewDetail",
-        icon: "bi bi-search",
+        title: 'button.viewDetail',
+        icon: 'bi bi-search',
         onClick: fnViewDetail
-      },
-      {
-        title: "button.printDetail",
-        icon: "bi bi-printer",
-        onClick: fnPrintDetail
-      },
-      {
-        title: "button.movementByProduct",
-        icon: "bi bi-card-checklist",
-        onClick: fnMovementByProduct
-      },
-      {
-        title: "button.stockReport",
-        icon: "bi bi-file-earmark-bar-graph",
-        onClick: fnStockReport
       }
     ],
     buttonsOptions: [],
     buttonsAdmin: []
-  }
+  };
 
-  return (
-    {
-      propsToControlPanel,
-      formState,
-      onInputChange,
-      onBulkForm,
-      listStores,
-      listProducts,
-      openModalStockReport,
-      setOpenModalStockReport,
-      openModalPrintMovement,
-      setOpenModalPrintMovement
-    }
-  )
-}
+  return {
+    propsToControlPanel,
+    formState,
+    errors,
+    sendForm,
+    kardex,
+    summary,
+    listStores,
+    listProducts,
+    onFilterChange,
+    onProductChange,
+    onProductSearch
+  };
+};
