@@ -4,9 +4,12 @@ import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
 import { validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
+import { useProductOptions } from '@Views/app/inventory/settings/productsCatalog/useProductOptions';
+import { withSelectedOption } from '@Views/app/inventory/settings/productsCatalog/pagingRules';
 import {
   TYPE_DISCOUNT, TYPE_CANCEL, TYPE_RETURN, TYPE_OTHER, validateNote, buildPayload, noteState, normalizeNote, buildInvoiceLine, buildReturnLinesFromPurchase,
-  setReturnQty, sumApplied, sumReturn, appliedFromPercent, percentFromApplied, isReturnType
+  setReturnQty, sumApplied, sumReturn, appliedFromPercent, percentFromApplied, isReturnType, isMixedNote, emptyMixedDraft, validateMixedDraft, mixedLineFromDraft,
+  setMixedField, sumMixed
 } from './creditNoteRules';
 
 export { TYPE_DISCOUNT, TYPE_CANCEL, TYPE_RETURN, TYPE_OTHER };
@@ -45,6 +48,11 @@ export const useCreditNotes = ({ setLoading }) => {
   const [listDocuments, setListDocuments] = useState([]);
   const [listProviders, setListProviders] = useState([]);
   const [listAccounts, setListAccounts] = useState([]);
+  const [listStores, setListStores] = useState([]);
+  // Nota mixta (SPEC v2-47-sr): la línea que se está digitando y el combo de productos con búsqueda en el servidor.
+  const [draft, setDraft] = useState(() => emptyMixedDraft());
+  const [draftLabel, setDraftLabel] = useState(null);
+  const { options: productOptions, onInputChange: onProductSearch } = useProductOptions();
   const [detail1, setDetail1] = useState([]); // compras aplicadas (descuento, anulación y otros)
   const [detail2, setDetail2] = useState([]); // productos devueltos (devolución)
   const [originPurchase, setOriginPurchase] = useState(null); // compra origen (devolución)
@@ -64,6 +72,7 @@ export const useCreditNotes = ({ setLoading }) => {
   const { id, providerId, typeId, pdaNumber, status } = formState;
   const state = noteState({ id, pdaNumber, status });
   const isReturn = isReturnType(typeId);
+  const isMixed = isMixedNote(formState);
   const disabled = state.locked;
   const errors = useMemo(() => validateNote(formState, { invoices: detail1, products: detail2 }), [formState, detail1, detail2]);
 
@@ -81,6 +90,10 @@ export const useCreditNotes = ({ setLoading }) => {
 
     request.GET('inventory/process/providers', (resp) => {
       setListProviders(resp.data.map((item) => ({ id: item.id, label: item.name, value: item.id, rtn: item.dni, name: item.name })));
+    }, () => { });
+
+    request.GET('inventory/settings/stores?type=1', (resp) => {
+      setListStores((resp.data || []).map((item) => ({ label: item.name, value: item.id })));
     }, () => { });
 
     request.GET('accounting/settings/accountants/getSL', (resp) => {
@@ -102,14 +115,80 @@ export const useCreditNotes = ({ setLoading }) => {
   // Igual que el legacy: cambiar el tipo descarta el detalle del tipo que deja de aplicar.
   const onTypeChange = (e) => {
     const newType = validInt(e.target.value);
+    if (formState.isMixed && newType !== TYPE_RETURN) return; // una nota mixta siempre es una devolución
     if (newType === TYPE_RETURN) {
       setDetail1([]);
     } else {
       setDetail2([]);
       setOriginPurchase(null);
-      setBulkForm({ originInvoiceNumber: '' });
+      setBulkForm({ originInvoiceNumber: '', isMixed: false });
     }
     setBulkForm({ typeId: newType, valueLps: 0 });
+  }
+
+  // ---- Nota mixta (SPEC v2-47-sr): marcar la casilla fija el tipo en Devolución y descarta el detalle del otro modo ----
+  const onMixedToggle = (e) => {
+    const checked = Boolean(e.target.checked);
+    setDetail1([]);
+    setDetail2([]);
+    setOriginPurchase(null);
+    setDraft(emptyMixedDraft());
+    setDraftLabel(null);
+    setBulkForm({ isMixed: checked, ...(checked ? { typeId: TYPE_RETURN } : {}), originInvoiceNumber: '', valueLps: 0 });
+  }
+
+  const onDraftChange = ({ target: { name, value } }) => setDraft((prev) => ({ ...prev, [name]: value }));
+
+  // Al elegir el producto se pide su ficha: el impuesto (que el back usa igual), si exige lote o vencimiento y su costo como sugerencia.
+  const onDraftProductChange = (e) => {
+    const code = e.target.value;
+    const option = productOptions.find((item) => item.value === code);
+    setDraftLabel(option || null);
+    if (!code || code === '0') {
+      setDraft((prev) => ({ ...prev, productCode: '', description: '', taxPercent: 0, requireExpLot: false }));
+      return;
+    }
+    setDraft((prev) => ({ ...prev, productCode: code, description: option ? option.label : code }));
+    request.GET(`inventory/settings/products/byCode/${encodeURIComponent(code)}`, (resp) => {
+      const product = resp.data || {};
+      setDraft((prev) => (prev.productCode !== code ? prev : {
+        ...prev,
+        taxPercent: product.chargesTax ? Number(product.percentTax) || 0 : 0,
+        requireExpLot: Boolean(product.requireExpLot),
+        cost: prev.cost === '' && Number(product.costValue) > 0 ? Number(product.costValue) : prev.cost
+      }));
+    }, () => { });
+  }
+
+  const fnAddMixedLine = () => {
+    const error = validateMixedDraft(draft, detail2);
+    if (error) {
+      notification('warning', error, 'alert.warning.title');
+      return;
+    }
+    const updated = [...detail2, mixedLineFromDraft(draft)];
+    setDetail2(updated);
+    setTotal(sumMixed(updated));
+    setDraft(emptyMixedDraft(draft.storeId));
+    setDraftLabel(null);
+  }
+
+  const onChangeMixedField = (rowId, field, value) => {
+    const updated = detail2.map((item) => (item.id === rowId ? setMixedField(item, field, value) : item));
+    setDetail2(updated);
+    setTotal(sumMixed(updated));
+  }
+
+  const fnDeleteMixedRow = (rowId) => {
+    const updated = detail2.filter((item) => item.id !== rowId);
+    setDetail2(updated);
+    setTotal(sumMixed(updated));
+  }
+
+  // La compra origen de la mixta es opcional: solo elige la CxP a rebajar y no trae productos.
+  const fnClearOrigin = () => {
+    setOriginPurchase(null);
+    setBulkForm({ originInvoiceNumber: '' });
   }
 
   // ---- Descuento, anulación y otros: compras aplicadas ----
@@ -187,6 +266,12 @@ export const useCreditNotes = ({ setLoading }) => {
   }
 
   const fnSelectOriginPurchase = (purchase) => {
+    if (isMixed) {
+      setOriginPurchase({ id: purchase.id, invoiceNumber: purchase.invoiceNumber, date: purchase.date });
+      setBulkForm({ originInvoiceNumber: purchase.invoiceNumber });
+      setOpenModalSeekOrigin(false);
+      return;
+    }
     setLoading(true);
     loadPurchaseLines(purchase, null, (lines) => {
       setDetail2(lines);
@@ -221,6 +306,8 @@ export const useCreditNotes = ({ setLoading }) => {
     setDetail1([]);
     setDetail2([]);
     setOriginPurchase(null);
+    setDraft(emptyMixedDraft());
+    setDraftLabel(null);
     setSendForm(false);
   }
 
@@ -264,6 +351,15 @@ export const useCreditNotes = ({ setLoading }) => {
         status: note.status,
         isMixed: Boolean(note.isMixed)
       });
+
+      if (isReturnType(note.typeId) && note.isMixed) {
+        // Nota mixta: se muestra lo guardado (las líneas se digitan, no salen de una compra).
+        setDetail1([]);
+        setDetail2(products);
+        setOriginPurchase(note.originInvoiceNumber ? { invoiceNumber: note.originInvoiceNumber } : null);
+        setLoading(false);
+        return;
+      }
 
       if (isReturnType(note.typeId)) {
         setDetail1([]);
@@ -388,9 +484,11 @@ export const useCreditNotes = ({ setLoading }) => {
 
   return {
     formState, formValidation, isFormValid, onInputChange, setBulkForm, sendForm, errors,
-    listDocuments, listProviders, listAccounts,
+    listDocuments, listProviders, listAccounts, listStores,
     detail1, detail2, originPurchase,
-    onProviderChange, onTypeChange,
+    onProviderChange, onTypeChange, onMixedToggle,
+    isMixed, draft, productOptions: withSelectedOption(productOptions, draft.productCode, draftLabel ? [draftLabel] : []), onProductSearch,
+    onDraftChange, onDraftProductChange, fnAddMixedLine, onChangeMixedField, fnDeleteMixedRow, fnClearOrigin,
     fnAddInvoices, onChangeDetail1Row, fnApplyPercentToAll, fnDeleteDetail1Row,
     fnSeekOriginPurchase, onChangeDetail2Qty, fnDeleteDetail2Row,
     isProcessed: state.processed, isVoided: state.voided, isSaved: state.saved, isReturn, disabled,

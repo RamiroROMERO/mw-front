@@ -120,7 +120,9 @@ describe('cuerpo del POST y PUT', () => {
   });
   it('el texto "otros" solo viaja en el tipo 4 y la nota mixta como booleano', () => {
     expect(buildPayload({ ...FULL, typeId: 4 }, { invoices: INVOICES }).typeOther).toBe('Intereses');
-    expect(buildPayload({ ...FULL, isMixed: true }, { invoices: INVOICES }).isMixed).toBe(true);
+    // La mixta solo existe con el tipo 3 (SPEC v2-47-sr): con otro tipo la casilla no viaja.
+    expect(buildPayload({ ...FULL, isMixed: true }, { invoices: INVOICES }).isMixed).toBe(false);
+    expect(buildPayload({ ...FULL, typeId: 3, isMixed: true, originInvoiceNumber: 'F-1' }, { products: [{ productCode: 'A', qtyReturn: 1 }] }).isMixed).toBe(true);
   });
 });
 

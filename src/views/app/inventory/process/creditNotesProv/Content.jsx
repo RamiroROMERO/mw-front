@@ -7,6 +7,7 @@ import ModalVoidInvoice from '@Views/app/billing/process/pointSales/ModalVoidInv
 import FormCreditNotes from './FormCreditNotes';
 import CreditNoteInvoicesTable from './CreditNoteInvoicesTable';
 import CreditNoteProductsTable from './CreditNoteProductsTable';
+import CreditNoteMixedTable from './CreditNoteMixedTable';
 import ModalUnpaidBill from './ModalUnpaidBill';
 import ModalSeekOriginPurchase from './ModalSeekOriginPurchase';
 import ModalSeekCreditNotesProv from './ModalSeekCreditNotesProv';
@@ -15,9 +16,10 @@ import { useCreditNotes } from './useCreditNotes';
 const CreditNotesProv = ({ setLoading }) => {
   const {
     formState, errors, onInputChange, sendForm,
-    listDocuments, listProviders, listAccounts,
+    listDocuments, listProviders, listAccounts, listStores,
     detail1, detail2, originPurchase,
-    onProviderChange, onTypeChange,
+    onProviderChange, onTypeChange, onMixedToggle,
+    isMixed, draft, productOptions, onProductSearch, onDraftChange, onDraftProductChange, fnAddMixedLine, onChangeMixedField, fnDeleteMixedRow, fnClearOrigin,
     fnAddInvoices, onChangeDetail1Row, fnApplyPercentToAll, fnDeleteDetail1Row,
     fnSeekOriginPurchase, onChangeDetail2Qty, fnDeleteDetail2Row,
     isVoided, isReturn, disabled,
@@ -39,6 +41,8 @@ const CreditNotesProv = ({ setLoading }) => {
     onInputChange,
     onProviderChange,
     onTypeChange,
+    onMixedToggle,
+    isMixed,
     errors,
     sendForm,
     disabled,
@@ -65,6 +69,25 @@ const CreditNotesProv = ({ setLoading }) => {
     fnSeekOriginPurchase,
     onChangeDetail2Qty,
     fnDeleteDetail2Row,
+    disabled
+  }
+
+  const propsToCreditNoteMixedTable = {
+    detail2,
+    draft,
+    listStores,
+    productOptions,
+    onProductSearch,
+    onDraftChange,
+    onDraftProductChange,
+    fnAddMixedLine,
+    onChangeMixedField,
+    fnDeleteMixedRow,
+    originPurchase,
+    fnSeekOriginPurchase,
+    fnClearOrigin,
+    sendForm,
+    detailError: sendForm ? errors.detail : null,
     disabled
   }
 
@@ -141,9 +164,11 @@ const CreditNotesProv = ({ setLoading }) => {
               <Separator className="mt-2 mb-4" />
               <FormCreditNotes {...propsToFormCreditNotes} />
               <Separator className="mt-2 mb-4" />
-              {isReturn
-                ? <CreditNoteProductsTable {...propsToCreditNoteProductsTable} />
-                : <CreditNoteInvoicesTable {...propsToCreditNoteInvoicesTable} />}
+              {isMixed
+                ? <CreditNoteMixedTable {...propsToCreditNoteMixedTable} />
+                : isReturn
+                  ? <CreditNoteProductsTable {...propsToCreditNoteProductsTable} />
+                  : <CreditNoteInvoicesTable {...propsToCreditNoteInvoicesTable} />}
             </CardBody>
           </Card>
         </Colxx>

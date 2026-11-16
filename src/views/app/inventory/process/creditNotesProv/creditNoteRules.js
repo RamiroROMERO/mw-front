@@ -17,6 +17,72 @@ const isBlank = (value) => value === undefined || value === null || String(value
 
 export const isReturnType = (typeId) => Number(typeId) === TYPE_RETURN;
 
+// Nota mixta (SPEC v2-47-sr): siempre es una devolución (tipo 3) con los productos digitados a mano. La casilla solo aplica al tipo 3.
+export const isMixedNote = (form) => isReturnType(form?.typeId) && Boolean(form?.isMixed);
+export const canBeMixed = (typeId) => isReturnType(typeId);
+
+const hasAtMostTwoDecimals = (value) => Math.abs(Math.round(num(value) * 100) - num(value) * 100) < 1e-6;
+const MAX_COST = 999999.99;
+
+// Importes de una línea de la nota mixta: subtotal = cantidad x costo; impuesto = porcentaje del producto sobre el subtotal (0 si no
+// cobra); sin descuento. Mitades hacia arriba a centavos, igual que el back (`buildMixedLines`).
+export const calculateMixedLine = ({ quantity, cost, taxPercent }) => {
+  const subtotal = round2(num(quantity) * num(cost));
+  const taxValue = round2(subtotal * (num(taxPercent) > 0 ? num(taxPercent) / 100 : 0));
+  return { subtotal, taxValue, total: round2(subtotal + taxValue) };
+};
+
+export const emptyMixedDraft = (storeId = 0) => ({
+  storeId, productCode: '', description: '', taxPercent: 0, requireExpLot: false, quantity: '', cost: '', lotCode: '', dateExp: ''
+});
+
+const lineKey = (line) => `${Number(line.storeId)}|${String(line.productCode).trim()}|${String(line.lotCode ?? '').trim()}`;
+
+// Valida la línea que se va a agregar (ids de traducción, mismos casos que `buildMixedLines` del back). '' = válida.
+export const validateMixedDraft = (draft, existing = []) => {
+  if (!(Number(draft?.storeId) > 0)) return 'page.creditNotesProv.error.mixed.store';
+  if (isBlank(draft?.productCode)) return 'page.creditNotesProv.error.mixed.product';
+  if (!(num(draft?.quantity) > 0) || !hasAtMostTwoDecimals(draft.quantity)) return 'page.creditNotesProv.error.mixed.qty';
+  if (isBlank(draft?.cost) || num(draft.cost) < 0 || num(draft.cost) > MAX_COST || !hasAtMostTwoDecimals(draft.cost)) return 'page.creditNotesProv.error.mixed.cost';
+  if (draft.requireExpLot && isBlank(draft.lotCode) && isBlank(draft.dateExp)) return 'page.creditNotesProv.error.mixed.lot';
+  if (existing.some((line) => lineKey(line) === lineKey(draft))) return 'page.creditNotesProv.error.mixed.duplicated';
+  return '';
+};
+
+// Línea de la tabla a partir del borrador ya validado. El `id` es la llave (almacén + producto + lote).
+export const mixedLineFromDraft = (draft) => ({
+  id: lineKey(draft),
+  storeId: Number(draft.storeId),
+  productCode: String(draft.productCode).trim(),
+  description: draft.description || String(draft.productCode).trim(),
+  taxPercent: num(draft.taxPercent),
+  requireExpLot: Boolean(draft.requireExpLot),
+  quantity: num(draft.quantity),
+  cost: num(draft.cost),
+  lotCode: String(draft.lotCode ?? '').trim(),
+  dateExp: String(draft.dateExp ?? ''),
+  ...calculateMixedLine({ quantity: draft.quantity, cost: draft.cost, taxPercent: draft.taxPercent })
+});
+
+// Cambia la cantidad o el costo de una línea ya agregada y recalcula sus importes.
+export const setMixedField = (line, field, value) => {
+  const next = { ...line, [field]: value };
+  return { ...next, ...calculateMixedLine({ quantity: next.quantity, cost: next.cost, taxPercent: next.taxPercent }) };
+};
+
+export const sumMixed = (lines) => round2((lines || []).reduce((sum, line) => sum + round2(num(line.quantity) > 0 ? num(line.total) : 0), 0));
+
+// Valida todas las líneas de la tabla antes de guardar: devuelve el primer error o ''.
+export const validateMixedLines = (lines) => {
+  const list = (lines || []).filter((line) => num(line.quantity) > 0);
+  if (list.length === 0) return 'page.creditNotesProv.error.mixed.empty';
+  for (let i = 0; i < list.length; i += 1) {
+    const error = validateMixedDraft(list[i], list.slice(0, i));
+    if (error) return error;
+  }
+  return '';
+};
+
 // Importes de una línea de la devolución: subtotal = cantidad x costo; descuento sobre el subtotal; impuesto sobre el subtotal ya
 // descontado (0 en una línea exonerada), con mitades hacia arriba a centavos (igual que el back).
 export const calculateReturnLine = (line, quantity) => {
@@ -81,7 +147,11 @@ export const validateNote = (form, { invoices = [], products = [] } = {}) => {
   if (isBlank(form?.cai)) errors.cai = 'msg.required.input.code';
   if (isBlank(form?.numberCAI)) errors.numberCAI = 'msg.required.input.code';
 
-  if (isReturnType(form?.typeId)) {
+  if (isMixedNote(form)) {
+    // La compra origen es opcional en la nota mixta: solo se validan las líneas digitadas.
+    const lineError = validateMixedLines(products);
+    if (lineError) errors.detail = lineError;
+  } else if (isReturnType(form?.typeId)) {
     if (isBlank(form?.originInvoiceNumber)) errors.detail = 'msg.required.select.originInvoice';
     else if (!products.some((line) => num(line.qtyReturn) > 0)) errors.detail = 'msg.required.select.originInvoice';
   } else {
@@ -109,9 +179,15 @@ export const buildPayload = (form, { invoices = [], products = [] } = {}) => {
     cai: form.cai,
     numberCAI: form.numberCAI,
     originInvoiceNumber: returnNote ? form.originInvoiceNumber : '',
-    isMixed: Boolean(form.isMixed)
+    isMixed: returnNote && Boolean(form.isMixed)
   };
-  if (returnNote) {
+  if (returnNote && payload.isMixed) {
+    // Nota mixta: se mandan solo los datos digitados (el back calcula los importes y toma el impuesto de la ficha del producto).
+    payload.products = products.filter((line) => num(line.quantity) > 0).map((line) => ({
+      storeId: Number(line.storeId), productCode: line.productCode, quantity: num(line.quantity), cost: num(line.cost),
+      lotCode: line.lotCode || '', dateExp: line.dateExp || ''
+    }));
+  } else if (returnNote) {
     payload.products = products.filter((line) => num(line.qtyReturn) > 0).map((line) => ({ productCode: line.productCode, quantity: num(line.qtyReturn) }));
   } else {
     payload.invoices = invoices.filter((row) => num(row.appliedValue) > 0).map((row) => ({
@@ -149,6 +225,13 @@ export const normalizeNote = (data) => {
     description: row.productData ? row.productData.name : row.productCode,
     qty: num(row.quantity),
     qtyReturn: num(row.quantity),
+    // Nota mixta: lo digitado y el porcentaje de impuesto que salió de la ficha (lo derivamos del importe guardado).
+    storeId: num(row.storeId),
+    quantity: num(row.quantity),
+    cost: num(row.cost),
+    lotCode: row.lotCode || '',
+    dateExp: row.dateExp && String(row.dateExp).slice(0, 10) !== '1900-01-01' ? String(row.dateExp).slice(0, 10) : '',
+    taxPercent: num(row.subtotal) > 0 ? round2((num(row.taxValue) * 100) / num(row.subtotal)) : 0,
     subtotal: num(row.subtotal),
     discountValue: num(row.discountValue),
     taxValue: num(row.taxValue),
