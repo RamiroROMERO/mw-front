@@ -3,15 +3,17 @@ import { request, buildUrl, notifyError } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import { useProductOptions } from '@Views/app/inventory/settings/productsCatalog/useProductOptions';
 import { withSelectedOption } from '@Views/app/inventory/settings/productsCatalog/pagingRules';
-import { KARDEX_PATH, EMPTY_KARDEX, todayText, validateKardexFilter, buildKardexParams, normalizeKardex, buildSummary } from './kardexRules';
+import { KARDEX_PATH, EMPTY_KARDEX, todayText, validateKardexFilter, buildKardexParams, normalizeKardex, buildSummary, filterKey, canExportDetail, buildReportRequest } from './kardexRules';
 
 // Detalle de kardex de un producto en un almacén (equivale a "Ver Detalle" de inv_kardex.sc2). Solo lectura: lo calcula el back.
-// Los reportes, la impresión y el Excel del detalle son specs aparte y todavía no están en la pantalla.
+// Imprimir y exportar el detalle (SPEC v2-43-sr) descargan un GET que el back arma desde lo guardado; los reportes de existencias son otra spec.
 export const useStock = ({ setLoading }) => {
   const [listStores, setListStores] = useState([]);
   const [kardex, setKardex] = useState({ ...EMPTY_KARDEX, rows: [] });
   const [sendForm, setSendForm] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState(null);
+  const [queriedKey, setQueriedKey] = useState('');
+  const [downloading, setDownloading] = useState(false);
   const latestRequest = useRef(0);
   const { options: productOptions, onInputChange: onProductSearch } = useProductOptions();
 
@@ -41,6 +43,7 @@ export const useStock = ({ setLoading }) => {
   const clearDetail = () => {
     latestRequest.current += 1; // una respuesta que esté en camino ya no se muestra
     setKardex({ ...EMPTY_KARDEX, rows: [] });
+    setQueriedKey('');
   };
 
   const onFilterChange = (e) => {
@@ -65,6 +68,7 @@ export const useStock = ({ setLoading }) => {
     request.GET(buildUrl(KARDEX_PATH, buildKardexParams(formState)), (resp) => {
       if (requestId !== latestRequest.current) return;
       setKardex(normalizeKardex(resp?.data));
+      setQueriedKey(filterKey(formState));
       setLoading(false);
     }, (err) => {
       if (requestId !== latestRequest.current) return;
@@ -74,12 +78,37 @@ export const useStock = ({ setLoading }) => {
     });
   };
 
+  // Un solo GET por botón; GETPdf no notifica por sí mismo, así que el rechazo del back se avisa aquí con su mensaje real.
+  const canExport = canExportDetail(formState, queriedKey) && !downloading;
+  const fnDownload = (format) => {
+    if (!canExport) return;
+    setDownloading(true);
+    const stop = () => setDownloading(false);
+    const { url, params, fileName } = buildReportRequest(formState, format);
+    request.GETPdf(url, params, fileName, (err) => {
+      stop();
+      notifyError(err, 'page.stock.msg.reportError');
+    }, 'GET', stop);
+  };
+
   const propsToControlPanel = {
     buttonsHome: [
       {
         title: 'button.viewDetail',
         icon: 'bi bi-search',
         onClick: fnViewDetail
+      },
+      {
+        title: 'button.printDetail',
+        icon: 'bi bi-printer',
+        onClick: () => fnDownload('pdf'),
+        disabled: !canExport
+      },
+      {
+        title: 'button.exportDetail',
+        icon: 'bi bi-file-earmark-excel',
+        onClick: () => fnDownload('xlsx'),
+        disabled: !canExport
       }
     ],
     buttonsOptions: [],
