@@ -3931,6 +3931,13 @@ const enLang = {
   "page.stock.modal.printMovements.radio.detail": "Detail",
   "page.stock.modal.printMovements.radio.summary": "Summary",
   "page.stock.modal.printMovement.title": "Movement by Product",
+  "button.productMovement": "Product Movement",
+  "page.stock.modal.printMovements.productType": "Product Type",
+  "page.stock.modal.printMovements.allTypes": "All",
+  "page.stock.modal.printMovements.excludeAdjustments": "Exclude adjustments",
+  "page.stock.movement.error.dateFuture": "The date cannot be in the future!",
+  "page.stock.movement.error.range": "The start date cannot be after the end date!",
+  "page.stock.msg.movementError": "The product movement could not be generated",
   /* 75. Credit notes provider page in inventory */
   "page.creditNotesProv.radio.concept": "Concept",
   "page.creditNotesProv.radio.discount": "Discount",
