@@ -6,6 +6,8 @@ import { validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
 import { useProductOptions } from '@Views/app/inventory/settings/productsCatalog/useProductOptions';
 import { withSelectedOption } from '@Views/app/inventory/settings/productsCatalog/pagingRules';
+import { printDocument } from '@Helpers/printDocument';
+import { printOptions } from './creditNotePrintRules';
 import {
   TYPE_DISCOUNT, TYPE_CANCEL, TYPE_RETURN, TYPE_OTHER, validateNote, buildPayload, noteState, normalizeNote, buildInvoiceLine, buildReturnLinesFromPurchase,
   setReturnQty, sumApplied, sumReturn, appliedFromPercent, percentFromApplied, isReturnType, isMixedNote, emptyMixedDraft, validateMixedDraft, mixedLineFromDraft,
@@ -464,7 +466,7 @@ export const useCreditNotes = ({ setLoading }) => {
     fnNew: fnNewCreditNote,
     fnSearch: fnSearchCreditNotes,
     fnSave: !disabled ? fnSaveCreditNote : null,
-    fnPrint: null,
+    fnPrint: () => { printDocument({ ...printOptions(id), setLoading }); },
     fnCancel: state.canVoid ? fnAskVoid : null,
     buttonsHome: [
       ...(state.canProcess ? [{
