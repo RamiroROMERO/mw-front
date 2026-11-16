@@ -14,6 +14,7 @@ export const useStock = ({ setLoading }) => {
   const [selectedLabel, setSelectedLabel] = useState(null);
   const [queriedKey, setQueriedKey] = useState('');
   const [downloading, setDownloading] = useState(false);
+  const [openModalReports, setOpenModalReports] = useState(false);
   const latestRequest = useRef(0);
   const { options: productOptions, onInputChange: onProductSearch } = useProductOptions();
 
@@ -111,7 +112,14 @@ export const useStock = ({ setLoading }) => {
         disabled: !canExport
       }
     ],
-    buttonsOptions: [],
+    // Reportes de Existencias (SPEC v2-44-sr): abre el modal con los cuatro reportes en PDF o Excel.
+    buttonsOptions: [
+      {
+        title: 'button.stockReports',
+        icon: 'bi bi-file-earmark-bar-graph',
+        onClick: () => setOpenModalReports(true)
+      }
+    ],
     buttonsAdmin: []
   };
 
@@ -124,6 +132,8 @@ export const useStock = ({ setLoading }) => {
     summary,
     listStores,
     listProducts,
+    openModalReports,
+    setOpenModalReports,
     onFilterChange,
     onProductChange,
     onProductSearch
