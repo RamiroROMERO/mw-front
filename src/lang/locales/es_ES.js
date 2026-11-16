@@ -450,6 +450,8 @@ const esLang = {
   "button.calcCashClose": "Calcular Cierre",
   "button.count": "Contabilizar",
   "button.genCai": "Gen CAI",
+  "button.ticketProforma": "Boleta Proforma",
+  "button.ticketEmpty": "Boleta vacía",
   "button.distAdvance": "Dist Anticipo",
   "button.concepts": "Conceptos",
   "button.closeOrder": "Cerrar Orden",

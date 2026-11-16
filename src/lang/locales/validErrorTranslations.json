@@ -353,6 +353,7 @@
     "ticketPurchase.not.found",
     "ticketPurchase.paymentType.invalid",
     "ticketPurchase.paymentType.required",
+    "ticketPurchase.print.posted",
     "ticketPurchase.product.invalid",
     "ticketPurchase.provider.accounts.missing",
     "ticketPurchase.provider.invalid",
