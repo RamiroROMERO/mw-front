@@ -41,8 +41,10 @@ export const useAdminCars = ({ setLoading, fnGetDataCars, dataCars }) => {
       fnGetDataCars();
       onResetForm();
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
+      // Rechazo del back (por ejemplo, en uso): request ya mostró su mensaje real. El registro se queda y el
+      // formulario se limpia para que un Guardar posterior no edite el registro que se intentó eliminar.
+      onResetForm();
       setLoading(false);
     });
   }
