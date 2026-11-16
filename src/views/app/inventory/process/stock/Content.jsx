@@ -2,13 +2,15 @@ import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { Separator } from '@Components/common/CustomBootstrap';
 import ControlPanel from '@Components/controlPanel';
+import Modal from '@Components/modal';
 import FilterStock from './FilterStock';
 import DetailStock from './DetailStock';
 import TableStock from './TableStock';
+import ModalStockReport from './ModalStockReport';
 import { useStock } from './useStock';
 
 const Stock = ({ setLoading }) => {
-  const { propsToControlPanel, formState, errors, sendForm, kardex, summary, listStores, listProducts, onFilterChange, onProductChange, onProductSearch } = useStock({ setLoading });
+  const { propsToControlPanel, formState, errors, sendForm, kardex, summary, listStores, listProducts, openModalReports, setOpenModalReports, onFilterChange, onProductChange, onProductSearch } = useStock({ setLoading });
 
   const propsToFilterStock = {
     ...formState,
@@ -21,6 +23,15 @@ const Stock = ({ setLoading }) => {
     onFilterChange,
     onProductChange,
     onProductSearch
+  };
+
+  const propsToModalReports = {
+    ModalContent: ModalStockReport,
+    title: 'page.stock.modal.stockReports.title',
+    open: openModalReports,
+    setOpen: setOpenModalReports,
+    maxWidth: 'md',
+    data: { listStores }
   };
 
   return (
@@ -42,6 +53,7 @@ const Stock = ({ setLoading }) => {
           </CardBody>
         </Card>
       </Colxx>
+      <Modal {...propsToModalReports} />
     </Row>
   );
 }

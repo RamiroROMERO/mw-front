@@ -1,53 +1,36 @@
-import { validInt } from '@Helpers/Utils';
-import { useForm } from '@Hooks';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { request, notifyError } from '@Helpers/core';
+import { buildStockReportRequest, defaultReportForm, needsStore, validateStockReport } from './stockReportRules';
 
-export const useModalStock = ({ listProducts }) => {
-  const [productsByStore, setProductsByStore] = useState([]);
+// Modal "Reportes de Existencias" (SPEC v2-44-sr): pide el tipo de reporte, el almacén (no en el general), la fecha y el filtro de valores y
+// descarga el documento en PDF o Excel. Es un GET de solo lectura que el back arma desde lo guardado; GETPdf no notifica por sí mismo, así
+// que el error se avisa aquí. Un filtro incompleto se marca en pantalla y NO llama al back. Si el back rechaza, el modal queda abierto
+// con su mensaje real.
+export const useModalStock = ({ setOpen }) => {
+  const [form, setForm] = useState(() => defaultReportForm());
+  const [sendForm, setSendForm] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
-    storeId: 0,
-    productId: 0,
-    dateStart: '',
-    dateEnd: '',
-    inputUnit: '',
-    outputUnit: '',
-    typeValues: 0,
-    exportToXls: 0,
-    typeReport: 0
-  });
+  const errors = useMemo(() => validateStockReport(form), [form]);
 
-  const onStoreChange = e => {
-    const store = e.target.value;
+  const onInputChange = ({ target: { name, value } }) => setForm((prev) => ({ ...prev, [name]: value }));
+  const onStoreChange = ({ target: { value } }) => setForm((prev) => ({ ...prev, storeId: Number(value) || 0 }));
 
-    const filterProducts = listProducts.filter(item => { return item.storeId === validInt(store) });
-    if (filterProducts.lenght > 0) {
-      setProductsByStore(filterProducts);
-    } else {
-      setProductsByStore(listProducts);
-    }
+  const fnDownload = (format) => {
+    setSendForm(true);
+    if (Object.keys(errors).length > 0) return;
 
-    onBulkForm({ storeId: store });
-  }
+    setDownloading(true);
+    const stop = () => setDownloading(false);
+    const { url, params, fileName } = buildStockReportRequest(form, format);
+    request.GETPdf(url, params, fileName, (err) => {
+      stop();
+      notifyError(err, 'page.stock.msg.reportsError');
+    }, 'GET', () => {
+      stop();
+      setOpen(false);
+    });
+  };
 
-  const onProductChange = e => {
-    const product = e.target.value;
-
-    const findProduct = listProducts.find(item => { return item.id === validInt(product) });
-
-    onBulkForm({ productId: product, inputUnit: findProduct.inputUnit, outputUnit: findProduct.outputUnit });
-  }
-
-  const fnPrintReport = () => { }
-
-  return (
-    {
-      formState,
-      productsByStore,
-      onInputChange,
-      onStoreChange,
-      onProductChange,
-      fnPrintReport
-    }
-  )
-}
+  return { form, errors, sendForm, downloading, askStore: needsStore(form.typeId), onInputChange, onStoreChange, fnDownload };
+};

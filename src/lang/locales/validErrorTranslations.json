@@ -330,6 +330,8 @@
     "stock.kardex.product.notFound",
     "stock.kardex.product.required",
     "stock.kardex.store.required",
+    "stock.report.filter.invalid",
+    "stock.report.type.invalid",
     "store.account.invalid",
     "store.fertilizer.notAllowed",
     "store.inUse",
