@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateKardexFilter, buildKardexParams, currentCost, normalizeKardex, formatQty, documentLabel, buildSummary, isValidCalendarDate, todayText, EMPTY_KARDEX } from './kardexRules';
+import { validateKardexFilter, buildKardexParams, currentCost, normalizeKardex, formatQty, documentLabel, buildSummary, isValidCalendarDate, todayText, EMPTY_KARDEX, filterKey, canExportDetail, buildReportRequest } from './kardexRules';
 
 // Los casos del filtro son los mismos de modules/inventory/stocks/__tests__/kardexRules.test.js del back.
 const VALID = { storeId: 1, productCode: 'HPL-00001', dateStart: '2026-08-01', dateEnd: '2026-08-31' };
@@ -100,5 +100,29 @@ describe('panel de totales', () => {
   });
   it('existencia negativa se muestra con su signo', () => {
     expect(buildSummary({ product: { costType: 3, lastCost: 62 }, totals: { stock: -88, value: -4772.24 } })).toMatchObject({ currentExistence: '-88.00', totalValue: '-4772.24' });
+  });
+});
+
+describe('imprimir y exportar el detalle (SPEC v2-43-sr)', () => {
+  it('la huella del filtro es la misma con los mismos valores (número o texto)', () => {
+    expect(filterKey(VALID)).toBe(filterKey({ ...VALID, storeId: '1' }));
+  });
+  it('sin detalle consultado no se habilita', () => {
+    expect(canExportDetail(VALID, '')).toBe(false);
+  });
+  it('con el filtro igual al consultado se habilita', () => {
+    expect(canExportDetail(VALID, filterKey(VALID))).toBe(true);
+  });
+  it.each([['storeId', 2], ['productCode', 'HPL-00002'], ['dateStart', '2026-08-02'], ['dateEnd', '2026-09-01']])('si cambia %s se deshabilita', (field, value) => {
+    expect(canExportDetail({ ...VALID, [field]: value }, filterKey(VALID))).toBe(false);
+  });
+  it('arma el GET con los parámetros en `params` y no en la URL', () => {
+    const r = buildReportRequest(VALID, 'xlsx');
+    expect(r).toEqual({ url: 'inventory/process/stocks/kardex/report', params: { storeId: 1, productCode: 'HPL-00001', dateStart: '2026-08-01', dateEnd: '2026-08-31', format: 'xlsx' }, fileName: 'Movimiento de Producto.xlsx' });
+    expect(r.url).not.toContain('?');
+  });
+  it('un formato distinto de xlsx es pdf', () => {
+    expect(buildReportRequest(VALID, 'otro').params.format).toBe('pdf');
+    expect(buildReportRequest(VALID).fileName).toBe('Movimiento de Producto.pdf');
   });
 });

@@ -110,3 +110,21 @@ export const buildSummary = (kardex) => {
     totalValue: Number(totals.value).toFixed(2)
   };
 };
+
+// Imprimir y exportar el detalle (SPEC v2-43-sr): son un GET al back, que vuelve a leer lo guardado con el filtro (nunca envía las filas de
+// la pantalla). Solo se habilitan con un detalle ya consultado y mientras el filtro de pantalla es el mismo que se consultó.
+export const REPORT_PATH = `${KARDEX_PATH}/report`;
+export const REPORT_FILE_NAMES = { pdf: 'Movimiento de Producto.pdf', xlsx: 'Movimiento de Producto.xlsx' };
+
+// Huella del filtro: dos filtros con los mismos valores dan la misma huella.
+export const filterKey = (form = {}) => JSON.stringify(buildKardexParams({ storeId: form.storeId ?? 0, productCode: form.productCode ?? '', dateStart: form.dateStart, dateEnd: form.dateEnd }));
+
+// `queriedKey` es la huella del último detalle consultado con éxito ('' = ninguno).
+export const canExportDetail = (form, queriedKey) => Boolean(queriedKey) && filterKey(form) === queriedKey;
+
+// Petición para `request.GETPdf(url, params, fileName, ...)`: los parámetros van en `params` y no escritos en la URL (GETPdf agrega `?`,
+// lección de la v2-12-sr). Cualquier formato distinto de xlsx es pdf, igual que el botón.
+export const buildReportRequest = (form, format = 'pdf') => {
+  const finalFormat = format === 'xlsx' ? 'xlsx' : 'pdf';
+  return { url: REPORT_PATH, params: { ...buildKardexParams(form), format: finalFormat }, fileName: REPORT_FILE_NAMES[finalFormat] };
+};

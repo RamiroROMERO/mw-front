@@ -3919,6 +3919,8 @@ const esLang = {
   "page.stock.input.totalValue": "Valor Total",
   "page.stock.input.lastPurchase": "Última Compra",
   "page.stock.msg.loadError": "No se pudo consultar el detalle del kardex",
+  "button.exportDetail": "Exportar Detalle",
+  "page.stock.msg.reportError": "No se pudo generar el documento Movimiento de Producto",
   'page.stock.table.column.valueOutput': "Valor Salida",
   "page.stock.table.column.unitCost": "Costo Und.",
   "page.stock.table.column.doctoNum": "No. Docto",

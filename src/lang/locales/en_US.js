@@ -3903,6 +3903,8 @@ const enLang = {
   "page.stock.input.totalValue": "Total Value",
   "page.stock.input.lastPurchase": "Last Purchase",
   "page.stock.msg.loadError": "The kardex detail could not be loaded",
+  "button.exportDetail": "Export Detail",
+  "page.stock.msg.reportError": "The Product Movement document could not be generated",
   "page.stock.table.column.valueOutput": "Value Output",
   "page.stock.table.column.unitCost": "Unit Cost",
   "page.stock.table.column.doctoNum": "Document Num.",
