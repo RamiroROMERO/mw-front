@@ -7,6 +7,7 @@ import { useForm } from "@Hooks"
 import {
   buildPayload, emptyForm, formFromTicket, isProcessed, lineFromOrder, lineFromServer, sumTotals, toFormValidation, validateHeader, validateLines
 } from "./ticketPurchaseRules";
+import { accountAction, caiFormPatch, genCaiAction } from "./ticketCaiRules";
 
 const MAX_LINE_ERRORS = 5;
 // El combo solo ofrece lo que el back acepta: un registro inactivo (status 0 o false) se omite.
@@ -26,6 +27,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
   const [openModalViewTicket, setOpenModalViewTickets] = useState(false);
   const [openModalViewOrders, setOpenModalViewOrders] = useState(false);
   const [openMsgAccountDocument, setOpenMsgAccountDocument] = useState(false);
+  const [openMsgGenCai, setOpenMsgGenCai] = useState(false);
   const [openMsgCancelDocument, setOpenMsgCancelDocument] = useState(false);
   const [openModalSettings, setOpenModalSettings] = useState(false);
   const [openModalBulkLoad, setOpenModalBulkLoad] = useState(false);
@@ -126,13 +128,47 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
   // Impresión, Reporte y Exportar: sin función (el legacy los tiene; quedan para sus specs, ver Fase 4 de la revisión).
   const fnPrintDocument = () => { }
 
-  const fnAccountDocument = () => {
-    if (validInt(id) === 0) {
+  // Gen CAI (SPEC v2-38-sr): paso propio, con confirmación (el número fiscal consumido no se devuelve). Sin boleta guardada o con el número
+  // ya generado no llama al back (`genCaiAction`); el back valida el resto (líneas, total, período) y su mensaje real llega por `notifyError`.
+  const fnGenCai = () => {
+    const action = genCaiAction(formState);
+    if (action === 'saveFirst') {
       createNotification('warning', 'msg.required.saveDocument', 'alert.warning.title');
       return;
     }
-    if (processed) {
+    if (action === 'alreadyGenerated') {
+      createNotification('warning', 'msg.warning.ticketPurchase.cai.already', 'alert.warning.title');
+      return;
+    }
+    setOpenMsgGenCai(true);
+  }
+
+  const fnOkGenCai = () => {
+    setOpenMsgGenCai(false);
+    setLoading(true);
+    request.POST(`inventory/process/ticketPurchase/${id}/generateCai`, {}, (resp) => {
+      onBulkForm(caiFormPatch(resp.data));
+      createNotification('success', 'msg.success.genCai', 'alert.success.title');
+      setLoading(false);
+    }, (err) => {
+      notifyError(err, 'msg.save.record.error');
+      setLoading(false);
+    }, false);
+  }
+
+  const fnAccountDocument = () => {
+    const action = accountAction(formState);
+    if (action === 'saveFirst') {
+      createNotification('warning', 'msg.required.saveDocument', 'alert.warning.title');
+      return;
+    }
+    if (action === 'processed') {
       createNotification('error', 'msg.error.ticketPurchase.already.processed', 'alert.error.title');
+      return;
+    }
+    // SPEC v2-38-sr: contabilizar ya no genera el número fiscal; sin él el back respondería ticketPurchase.cai.required.
+    if (action === 'genCaiFirst') {
+      createNotification('warning', 'msg.warning.ticketPurchase.cai.required', 'alert.warning.title');
       return;
     }
     setOpenMsgAccountDocument(true);
@@ -309,6 +345,11 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
     fnPrint: fnPrintDocument,
     fnCancel: fnCancelDocument,
     buttonsHome: [
+      {
+        title: "button.genCai",
+        icon: "bi bi-123",
+        onClick: fnGenCai
+      },
       // Contabilizar (kardex, CxP y partida) solo existe con Contabilidad activa, igual que en el legacy.
       ...(accountingActive ? [{
         title: "button.count",
@@ -367,6 +408,9 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       openMsgAccountDocument,
       setOpenMsgAccountDocument,
       fnOkAccountDocument,
+      openMsgGenCai,
+      setOpenMsgGenCai,
+      fnOkGenCai,
       openMsgCancelDocument,
       setOpenMsgCancelDocument,
       fnOkCancelDocument,

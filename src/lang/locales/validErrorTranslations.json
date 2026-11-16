@@ -343,6 +343,8 @@
     "ticketPurchase.accounting.create.error",
     "ticketPurchase.accounting.disabled",
     "ticketPurchase.already.processed",
+    "ticketPurchase.cai.already",
+    "ticketPurchase.cai.required",
     "ticketPurchase.cxp.has.payments",
     "ticketPurchase.detail.required",
     "ticketPurchase.document.invalid",

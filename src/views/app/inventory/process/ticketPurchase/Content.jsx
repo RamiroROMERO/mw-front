@@ -31,7 +31,7 @@ const TicketPurchase = ({ setLoading }) => {
     propsToControlPanel, formState, onInputChange, listDocuments, listProviders, listPaymentTypes, listAccounts, listStores,
     onBulkForm, sendForm, formValidation, processed, openModalViewTicket, setOpenModalViewTickets, dataOrders, dataTickets,
     openModalViewOrders, setOpenModalViewOrders, fnViewOrder, fnViewTicket, openMsgAccountDocument, setOpenMsgAccountDocument,
-    fnOkAccountDocument, openMsgCancelDocument, setOpenMsgCancelDocument, fnOkCancelDocument, openModalSettings,
+    fnOkAccountDocument, openMsgGenCai, setOpenMsgGenCai, fnOkGenCai, openMsgCancelDocument, setOpenMsgCancelDocument, fnOkCancelDocument, openModalSettings,
     setOpenModalSettings, openModalBulkLoad, setOpenModalBulkLoad, fnConfirmBulkLoad
   } = useTicketPurchase({ setLoading, setTicketDetail, ticketDetail, onResetFormDeta, accountingActive });
 
@@ -134,6 +134,13 @@ const TicketPurchase = ({ setLoading }) => {
     }
   }
 
+  const propsToMsgGenCai = {
+    open: openMsgGenCai,
+    setOpen: setOpenMsgGenCai,
+    fnOnOk: fnOkGenCai,
+    title: "msg.question.genCai.title"
+  }
+
   const propsToMsgAccountDocument = {
     open: openMsgAccountDocument,
     setOpen: setOpenMsgAccountDocument,
@@ -168,6 +175,7 @@ const TicketPurchase = ({ setLoading }) => {
       <Modal {...propsToModalViewOrders} />
       <Modal {...propsToModalSettings} />
       <Modal {...propsToModalBulkLoad} />
+      <Confirmation {...propsToMsgGenCai} />
       <Confirmation {...propsToMsgAccountDocument} />
       <Confirmation {...propsToMsgCancelDocument} />
     </>
