@@ -448,6 +448,8 @@ const enLang = {
   "button.calcCashClose": "Calculate Cash Closing",
   "button.count": "Count",
   "button.genCai": "Gen CAI",
+  "button.ticketProforma": "Proforma Ticket",
+  "button.ticketEmpty": "Blank Ticket",
   "button.distAdvance": "Distribute Advance",
   "button.concepts": "Concepts",
   "button.closeOrder": "Close Work Order",

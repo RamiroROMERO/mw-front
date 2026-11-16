@@ -7,7 +7,9 @@ import { useForm } from "@Hooks"
 import {
   buildPayload, emptyForm, formFromTicket, isProcessed, lineFromOrder, lineFromServer, sumTotals, toFormValidation, validateHeader, validateLines
 } from "./ticketPurchaseRules";
+import { printDocument } from "@Helpers/printDocument";
 import { accountAction, caiFormPatch, genCaiAction } from "./ticketCaiRules";
+import { printOptions } from "./ticketPrintRules";
 
 const MAX_LINE_ERRORS = 5;
 // El combo solo ofrece lo que el back acepta: un registro inactivo (status 0 o false) se omite.
@@ -125,8 +127,12 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
     }
   }
 
-  // Impresión, Reporte y Exportar: sin función (el legacy los tiene; quedan para sus specs, ver Fase 4 de la revisión).
-  const fnPrintDocument = () => { }
+  // Impresión (SPEC v2-40-sr): boleta, proforma y boleta vacía por GET, siempre de lo guardado. Sin boleta guardada avisa "guarde primero"
+  // sin llamar al back; un rechazo (la vacía de una boleta ya contabilizada) muestra su mensaje real. Reporte y Exportar: otra spec.
+  const fnPrintKind = (kind) => () => { printDocument({ ...printOptions(id, kind), setLoading }); };
+  const fnPrintDocument = fnPrintKind('ticket');
+  const fnPrintProforma = fnPrintKind('proforma');
+  const fnPrintEmpty = fnPrintKind('empty');
 
   // Gen CAI (SPEC v2-38-sr): paso propio, con confirmación (el número fiscal consumido no se devuelve). Sin boleta guardada o con el número
   // ya generado no llama al back (`genCaiAction`); el back valida el resto (líneas, total, período) y su mensaje real llega por `notifyError`.
@@ -363,6 +369,16 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       }
     ],
     buttonsOptions: [
+      {
+        title: "button.ticketProforma",
+        icon: "bi bi-file-earmark-text",
+        onClick: fnPrintProforma
+      },
+      {
+        title: "button.ticketEmpty",
+        icon: "bi bi-file-earmark",
+        onClick: fnPrintEmpty
+      },
       {
         title: "button.settings",
         icon: "bi bi-sliders",
