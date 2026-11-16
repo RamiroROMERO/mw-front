@@ -6,9 +6,9 @@ import { IntlMessages, formatNumber } from '@Helpers/Utils'
 import DateCalendar from '@Components/dateCalendar'
 import { useDetailProduct } from './useDetailProduct'
 
-const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, dateOut, sourceStoreId, total, onInputChangeDeta, fnViewProducts, setBulkFormDeta, transferDetail, setTransferDetail, sendFormDeta, setSendFormDeta, isFormValidDeta, formValidationDeta, setSendForm, isFormValid, disabled}) => {
+const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, expirationDate, sourceStoreId, total, onInputChangeDeta, fnViewProducts, setBulkFormDeta, transferDetail, setTransferDetail, sendFormDeta, setSendFormDeta, isFormValidDeta, formValidationDeta, setSendForm, isFormValid, disabled}) => {
 
-  const {onQtyChange, fnAddProduct} = useDetailProduct({idProd, productCode, nameProduct, qty, cost, total, lotCode, dateOut, sourceStoreId, setBulkFormDeta, transferDetail, setTransferDetail, isFormValidDeta, setSendFormDeta, setSendForm, isFormValid});
+  const {onQtyChange, fnAddProduct} = useDetailProduct({idProd, productCode, nameProduct, qty, cost, total, lotCode, expirationDate, sourceStoreId, setBulkFormDeta, transferDetail, setTransferDetail, isFormValidDeta, setSendFormDeta, setSendForm, isFormValid});
 
   const {productCodeValid, costValid} = formValidationDeta;
 
@@ -83,9 +83,9 @@ const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost
             </Colxx>
             <Colxx xxs="12" xs="7" sm="5" lg="4" xl="4">
               <DateCalendar
-                name="dateOut"
+                name="expirationDate"
                 label="input.dateOutProd"
-                value={dateOut}
+                value={expirationDate}
                 onChange={onInputChangeDeta}
               />
             </Colxx>

@@ -6,9 +6,9 @@ import { IntlMessages, formatNumber } from '@Helpers/Utils'
 import DateCalendar from '@Components/dateCalendar'
 import { useDetailProduct } from './useDetailProduct'
 
-const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, dateOut, sourceStoreId, assignStoreId, total, onInputChangeDeta, fnViewProducts, setBulkFormDeta, transferDetail, setTransferDetail, sendFormDeta,setSendFormDeta, isFormValidDeta, formValidationDeta, setSendForm, isFormValid, noCtaOrigin, noCtaAssign, disabled}) => {
+const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, expirationDate, sourceStoreId, assignStoreId, total, onInputChangeDeta, fnViewProducts, setBulkFormDeta, transferDetail, setTransferDetail, sendFormDeta,setSendFormDeta, isFormValidDeta, formValidationDeta, setSendForm, isFormValid, originCtaCode, assignCtaCode, disabled}) => {
 
-  const {onQtyChange, fnAddProduct} = useDetailProduct({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, dateOut, sourceStoreId, assignStoreId, total, setBulkFormDeta, transferDetail, setTransferDetail, isFormValidDeta, setSendFormDeta, setSendForm, isFormValid, noCtaOrigin, noCtaAssign});
+  const {onQtyChange, fnAddProduct} = useDetailProduct({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, expirationDate, sourceStoreId, assignStoreId, total, setBulkFormDeta, transferDetail, setTransferDetail, isFormValidDeta, setSendFormDeta, setSendForm, isFormValid, originCtaCode, assignCtaCode});
 
   const {productCodeValid, qtyValid, costValid} = formValidationDeta;
 
@@ -86,9 +86,9 @@ const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost
             </Colxx>
             <Colxx xxs="12" xs="7" sm="5" lg="3" xl="4">
               <DateCalendar
-                name="dateOut"
+                name="expirationDate"
                 label="input.dateOutProd"
-                value={dateOut}
+                value={expirationDate}
                 onChange={onInputChangeDeta}
               />
             </Colxx>

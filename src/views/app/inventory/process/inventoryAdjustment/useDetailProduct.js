@@ -3,7 +3,7 @@ import { validFloat } from '@Helpers/Utils';
 // A diferencia de Traslados/Requisiciones, acá `qty` es el CONTEO FÍSICO objetivo (no un
 // movimiento) — 0 es un valor válido (el producto realmente no existe), así que no se
 // exige > 0 como en las otras pantallas de la familia.
-export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, total, lotCode, dateOut, sourceStoreId, setBulkFormDeta, transferDetail, setTransferDetail, setSendFormDeta, isFormValidDeta, setSendForm, isFormValid }) => {
+export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, total, lotCode, expirationDate, sourceStoreId, setBulkFormDeta, transferDetail, setTransferDetail, setSendFormDeta, isFormValidDeta, setSendForm, isFormValid }) => {
 
   const onQtyChange = e => {
     const totalValue = validFloat(cost) * e.target.value;
@@ -34,7 +34,7 @@ export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, 
       cost,
       total: validFloat(total),
       lotCode,
-      dateOut: dateOut !== "" ? dateOut : "1900-01-01"
+      expirationDate: expirationDate !== "" ? expirationDate : "1900-01-01"
     }
 
     if (idProd > 0) {
@@ -44,7 +44,7 @@ export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, 
         cost,
         total: validFloat(total),
         lotCode,
-        dateOut: dateOut !== "" ? dateOut : "1900-01-01",
+        expirationDate: expirationDate !== "" ? expirationDate : "1900-01-01",
         originStoreId: sourceStoreId
       } : item);
       setTransferDetail(updated);
@@ -61,7 +61,7 @@ export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, 
       cost: 0,
       qty: 0,
       lotCode: '',
-      dateOut: '',
+      expirationDate: '',
       total: 0
     }
 

@@ -6,7 +6,7 @@ export const useDetailTable = ({setBulkFormDeta, transferDetail, setTransferDeta
 
   const fnEditProduct = (itemProd)=>{
     itemProd.idProd = itemProd.id?itemProd.id:itemProd.idTemp
-    itemProd.dateOut = itemProd.dateOut==="1900-01-01"?"":itemProd.dateOut
+    itemProd.expirationDate = itemProd.expirationDate==="1900-01-01"?"":itemProd.expirationDate
     setBulkFormDeta(itemProd);
   }
 

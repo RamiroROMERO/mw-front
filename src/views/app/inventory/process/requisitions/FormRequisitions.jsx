@@ -10,11 +10,11 @@ import { IntlMessages } from '@Helpers/Utils'
 import { useFormRequisition } from './useFormRequisition'
 import ModalApplyAccount from './ModalApplyAccount'
 
-const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, noCtaOrigin, assignStoreId, noCtaAssign, date, code, applyTo, onInputChange, listDocuments, listStores, listDestinations, listTypeApply, formValidation, sendForm, listAccounts, onBulkForm, requisitionDetail, setRequisitionDetail, onResetFormDeta, disabled, isProcessed, isVoided, pdaNumber}) => {
+const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, originCtaCode, assignStoreId, assignCtaCode, date, physicalNumber, applyTo, onInputChange, listDocuments, listStores, listDestinations, listTypeApply, formValidation, sendForm, listAccounts, onBulkForm, requisitionDetail, setRequisitionDetail, onResetFormDeta, disabled, isProcessed, isVoided, pdaNumber}) => {
 
   const {documentCodeValid, sourceStoreIdValid, assignStoreIdValid, applyToValid} = formValidation;
 
-  const {fnApplyDestinyAccount, onStoreChange, onDestinationChange, onApplyToChange, openModalApplyAccount, setOpenModalApplyAccount, fnApplyAll, fnApplyCurrent} = useFormRequisition({onBulkForm, listStores, listDestinations, requisitionDetail, setRequisitionDetail, noCtaAssign, idProd, onResetFormDeta});
+  const {fnApplyDestinyAccount, onStoreChange, onDestinationChange, onApplyToChange, openModalApplyAccount, setOpenModalApplyAccount, fnApplyAll, fnApplyCurrent} = useFormRequisition({onBulkForm, listStores, listDestinations, requisitionDetail, setRequisitionDetail, assignCtaCode, idProd, onResetFormDeta});
 
   const propsToModalApplyAccount = {
     ModalContent: ModalApplyAccount,
@@ -71,8 +71,8 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, noCt
                 <Colxx xxs="12" lg="7">
                   <SearchSelect
                     label='select.accountId'
-                    name='noCtaOrigin'
-                    inputValue={noCtaOrigin}
+                    name='originCtaCode'
+                    inputValue={originCtaCode}
                     options={listAccounts}
                     onChange={onInputChange}
                     isDisabled
@@ -99,8 +99,8 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, noCt
                 <Colxx xxs="12" lg="7">
                   <SearchSelect
                     label='select.accountId'
-                    name='noCtaAssign'
-                    inputValue={noCtaAssign}
+                    name='assignCtaCode'
+                    inputValue={assignCtaCode}
                     options={listAccounts}
                     onChange={onInputChange}
                     isDisabled={disabled}
@@ -129,9 +129,9 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, noCt
           </Colxx>
           <Colxx xxs="12" xs="6" sm="12">
             <InputField
-              name="code"
+              name="physicalNumber"
               label='page.transfersToStores.input.numPhysical'
-              value={code}
+              value={physicalNumber}
               onChange={onInputChange}
               type="text"
               disabled={disabled}

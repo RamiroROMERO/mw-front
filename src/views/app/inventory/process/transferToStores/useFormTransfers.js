@@ -17,7 +17,7 @@ export const useFormTransfers = ({ onBulkForm, listStores }) => {
 
     const filter = listStores.find(item => item.value === validInt(store));
 
-    onBulkForm({ sourceStoreId: store, noCtaOrigin: filter ? filter.invCtaCode : '' });
+    onBulkForm({ sourceStoreId: store, originCtaCode: filter ? filter.invCtaCode : '' });
   }
 
   const onDestinationChange = (e, applyTo) => {
@@ -26,7 +26,7 @@ export const useFormTransfers = ({ onBulkForm, listStores }) => {
     const filter = listStores.find(item => item.value === validInt(destination));
     const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'invCtaCode';
 
-    onBulkForm({ assignStoreId: destination, noCtaAssign: filter ? filter[accountField] : '' });
+    onBulkForm({ assignStoreId: destination, assignCtaCode: filter ? filter[accountField] : '' });
   }
 
   const onApplyToChange = (e, assignStoreId) => {
@@ -35,7 +35,7 @@ export const useFormTransfers = ({ onBulkForm, listStores }) => {
     const filter = listStores.find(item => item.value === validInt(assignStoreId));
     const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'invCtaCode';
 
-    onBulkForm({ applyTo, noCtaAssign: filter ? filter[accountField] : '' });
+    onBulkForm({ applyTo, assignCtaCode: filter ? filter[accountField] : '' });
   }
 
   return (

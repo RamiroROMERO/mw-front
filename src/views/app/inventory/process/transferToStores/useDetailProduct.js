@@ -1,6 +1,6 @@
 import { validFloat } from '@Helpers/Utils';
 
-export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, total, lotCode, dateOut, sourceStoreId, assignStoreId, setBulkFormDeta, transferDetail, setTransferDetail, setSendFormDeta, isFormValidDeta, setSendForm, isFormValid, noCtaOrigin, noCtaAssign }) => {
+export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, total, lotCode, expirationDate, sourceStoreId, assignStoreId, setBulkFormDeta, transferDetail, setTransferDetail, setSendFormDeta, isFormValidDeta, setSendForm, isFormValid, originCtaCode, assignCtaCode }) => {
 
   const onQtyChange = e => {
     const totalValue = validFloat(cost) * e.target.value;
@@ -26,15 +26,15 @@ export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, 
       idTemp: new Date().getTime(),
       originStoreId: sourceStoreId,
       assignStoreId,
-      noCtaOrigin,
-      noCtaAssign,
+      originCtaCode,
+      assignCtaCode,
       productCode,
       nameProduct,
       qty: validFloat(qty),
       cost,
       total: validFloat(total),
       lotCode,
-      dateOut: dateOut !== "" ? dateOut : "1900-01-01"
+      expirationDate: expirationDate !== "" ? expirationDate : "1900-01-01"
     }
 
     if (idProd > 0) {
@@ -44,11 +44,11 @@ export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, 
           item.cost = validFloat(cost)
           item.total = validFloat(total)
           item.lotCode = lotCode
-          item.dateOut = dateOut !== "" ? dateOut : "1900-01-01"
+          item.expirationDate = expirationDate !== "" ? expirationDate : "1900-01-01"
           item.assignStoreId = assignStoreId
           item.originStoreId = sourceStoreId
-          item.noCtaOrigin = noCtaOrigin
-          item.noCtaAssign = noCtaAssign
+          item.originCtaCode = originCtaCode
+          item.assignCtaCode = assignCtaCode
         }
         return item;
       });
@@ -65,7 +65,7 @@ export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, 
       cost: 0,
       qty: 1,
       lotCode: '',
-      dateOut: '',
+      expirationDate: '',
       total: 0
     }
 

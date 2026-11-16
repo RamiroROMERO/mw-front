@@ -22,7 +22,7 @@ export const useTransfersDeta = ({ setLoading }) => {
       cost: 0,
       qty: 1,
       lotCode: '',
-      dateOut: '',
+      expirationDate: '',
       total: 0
     }, transfersDetaValid);
 
