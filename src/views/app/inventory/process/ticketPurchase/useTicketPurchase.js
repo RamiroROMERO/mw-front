@@ -32,6 +32,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
   const [openMsgGenCai, setOpenMsgGenCai] = useState(false);
   const [openMsgCancelDocument, setOpenMsgCancelDocument] = useState(false);
   const [openModalSettings, setOpenModalSettings] = useState(false);
+  const [openModalReport, setOpenModalReport] = useState(false);
   const [openModalBulkLoad, setOpenModalBulkLoad] = useState(false);
   const [bulkLoadOptions, setBulkLoadOptions] = useState({ storeId: 0, expenseCtaCode: '', toInventory: false });
 
@@ -218,9 +219,10 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
     setOpenModalSettings(true);
   }
 
-  const fnReport = () => { }
+  // Reporte y Exportar abren el mismo modal: rango de fechas y descarga en PDF o Excel (SPEC v2-41-sr).
+  const fnReport = () => setOpenModalReport(true);
 
-  const fnExport = () => { }
+  const fnExport = () => setOpenModalReport(true);
 
   const fnConfirmBulkLoad = (options) => {
     setBulkLoadOptions(options);
@@ -432,6 +434,8 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
       fnOkCancelDocument,
       openModalSettings,
       setOpenModalSettings,
+      openModalReport,
+      setOpenModalReport,
       openModalBulkLoad,
       setOpenModalBulkLoad,
       fnConfirmBulkLoad

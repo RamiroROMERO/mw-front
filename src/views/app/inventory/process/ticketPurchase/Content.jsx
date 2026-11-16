@@ -15,6 +15,7 @@ import FormTicket from './FormTicket';
 import DetailTable from './DetailTable';
 import ModalViewTickets from './ModalViewTickets';
 import ModalTicketSettings from './ModalTicketSettings';
+import ModalTicketPurchaseReport from './ModalTicketPurchaseReport';
 import ModalBulkLoadOptions from './ModalBulkLoadOptions';
 
 const TicketPurchase = ({ setLoading }) => {
@@ -32,7 +33,7 @@ const TicketPurchase = ({ setLoading }) => {
     onBulkForm, sendForm, formValidation, processed, openModalViewTicket, setOpenModalViewTickets, dataOrders, dataTickets,
     openModalViewOrders, setOpenModalViewOrders, fnViewOrder, fnViewTicket, openMsgAccountDocument, setOpenMsgAccountDocument,
     fnOkAccountDocument, openMsgGenCai, setOpenMsgGenCai, fnOkGenCai, openMsgCancelDocument, setOpenMsgCancelDocument, fnOkCancelDocument, openModalSettings,
-    setOpenModalSettings, openModalBulkLoad, setOpenModalBulkLoad, fnConfirmBulkLoad
+    setOpenModalSettings, openModalReport, setOpenModalReport, openModalBulkLoad, setOpenModalBulkLoad, fnConfirmBulkLoad
   } = useTicketPurchase({ setLoading, setTicketDetail, ticketDetail, onResetFormDeta, accountingActive });
 
   const propToFormTicket = {
@@ -121,6 +122,15 @@ const TicketPurchase = ({ setLoading }) => {
     data: {}
   }
 
+  const propsToModalReport = {
+    ModalContent: ModalTicketPurchaseReport,
+    title: "page.ticketPurchase.modal.report.title",
+    open: openModalReport,
+    setOpen: setOpenModalReport,
+    maxWidth: 'md',
+    data: {}
+  }
+
   const propsToModalBulkLoad = {
     ModalContent: ModalBulkLoadOptions,
     title: "page.ticketPurchase.modal.bulkLoad.title",
@@ -174,6 +184,7 @@ const TicketPurchase = ({ setLoading }) => {
       <Modal {...propsToModalViewTickets} />
       <Modal {...propsToModalViewOrders} />
       <Modal {...propsToModalSettings} />
+      <Modal {...propsToModalReport} />
       <Modal {...propsToModalBulkLoad} />
       <Confirmation {...propsToMsgGenCai} />
       <Confirmation {...propsToMsgAccountDocument} />
