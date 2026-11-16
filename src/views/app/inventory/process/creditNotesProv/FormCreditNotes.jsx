@@ -9,6 +9,7 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import DateCalendar from '@Components/dateCalendar';
 import { useIntl } from 'react-intl';
 import { TYPE_OTHER } from './useCreditNotes';
+import { canBeMixed } from './creditNoteRules';
 
 const FormCreditNotes = (props) => {
   const intl = useIntl();
@@ -17,7 +18,7 @@ const FormCreditNotes = (props) => {
     documentCode, documentId, cai, numberCAI, date, providerId, providerRtn, providerName, typeId, typeOther, description,
     valueLps, docValueUSD, exchangeRate, currenId, pdaNumber, isMixed,
     listDocuments, listProviders,
-    onInputChange, onProviderChange, onTypeChange,
+    onInputChange, onProviderChange, onTypeChange, onMixedToggle,
     errors, sendForm, disabled, isVoided
   } = props;
 
@@ -125,10 +126,11 @@ const FormCreditNotes = (props) => {
                 value={typeId}
                 onChange={onTypeChange}
                 options={[
-                  { id: 1, label: 'page.creditNotesProv.radio.discount', disabled },
-                  { id: 2, label: 'page.creditNotesProv.radio.cancellation', disabled },
+                  // Una nota mixta siempre es una devolución: los otros tipos se bloquean mientras la casilla esté marcada.
+                  { id: 1, label: 'page.creditNotesProv.radio.discount', disabled: disabled || isMixed },
+                  { id: 2, label: 'page.creditNotesProv.radio.cancellation', disabled: disabled || isMixed },
                   { id: 3, label: 'page.creditNotesProv.radio.devolution', disabled },
-                  { id: 4, label: 'page.creditNotesProv.radio.others', disabled }
+                  { id: 4, label: 'page.creditNotesProv.radio.others', disabled: disabled || isMixed }
                 ]}
               />
             </Colxx>
@@ -158,12 +160,12 @@ const FormCreditNotes = (props) => {
             </Colxx>
             <Colxx xxs="12">
               <Checkbox
-                onChange={onInputChange}
+                onChange={onMixedToggle}
                 type="checkbox"
                 value={isMixed}
                 name="isMixed"
                 label="page.creditNotesProv.check.isMixed"
-                disabled={disabled}
+                disabled={disabled || !canBeMixed(typeId)}
               />
             </Colxx>
           </Row>
