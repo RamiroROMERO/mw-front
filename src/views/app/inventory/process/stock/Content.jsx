@@ -7,10 +7,11 @@ import FilterStock from './FilterStock';
 import DetailStock from './DetailStock';
 import TableStock from './TableStock';
 import ModalStockReport from './ModalStockReport';
+import ModalPrintMovement from './ModalPrintMovement';
 import { useStock } from './useStock';
 
 const Stock = ({ setLoading }) => {
-  const { propsToControlPanel, formState, errors, sendForm, kardex, summary, listStores, listProducts, openModalReports, setOpenModalReports, onFilterChange, onProductChange, onProductSearch } = useStock({ setLoading });
+  const { propsToControlPanel, formState, errors, sendForm, kardex, summary, listStores, listProducts, openModalReports, setOpenModalReports, openModalMovement, setOpenModalMovement, onFilterChange, onProductChange, onProductSearch } = useStock({ setLoading });
 
   const propsToFilterStock = {
     ...formState,
@@ -34,6 +35,15 @@ const Stock = ({ setLoading }) => {
     data: { listStores }
   };
 
+  const propsToModalMovement = {
+    ModalContent: ModalPrintMovement,
+    title: 'page.stock.modal.printMovement.title',
+    open: openModalMovement,
+    setOpen: setOpenModalMovement,
+    maxWidth: 'md',
+    data: {}
+  };
+
   return (
     <Row>
       <Colxx xxs="12">
@@ -54,6 +64,7 @@ const Stock = ({ setLoading }) => {
         </Card>
       </Colxx>
       <Modal {...propsToModalReports} />
+      <Modal {...propsToModalMovement} />
     </Row>
   );
 }

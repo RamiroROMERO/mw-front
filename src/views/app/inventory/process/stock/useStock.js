@@ -15,6 +15,7 @@ export const useStock = ({ setLoading }) => {
   const [queriedKey, setQueriedKey] = useState('');
   const [downloading, setDownloading] = useState(false);
   const [openModalReports, setOpenModalReports] = useState(false);
+  const [openModalMovement, setOpenModalMovement] = useState(false);
   const latestRequest = useRef(0);
   const { options: productOptions, onInputChange: onProductSearch } = useProductOptions();
 
@@ -118,6 +119,12 @@ export const useStock = ({ setLoading }) => {
         title: 'button.stockReports',
         icon: 'bi bi-file-earmark-bar-graph',
         onClick: () => setOpenModalReports(true)
+      },
+      // Movimiento por Producto (SPEC v2-45-sr): detalle o resumen por tipo de producto, en PDF o Excel.
+      {
+        title: 'button.productMovement',
+        icon: 'bi bi-arrow-left-right',
+        onClick: () => setOpenModalMovement(true)
       }
     ],
     buttonsAdmin: []
@@ -134,6 +141,8 @@ export const useStock = ({ setLoading }) => {
     listProducts,
     openModalReports,
     setOpenModalReports,
+    openModalMovement,
+    setOpenModalMovement,
     onFilterChange,
     onProductChange,
     onProductSearch

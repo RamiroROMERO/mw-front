@@ -3947,6 +3947,13 @@ const esLang = {
   "page.stock.modal.printMovements.radio.detail": "Detalle",
   "page.stock.modal.printMovements.radio.summary": "Resumen",
   "page.stock.modal.printMovement.title": "Movimiento por Producto",
+  "button.productMovement": "Movimiento por Producto",
+  "page.stock.modal.printMovements.productType": "Tipo de Producto",
+  "page.stock.modal.printMovements.allTypes": "Todos",
+  "page.stock.modal.printMovements.excludeAdjustments": "Excluir ajustes",
+  "page.stock.movement.error.dateFuture": "La fecha no puede ser futura!",
+  "page.stock.movement.error.range": "La fecha inicial no puede ser mayor a la final!",
+  "page.stock.msg.movementError": "No se pudo generar el movimiento por producto",
   /* 75. Credit notes provider page in inventory */
   "page.creditNotesProv.radio.concept": "Concepto",
   "page.creditNotesProv.radio.discount": "Descuento",
