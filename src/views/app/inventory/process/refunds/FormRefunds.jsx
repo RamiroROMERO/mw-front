@@ -11,9 +11,9 @@ import Modal from "@Components/modal";
 import { useFormRefund } from './useFormRefund'
 import ModalApplyAccount from '../requisitions/ModalApplyAccount'
 
-const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assignStoreId, noCtaAssign, providerId, date, code, applyTo, expirationDate, reintType, listDocuments, listStores, listDestinations, listAccounts, listProviders, listTypeApply, onInputChange, showType1, showType2, setShowType1, setShowType2, onBulkForm, refundDetail, setRefundDetail, idProd, onResetFormDeta, sendForm, formValidation, disabled, isProcessed, isVoided, pdaNumber}) => {
+const FormRefunds = ({documentCode, documentId, sourceStoreId, originCtaCode, assignStoreId, assignCtaCode, providerId, date, physicalNumber, applyTo, expirationDate, reintType, listDocuments, listStores, listDestinations, listAccounts, listProviders, listTypeApply, onInputChange, showType1, showType2, setShowType1, setShowType2, onBulkForm, refundDetail, setRefundDetail, idProd, onResetFormDeta, sendForm, formValidation, disabled, isProcessed, isVoided, pdaNumber}) => {
 
-  const {onStoreChange, onDestinationChange, onApplyToChange, onProviderChange, onTypeChange, fnApplyDestinyAccount, openModalApplyAccount, setOpenModalApplyAccount, fnApplyAll, fnApplyCurrent} = useFormRefund({onBulkForm, listStores, listDestinations, listProviders, refundDetail, setRefundDetail, noCtaAssign, idProd, onResetFormDeta, setShowType1, setShowType2});
+  const {onStoreChange, onDestinationChange, onApplyToChange, onProviderChange, onTypeChange, fnApplyDestinyAccount, openModalApplyAccount, setOpenModalApplyAccount, fnApplyAll, fnApplyCurrent} = useFormRefund({onBulkForm, listStores, listDestinations, listProviders, refundDetail, setRefundDetail, assignCtaCode, idProd, onResetFormDeta, setShowType1, setShowType2});
 
   const {documentCodeValid, sourceStoreIdValid} = formValidation;
 
@@ -72,8 +72,8 @@ const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assi
                 <Colxx xxs="12" lg="7">
                   <SearchSelect
                     label='select.accountId'
-                    name='noCtaOrigin'
-                    inputValue={noCtaOrigin}
+                    name='originCtaCode'
+                    inputValue={originCtaCode}
                     options={listAccounts}
                     onChange={onInputChange}
                     isDisabled
@@ -98,8 +98,8 @@ const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assi
                 <Colxx xxs="12" lg="7" style={{display: showType2}}>
                   <SearchSelect
                     label='select.accountId'
-                    name='noCtaAssign'
-                    inputValue={noCtaAssign}
+                    name='assignCtaCode'
+                    inputValue={assignCtaCode}
                     options={listAccounts}
                     onChange={onInputChange}
                     isDisabled={disabled}
@@ -140,9 +140,9 @@ const FormRefunds = ({documentCode, documentId, sourceStoreId, noCtaOrigin, assi
               </Colxx>
               <Colxx xxs="12">
                 <InputField
-                  name="code"
+                  name="physicalNumber"
                   label='page.transfersToStores.input.numPhysical'
-                  value={code}
+                  value={physicalNumber}
                   onChange={onInputChange}
                   type="text"
                   disabled={disabled}

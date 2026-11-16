@@ -30,19 +30,19 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
     documentId: 0,
     documentCode: '',
     date: DateHelper.format(new Date()),
-    code: 0,
+    physicalNumber: 0,
     sourceStoreId: 0,
     assignStoreId: 0,
     notes: '',
     userId: userData ? userData.id : 0,
     applyTo: 'Inventario',
     pdaNumber: 0,
-    noCtaOrigin: '',
-    noCtaAssign: '',
+    originCtaCode: '',
+    assignCtaCode: '',
     status: true
   }, validTransfers);
 
-  const { id, documentId, documentCode, date, code, sourceStoreId, assignStoreId, notes, userId, applyTo, pdaNumber, noCtaAssign, noCtaOrigin, status } = formState;
+  const { id, documentId, documentCode, date, physicalNumber, sourceStoreId, assignStoreId, notes, userId, applyTo, pdaNumber, assignCtaCode, originCtaCode, status } = formState;
 
   const isProcessed = validInt(pdaNumber) > 0;
   const isVoided = id > 0 && !status;
@@ -63,7 +63,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       const transactions = resp.data.map((item) => {
         item.store = item.invStore ? item.invStore.name : ''
         item.destination = item.invAssign ? item.invAssign.name : ''
-        item.noPhysical = item.code
+        item.noPhysical = item.physicalNumber
         return item;
       });
       setDataTransfers(transactions);
@@ -107,7 +107,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       documentCode,
       documentId,
       date,
-      code,
+      physicalNumber,
       sourceStoreId,
       assignStoreId,
       typeName,
@@ -141,7 +141,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
             const detailReq = {
               idFather: resp2.data.id,
               ...item,
-              dateOut: item.dateOut === "" ? "1900-01-01" : item.dateOut
+              expirationDate: item.expirationDate === "" ? "1900-01-01" : item.expirationDate
             }
             setLoading(true);
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
@@ -173,7 +173,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
             const detailReq = {
               idFather: id,
               ...item,
-              dateOut: item.dateOut === "" ? "1900-01-01" : item.dateOut
+              expirationDate: item.expirationDate === "" ? "1900-01-01" : item.expirationDate
             }
             setLoading(true);
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {

@@ -2,7 +2,7 @@ import { validInt } from '@Helpers/Utils';
 import { useState } from 'react';
 import { ACCOUNT_BY_APPLY_TO } from '../transferToStores/useFormTransfers';
 
-export const useFormRequisition = ({ onBulkForm, listStores, listDestinations, requisitionDetail, setRequisitionDetail, noCtaAssign, idProd, onResetFormDeta }) => {
+export const useFormRequisition = ({ onBulkForm, listStores, listDestinations, requisitionDetail, setRequisitionDetail, assignCtaCode, idProd, onResetFormDeta }) => {
   const [openModalApplyAccount, setOpenModalApplyAccount] = useState(false);
 
   const onStoreChange = e => {
@@ -10,7 +10,7 @@ export const useFormRequisition = ({ onBulkForm, listStores, listDestinations, r
 
     const filter = listStores.find(item => item.value === validInt(store));
 
-    onBulkForm({ sourceStoreId: store, noCtaOrigin: filter ? filter.invCtaCode : '' });
+    onBulkForm({ sourceStoreId: store, originCtaCode: filter ? filter.invCtaCode : '' });
   }
 
   const onDestinationChange = (e, applyTo) => {
@@ -19,7 +19,7 @@ export const useFormRequisition = ({ onBulkForm, listStores, listDestinations, r
     const filter = listDestinations.find(item => item.value === validInt(destination));
     const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'invCtaCode';
 
-    onBulkForm({ assignStoreId: destination, noCtaAssign: filter ? filter[accountField] : '' });
+    onBulkForm({ assignStoreId: destination, assignCtaCode: filter ? filter[accountField] : '' });
   }
 
   const onApplyToChange = (e, assignStoreId) => {
@@ -28,25 +28,25 @@ export const useFormRequisition = ({ onBulkForm, listStores, listDestinations, r
     const filter = listDestinations.find(item => item.value === validInt(assignStoreId));
     const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'invCtaCode';
 
-    onBulkForm({ applyTo, noCtaAssign: filter ? filter[accountField] : '' });
+    onBulkForm({ applyTo, assignCtaCode: filter ? filter[accountField] : '' });
   }
 
   const fnApplyDestinyAccount = () => {
-    if (noCtaAssign === "") {
+    if (assignCtaCode === "") {
       return
     }
     setOpenModalApplyAccount(true);
   }
 
   const fnApplyAll = () => {
-    const updated = requisitionDetail.map(item => ({ ...item, noCtaAssign }));
+    const updated = requisitionDetail.map(item => ({ ...item, assignCtaCode }));
     setRequisitionDetail(updated);
     onResetFormDeta();
     setOpenModalApplyAccount(false);
   }
 
   const fnApplyCurrent = () => {
-    const updated = requisitionDetail.map(item => item.idProd === idProd ? { ...item, noCtaAssign } : item);
+    const updated = requisitionDetail.map(item => item.idProd === idProd ? { ...item, assignCtaCode } : item);
     setRequisitionDetail(updated);
     onResetFormDeta();
     setOpenModalApplyAccount(false);

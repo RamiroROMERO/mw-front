@@ -2,7 +2,7 @@ import { validInt } from '@Helpers/Utils';
 import { useState } from 'react';
 import { ACCOUNT_BY_APPLY_TO } from '../transferToStores/useFormTransfers';
 
-export const useFormRefund = ({ onBulkForm, listStores, listDestinations, listProviders, refundDetail, setRefundDetail, noCtaAssign, idProd, onResetFormDeta, setShowType1, setShowType2 }) => {
+export const useFormRefund = ({ onBulkForm, listStores, listDestinations, listProviders, refundDetail, setRefundDetail, assignCtaCode, idProd, onResetFormDeta, setShowType1, setShowType2 }) => {
   const [openModalApplyAccount, setOpenModalApplyAccount] = useState(false);
 
   // CTAOrigen: siempre la cuenta de Inventario del almacén origen (el combobox "Aplica" del
@@ -13,7 +13,7 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, listPr
 
     const filter = listStores.find(item => item.value === validInt(store));
 
-    onBulkForm({ sourceStoreId: store, noCtaOrigin: filter ? filter.invCtaCode : '' });
+    onBulkForm({ sourceStoreId: store, originCtaCode: filter ? filter.invCtaCode : '' });
   }
 
   // CTADestino (reintType=2/Reintegro): cuenta del Centro de Destino según "Aplica".
@@ -23,7 +23,7 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, listPr
     const filter = listDestinations.find(item => item.value === validInt(destination));
     const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'invCtaCode';
 
-    onBulkForm({ assignStoreId: destination, noCtaAssign: filter ? filter[accountField] : '' });
+    onBulkForm({ assignStoreId: destination, assignCtaCode: filter ? filter[accountField] : '' });
   }
 
   const onApplyToChange = (e, assignStoreId) => {
@@ -32,7 +32,7 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, listPr
     const filter = listDestinations.find(item => item.value === validInt(assignStoreId));
     const accountField = ACCOUNT_BY_APPLY_TO[applyTo] || 'invCtaCode';
 
-    onBulkForm({ applyTo, noCtaAssign: filter ? filter[accountField] : '' });
+    onBulkForm({ applyTo, assignCtaCode: filter ? filter[accountField] : '' });
   }
 
   // CTADestino (reintType=1/Compra): cuenta de Cuentas por Pagar del proveedor seleccionado.
@@ -41,7 +41,7 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, listPr
 
     const filter = listProviders.find(item => item.value === validInt(provider));
 
-    onBulkForm({ providerId: provider, noCtaAssign: filter ? filter.payableCtaCode : '' });
+    onBulkForm({ providerId: provider, assignCtaCode: filter ? filter.payableCtaCode : '' });
   }
 
   const onTypeChange = e => {
@@ -51,30 +51,30 @@ export const useFormRefund = ({ onBulkForm, listStores, listDestinations, listPr
       setShowType1("none");
       setShowType2("block");
 
-      onBulkForm({ reintType: type, providerId: 0, expirationDate: '', noCtaAssign: '' });
+      onBulkForm({ reintType: type, providerId: 0, expirationDate: '', assignCtaCode: '' });
     } else {
       setShowType1("block");
       setShowType2("none");
-      onBulkForm({ reintType: type, assignStoreId: 0, applyTo: '', noCtaAssign: '' });
+      onBulkForm({ reintType: type, assignStoreId: 0, applyTo: '', assignCtaCode: '' });
     }
   }
 
   const fnApplyDestinyAccount = () => {
-    if (noCtaAssign === "") {
+    if (assignCtaCode === "") {
       return
     }
     setOpenModalApplyAccount(true);
   }
 
   const fnApplyAll = () => {
-    const updated = refundDetail.map(item => ({ ...item, noCtaAssign }));
+    const updated = refundDetail.map(item => ({ ...item, assignCtaCode }));
     setRefundDetail(updated);
     onResetFormDeta();
     setOpenModalApplyAccount(false);
   }
 
   const fnApplyCurrent = () => {
-    const updated = refundDetail.map(item => item.idProd === idProd ? { ...item, noCtaAssign } : item);
+    const updated = refundDetail.map(item => item.idProd === idProd ? { ...item, assignCtaCode } : item);
     setRefundDetail(updated);
     onResetFormDeta();
     setOpenModalApplyAccount(false);

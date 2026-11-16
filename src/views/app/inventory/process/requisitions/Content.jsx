@@ -29,7 +29,7 @@ const Requisitions = ({ setLoading }) => {
     openModalVoid, setOpenModalVoid, fnVoidRequisition
   } = useRequisitions({ requisitionDetail, onResetFormDeta, setRequisitionDetail, setLoading });
 
-  const { notes, sourceStoreId, assignStoreId, isWorkOrder, workOrderId, noCtaOrigin, noCtaAssign, documentCode, documentId, pdaNumber } = formState;
+  const { notes, sourceStoreId, assignStoreId, isWorkOrder, workOrderId, originCtaCode, assignCtaCode, documentCode, documentId, pdaNumber } = formState;
 
   const { idProd } = formStateDeta;
 
@@ -58,8 +58,8 @@ const Requisitions = ({ setLoading }) => {
     ...formStateDeta,
     sourceStoreId,
     assignStoreId,
-    noCtaOrigin,
-    noCtaAssign,
+    originCtaCode,
+    assignCtaCode,
     onInputChangeDeta,
     fnViewProducts,
     setBulkFormDeta,

@@ -14,7 +14,7 @@ const APPLY_TO_OPTIONS = [
   { id: 'Gasto', name: 'Gasto' }
 ]
 
-const FormTransfers = ({documentId, documentCode, sourceStoreId, noCtaOrigin, assignStoreId, noCtaAssign, applyTo, date, code, listDocuments, listStores, onInputChange, formValidation, sendForm, listAccounts, onBulkForm, disabled, isProcessed, isVoided, pdaNumber}) => {
+const FormTransfers = ({documentId, documentCode, sourceStoreId, originCtaCode, assignStoreId, assignCtaCode, applyTo, date, physicalNumber, listDocuments, listStores, onInputChange, formValidation, sendForm, listAccounts, onBulkForm, disabled, isProcessed, isVoided, pdaNumber}) => {
 
   const {documentCodeValid, sourceStoreIdValid, assignStoreIdValid} = formValidation;
 
@@ -62,8 +62,8 @@ const FormTransfers = ({documentId, documentCode, sourceStoreId, noCtaOrigin, as
                 <Colxx xxs="12" lg="7">
                   <SearchSelect
                     label='select.accountId'
-                    name='noCtaOrigin'
-                    inputValue={noCtaOrigin}
+                    name='originCtaCode'
+                    inputValue={originCtaCode}
                     options={listAccounts}
                     onChange={onInputChange}
                     isDisabled
@@ -90,8 +90,8 @@ const FormTransfers = ({documentId, documentCode, sourceStoreId, noCtaOrigin, as
                 <Colxx xxs="12" lg="7">
                   <SearchSelect
                     label='select.accountId'
-                    name='noCtaAssign'
-                    inputValue={noCtaAssign}
+                    name='assignCtaCode'
+                    inputValue={assignCtaCode}
                     options={listAccounts}
                     onChange={onInputChange}
                     isDisabled={disabled}
@@ -125,9 +125,9 @@ const FormTransfers = ({documentId, documentCode, sourceStoreId, noCtaOrigin, as
           </Colxx>
           <Colxx xxs="12" xs="6" sm="12">
             <InputField
-              name="code"
+              name="physicalNumber"
               label='page.transfersToStores.input.numPhysical'
-              value={code}
+              value={physicalNumber}
               onChange={onInputChange}
               type="text"
               disabled={disabled}

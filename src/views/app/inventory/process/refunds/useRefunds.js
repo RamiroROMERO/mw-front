@@ -34,14 +34,14 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
     documentCode: '',
     documentId: 0,
     date: DateHelper.format(new Date()),
-    code: 0,
+    physicalNumber: 0,
     sourceStoreId: 0,
     assignStoreId: 0,
     notes: '',
     userId: userData ? userData.id : 0,
     pdaNumber: 0,
-    noCtaOrigin: '',
-    noCtaAssign: '',
+    originCtaCode: '',
+    assignCtaCode: '',
     applyTo: '',
     providerId: 0,
     reintType: 1,
@@ -49,7 +49,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
     status: true
   }, validRefunds);
 
-  const { id, documentCode, documentId, date, code, sourceStoreId, assignStoreId, notes, userId, applyTo, providerId, reintType, expirationDate, pdaNumber, status } = formState;
+  const { id, documentCode, documentId, date, physicalNumber, sourceStoreId, assignStoreId, notes, userId, applyTo, providerId, reintType, expirationDate, pdaNumber, status } = formState;
 
   const isProcessed = validInt(pdaNumber) > 0;
   const isVoided = id > 0 && !status;
@@ -73,7 +73,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       const refunds = resp.data.map((item) => {
         item.store = item.invStore ? item.invStore.name : ''
         item.destination = item.invAssign ? item.invAssign.name : (item.providerData ? item.providerData.name : '')
-        item.noPhysical = item.code
+        item.noPhysical = item.physicalNumber
         return item;
       });
       setDataRefunds(refunds);
@@ -124,7 +124,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
       documentCode,
       documentId,
       date,
-      code,
+      physicalNumber,
       sourceStoreId,
       assignStoreId,
       typeName,
@@ -161,7 +161,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
             const detailReq = {
               idFather: resp2.data.id,
               ...item,
-              dateOut: item.dateOut === "" ? "1900-01-01" : item.dateOut
+              expirationDate: item.expirationDate === "" ? "1900-01-01" : item.expirationDate
             }
             setLoading(true);
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
@@ -193,7 +193,7 @@ export const useRefunds = ({ refundDetail, onResetFormDeta, setRefundDetail, set
             const detailReq = {
               idFather: id,
               ...item,
-              dateOut: item.dateOut === "" ? "1900-01-01" : item.dateOut
+              expirationDate: item.expirationDate === "" ? "1900-01-01" : item.expirationDate
             }
             setLoading(true);
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {

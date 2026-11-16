@@ -29,7 +29,7 @@ const Refunds = ({ setLoading }) => {
     openModalVoid, setOpenModalVoid, fnVoidRefund
   } = useRefunds({ refundDetail, onResetFormDeta, setRefundDetail, setLoading });
 
-  const { notes, sourceStoreId, assignStoreId, noCtaOrigin, noCtaAssign, documentCode, documentId, pdaNumber } = formState;
+  const { notes, sourceStoreId, assignStoreId, originCtaCode, assignCtaCode, documentCode, documentId, pdaNumber } = formState;
 
   const { idProd } = formStateDeta;
 
@@ -63,8 +63,8 @@ const Refunds = ({ setLoading }) => {
     ...formStateDeta,
     sourceStoreId,
     assignStoreId,
-    noCtaOrigin,
-    noCtaAssign,
+    originCtaCode,
+    assignCtaCode,
     onInputChangeDeta,
     fnViewProducts,
     setBulkFormDeta,

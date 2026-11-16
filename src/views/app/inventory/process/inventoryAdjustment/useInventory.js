@@ -133,7 +133,7 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
             const detailReq = {
               idFather: resp2.data.id,
               ...item,
-              dateOut: item.dateOut === "" ? "1900-01-01" : item.dateOut
+              expirationDate: item.expirationDate === "" ? "1900-01-01" : item.expirationDate
             }
             setLoading(true);
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
@@ -165,7 +165,7 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
             const detailReq = {
               idFather: id,
               ...item,
-              dateOut: item.dateOut === "" ? "1900-01-01" : item.dateOut
+              expirationDate: item.expirationDate === "" ? "1900-01-01" : item.expirationDate
             }
             setLoading(true);
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
@@ -303,7 +303,7 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, onResetFormD
           qty: 0,
           total: 0,
           lotCode: '',
-          dateOut: '1900-01-01'
+          expirationDate: '1900-01-01'
         }));
       setInventoryDetail([...inventoryDetail, ...missing]);
       setLoading(false);

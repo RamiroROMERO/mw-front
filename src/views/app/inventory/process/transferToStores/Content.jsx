@@ -28,7 +28,7 @@ const TransferToStores = ({ setLoading }) => {
     openModalVoid, setOpenModalVoid, fnVoidTransfer
   } = useTranfers({ setLoading, transferDetail, setTransferDetail, onResetFormDeta });
 
-  const { notes, sourceStoreId, assignStoreId, noCtaOrigin, noCtaAssign, documentCode, documentId, pdaNumber } = formState;
+  const { notes, sourceStoreId, assignStoreId, originCtaCode, assignCtaCode, documentCode, documentId, pdaNumber } = formState;
 
   const propsToFormTransfers = {
     ...formState,
@@ -49,8 +49,8 @@ const TransferToStores = ({ setLoading }) => {
     ...formStateDeta,
     sourceStoreId,
     assignStoreId,
-    noCtaOrigin,
-    noCtaAssign,
+    originCtaCode,
+    assignCtaCode,
     onInputChangeDeta,
     fnViewProducts,
     setBulkFormDeta,

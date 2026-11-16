@@ -35,22 +35,22 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
     documentCode: '',
     documentId: 0,
     date: DateHelper.format(new Date()),
-    code: 0,
+    physicalNumber: 0,
     sourceStoreId: 0,
     assignStoreId: 0,
     isWorkOrder: 0,
     workOrderId: 0,
     notes: '',
     userId: userData ? userData.id : 0,
-    applicated: 0,
+    isApplied: 0,
     pdaNumber: 0,
-    noCtaOrigin: '',
-    noCtaAssign: '',
+    originCtaCode: '',
+    assignCtaCode: '',
     applyTo: 'Inventario',
     status: true
   }, validRequisitions);
 
-  const { id, documentCode, documentId, date, code, sourceStoreId, assignStoreId, isWorkOrder, workOrderId, notes, userId, pdaNumber, applyTo, status } = formState;
+  const { id, documentCode, documentId, date, physicalNumber, sourceStoreId, assignStoreId, isWorkOrder, workOrderId, notes, userId, pdaNumber, applyTo, status } = formState;
 
   const isProcessed = validInt(pdaNumber) > 0;
   const isVoided = id > 0 && !status;
@@ -72,7 +72,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       const purchases = resp.data.map((item) => {
         item.store = item.invStore ? item.invStore.name : ''
         item.destination = item.invAssign ? item.invAssign.name : ''
-        item.noPhysical = item.code
+        item.noPhysical = item.physicalNumber
         return item;
       });
       setDataRequisitions(purchases);
@@ -116,7 +116,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       documentCode,
       documentId,
       date,
-      code,
+      physicalNumber,
       sourceStoreId,
       assignStoreId,
       typeName,
@@ -152,7 +152,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
             const detailReq = {
               idFather: resp2.data.id,
               ...item,
-              dateOut: item.dateOut === "" ? "1900-01-01" : item.dateOut
+              expirationDate: item.expirationDate === "" ? "1900-01-01" : item.expirationDate
             }
             setLoading(true);
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
@@ -184,7 +184,7 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
             const detailReq = {
               idFather: id,
               ...item,
-              dateOut: item.dateOut === "" ? "1900-01-01" : item.dateOut
+              expirationDate: item.expirationDate === "" ? "1900-01-01" : item.expirationDate
             }
             setLoading(true);
             request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
