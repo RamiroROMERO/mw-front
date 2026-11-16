@@ -352,6 +352,7 @@
     "ticketPurchase.line.account.missing",
     "ticketPurchase.not.found",
     "ticketPurchase.paymentType.invalid",
+    "ticketPurchase.paymentType.required",
     "ticketPurchase.product.invalid",
     "ticketPurchase.provider.accounts.missing",
     "ticketPurchase.provider.invalid",
