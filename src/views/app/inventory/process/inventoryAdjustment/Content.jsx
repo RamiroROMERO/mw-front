@@ -7,12 +7,12 @@ import ControlPanel from '@Components/controlPanel';
 import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ModalVoidInvoice from '@Views/app/billing/process/pointSales/ModalVoidInvoice';
-import { useTransfersDeta } from '../transferToStores/useTransfersDeta';
+import { useTransfersDeta } from '../transactions/shared/useTransfersDeta';
 import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
 import DetailProduct from './DetailProduct';
 import FormInventory from './FormInventory';
-import DetailTable from '../transferToStores/DetailTable';
-import ModalViewTransfers from '../transferToStores/ModalViewTransfers';
+import DetailTable from '../transactions/shared/DetailTable';
+import ModalViewTransfers from '../transactions/shared/ModalViewTransfers';
 
 const InventoryAdjustment = ({ setLoading }) => {
   const [inventoryDetail, setInventoryDetail] = useState([]);

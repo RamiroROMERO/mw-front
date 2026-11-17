@@ -7,6 +7,7 @@ import { ContainerWithLabel } from '@Components/containerWithLabel'
 import { SimpleSelect } from '@Components/simpleSelect'
 import { IntlMessages } from '@Helpers/Utils'
 import { useFormTransfers } from './useFormTransfers'
+import { localToday, MAX } from './transferRules'
 
 const APPLY_TO_OPTIONS = [
   { id: 'Inventario', name: 'Inventario' },
@@ -14,9 +15,9 @@ const APPLY_TO_OPTIONS = [
   { id: 'Gasto', name: 'Gasto' }
 ]
 
-const FormTransfers = ({documentId, documentCode, sourceStoreId, originCtaCode, assignStoreId, assignCtaCode, applyTo, date, physicalNumber, listDocuments, listStores, onInputChange, formValidation, sendForm, listAccounts, onBulkForm, disabled, isProcessed, isVoided, pdaNumber}) => {
+const FormTransfers = ({senderName, receiverName, documentId, documentCode, sourceStoreId, originCtaCode, assignStoreId, assignCtaCode, applyTo, date, physicalNumber, listDocuments, listStores, onInputChange, formValidation, sendForm, listAccounts, onBulkForm, disabled, isProcessed, isVoided, pdaNumber}) => {
 
-  const {documentCodeValid, sourceStoreIdValid, assignStoreIdValid} = formValidation;
+  const {documentCodeValid, sourceStoreIdValid, assignStoreIdValid, dateValid, senderNameValid, receiverNameValid, physicalNumberValid} = formValidation;
 
   const {onStoreChange, onDestinationChange, onApplyToChange} = useFormTransfers({onBulkForm, listStores});
 
@@ -101,6 +102,32 @@ const FormTransfers = ({documentId, documentCode, sourceStoreId, originCtaCode, 
             </ContainerWithLabel>
           </Colxx>
           <Colxx xxs="12" md="4">
+            <InputField
+              name="senderName"
+              label="page.transfersToStores.input.senderName"
+              value={senderName}
+              onChange={onInputChange}
+              type="text"
+              maxLength={MAX.senderName}
+              disabled={disabled}
+              invalid={sendForm && !!senderNameValid}
+              feedbackText={sendForm && (senderNameValid || null)}
+            />
+          </Colxx>
+          <Colxx xxs="12" md="4">
+            <InputField
+              name="receiverName"
+              label="page.transfersToStores.input.receiverName"
+              value={receiverName}
+              onChange={onInputChange}
+              type="text"
+              maxLength={MAX.receiverName}
+              disabled={disabled}
+              invalid={sendForm && !!receiverNameValid}
+              feedbackText={sendForm && (receiverNameValid || null)}
+            />
+          </Colxx>
+          <Colxx xxs="12" md="4">
             <SimpleSelect
               label="page.transfersToStores.title.applyTo"
               name="applyTo"
@@ -121,6 +148,9 @@ const FormTransfers = ({documentId, documentCode, sourceStoreId, originCtaCode, 
               value={date}
               onChange={onInputChange}
               disabled={disabled}
+              maxDate={localToday()}
+              invalid={sendForm && !!dateValid}
+              feedbackText={sendForm && (dateValid || null)}
             />
           </Colxx>
           <Colxx xxs="12" xs="6" sm="12">
@@ -131,6 +161,8 @@ const FormTransfers = ({documentId, documentCode, sourceStoreId, originCtaCode, 
               onChange={onInputChange}
               type="text"
               disabled={disabled}
+              invalid={sendForm && !!physicalNumberValid}
+              feedbackText={sendForm && (physicalNumberValid || null)}
             />
           </Colxx>
           {isVoided && (

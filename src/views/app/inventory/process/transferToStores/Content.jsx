@@ -8,12 +8,13 @@ import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ModalVoidInvoice from '@Views/app/billing/process/pointSales/ModalVoidInvoice';
 import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
-import { useTransfersDeta } from './useTransfersDeta';
+import { useTransfersDeta } from '../transactions/shared/useTransfersDeta';
 import FormTransfers from './FormTransfers';
-import DetailProduct from './DetailProduct';
-import DetailTable from './DetailTable';
-import ModalViewTransfers from './ModalViewTransfers';
-import FooterTransfers from './FooterTransfers';
+import DetailProduct from '../transactions/shared/DetailProduct';
+import DetailTable from '../transactions/shared/DetailTable';
+import ModalViewTransfers from '../transactions/shared/ModalViewTransfers';
+import FooterTransfers from '../transactions/shared/FooterTransfers';
+import ModalAddManyProducts from '../transactions/shared/ModalAddManyProducts';
 
 const TransferToStores = ({ setLoading }) => {
   const [transferDetail, setTransferDetail] = useState([]);
@@ -25,13 +26,15 @@ const TransferToStores = ({ setLoading }) => {
     formValidation, sendForm, setSendForm, isFormValid, dataTransfers, openModalViewTransfers, setOpenModalViewTransfers,
     onBulkForm, listAccounts, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument, fnOkDeleteDocument,
     disabled, isProcessed, isVoided, openMsgProcess, setOpenMsgProcess, fnProcessTransfer,
-    openModalVoid, setOpenModalVoid, fnVoidTransfer
+    openModalVoid, setOpenModalVoid, fnVoidTransfer, openModalAddMany, setOpenModalAddMany, fnAddManyLine
   } = useTranfers({ setLoading, transferDetail, setTransferDetail, onResetFormDeta });
 
-  const { notes, sourceStoreId, assignStoreId, originCtaCode, assignCtaCode, documentCode, documentId, pdaNumber } = formState;
+  const { notes, senderName, receiverName, sourceStoreId, assignStoreId, originCtaCode, assignCtaCode, documentCode, documentId, pdaNumber } = formState;
 
   const propsToFormTransfers = {
     ...formState,
+    senderName,
+    receiverName,
     onInputChange,
     listDocuments,
     listStores,
@@ -103,6 +106,19 @@ const TransferToStores = ({ setLoading }) => {
     }
   }
 
+  const propsToModalAddMany = {
+    ModalContent: ModalAddManyProducts,
+    title: "page.transfersToStores.button.addMany",
+    open: openModalAddMany,
+    setOpen: setOpenModalAddMany,
+    maxWidth: 'lg',
+    data: {
+      url: 'inventory/process/transfers/availableProducts',
+      storeId: sourceStoreId,
+      fnAddLine: fnAddManyLine
+    }
+  }
+
   const propsToMsgDeleteDocument = {
     open: openMsgDeleteDocument,
     setOpen: setOpenMsgDeleteDocument,
@@ -148,6 +164,7 @@ const TransferToStores = ({ setLoading }) => {
       <Modal {...propsToModalViewProd} />
       <Modal {...propsToModalViewTransfers} />
       <Modal {...propsToModalVoid} />
+      <Modal {...propsToModalAddMany} />
       <Confirmation {...propsToMsgDeleteDocument} />
       <Confirmation {...propsToMsgProcess} />
     </>

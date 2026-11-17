@@ -2,9 +2,16 @@ import DateHelper from '@Helpers/DateHelper';
 import { request, buildUrl } from '@Helpers/core';
 import { getErrorCode } from '@Helpers/errorMessage';
 import { useForm } from '@Hooks'
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { validInt } from '@Helpers/Utils';
 import createNotification from '@Containers/ui/Notifications';
+import {
+  TRANSFER_DOCUMENT, buildTransferPayload, canOpenAddMany, detailsFromApi, mergeLine, linesFromSelection, validateTransfer, warningTexts
+} from './transferRules';
+
+const TRANSFERS_URL = 'inventory/process/transfers';
+// { campo: id } -> { campoValid: id } (la forma que consumen los componentes).
+const toFormValidation = (errors = {}) => Object.fromEntries(Object.entries(errors).map(([field, id]) => [`${field}Valid`, id]));
 
 export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onResetFormDeta }) => {
   const [listDocuments, setListDocuments] = useState([]);
@@ -17,6 +24,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
   const [openMsgDeleteDocument, setOpenMsgDeleteDocument] = useState(false);
   const [openModalVoid, setOpenModalVoid] = useState(false);
   const [openMsgProcess, setOpenMsgProcess] = useState(false);
+  const [openModalAddMany, setOpenModalAddMany] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
   const validTransfers = {
@@ -25,15 +33,17 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
     assignStoreId: [(val) => validInt(val) > 0, "msg.required.select.destinationId"]
   }
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
+  const { formState, formValidation: baseValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
     id: 0,
     documentId: 0,
-    documentCode: '',
+    documentCode: TRANSFER_DOCUMENT,
     date: DateHelper.format(new Date()),
     physicalNumber: 0,
     sourceStoreId: 0,
     assignStoreId: 0,
     notes: '',
+    senderName: '',
+    receiverName: '',
     userId: userData ? userData.id : 0,
     applyTo: 'Inventario',
     pdaNumber: 0,
@@ -43,6 +53,11 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
   }, validTransfers);
 
   const { id, documentId, documentCode, date, physicalNumber, sourceStoreId, assignStoreId, notes, userId, applyTo, pdaNumber, assignCtaCode, originCtaCode, status } = formState;
+
+  // Mismas reglas del DTO del back (fecha no futura, destino distinto del origen, máximos): los errores de campo se muestran
+  // junto al campo y, si hay alguno, no se llama al back.
+  const fieldErrors = useMemo(() => validateTransfer(formState, transferDetail), [formState, transferDetail]);
+  const formValidation = useMemo(() => ({ ...baseValidation, ...toFormValidation(fieldErrors) }), [baseValidation, fieldErrors]);
 
   const isProcessed = validInt(pdaNumber) > 0;
   const isVoided = id > 0 && !status;
@@ -59,7 +74,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
 
   const fnSearchDocument = () => {
     setLoading(true);
-    request.GET(buildUrl('inventory/process/inventoryTransactions', { typeName: 'Trasl' }), (resp) => {
+    request.GET(TRANSFERS_URL, (resp) => {
       const transactions = resp.data.map((item) => {
         item.store = item.invStore ? item.invStore.name : ''
         item.destination = item.invAssign ? item.invAssign.name : ''
@@ -69,131 +84,47 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       setDataTransfers(transactions);
       setOpenModalViewTransfers(true);
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
   }
 
+  // Cabecera y detalle en una sola lectura (SPEC v2-49-sr).
   const fnGetDataDetail = (idReq) => {
     setLoading(true);
-    request.GET(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: idReq }), (resp) => {
-      const requisitionDeta = resp.data.map((item) => {
-        item.nameProduct = item.invProduct ? item.invProduct.name : ''
-        return item;
-      });
-      setTransferDetail(requisitionDeta);
+    request.GET(`${TRANSFERS_URL}/${idReq}`, (resp) => {
+      setTransferDetail(detailsFromApi(resp.data.details));
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
   }
 
+  // Un solo POST o PUT con la cabecera y el detalle: el back calcula costo, total y cuentas, asigna el correlativo y guarda todo
+  // en una transacción. Tras guardar se muestran los avisos de existencia (el documento queda guardado igual).
   const fnSaveDocument = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    if (Object.keys(fieldErrors).length > 0) {
+      if (fieldErrors.details) createNotification('warning', fieldErrors.details, 'alert.warning.title');
       return;
     }
 
-    if (transferDetail.length === 0) {
-      createNotification('warning', 'msg.required.documentDetail', 'alert.warning.title');
-      return;
-    }
+    const payload = buildTransferPayload(formState, transferDetail);
+    const names = new Map(transferDetail.map((item) => [item.productCode, item.nameProduct]));
 
-    const typeName = "Trasl";
+    const onSaved = (resp) => {
+      const saved = resp.data;
+      onBulkForm({ id: saved.id, documentId: saved.documentId });
+      setTransferDetail(detailsFromApi(saved.details).map((item) => ({ ...item, nameProduct: names.get(item.productCode) || '' })));
+      setSendForm(false);
+      warningTexts(saved.warnings).forEach((text) => createNotification('warning', 'alert.warning.title', { text }));
+      setLoading(false);
+    };
+    const onError = () => setLoading(false);
 
-    const newData = {
-      documentCode,
-      documentId,
-      date,
-      physicalNumber,
-      sourceStoreId,
-      assignStoreId,
-      typeName,
-      applyTo,
-      notes,
-      userId,
-      status
-    }
-
-    transferDetail.map((item) => {
-      delete item.invAssign;
-      delete item.invProduct;
-      return item;
-    });
-
-    if (id === 0) {
-      // Generar documento
-      setLoading(true);
-      request.POST('admin/documents/getCurrentNumber', { code: documentCode }, (resp) => {
-        newData.documentId = resp.data.codeInt;
-        setLoading(false);
-
-        // Guardar la transferencia
-        setLoading(true);
-        request.POST('inventory/process/inventoryTransactions', newData, (resp2) => {
-          onBulkForm({ documentId: resp.data.codeInt, id: resp2.data.id });
-          setSendForm(false);
-
-          // guardar detalle de la transferencia
-          transferDetail.forEach(item => {
-            const detailReq = {
-              idFather: resp2.data.id,
-              ...item,
-              expirationDate: item.expirationDate === "" ? "1900-01-01" : item.expirationDate
-            }
-            setLoading(true);
-            request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
-              setLoading(false);
-            }, (err) => {
-
-              setLoading(false);
-            }, false);
-            setLoading(true);
-          });
-          setLoading(false);
-        }, (err) => {
-
-          setLoading(false);
-        });
-      }, (err) => {
-
-        setLoading(false);
-      }, false);
-    } else {
-      setLoading(true);
-      request.PUT(`inventory/process/inventoryTransactions/${id}`, newData, () => {
-        setLoading(false);
-        setSendForm(false);
-        // Eliminar detalle de la transferencia
-        request.DELETE(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: id }), () => {
-          // guardar detalle de la transferencia
-          transferDetail.forEach(item => {
-            const detailReq = {
-              idFather: id,
-              ...item,
-              expirationDate: item.expirationDate === "" ? "1900-01-01" : item.expirationDate
-            }
-            setLoading(true);
-            request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
-              setLoading(false);
-            }, (err) => {
-
-              setLoading(false);
-            }, false);
-            setLoading(true);
-          });
-          setLoading(false);
-        }, (err) => {
-
-          setLoading(false);
-        }, false);
-      }, (err) => {
-
-        setLoading(false);
-      });
-    }
+    setLoading(true);
+    if (id === 0) request.POST(TRANSFERS_URL, payload, onSaved, onError);
+    else request.PUT(`${TRANSFERS_URL}/${id}`, payload, onSaved, onError);
   }
 
   const fnPrintDocument = () => {
@@ -220,22 +151,33 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
   const fnOkDeleteDocument = () => {
     setOpenMsgDeleteDocument(false);
     setLoading(true);
-    request.DELETE(`inventory/process/inventoryTransactions/${id}`, () => {
+    request.DELETE(`${TRANSFERS_URL}/${id}`, () => {
       onResetForm();
       onResetFormDeta();
       setTransferDetail([]);
-
-      // eliminar detalle
-      request.DELETE(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: id }), () => {
-        setLoading(false);
-      }, (err) => {
-
-        setLoading(false);
-      }, false);
-    }, (err) => {
-
+      setLoading(false);
+    }, () => {
       setLoading(false);
     });
+  }
+
+  // "Agregar varios" (modal compartido): suma la cantidad si el producto ya está en el detalle.
+  const fnOpenAddMany = () => {
+    if (!canOpenAddMany({ sourceStoreId, assignStoreId, disabled })) {
+      createNotification('warning', 'page.transfersToStores.msg.addManyRequires', 'alert.warning.title');
+      return;
+    }
+    setOpenModalAddMany(true);
+  }
+
+  const fnAddManyLine = (product, qty) => {
+    if (!(Number(qty) > 0)) {
+      createNotification('warning', 'msg.required.input.qty', 'alert.warning.title');
+      return false;
+    }
+    const [line] = linesFromSelection({ [product.productCode]: { product, qty } });
+    setTransferDetail((current) => mergeLine(current, line));
+    return true;
   }
 
   const fnAskProcess = () => {
@@ -284,7 +226,7 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
   useEffect(() => {
     setLoading(true);
     request.GET('admin/documents?status=1&useInv=1', (resp) => {
-      const documents = resp.data.map((item) => {
+      const documents = resp.data.filter((item) => item.code === TRANSFER_DOCUMENT).map((item) => {
         return {
           value: item.code,
           code: item.code,
@@ -346,7 +288,13 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
         onClick: isSaved && !isProcessed ? fnAskProcess : () => { }
       }
     ],
-    buttonsOptions: [],
+    buttonsOptions: [
+      {
+        title: 'page.transfersToStores.button.addMany',
+        icon: 'bi bi-plus-square-dotted',
+        onClick: fnOpenAddMany
+      }
+    ],
     buttonsAdmin: []
   }
 
@@ -381,7 +329,10 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
       fnProcessTransfer,
       openModalVoid,
       setOpenModalVoid,
-      fnVoidTransfer
+      fnVoidTransfer,
+      openModalAddMany,
+      setOpenModalAddMany,
+      fnAddManyLine
     }
   )
 }
