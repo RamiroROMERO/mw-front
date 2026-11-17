@@ -4,26 +4,29 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { InputField } from '@Components/inputFields';
 import { Checkbox } from '@Components/checkbox';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { MAX_NAME } from './cashBoxRules';
 
+// Formulario de Cajas de cobro (fac_cajas.sc2). Obligatorios con `*` (nombre y las dos cuentas); el área es opcional como en el legacy. `feedbackText` recibe la CLAVE
+// de traducción (el componente la traduce). Las cuentas, que en el legacy eran un buscador F1, se conservan como combos con búsqueda.
 const CashBoxDetail = (props) => {
 
-  const { formState, formValidation, sendForm, listBillingArea, listLedgerAccount, onInputChange, fnSave, fnClearInputs } = props;
+  const { formState, errors, sendForm, listBillingArea, listLedgerAccount, onInputChange, fnSave, fnClearInputs } = props;
 
-  const { name, idCtaCash, idCtaDeposit, billingAreaId, status } = formState;
-
-  const {nameValid, idCtaCashValid, idCtaDepositValid} = formValidation;
+  const { name, cashCtaCode, depositCtaCode, billingAreaId, status } = formState;
+  const error = (field) => (sendForm ? errors[field] : undefined);
 
   return (
     <>
       <Row>
         <Colxx xxs="8" sm="6" lg="8">
           <InputField
-            label='page.cashBoxes.input.name'
+            label='page.cashBoxes.input.nameRequired'
             name="name"
             value={name}
+            maxLength={MAX_NAME}
             onChange={onInputChange}
-            invalid={sendForm && !!nameValid}
-            feedbackText={sendForm && (nameValid || null)}
+            invalid={!!error('name')}
+            feedbackText={error('name')}
           />
         </Colxx>
         <Colxx xxs="4" align="right">
@@ -38,24 +41,24 @@ const CashBoxDetail = (props) => {
       <Row>
         <Colxx xxs="12" sm="6" lg="12">
           <SearchSelect
-            label='page.cashBoxes.select.cashAccount'
-            name='idCtaCash'
-            inputValue={idCtaCash}
+            label='page.cashBoxes.select.cashAccountRequired'
+            name='cashCtaCode'
+            inputValue={cashCtaCode}
             options={listLedgerAccount}
             onChange={onInputChange}
-            invalid={sendForm && !!idCtaCashValid}
-            feedbackText={sendForm && (idCtaCashValid || null)}
+            invalid={!!error('cashCtaCode')}
+            feedbackText={error('cashCtaCode')}
           />
         </Colxx>
         <Colxx xxs="12" sm="6" lg="12">
           <SearchSelect
-            label='page.cashBoxes.select.depositAccount'
-            name='idCtaDeposit'
-            inputValue={idCtaDeposit}
+            label='page.cashBoxes.select.depositAccountRequired'
+            name='depositCtaCode'
+            inputValue={depositCtaCode}
             options={listLedgerAccount}
             onChange={onInputChange}
-            invalid={sendForm && !!idCtaDepositValid}
-            feedbackText={sendForm && (idCtaDepositValid || null)}
+            invalid={!!error('depositCtaCode')}
+            feedbackText={error('depositCtaCode')}
           />
         </Colxx>
       </Row>

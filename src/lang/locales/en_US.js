@@ -2237,6 +2237,12 @@ const enLang = {
   "page.cashBoxes.table.name": "Name",
   "page.cashBoxes.select.cashAccount": "Cash Account",
   "page.cashBoxes.select.depositAccount": "Deposit Account",
+  "page.cashBoxes.input.nameRequired": "Name *",
+  "page.cashBoxes.select.cashAccountRequired": "Cash Account *",
+  "page.cashBoxes.select.depositAccountRequired": "Deposit Account *",
+  "page.cashBoxes.error.name": "The name must have at least 5 characters",
+  "page.cashBoxes.error.nameMax": "The name cannot exceed 40 characters",
+  "page.cashBoxes.error.accountMax": "The account cannot exceed 20 characters",
   "page.cashBoxes.select.billingArea": "Default Billing Area",
   /* 26. paymentMethods page in  */
   "page.paymentMethods.input.name": "Name",

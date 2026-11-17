@@ -2253,6 +2253,12 @@ const esLang = {
   "page.cashBoxes.table.name": "Nombre",
   "page.cashBoxes.select.cashAccount": "Cuenta de Efectivo",
   "page.cashBoxes.select.depositAccount": "Cuenta de Deposito",
+  "page.cashBoxes.input.nameRequired": "Nombre *",
+  "page.cashBoxes.select.cashAccountRequired": "Cuenta de Efectivo *",
+  "page.cashBoxes.select.depositAccountRequired": "Cuenta de Depósito *",
+  "page.cashBoxes.error.name": "El nombre debe tener al menos 5 caracteres",
+  "page.cashBoxes.error.nameMax": "El nombre no puede exceder 40 caracteres",
+  "page.cashBoxes.error.accountMax": "La cuenta no puede exceder 20 caracteres",
   "page.cashBoxes.select.billingArea": "Area de Facturacion",
   /* 26. paymentMethods page in  */
   "page.paymentMethods.input.name": "Nombre",
