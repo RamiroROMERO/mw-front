@@ -1,12 +1,11 @@
 import DateHelper from '@Helpers/DateHelper';
-import { request, buildUrl } from '@Helpers/core';
-import { getErrorCode } from '@Helpers/errorMessage';
+import { request, buildUrl, notifyError } from '@Helpers/core';
 import { useForm } from '@Hooks'
 import { useEffect, useMemo, useState } from 'react';
 import { validInt } from '@Helpers/Utils';
 import createNotification from '@Containers/ui/Notifications';
 import {
-  TRANSFER_DOCUMENT, buildTransferPayload, canOpenAddMany, detailsFromApi, mergeLine, linesFromSelection, validateTransfer, warningTexts
+  TRANSFER_DOCUMENT, buildTransferPayload, canOpenAddMany, detailsFromApi, mergeLine, linesFromSelection, transferState, validateTransfer, warningTexts
 } from './transferRules';
 
 const TRANSFERS_URL = 'inventory/process/transfers';
@@ -47,22 +46,24 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
     userId: userData ? userData.id : 0,
     applyTo: 'Inventario',
     pdaNumber: 0,
+    isApplied: false,
     originCtaCode: '',
     assignCtaCode: '',
     status: true
   }, validTransfers);
 
-  const { id, documentId, documentCode, date, physicalNumber, sourceStoreId, assignStoreId, notes, userId, applyTo, pdaNumber, assignCtaCode, originCtaCode, status } = formState;
+  const { id, documentId, documentCode, date, physicalNumber, sourceStoreId, assignStoreId, notes, userId, applyTo, pdaNumber, isApplied, assignCtaCode, originCtaCode, status } = formState;
 
   // Mismas reglas del DTO del back (fecha no futura, destino distinto del origen, máximos): los errores de campo se muestran
   // junto al campo y, si hay alguno, no se llama al back.
   const fieldErrors = useMemo(() => validateTransfer(formState, transferDetail), [formState, transferDetail]);
   const formValidation = useMemo(() => ({ ...baseValidation, ...toFormValidation(fieldErrors) }), [baseValidation, fieldErrors]);
 
-  const isProcessed = validInt(pdaNumber) > 0;
-  const isVoided = id > 0 && !status;
-  const isSaved = validInt(id) > 0;
-  const disabled = isProcessed || isVoided;
+  const state = transferState({ id, isApplied, pdaNumber, status });
+  const isProcessed = state.applied;
+  const isVoided = state.voided;
+  const isSaved = state.saved;
+  const disabled = state.locked;
 
   const fnNewDocument = () => {
     onResetForm();
@@ -180,45 +181,51 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
     return true;
   }
 
-  const fnAskProcess = () => {
-    if (id === 0) return;
-    setOpenMsgProcess(true);
-  }
-
-  const fnProcessTransfer = () => {
-    setOpenMsgProcess(false);
-    setLoading(true);
-    request.POST(`inventory/process/inventoryTransactions/process/${id}`, {}, (resp) => {
-      onBulkForm({ pdaNumber: resp.data.numberPDA });
-      createNotification('success', 'msg.success.processDocument', 'alert.success.title');
+  // Recarga el documento guardado (cabecera y detalle) para reflejar su estado real tras contabilizar o anular.
+  const fnReloadDocument = (idDoc) => {
+    request.GET(`${TRANSFERS_URL}/${idDoc}`, (resp) => {
+      const header = { ...resp.data };
+      ['details', 'invStore', 'invAssign', 'documentData'].forEach((key) => { delete header[key]; });
+      onBulkForm(header);
+      setTransferDetail(detailsFromApi(resp.data.details));
       setLoading(false);
-    }, (err) => {
-      const errorCode = getErrorCode(err);
-      if (errorCode) {
-        createNotification('error', `msg.error.transfer.${errorCode}`, 'alert.error.title');
-      } else {
-        createNotification('error', 'msg.error.processDocument', 'alert.error.title');
-      }
+    }, () => {
       setLoading(false);
     });
   }
 
+  const fnAskProcess = () => {
+    if (!state.canProcess) return;
+    setOpenMsgProcess(true);
+  }
+
+  // Contabilizar: un solo POST; el back valida existencias, período y cuentas y responde el motivo real de cada rechazo.
+  const fnProcessTransfer = () => {
+    setOpenMsgProcess(false);
+    setLoading(true);
+    request.POST(`${TRANSFERS_URL}/${id}/process`, {}, () => {
+      createNotification('success', 'msg.success.processDocument', 'alert.success.title');
+      fnReloadDocument(id);
+    }, (err) => {
+      notifyError(err, 'msg.error.processDocument');
+      setLoading(false);
+    }, false);
+  }
+
   const fnAskVoid = () => {
-    if (id === 0 || !isProcessed) return;
+    if (!state.canVoid) return;
     setOpenModalVoid(true);
   }
 
+  // Anular: DELETE con el motivo; el documento queda anulado y se muestra como tal (no se limpia el formulario).
   const fnVoidTransfer = (reason) => {
     setLoading(true);
-    request.DELETE(buildUrl(`inventory/process/inventoryTransactions/void/${id}`, { reason }), () => {
+    request.DELETE(buildUrl(`${TRANSFERS_URL}/${id}/void`, { reason }), () => {
       setOpenModalVoid(false);
-      onResetForm();
-      onResetFormDeta();
-      setTransferDetail([]);
       createNotification('success', 'msg.success.voidDocument', 'alert.success.title');
-      setLoading(false);
-    }, () => {
-      createNotification('error', 'msg.delete.record.error', 'alert.error.title');
+      fnReloadDocument(id);
+    }, (err) => {
+      notifyError(err, 'msg.delete.record.error');
       setLoading(false);
     }, false);
   }
@@ -280,14 +287,15 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
     fnSave: !disabled ? fnSaveDocument : null,
     fnPrint: fnPrintDocument,
     fnDelete: !disabled ? fnDeleteDocument : null,
-    fnCancel: isProcessed && !isVoided ? fnAskVoid : null,
-    buttonsHome: [
+    fnCancel: state.canVoid ? fnAskVoid : null,
+    // Contabilizar solo se ofrece en un traslado guardado y sin aplicar ni anular.
+    buttonsHome: state.canProcess ? [
       {
         title: "button.count",
         icon: "bi bi-journal-check",
-        onClick: isSaved && !isProcessed ? fnAskProcess : () => { }
+        onClick: fnAskProcess
       }
-    ],
+    ] : [],
     buttonsOptions: [
       {
         title: 'page.transfersToStores.button.addMany',

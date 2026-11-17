@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import {
-  buildTransferPayload, canOpenAddMany, detailsFromApi, lineKey, linesFromSelection, mergeLine, validateTransfer, warningTexts
+  buildTransferPayload, canOpenAddMany, detailsFromApi, lineKey, linesFromSelection, mergeLine, transferState, validateTransfer, warningTexts
 } from './transferRules';
 
 const TODAY = '2026-11-17';
@@ -133,5 +133,39 @@ describe('Agregar varios', () => {
     expect(lines.map((l) => l.productCode)).toEqual(['A', 'C']);
     expect(lines[0]).toMatchObject({ nameProduct: 'ALFA', qty: 3, cost: 2.5, total: 7.5, lotCode: '', expirationDate: '' });
     expect(lines[1].total).toBe(5);
+  });
+});
+
+describe('transferState', () => {
+  test('un documento nuevo (sin guardar) no ofrece contabilizar ni anular y no está bloqueado', () => {
+    expect(transferState({ id: 0, isApplied: false, pdaNumber: 0, status: true }))
+      .toEqual({ saved: false, applied: false, voided: false, canProcess: false, canVoid: false, locked: false });
+  });
+
+  test('guardado y sin aplicar: solo contabilizar', () => {
+    expect(transferState({ id: 5, isApplied: false, pdaNumber: 0, status: true }))
+      .toEqual({ saved: true, applied: false, voided: false, canProcess: true, canVoid: false, locked: false });
+  });
+
+  test('aplicado por isApplied (Contabilidad apagada, sin partida) o por partida: solo anular y bloqueado', () => {
+    [{ isApplied: true, pdaNumber: 0 }, { isApplied: 1, pdaNumber: 0 }, { isApplied: false, pdaNumber: 9 }].forEach((patch) => {
+      expect(transferState({ id: 5, status: true, ...patch }))
+        .toEqual({ saved: true, applied: true, voided: false, canProcess: false, canVoid: true, locked: true });
+    });
+  });
+
+  test('anulado (status false o 0): ninguna acción y bloqueado', () => {
+    [false, 0].forEach((status) => {
+      expect(transferState({ id: 5, isApplied: true, pdaNumber: 9, status }))
+        .toEqual({ saved: true, applied: false, voided: true, canProcess: false, canVoid: false, locked: true });
+    });
+  });
+
+  test('un documento sin guardar nunca cuenta como anulado aunque status sea falso', () => {
+    expect(transferState({ id: 0, status: false }).voided).toBe(false);
+  });
+
+  test('sin argumentos no falla', () => {
+    expect(transferState()).toMatchObject({ saved: false, canProcess: false, canVoid: false });
   });
 });
