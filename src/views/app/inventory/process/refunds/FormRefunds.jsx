@@ -9,7 +9,7 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import DateCalendar from '@Components/dateCalendar'
 import Modal from "@Components/modal";
 import { useFormRefund } from './useFormRefund'
-import ModalApplyAccount from '../requisitions/ModalApplyAccount'
+import ModalApplyAccount from '../transactions/shared/ModalApplyAccount'
 
 const FormRefunds = ({documentCode, documentId, sourceStoreId, originCtaCode, assignStoreId, assignCtaCode, providerId, date, physicalNumber, applyTo, expirationDate, reintType, listDocuments, listStores, listDestinations, listAccounts, listProviders, listTypeApply, onInputChange, showType1, showType2, setShowType1, setShowType2, onBulkForm, refundDetail, setRefundDetail, idProd, onResetFormDeta, sendForm, formValidation, disabled, isProcessed, isVoided, pdaNumber}) => {
 

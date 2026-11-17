@@ -4023,6 +4023,9 @@ const esLang = {
   "page.transfersToStores.radio.expense": "Gasto",
   // 77. Requisitions page in inventory
   "page.requisitions.select.applyId": "Aplicar a",
+  "page.requisitions.select.employee": "Empleado",
+  "page.requisitions.table.column.employee": "Empleado",
+  "page.requisitions.error.duplicateLine": "Hay líneas repetidas (mismo producto, lote, vencimiento y empleado)",
   "page.requisitions.check.assignOT": "Asignar OT",
   "page.requisitions.modal.viewTransfers.title": "Requisiciones",
   "page.requisitions.modal.applyAccount.question": "Aplicar Cuenta Contable",

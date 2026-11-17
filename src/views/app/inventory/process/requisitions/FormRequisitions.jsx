@@ -1,35 +1,27 @@
-import { Button, Row } from 'reactstrap'
+import { Row } from 'reactstrap'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import DateCalendar from '@Components/dateCalendar'
-import Modal from "@Components/modal";
 import { InputField } from '@Components/inputFields'
-import { SimpleSelect } from '@Components/simpleSelect'
 import { ContainerWithLabel } from '@Components/containerWithLabel'
+import { SimpleSelect } from '@Components/simpleSelect'
 import { IntlMessages } from '@Helpers/Utils'
-import { useFormRequisition } from './useFormRequisition'
-import ModalApplyAccount from './ModalApplyAccount'
+import { useFormTransfers } from '../transferToStores/useFormTransfers'
+import { localToday, MAX } from './requisitionRules'
 
-const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, originCtaCode, assignStoreId, assignCtaCode, date, physicalNumber, applyTo, onInputChange, listDocuments, listStores, listDestinations, listTypeApply, formValidation, sendForm, listAccounts, onBulkForm, requisitionDetail, setRequisitionDetail, onResetFormDeta, disabled, isProcessed, isVoided, pdaNumber}) => {
+const APPLY_TO_OPTIONS = [
+  { id: 'Inventario', name: 'Inventario' },
+  { id: 'Costo', name: 'Costo' },
+  { id: 'Gasto', name: 'Gasto' }
+]
 
-  const {documentCodeValid, sourceStoreIdValid, assignStoreIdValid, applyToValid} = formValidation;
+const FormRequisitions = ({senderName, receiverName, documentId, documentCode, sourceStoreId, originCtaCode, assignStoreId, assignCtaCode, applyTo, date, physicalNumber, listDocuments, listStores, listDestinations, onInputChange, formValidation, sendForm, listAccounts, onBulkForm, disabled, isProcessed, isVoided, pdaNumber}) => {
 
-  const {fnApplyDestinyAccount, onStoreChange, onDestinationChange, onApplyToChange, openModalApplyAccount, setOpenModalApplyAccount, fnApplyAll, fnApplyCurrent} = useFormRequisition({onBulkForm, listStores, listDestinations, requisitionDetail, setRequisitionDetail, assignCtaCode, idProd, onResetFormDeta});
+  const {documentCodeValid, sourceStoreIdValid, assignStoreIdValid, dateValid, senderNameValid, receiverNameValid, physicalNumberValid, applyToValid} = formValidation;
 
-  const propsToModalApplyAccount = {
-    ModalContent: ModalApplyAccount,
-    title: "modal.confirm.title",
-    open: openModalApplyAccount,
-    setOpen: setOpenModalApplyAccount,
-    maxWidth: 'md',
-    data:{
-      fnApplyAll,
-      fnApplyCurrent
-    }
-  }
+  const {onStoreChange, onDestinationChange, onApplyToChange} = useFormTransfers({onBulkForm, listStores: [...listStores, ...listDestinations]});
 
   return (
-    <>
     <Row>
       <Colxx className="order-xs-2 order-sm-1" xxs="12" sm="8" lg="9">
         <Row>
@@ -103,16 +95,49 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, orig
                     inputValue={assignCtaCode}
                     options={listAccounts}
                     onChange={onInputChange}
-                    isDisabled={disabled}
+                    isDisabled
                   />
-                </Colxx>
-                <Colxx xxs="12" align="right">
-                  <Button color="secondary" onClick={() => {fnApplyDestinyAccount()}} disabled={disabled}>
-                    <i className='bi bi-check' /> {IntlMessages("button.apply")}
-                  </Button>
                 </Colxx>
               </Row>
             </ContainerWithLabel>
+          </Colxx>
+          <Colxx xxs="12" md="4">
+            <InputField
+              name="senderName"
+              label="page.transfersToStores.input.senderName"
+              value={senderName}
+              onChange={onInputChange}
+              type="text"
+              maxLength={MAX.senderName}
+              disabled={disabled}
+              invalid={sendForm && !!senderNameValid}
+              feedbackText={sendForm && (senderNameValid || null)}
+            />
+          </Colxx>
+          <Colxx xxs="12" md="4">
+            <InputField
+              name="receiverName"
+              label="page.transfersToStores.input.receiverName"
+              value={receiverName}
+              onChange={onInputChange}
+              type="text"
+              maxLength={MAX.receiverName}
+              disabled={disabled}
+              invalid={sendForm && !!receiverNameValid}
+              feedbackText={sendForm && (receiverNameValid || null)}
+            />
+          </Colxx>
+          <Colxx xxs="12" md="4">
+            <SimpleSelect
+              label="page.requisitions.select.applyId"
+              name="applyTo"
+              value={applyTo}
+              onChange={(e) => onApplyToChange(e, assignStoreId)}
+              options={APPLY_TO_OPTIONS}
+              disabled={disabled}
+              invalid={sendForm && !!applyToValid}
+              feedbackText={sendForm && (applyToValid || null)}
+            />
           </Colxx>
         </Row>
       </Colxx>
@@ -125,6 +150,9 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, orig
               value={date}
               onChange={onInputChange}
               disabled={disabled}
+              maxDate={localToday()}
+              invalid={sendForm && !!dateValid}
+              feedbackText={sendForm && (dateValid || null)}
             />
           </Colxx>
           <Colxx xxs="12" xs="6" sm="12">
@@ -135,18 +163,8 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, orig
               onChange={onInputChange}
               type="text"
               disabled={disabled}
-            />
-          </Colxx>
-          <Colxx xxs="12" xs="6" sm="12">
-            <SimpleSelect
-              value={applyTo}
-              name="applyTo"
-              onChange={(e) => onApplyToChange(e, assignStoreId)}
-              label="page.requisitions.select.applyId"
-              options={listTypeApply}
-              disabled={disabled}
-              invalid={sendForm && !!applyToValid}
-              feedbackText={sendForm && (applyToValid || null)}
+              invalid={sendForm && !!physicalNumberValid}
+              feedbackText={sendForm && (physicalNumberValid || null)}
             />
           </Colxx>
           {isVoided && (
@@ -166,8 +184,6 @@ const FormRequisitions = ({idProd, documentCode, documentId, sourceStoreId, orig
         </Row>
       </Colxx>
     </Row>
-    <Modal {...propsToModalApplyAccount}/>
-    </>
   )
 }
 

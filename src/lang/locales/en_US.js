@@ -4007,6 +4007,9 @@ const enLang = {
   "page.transfersToStores.radio.expense": "Expense",
   // 77. Requisitions page in enventory
   "page.requisitions.select.applyId": "Apply to",
+  "page.requisitions.select.employee": "Employee",
+  "page.requisitions.table.column.employee": "Employee",
+  "page.requisitions.error.duplicateLine": "There are repeated lines (same product, lot, expiration date and employee)",
   "page.requisitions.check.assignOT": "Assign WO",
   "page.requisitions.modal.viewTransfers.title": "Requisitions",
   "page.requisitions.modal.applyAccount.question": "Apply Ledger Account",

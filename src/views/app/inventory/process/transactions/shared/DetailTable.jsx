@@ -4,9 +4,12 @@ import { IntlMessages, formatNumber } from '@Helpers/Utils'
 import Confirmation from '@Containers/ui/confirmationMsg';
 import { useDetailTable } from './useDetailTable'
 
-const DetailTable = ({transferDetail, setTransferDetail, setBulkFormDeta, disabled}) => {
+const DetailTable = ({transferDetail, setTransferDetail, setBulkFormDeta, disabled, showEmployee}) => {
 
   const {openMsgDelete, setOpenMsgDelete, fnEditProduct, fnDeleteProduct, fnDeleteOkProduct} = useDetailTable({setBulkFormDeta, transferDetail, setTransferDetail});
+
+  // IntlMessages es un hook: se llama siempre, no dentro de la condición.
+  const textEmployee = IntlMessages("page.requisitions.table.column.employee");
 
   const propsToMsgDeleteProd = {
     open: openMsgDelete,
@@ -24,6 +27,7 @@ const DetailTable = ({transferDetail, setTransferDetail, setBulkFormDeta, disabl
             <tr>
               <th className = 'd-md-none-table-cell'>{IntlMessages("table.column.code")}</th>
               <th>{IntlMessages("table.column.name")}</th>
+              {showEmployee && <th>{textEmployee}</th>}
               <th className = 'd-xs-none-table-cell'>{IntlMessages("table.column.cost")}</th>
               <th className = 'd-xxs-none-table-cell'>{IntlMessages("table.column.qty")}</th>
               <th>{IntlMessages("table.column.total")}</th>
@@ -36,6 +40,7 @@ const DetailTable = ({transferDetail, setTransferDetail, setBulkFormDeta, disabl
                 <tr id={`tr-table-transferDetail-${item.id}`} key={idx}>
                   <th className = 'd-md-none-table-cell' scope="row">{item.productCode}</th>
                   <th scope="row">{item.nameProduct}</th>
+                  {showEmployee && <td>{item.employeeName || ''}</td>}
                   <td className = 'd-xs-none-table-cell' align='right'>{formatNumber(item.cost)}</td>
                   <td className = 'd-xxs-none-table-cell' align='right'>{formatNumber(item.qty)}</td>
                   <td align='right'>{formatNumber(item.total)}</td>

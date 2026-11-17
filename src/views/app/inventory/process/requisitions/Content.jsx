@@ -1,19 +1,21 @@
 import { useState } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
+import { useRequisitions } from './useRequisitions';
 import { Separator } from '@Components/common/CustomBootstrap';
 import ControlPanel from '@Components/controlPanel';
 import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ModalVoidInvoice from '@Views/app/billing/process/pointSales/ModalVoidInvoice';
-import { useTransfersDeta } from '../transactions/shared/useTransfersDeta';
-import { useRequisitions } from './useRequisitions';
-import DetailProduct from '../transactions/shared/DetailProduct';
 import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
-import ModalViewTransfers from '../transactions/shared/ModalViewTransfers';
-import DetailTable from '../transactions/shared/DetailTable';
+import { useTransfersDeta } from '../transactions/shared/useTransfersDeta';
 import FormRequisitions from './FormRequisitions';
-import FooterRequisitions from './FooterRequisitions';
+import DetailProduct from '../transactions/shared/DetailProduct';
+import DetailTable from '../transactions/shared/DetailTable';
+import ModalViewTransfers from '../transactions/shared/ModalViewTransfers';
+import FooterTransfers from '../transactions/shared/FooterTransfers';
+import ModalAddManyProducts from '../transactions/shared/ModalAddManyProducts';
+import { ensureSelectedEmployee } from './requisitionRules';
 
 const Requisitions = ({ setLoading }) => {
   const [requisitionDetail, setRequisitionDetail] = useState([]);
@@ -21,33 +23,31 @@ const Requisitions = ({ setLoading }) => {
   const { formStateDeta, onInputChangeDeta, fnViewProducts, fnSelectProduct, openModalProducts, setOpenModalProducts, dataProducts, setBulkFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTransfersDeta({ setLoading });
 
   const {
-    propsToControlPanel, formState, onInputChange, listDocuments, listStores, listDestinations, listTypeApply,
-    sendFormDeta, setSendFormDeta, sendForm, setSendForm, formValidation, isFormValid, listWorkOrders, onBulkForm,
-    showWorkOrder, setShowWorkOrder, openModalViewRequisitions, setOpenModalViewRequisitions, dataRequisitions,
-    listAccounts, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument, fnOkDeleteDocument,
+    propsToControlPanel, formState, onInputChange, listDocuments, listStores, listDestinations, sendFormDeta, setSendFormDeta,
+    formValidation, sendForm, setSendForm, isFormValid, dataRequisitions, openModalViewRequisitions, setOpenModalViewRequisitions,
+    onBulkForm, listAccounts, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument, fnOkDeleteDocument,
     disabled, isProcessed, isVoided, openMsgProcess, setOpenMsgProcess, fnProcessRequisition,
-    openModalVoid, setOpenModalVoid, fnVoidRequisition
-  } = useRequisitions({ requisitionDetail, onResetFormDeta, setRequisitionDetail, setLoading });
+    openModalVoid, setOpenModalVoid, fnVoidRequisition, openModalAddMany, setOpenModalAddMany, fnAddManyLine,
+    employees, onEmployeeSearch
+  } = useRequisitions({ setLoading, requisitionDetail, setRequisitionDetail, onResetFormDeta });
 
-  const { notes, sourceStoreId, assignStoreId, isWorkOrder, workOrderId, originCtaCode, assignCtaCode, documentCode, documentId, pdaNumber } = formState;
+  // El empleado elegido sigue en las opciones aunque la búsqueda del servidor ya no lo traiga.
+  const employeesForDetail = employees ? ensureSelectedEmployee(employees, formStateDeta.employeeId, formStateDeta.employeeName) : null;
 
-  const { idProd } = formStateDeta;
+  const { notes, senderName, receiverName, sourceStoreId, assignStoreId, originCtaCode, assignCtaCode, documentCode, documentId, pdaNumber } = formState;
 
-  const propsToFormRequisition = {
+  const propsToFormRequisitions = {
     ...formState,
+    senderName,
+    receiverName,
     onInputChange,
     listDocuments,
     listStores,
     listDestinations,
-    listTypeApply,
     formValidation,
     sendForm,
     listAccounts,
     onBulkForm,
-    requisitionDetail,
-    setRequisitionDetail,
-    idProd,
-    onResetFormDeta,
     disabled,
     isProcessed,
     isVoided,
@@ -71,25 +71,22 @@ const Requisitions = ({ setLoading }) => {
     formValidationDeta,
     setSendForm,
     isFormValid,
-    disabled
+    disabled,
+    employees: employeesForDetail,
+    onEmployeeSearch
   }
 
   const propsToDetailTable = {
     transferDetail: requisitionDetail,
     setTransferDetail: setRequisitionDetail,
     setBulkFormDeta,
-    disabled
+    disabled,
+    showEmployee: Array.isArray(employees)
   }
 
   const propsToFooter = {
     notes,
-    isWorkOrder,
-    workOrderId,
     onInputChange,
-    listWorkOrders,
-    onBulkForm,
-    showWorkOrder,
-    setShowWorkOrder,
     disabled
   }
 
@@ -113,8 +110,23 @@ const Requisitions = ({ setLoading }) => {
     maxWidth: "lg",
     data: {
       dataTransfers: dataRequisitions,
-      fnGetDataDetail,
-      onBulkForm
+      onBulkForm,
+      fnGetDataDetail
+    }
+  }
+
+  const propsToModalAddMany = {
+    ModalContent: ModalAddManyProducts,
+    title: "page.transfersToStores.button.addMany",
+    open: openModalAddMany,
+    setOpen: setOpenModalAddMany,
+    maxWidth: 'lg',
+    data: {
+      url: 'inventory/process/requisitions/availableProducts',
+      storeId: sourceStoreId,
+      employees,
+      onEmployeeSearch,
+      fnAddLine: fnAddManyLine
     }
   }
 
@@ -152,10 +164,10 @@ const Requisitions = ({ setLoading }) => {
             <CardBody>
               <ControlPanel {...propsToControlPanel} />
               <Separator className="mt-2 mb-4" />
-              <FormRequisitions {...propsToFormRequisition} />
+              <FormRequisitions {...propsToFormRequisitions} />
               <DetailProduct {...propsToDetailProduct} />
               <DetailTable {...propsToDetailTable} />
-              <FooterRequisitions {...propsToFooter} />
+              <FooterTransfers {...propsToFooter} />
             </CardBody>
           </Card>
         </Colxx>
@@ -163,6 +175,7 @@ const Requisitions = ({ setLoading }) => {
       <Modal {...propsToModalViewProd} />
       <Modal {...propsToModalViewRequisitions} />
       <Modal {...propsToModalVoid} />
+      <Modal {...propsToModalAddMany} />
       <Confirmation {...propsToMsgDeleteDocument} />
       <Confirmation {...propsToMsgProcess} />
     </>

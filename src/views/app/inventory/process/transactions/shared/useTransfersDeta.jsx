@@ -23,7 +23,9 @@ export const useTransfersDeta = ({ setLoading }) => {
       qty: 1,
       lotCode: '',
       expirationDate: '',
-      total: 0
+      total: 0,
+      employeeId: 0,
+      employeeName: ''
     }, transfersDetaValid);
 
   const fnSelectProduct = (item) => {

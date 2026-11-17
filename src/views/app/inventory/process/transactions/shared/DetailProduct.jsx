@@ -4,11 +4,12 @@ import { ContainerWithLabel } from '@Components/containerWithLabel'
 import { InputField } from '@Components/inputFields'
 import { IntlMessages, formatNumber } from '@Helpers/Utils'
 import DateCalendar from '@Components/dateCalendar'
+import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { useDetailProduct } from './useDetailProduct'
 
-const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, expirationDate, sourceStoreId, assignStoreId, total, onInputChangeDeta, fnViewProducts, setBulkFormDeta, transferDetail, setTransferDetail, sendFormDeta,setSendFormDeta, isFormValidDeta, formValidationDeta, setSendForm, isFormValid, originCtaCode, assignCtaCode, disabled}) => {
+const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, expirationDate, sourceStoreId, assignStoreId, total, onInputChangeDeta, fnViewProducts, setBulkFormDeta, transferDetail, setTransferDetail, sendFormDeta,setSendFormDeta, isFormValidDeta, formValidationDeta, setSendForm, isFormValid, originCtaCode, assignCtaCode, disabled, employees, employeeId, employeeName, onEmployeeSearch}) => {
 
-  const {onQtyChange, fnAddProduct} = useDetailProduct({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, expirationDate, sourceStoreId, assignStoreId, total, setBulkFormDeta, transferDetail, setTransferDetail, isFormValidDeta, setSendFormDeta, setSendForm, isFormValid, originCtaCode, assignCtaCode});
+  const {onQtyChange, fnAddProduct} = useDetailProduct({idProd, productCode, nameProduct, currentExistence, cost, qty, lotCode, expirationDate, employeeId, employeeName, sourceStoreId, assignStoreId, total, setBulkFormDeta, transferDetail, setTransferDetail, isFormValidDeta, setSendFormDeta, setSendForm, isFormValid, originCtaCode, assignCtaCode});
 
   const {productCodeValid, qtyValid, costValid} = formValidationDeta;
 
@@ -92,6 +93,22 @@ const DetailProduct = ({idProd, productCode, nameProduct, currentExistence, cost
                 onChange={onInputChangeDeta}
               />
             </Colxx>
+            {Array.isArray(employees) && (
+              <Colxx xxs="12" sm="12" lg="6" xl="6">
+                <SearchSelect
+                  label="page.requisitions.select.employee"
+                  name="employeeId"
+                  inputValue={employeeId}
+                  options={employees}
+                  onInputChange={onEmployeeSearch}
+                  onChange={(e) => {
+                    const value = Number(e.target.value) || 0
+                    const found = employees.find((item) => item.value === value)
+                    setBulkFormDeta({ employeeId: value, employeeName: found ? found.label : '' })
+                  }}
+                />
+              </Colxx>
+            )}
             <Colxx xxs="12" xs="5" sm="3" lg="12" xl="4" align="right">
               <Button color="primary" onClick={() => {fnAddProduct()}}>
                 <i className='bi bi-plus' /> {IntlMessages("button.add")}

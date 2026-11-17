@@ -378,6 +378,7 @@
     "transaction.alreadyApplied",
     "transaction.alreadyVoided",
     "transaction.document.invalid",
+    "transaction.employee.invalid",
     "transaction.line.duplicated",
     "transaction.locked.applied",
     "transaction.not.found",

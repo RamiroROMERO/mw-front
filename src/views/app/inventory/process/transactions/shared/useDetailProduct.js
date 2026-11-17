@@ -1,6 +1,6 @@
 import { validFloat } from '@Helpers/Utils';
 
-export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, total, lotCode, expirationDate, sourceStoreId, assignStoreId, setBulkFormDeta, transferDetail, setTransferDetail, setSendFormDeta, isFormValidDeta, setSendForm, isFormValid, originCtaCode, assignCtaCode }) => {
+export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, total, lotCode, expirationDate, employeeId, employeeName, sourceStoreId, assignStoreId, setBulkFormDeta, transferDetail, setTransferDetail, setSendFormDeta, isFormValidDeta, setSendForm, isFormValid, originCtaCode, assignCtaCode }) => {
 
   const onQtyChange = e => {
     const totalValue = validFloat(cost) * e.target.value;
@@ -34,7 +34,9 @@ export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, 
       cost,
       total: validFloat(total),
       lotCode,
-      expirationDate: expirationDate !== "" ? expirationDate : "1900-01-01"
+      expirationDate: expirationDate !== "" ? expirationDate : "1900-01-01",
+      employeeId: Number(employeeId) || 0,
+      employeeName: employeeName || ''
     }
 
     if (idProd > 0) {
@@ -49,6 +51,8 @@ export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, 
           item.originStoreId = sourceStoreId
           item.originCtaCode = originCtaCode
           item.assignCtaCode = assignCtaCode
+          item.employeeId = Number(employeeId) || 0
+          item.employeeName = employeeName || ''
         }
         return item;
       });
@@ -66,7 +70,9 @@ export const useDetailProduct = ({ idProd, productCode, nameProduct, qty, cost, 
       qty: 1,
       lotCode: '',
       expirationDate: '',
-      total: 0
+      total: 0,
+      employeeId: 0,
+      employeeName: ''
     }
 
     setBulkFormDeta(cleanProd);

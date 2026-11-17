@@ -1,61 +1,79 @@
-import { useForm } from '@Hooks'
-import { useState, useEffect } from 'react';
-import { request, buildUrl } from '@Helpers/core';
-import { getErrorCode } from '@Helpers/errorMessage';
-import { validInt } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
+import { request, buildUrl, notifyError } from '@Helpers/core';
+import { useForm } from '@Hooks'
+import { useEffect, useMemo, useState } from 'react';
+import { validInt } from '@Helpers/Utils';
 import createNotification from '@Containers/ui/Notifications';
+import { printDocument } from '@Helpers/printDocument';
+import { printOptions } from './requisitionPrintRules';
+import useEmployeeOptions from './useEmployeeOptions';
+import {
+  REQUISITION_DOCUMENT, DEFAULT_APPLY_TO, buildRequisitionPayload, canOpenAddMany, detailsFromApi, lineFromSelection, mergeLine,
+  requisitionState, validateRequisition, warningTexts
+} from './requisitionRules';
 
-export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisitionDetail, setLoading }) => {
+const REQUISITIONS_URL = 'inventory/process/requisitions';
+// { campo: id } -> { campoValid: id } (la forma que consumen los componentes).
+const toFormValidation = (errors = {}) => Object.fromEntries(Object.entries(errors).map(([field, id]) => [`${field}Valid`, id]));
+const toOption = (item) => ({
+  label: item.name, value: item.id, invCtaCode: item.invCtaCode, costCtaCode: item.costCtaCode, expenseCtaCode: item.expenseCtaCode
+});
+
+export const useRequisitions = ({ setLoading, requisitionDetail, setRequisitionDetail, onResetFormDeta }) => {
   const [listDocuments, setListDocuments] = useState([]);
   const [listStores, setListStores] = useState([]);
   const [listDestinations, setListDestinations] = useState([]);
-  const [listTypeApply, setListTypeApply] = useState([]);
-  const [listWorkOrders, setListWorkOrders] = useState([]);
   const [listAccounts, setListAccounts] = useState([]);
   const [dataRequisitions, setDataRequisitions] = useState([]);
+  const [rrhhActive, setRrhhActive] = useState(false);
   const [sendFormDeta, setSendFormDeta] = useState(false);
   const [sendForm, setSendForm] = useState(false);
   const [openModalViewRequisitions, setOpenModalViewRequisitions] = useState(false);
   const [openMsgDeleteDocument, setOpenMsgDeleteDocument] = useState(false);
   const [openModalVoid, setOpenModalVoid] = useState(false);
   const [openMsgProcess, setOpenMsgProcess] = useState(false);
-  const [showWorkOrder, setShowWorkOrder] = useState("none");
+  const [openModalAddMany, setOpenModalAddMany] = useState(false);
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
+  const { employees, onEmployeeSearch } = useEmployeeOptions(rrhhActive);
 
   const validRequisitions = {
     documentCode: [(val) => val !== "", "msg.required.select.typeDocument"],
     sourceStoreId: [(val) => validInt(val) > 0, "msg.required.select.warehouse"],
-    assignStoreId: [(val) => validInt(val) > 0, "msg.required.select.destinationId"],
-    applyTo: [(val) => val !== "", "msg.required.select.applyTo"]
+    assignStoreId: [(val) => validInt(val) > 0, "msg.required.select.destinationId"]
   }
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
+  const { formState, formValidation: baseValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
     id: 0,
-    documentCode: '',
     documentId: 0,
+    documentCode: REQUISITION_DOCUMENT,
     date: DateHelper.format(new Date()),
     physicalNumber: 0,
     sourceStoreId: 0,
     assignStoreId: 0,
-    isWorkOrder: 0,
-    workOrderId: 0,
     notes: '',
+    senderName: '',
+    receiverName: '',
     userId: userData ? userData.id : 0,
-    isApplied: 0,
+    applyTo: DEFAULT_APPLY_TO,
     pdaNumber: 0,
+    isApplied: false,
     originCtaCode: '',
     assignCtaCode: '',
-    applyTo: 'Inventario',
     status: true
   }, validRequisitions);
 
-  const { id, documentCode, documentId, date, physicalNumber, sourceStoreId, assignStoreId, isWorkOrder, workOrderId, notes, userId, pdaNumber, applyTo, status } = formState;
+  const { id, applyTo, pdaNumber, isApplied, sourceStoreId, assignStoreId, status } = formState;
 
-  const isProcessed = validInt(pdaNumber) > 0;
-  const isVoided = id > 0 && !status;
-  const isSaved = validInt(id) > 0;
-  const disabled = isProcessed || isVoided;
+  // Mismas reglas del DTO del back ("Aplicar a" obligatorio, fecha no futura, máximos): los errores de campo se muestran junto al
+  // campo y, si hay alguno, no se llama al back.
+  const fieldErrors = useMemo(() => validateRequisition(formState, requisitionDetail), [formState, requisitionDetail]);
+  const formValidation = useMemo(() => ({ ...baseValidation, ...toFormValidation(fieldErrors) }), [baseValidation, fieldErrors]);
+
+  const state = requisitionState({ id, isApplied, pdaNumber, status });
+  const isProcessed = state.applied;
+  const isVoided = state.voided;
+  const isSaved = state.saved;
+  const disabled = state.locked;
 
   const fnNewDocument = () => {
     onResetForm();
@@ -63,165 +81,71 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
     setSendForm(false);
     setSendFormDeta(false);
     setRequisitionDetail([]);
-    setShowWorkOrder("none");
   }
 
   const fnSearchDocument = () => {
     setLoading(true);
-    request.GET(buildUrl('inventory/process/inventoryTransactions', { typeName: 'Requis' }), (resp) => {
-      const purchases = resp.data.map((item) => {
+    request.GET(REQUISITIONS_URL, (resp) => {
+      const documents = resp.data.map((item) => {
         item.store = item.invStore ? item.invStore.name : ''
         item.destination = item.invAssign ? item.invAssign.name : ''
         item.noPhysical = item.physicalNumber
         return item;
       });
-      setDataRequisitions(purchases);
+      setDataRequisitions(documents);
       setOpenModalViewRequisitions(true);
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
   }
 
+  // Cabecera y detalle (con el empleado de cada línea) en una sola lectura.
   const fnGetDataDetail = (idReq) => {
     setLoading(true);
-    request.GET(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: idReq }), (resp) => {
-      const requisitionDeta = resp.data.map((item) => {
-        item.nameProduct = item.invProduct ? item.invProduct.name : ''
-        return item;
-      });
-      setRequisitionDetail(requisitionDeta);
+    request.GET(`${REQUISITIONS_URL}/${idReq}`, (resp) => {
+      setRequisitionDetail(detailsFromApi(resp.data.details));
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
   }
 
+  // Un solo POST o PUT con la cabecera y el detalle: el back calcula costo, total y cuentas, asigna el correlativo y guarda todo
+  // en una transacción. Tras guardar se muestran los avisos de existencia (el documento queda guardado igual).
   const fnSaveDocument = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    if (Object.keys(fieldErrors).length > 0) {
+      if (fieldErrors.details) createNotification('warning', fieldErrors.details, 'alert.warning.title');
       return;
     }
 
-    if (requisitionDetail.length === 0) {
-      createNotification('warning', 'msg.required.documentDetail', 'alert.warning.title');
-      return;
-    }
+    const payload = buildRequisitionPayload(formState, requisitionDetail, { withEmployees: rrhhActive });
+    const names = new Map(requisitionDetail.map((item) => [item.productCode, item.nameProduct]));
 
-    const typeName = "Requis";
+    const onSaved = (resp) => {
+      const saved = resp.data;
+      onBulkForm({ id: saved.id, documentId: saved.documentId });
+      // El back guarda el detalle en el mismo orden: el nombre del empleado de cada línea se conserva por posición.
+      const employeeNames = requisitionDetail.map((item) => item.employeeName || '');
+      setRequisitionDetail(detailsFromApi(saved.details).map((item, index) => ({
+        ...item, nameProduct: names.get(item.productCode) || '', employeeName: item.employeeId > 0 ? employeeNames[index] : ''
+      })));
+      setSendForm(false);
+      warningTexts(saved.warnings).forEach((text) => createNotification('warning', 'alert.warning.title', { text }));
+      setLoading(false);
+    };
+    const onError = () => setLoading(false);
 
-    const newData = {
-      documentCode,
-      documentId,
-      date,
-      physicalNumber,
-      sourceStoreId,
-      assignStoreId,
-      typeName,
-      isWorkOrder,
-      workOrderId,
-      notes,
-      userId,
-      applyTo,
-      status
-    }
-
-    requisitionDetail.map((item) => {
-      delete item.invAssign;
-      delete item.invProduct;
-      return item;
-    });
-
-    if (id === 0) {
-      // Generar documento
-      setLoading(true);
-      request.POST('admin/documents/getCurrentNumber', { code: documentCode }, (resp) => {
-        newData.documentId = resp.data.codeInt;
-        setLoading(false);
-
-        // Guardar requisición
-        setLoading(true);
-        request.POST('inventory/process/inventoryTransactions', newData, (resp2) => {
-          onBulkForm({ documentId: resp.data.codeInt, id: resp2.data.id });
-          setSendForm(false);
-
-          // guardar detalle de la requisicion
-          requisitionDetail.forEach(item => {
-            const detailReq = {
-              idFather: resp2.data.id,
-              ...item,
-              expirationDate: item.expirationDate === "" ? "1900-01-01" : item.expirationDate
-            }
-            setLoading(true);
-            request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
-              setLoading(false);
-            }, (err) => {
-
-              setLoading(false);
-            }, false);
-            setLoading(true);
-          });
-          setLoading(false);
-        }, (err) => {
-
-          setLoading(false);
-        });
-      }, (err) => {
-
-        setLoading(false);
-      }, false);
-    } else {
-      setLoading(true);
-      request.PUT(`inventory/process/inventoryTransactions/${id}`, newData, () => {
-        setLoading(false);
-        setSendForm(false);
-        // Eliminar detalle de la requisicion
-        request.DELETE(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: id }), () => {
-          // guardar detalle de la requisicion
-          requisitionDetail.forEach(item => {
-            const detailReq = {
-              idFather: id,
-              ...item,
-              expirationDate: item.expirationDate === "" ? "1900-01-01" : item.expirationDate
-            }
-            setLoading(true);
-            request.POST('inventory/process/inventoryTransactionDetail', detailReq, () => {
-              setLoading(false);
-            }, (err) => {
-
-              setLoading(false);
-            }, false);
-            setLoading(true);
-          });
-          setLoading(false);
-        }, (err) => {
-
-          setLoading(false);
-        }, false);
-      }, (err) => {
-
-        setLoading(false);
-      });
-    }
+    setLoading(true);
+    if (id === 0) request.POST(REQUISITIONS_URL, payload, onSaved, onError);
+    else request.PUT(`${REQUISITIONS_URL}/${id}`, payload, onSaved, onError);
   }
 
-  const fnPrintDocument = () => {
-    if (id > 0) {
-      const dataPrint = {
-        id,
-        userName: userData.name
-      }
-      request.GETPdf('inventory/process/inventoryTransactions/exportPDFRequisition', dataPrint, 'Requisición.pdf', (err) => {
+  // Imprime lo guardado por GET; sin documento guardado avisa "guarde primero" y no llama al back.
+  const fnPrintDocument = () => { printDocument({ ...printOptions(id), setLoading }); };
 
-        setLoading(false);
-      });
-    }
-  }
-
-  // Eliminación física — solo antes de Contabilizar (fiel al legacy). Una vez aplicado,
-  // usar Anular (fnAskVoid) en su lugar.
+  // Eliminación física: solo antes de Contabilizar. Una vez aplicado se usa Anular.
   const fnDeleteDocument = () => {
     if (id > 0 && !disabled) {
       setOpenMsgDeleteDocument(true);
@@ -231,64 +155,79 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
   const fnOkDeleteDocument = () => {
     setOpenMsgDeleteDocument(false);
     setLoading(true);
-    request.DELETE(`inventory/process/inventoryTransactions/${id}`, () => {
+    request.DELETE(`${REQUISITIONS_URL}/${id}`, () => {
       onResetForm();
       onResetFormDeta();
       setRequisitionDetail([]);
+      setLoading(false);
+    }, () => {
+      setLoading(false);
+    });
+  }
 
-      // eliminar detalle
-      request.DELETE(buildUrl('inventory/process/inventoryTransactionDetail', { idFather: id }), () => {
-        setLoading(false);
-      }, (err) => {
+  // "Agregar varios" (modal compartido): suma la cantidad si el producto (con el mismo empleado) ya está en el detalle.
+  const fnOpenAddMany = () => {
+    if (!canOpenAddMany({ sourceStoreId, assignStoreId, disabled })) {
+      createNotification('warning', 'page.transfersToStores.msg.addManyRequires', 'alert.warning.title');
+      return;
+    }
+    setOpenModalAddMany(true);
+  }
 
-        setLoading(false);
-      }, false);
-    }, (err) => {
+  const fnAddManyLine = (product, qty, employee) => {
+    if (!(Number(qty) > 0)) {
+      createNotification('warning', 'msg.required.input.qty', 'alert.warning.title');
+      return false;
+    }
+    setRequisitionDetail((current) => mergeLine(current, lineFromSelection(product, qty, employee)));
+    return true;
+  }
 
+  // Recarga el documento guardado (cabecera y detalle) para reflejar su estado real tras contabilizar o anular.
+  const fnReloadDocument = (idDoc) => {
+    request.GET(`${REQUISITIONS_URL}/${idDoc}`, (resp) => {
+      const header = { ...resp.data };
+      ['details', 'invStore', 'invAssign', 'documentData'].forEach((key) => { delete header[key]; });
+      onBulkForm(header);
+      setRequisitionDetail(detailsFromApi(resp.data.details));
+      setLoading(false);
+    }, () => {
       setLoading(false);
     });
   }
 
   const fnAskProcess = () => {
-    if (id === 0) return;
+    if (!state.canProcess) return;
     setOpenMsgProcess(true);
   }
 
+  // Contabilizar: un solo POST; el back valida existencias, período y cuentas y responde el motivo real de cada rechazo.
   const fnProcessRequisition = () => {
     setOpenMsgProcess(false);
     setLoading(true);
-    request.POST(`inventory/process/inventoryTransactions/processRequisition/${id}`, {}, (resp) => {
-      onBulkForm({ pdaNumber: resp.data.numberPDA });
+    request.POST(`${REQUISITIONS_URL}/${id}/process`, {}, () => {
       createNotification('success', 'msg.success.processDocument', 'alert.success.title');
-      setLoading(false);
+      fnReloadDocument(id);
     }, (err) => {
-      const errorCode = getErrorCode(err);
-      if (errorCode) {
-        createNotification('error', `msg.error.transfer.${errorCode}`, 'alert.error.title');
-      } else {
-        createNotification('error', 'msg.error.processDocument', 'alert.error.title');
-      }
+      notifyError(err, 'msg.error.processDocument');
       setLoading(false);
-    });
+    }, false);
   }
 
   const fnAskVoid = () => {
-    if (id === 0 || !isProcessed) return;
+    if (!state.canVoid) return;
     setOpenModalVoid(true);
   }
 
+  // Anular: DELETE con el motivo; el documento queda anulado y se muestra como tal (no se limpia el formulario).
   const fnVoidRequisition = (reason) => {
     setLoading(true);
-    request.DELETE(buildUrl(`inventory/process/inventoryTransactions/voidRequisition/${id}`, { reason }), () => {
+    request.DELETE(buildUrl(`${REQUISITIONS_URL}/${id}/void`, { reason }), () => {
       setOpenModalVoid(false);
-      onResetForm();
-      onResetFormDeta();
-      setRequisitionDetail([]);
-      setShowWorkOrder("none");
       createNotification('success', 'msg.success.voidDocument', 'alert.success.title');
-      setLoading(false);
-    }, () => {
-      createNotification('error', 'msg.delete.record.error', 'alert.error.title');
+      fnReloadDocument(id);
+    }, (err) => {
+      notifyError(err, 'msg.delete.record.error');
       setLoading(false);
     }, false);
   }
@@ -296,84 +235,49 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
   useEffect(() => {
     setLoading(true);
     request.GET('admin/documents?status=1&useInv=1', (resp) => {
-      const documents = resp.data.map((item) => {
-        return {
-          value: item.code,
-          code: item.code,
-          label: `${item.code} | ${item.name}`,
-          name: item.name,
-          codeInt: item.codeInt
-        }
-      });
+      const documents = resp.data.filter((item) => item.code === REQUISITION_DOCUMENT).map((item) => ({
+        value: item.code, code: item.code, label: `${item.code} | ${item.name}`
+      }));
       setListDocuments(documents);
       setLoading(false);
-    }, (err) => {
+    }, () => {
+      setLoading(false);
+    });
 
+    // Origen: almacenes tipo 1. Destino: centros de costo (tipo 2).
+    setLoading(true);
+    request.GET('inventory/settings/stores?type=1', (resp) => {
+      setListStores(resp.data.map(toOption));
+      setLoading(false);
+    }, () => {
       setLoading(false);
     });
 
     setLoading(true);
-    request.GET('inventory/settings/stores', (resp) => {
-      const stores = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id,
-          type: item.type,
-          invCtaCode: item.invCtaCode,
-          costCtaCode: item.costCtaCode,
-          expenseCtaCode: item.expenseCtaCode
-        }
-      });
-      const filter1 = stores.filter(item => { return item.type === 1 });
-      const filter2 = stores.filter(item => { return item.type === 2 });
-
-      setListStores(filter1);
-      setListDestinations(filter2);
+    request.GET('inventory/settings/stores?type=2', (resp) => {
+      setListDestinations(resp.data.map(toOption));
       setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-
-    setLoading(true);
-    request.GET(`accounting/process/workOrders`, (resp) => {
-      const orders = resp.data.map((item) => {
-        return {
-          label: item.description,
-          value: item.id,
-          idCtaCont: item.idCtaCont
-        }
-      })
-      setListWorkOrders(orders);
-      setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
 
     setLoading(true);
     request.GET('accounting/settings/accountants/getSL', (resp) => {
-      const listAccounts = resp.data.map((item) => {
-        return {
-          label: `${item.cta} - ${item.nombre}`,
-          value: item.cta
-        }
-      })
-      setListAccounts(listAccounts);
+      setListAccounts(resp.data.map((item) => ({ label: `${item.cta} - ${item.nombre}`, value: item.cta })));
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
 
-    setListTypeApply(
-      [
-        { id: "Inventario", name: "Inventario" },
-        { id: "Costo", name: "Costo" },
-        { id: "Gasto", name: "Gasto" }
-      ]
-    );
-  }, [])
+    // El selector de empleado por línea solo existe con RRHH activo (mw_setting.rrhh_menu).
+    const companyData = JSON.parse(localStorage.getItem('mw_current_company'));
+    if (companyData?.id) {
+      request.GET(`admin/companyInternalSettings?companyId=${companyData.id}`, (resp) => {
+        const [settings] = resp.data;
+        setRrhhActive(!!settings?.rrhhMenu);
+      }, () => { });
+    }
+  }, []);
 
   const propsToControlPanel = {
     fnNew: fnNewDocument,
@@ -381,15 +285,22 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
     fnSave: !disabled ? fnSaveDocument : null,
     fnPrint: fnPrintDocument,
     fnDelete: !disabled ? fnDeleteDocument : null,
-    fnCancel: isProcessed && !isVoided ? fnAskVoid : null,
-    buttonsHome: [
+    fnCancel: state.canVoid ? fnAskVoid : null,
+    // Contabilizar solo se ofrece en una requisición guardada y sin aplicar ni anular.
+    buttonsHome: state.canProcess ? [
       {
         title: "button.count",
         icon: "bi bi-journal-check",
-        onClick: isSaved && !isProcessed ? fnAskProcess : () => { }
+        onClick: fnAskProcess
+      }
+    ] : [],
+    buttonsOptions: [
+      {
+        title: 'page.transfersToStores.button.addMany',
+        icon: 'bi bi-plus-square-dotted',
+        onClick: fnOpenAddMany
       }
     ],
-    buttonsOptions: [],
     buttonsAdmin: []
   }
 
@@ -401,20 +312,16 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       listDocuments,
       listStores,
       listDestinations,
-      listTypeApply,
       sendFormDeta,
       setSendFormDeta,
       formValidation,
       sendForm,
       setSendForm,
       isFormValid,
-      listWorkOrders,
-      onBulkForm,
-      showWorkOrder,
-      setShowWorkOrder,
+      dataRequisitions,
       openModalViewRequisitions,
       setOpenModalViewRequisitions,
-      dataRequisitions,
+      onBulkForm,
       listAccounts,
       fnGetDataDetail,
       openMsgDeleteDocument,
@@ -429,7 +336,14 @@ export const useRequisitions = ({ requisitionDetail, onResetFormDeta, setRequisi
       fnProcessRequisition,
       openModalVoid,
       setOpenModalVoid,
-      fnVoidRequisition
+      fnVoidRequisition,
+      openModalAddMany,
+      setOpenModalAddMany,
+      fnAddManyLine,
+      employees,
+      onEmployeeSearch,
+      rrhhActive,
+      applyTo
     }
   )
 }
