@@ -1,19 +1,20 @@
 import { useState } from 'react';
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
+import { useRefunds } from './useRefunds';
 import { Separator } from '@Components/common/CustomBootstrap';
 import ControlPanel from '@Components/controlPanel';
 import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ModalVoidInvoice from '@Views/app/billing/process/pointSales/ModalVoidInvoice';
+import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
 import { useTransfersDeta } from '../transactions/shared/useTransfersDeta';
-import { useRefunds } from './useRefunds';
+import FormRefunds from './FormRefunds';
 import DetailProduct from '../transactions/shared/DetailProduct';
 import DetailTable from '../transactions/shared/DetailTable';
-import FooterTransfers from '../transactions/shared/FooterTransfers';
 import ModalViewTransfers from '../transactions/shared/ModalViewTransfers';
-import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
-import FormRefunds from './FormRefunds';
+import FooterTransfers from '../transactions/shared/FooterTransfers';
+import ModalAddManyProducts from '../transactions/shared/ModalAddManyProducts';
 
 const Refunds = ({ setLoading }) => {
   const [refundDetail, setRefundDetail] = useState([]);
@@ -21,17 +22,14 @@ const Refunds = ({ setLoading }) => {
   const { formStateDeta, onInputChangeDeta, fnViewProducts, fnSelectProduct, openModalProducts, setOpenModalProducts, dataProducts, setBulkFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTransfersDeta({ setLoading });
 
   const {
-    propsToControlPanel, formState, onInputChange, listDocuments, listStores, listDestinations, listAccounts,
-    listProviders, listTypeApply, showType1, showType2, setShowType1, setShowType2, onBulkForm, sendFormDeta,
-    setSendFormDeta, sendForm, setSendForm, isFormValid, formValidation, openModalViewRefunds, setOpenModalViewRefunds,
-    dataRefunds, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument, fnOkDeleteDocument,
-    disabled, isProcessed, isVoided, openMsgProcess, setOpenMsgProcess, fnProcessRefund,
-    openModalVoid, setOpenModalVoid, fnVoidRefund
-  } = useRefunds({ refundDetail, onResetFormDeta, setRefundDetail, setLoading });
+    propsToControlPanel, formState, onInputChange, listDocuments, listStores, listDestinations, listAccounts, providerSelectOptions, onProviderSearch,
+    onStoreChange, onDestinationChange, onApplyToChange, onProviderChange, onTypeChange, isProviderMode, isStoreMode, sendFormDeta, setSendFormDeta,
+    formValidation, sendForm, setSendForm, isFormValid, dataRefunds, openModalViewRefunds, setOpenModalViewRefunds, onBulkForm, fnGetDataDetail,
+    openMsgDeleteDocument, setOpenMsgDeleteDocument, fnOkDeleteDocument, disabled, isProcessed, isVoided, openMsgProcess, setOpenMsgProcess,
+    fnProcessRefund, openModalVoid, setOpenModalVoid, fnVoidRefund, openModalAddMany, setOpenModalAddMany, fnAddManyLine
+  } = useRefunds({ setLoading, refundDetail, setRefundDetail, onResetFormDeta });
 
-  const { notes, sourceStoreId, assignStoreId, originCtaCode, assignCtaCode, documentCode, documentId, pdaNumber } = formState;
-
-  const { idProd } = formStateDeta;
+  const { notes, sourceStoreId, assignStoreId, originCtaCode, assignCtaCode, documentCode, documentId } = formState;
 
   const propsToFormRefunds = {
     ...formState,
@@ -40,23 +38,20 @@ const Refunds = ({ setLoading }) => {
     listStores,
     listDestinations,
     listAccounts,
-    listProviders,
-    listTypeApply,
-    showType1,
-    showType2,
-    setShowType1,
-    setShowType2,
-    onBulkForm,
-    refundDetail,
-    setRefundDetail,
-    idProd,
-    onResetFormDeta,
+    providerSelectOptions,
+    onProviderSearch,
+    onStoreChange,
+    onDestinationChange,
+    onApplyToChange,
+    onProviderChange,
+    onTypeChange,
+    isProviderMode,
+    isStoreMode,
     sendForm,
     formValidation,
     disabled,
     isProcessed,
-    isVoided,
-    pdaNumber
+    isVoided
   }
 
   const propsToDetailProduct = {
@@ -117,6 +112,19 @@ const Refunds = ({ setLoading }) => {
     }
   }
 
+  const propsToModalAddMany = {
+    ModalContent: ModalAddManyProducts,
+    title: "page.transfersToStores.button.addMany",
+    open: openModalAddMany,
+    setOpen: setOpenModalAddMany,
+    maxWidth: 'lg',
+    data: {
+      url: 'inventory/process/refunds/availableProducts',
+      storeId: sourceStoreId,
+      fnAddLine: fnAddManyLine
+    }
+  }
+
   const propsToMsgDeleteDocument = {
     open: openMsgDeleteDocument,
     setOpen: setOpenMsgDeleteDocument,
@@ -162,6 +170,7 @@ const Refunds = ({ setLoading }) => {
       <Modal {...propsToModalViewProd} />
       <Modal {...propsToModalViewRefunds} />
       <Modal {...propsToModalVoid} />
+      <Modal {...propsToModalAddMany} />
       <Confirmation {...propsToMsgDeleteDocument} />
       <Confirmation {...propsToMsgProcess} />
     </>

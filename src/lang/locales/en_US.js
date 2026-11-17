@@ -4117,6 +4117,11 @@ const enLang = {
   "page.refund.radio.purchase": "Purchase",
   "page.refund.radio.refund": "Refund",
   "page.refunds.modal.viewRefunds.title": "Product Refunds",
+  "page.refunds.error.reintType": "Select the refund type",
+  "page.refunds.error.expirationRequired": "The expiration date is required",
+  "page.refunds.error.expirationBeforeDate": "The expiration cannot be earlier than the document date",
+  "page.refunds.error.sameStores": "The destination must be different from the document warehouse",
+  "page.refunds.msg.addManyRequires": "Select the document warehouse (and the document must not be applied) before adding several products",
   // 80. Inventory Adjustment Page in Inventory
   "page.inventoryAdjustment.modal.viewInventoryAd.title": "Inventory Adjustment",
   "page.inventoryAdjustment.input.systemQty": "System Qty.",

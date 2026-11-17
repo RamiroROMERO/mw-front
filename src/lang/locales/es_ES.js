@@ -4133,6 +4133,11 @@ const esLang = {
   "page.refund.radio.purchase": "Compra",
   "page.refund.radio.refund": "Reintegro",
   "page.refunds.modal.viewRefunds.title": "Reintegro de Productos",
+  "page.refunds.error.reintType": "Seleccione el tipo de reintegro",
+  "page.refunds.error.expirationRequired": "La fecha de vencimiento es obligatoria",
+  "page.refunds.error.expirationBeforeDate": "El vencimiento no puede ser menor que la fecha del documento",
+  "page.refunds.error.sameStores": "El destino debe ser distinto del almacén del documento",
+  "page.refunds.msg.addManyRequires": "Seleccione el almacén del documento (y el documento no debe estar aplicado) antes de agregar varios productos",
   // 80. Inventory Adjustment Page in Inventory
   "page.inventoryAdjustment.modal.viewInventoryAd.title": "Ajustes de Inventario",
   "page.inventoryAdjustment.input.systemQty": "Cant. Sistema",
