@@ -4,6 +4,8 @@ import { useForm } from '@Hooks'
 import { useEffect, useMemo, useState } from 'react';
 import { validInt } from '@Helpers/Utils';
 import createNotification from '@Containers/ui/Notifications';
+import { printDocument } from '@Helpers/printDocument';
+import { printOptions } from './transferPrintRules';
 import {
   TRANSFER_DOCUMENT, buildTransferPayload, canOpenAddMany, detailsFromApi, mergeLine, linesFromSelection, transferState, validateTransfer, warningTexts
 } from './transferRules';
@@ -128,18 +130,8 @@ export const useTranfers = ({ setLoading, transferDetail, setTransferDetail, onR
     else request.PUT(`${TRANSFERS_URL}/${id}`, payload, onSaved, onError);
   }
 
-  const fnPrintDocument = () => {
-    if (id > 0) {
-      const dataPrint = {
-        id,
-        userName: userData.name
-      }
-      request.GETPdf('inventory/process/inventoryTransactions/exportPDFRequisition', dataPrint, 'Traslado entre Almacenes.pdf', (err) => {
-
-        setLoading(false);
-      });
-    }
-  }
+  // Imprime lo guardado por GET (SPEC v2-51-sr); sin traslado guardado avisa "guarde primero" y no llama al back.
+  const fnPrintDocument = () => { printDocument({ ...printOptions(id), setLoading }); };
 
   // Eliminación física — solo antes de Contabilizar (fiel al legacy, que no permite tocar
   // el documento una vez aplicado). Una vez aplicado, usar Anular (fnAskVoid) en su lugar.

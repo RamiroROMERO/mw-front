@@ -337,6 +337,7 @@ const esLang = {
   "msg.delete.record.error": "Error al Eliminar el Registro",
   "msg.upload.record": "Archivo cargado exitosamente!",
   "msg.question.cancelInvoice.title": "¿Esta seguro que desea anular esta factura?",
+  "msg.question.voidDocument.title": "¿Está seguro que desea anular este documento?",
   "msg.question.cancel.document.title": "¿Esta seguro que desea anular este documento?",
   "msg.question.generateInvoice.title": "¿Esta seguro que desea generar el documento fiscal?",
   "msg.question.save.document.title": "¿Esta seguro que desea guardar este documento?",
