@@ -15,6 +15,9 @@ const Confirmation = (props) => {
     setOpen(false);
   };
   return (
+    <>
+    {/* Atenúa el resto de la pantalla para que el usuario se enfoque en la pregunta; no cierra al hacer clic (evita descartar la acción sin querer). */}
+    {open && <div className="confirmation-backdrop" />}
     <div className="confirmation-container lg">
       <Alert className="notification-primary" isOpen={open}>
         <Row>
@@ -37,6 +40,7 @@ const Confirmation = (props) => {
         </Row>
       </Alert>
     </div>
+    </>
   );
 };
 
