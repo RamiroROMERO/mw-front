@@ -1,66 +1,6 @@
-import { Card, CardBody, Row } from 'reactstrap';
-import { Colxx } from '@Components/common/CustomBootstrap';
-import Modal from "@Components/modal";
-import { useInventoryMemo } from './useInventoryMemo';
-import HeaderReport from './HeaderReport';
-import TableReport from './TableReport';
-import FooterReport from '../purchaseMemo/FooterReport';
-import ModalViewMemos from '../purchaseMemo/ModalViewMemos';
+import MemoScreen from '../memos/MemoScreen';
 
-const InventoryMemo = (props) => {
+// Memorándum de documentos de inventario (SPEC v2-59-sr): la pantalla común con el tipo `inventory`.
+const InventoryMemo = ({ setLoading }) => <MemoScreen setLoading={setLoading} kind="inventory" />;
 
-  const { formState, onInputChange, fnMarkReported, fnPrintPrevious, dataMovements, dataMemos, openModalMemos, setOpenModalMemos } = useInventoryMemo({});
-
-  const propsToHeaderReport = {
-    formState,
-    onInputChange,
-    fnMarkReported,
-    fnPrintPrevious
-  }
-
-  const propsToTableReport = {
-    dataMovements
-  }
-
-  const propsToFooterReport = {
-    formState,
-    onInputChange
-  }
-
-  const propsToModalViewMemos = {
-    ModalContent: ModalViewMemos,
-    title: "page.purchaseMemo.modal.viewMemos.title",
-    open: openModalMemos,
-    setOpen: setOpenModalMemos,
-    maxWidth: "lg",
-    data: {
-      dataMemos
-    }
-  }
-
-  return (
-    <>
-      <Row>
-        <Colxx xxs="12" className="mb-3">
-          <Card>
-            <CardBody>
-              <HeaderReport {...propsToHeaderReport} />
-            </CardBody>
-          </Card>
-        </Colxx>
-      </Row>
-      <TableReport {...propsToTableReport} />
-      <Row>
-        <Colxx xxs="12">
-          <Card>
-            <CardBody>
-              <FooterReport {...propsToFooterReport} />
-            </CardBody>
-          </Card>
-        </Colxx>
-      </Row>
-      <Modal {...propsToModalViewMemos} />
-    </>
-  );
-}
 export default InventoryMemo;
