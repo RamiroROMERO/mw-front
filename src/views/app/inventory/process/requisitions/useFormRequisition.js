@@ -1,6 +1,6 @@
 import { validInt } from '@Helpers/Utils';
 import { useState } from 'react';
-import { ACCOUNT_BY_APPLY_TO } from '../transferToStores/useFormTransfers';
+import { ACCOUNT_BY_APPLY_TO } from '../transactions/shared/accountByApplyTo';
 
 export const useFormRequisition = ({ onBulkForm, listStores, listDestinations, requisitionDetail, setRequisitionDetail, assignCtaCode, idProd, onResetFormDeta }) => {
   const [openModalApplyAccount, setOpenModalApplyAccount] = useState(false);

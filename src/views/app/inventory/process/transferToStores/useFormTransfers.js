@@ -1,14 +1,5 @@
 import { validInt } from '@Helpers/Utils';
-
-// Mismo criterio que Requisiciones (useRequisitions.js) — `applyTo` se guarda como el
-// texto real ('Inventario'/'Costo'/'Gasto') tanto en el estado del formulario como en el
-// backend, sin capa de traducción numérica (SimpleSelect sí soporta valores string, a
-// diferencia de RadioGroup/RadioButton que compara con validInt).
-export const ACCOUNT_BY_APPLY_TO = {
-  Inventario: 'invCtaCode',
-  Costo: 'costCtaCode',
-  Gasto: 'expenseCtaCode'
-}
+import { ACCOUNT_BY_APPLY_TO } from '../transactions/shared/accountByApplyTo';
 
 export const useFormTransfers = ({ onBulkForm, listStores }) => {
 

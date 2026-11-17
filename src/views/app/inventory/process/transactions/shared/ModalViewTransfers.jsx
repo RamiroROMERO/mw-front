@@ -3,7 +3,7 @@ import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { IntlMessages } from '@Helpers/Utils'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import ReactTable from '@Components/reactTable'
-import { ACCOUNT_BY_APPLY_TO } from './useFormTransfers'
+import { ACCOUNT_BY_APPLY_TO } from './accountByApplyTo'
 
 const ModalViewTransfers = ({setOpen, data}) => {
 

@@ -6,12 +6,12 @@ import ControlPanel from '@Components/controlPanel';
 import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ModalVoidInvoice from '@Views/app/billing/process/pointSales/ModalVoidInvoice';
-import { useTransfersDeta } from '../transferToStores/useTransfersDeta';
+import { useTransfersDeta } from '../transactions/shared/useTransfersDeta';
 import { useRequisitions } from './useRequisitions';
-import DetailProduct from '../transferToStores/DetailProduct';
+import DetailProduct from '../transactions/shared/DetailProduct';
 import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
-import ModalViewTransfers from '../transferToStores/ModalViewTransfers';
-import DetailTable from '../transferToStores/DetailTable';
+import ModalViewTransfers from '../transactions/shared/ModalViewTransfers';
+import DetailTable from '../transactions/shared/DetailTable';
 import FormRequisitions from './FormRequisitions';
 import FooterRequisitions from './FooterRequisitions';
 
