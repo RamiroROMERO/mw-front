@@ -1,44 +1,21 @@
 import { IntlMessages, validInt } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { DETAIL_PATH, INITIAL_DETAIL_FORM, buildDetailPayload, mapDetailToForm, validateDetail } from './paymentMethodRules';
 
-const formValidations = {
-  description: [(val) => val.length !== 0, "msg.required.input.description"],
-  idCtaCont: [val => val.length !== 0, "msg.required.select.contAccount"],
-};
-
+// Formas de pago, cuentas (fac_formpagctas.sc2). Validación por campo con las mismas reglas del back (paymentMethodRules.js): un formulario inválido se marca y NO llama al back.
+// Eliminar una línea es un borrado real que el back rechaza (con su mensaje) si algún documento la usa; entonces se desactiva con la casilla "Activa".
 export const useModalDetail = ({ setLoading, selectedItem }) => {
 
   const [sendForm, setSendForm] = useState(false);
   const [contCtasList, setContCtasList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
-  const [detailData, setDetailData] = useState([]);
   const [currentItemDetail, setCurrentItemDetail] = useState({});
   const [msgQuestionDeleteDetail, setMsgQuestionDeleteDetail] = useState(false);
 
-  const { formState, formValidation, onInputChange, onBulkForm, onResetForm, isFormValid } = useForm({
-    id: 0,
-    idFather: selectedItem || 0,
-    description: '',
-    idCtaCont: '',
-    percentComiss: 0,
-    idCtaComiss: '',
-    isReceivable: false,
-    customerId: 0,
-    status: true
-  }, formValidations);
-
-  const fnEditDetail = (item) => {
-    onBulkForm(item)
-    setCurrentItemDetail(item);
-    setSendForm(false);
-  };
-  const fnDeleteDetail = (item) => {
-    setCurrentItemDetail(item);
-    onBulkForm(item);
-    setMsgQuestionDeleteDetail(true);
-  }
+  const { formState, onInputChange, onBulkForm, onResetForm } = useForm({ ...INITIAL_DETAIL_FORM, paymentTypeId: selectedItem || 0 });
+  const errors = useMemo(() => validateDetail(formState), [formState]);
 
   const fnNewDetail = () => {
     onResetForm();
@@ -46,35 +23,23 @@ export const useModalDetail = ({ setLoading, selectedItem }) => {
     setCurrentItemDetail({});
   }
 
-  const fnSaveDetail = () => {
+  const fnEditDetail = (item) => {
+    onBulkForm(mapDetailToForm(item));
+    setCurrentItemDetail(item);
+    setSendForm(false);
+  };
 
-    setSendForm(true);
-
-    if (!isFormValid) return;
-
-    if (validInt(formState.id) === 0) {
-      formState.idFather = selectedItem;
-      request.POST('billing/settings/paymentMethodsDetail', formState, res => {
-        fnGetTableData();
-        fnNewDetail();
-      }, err => {
-      });
-    } else {
-      request.PUT(`billing/settings/paymentMethodsDetail/${formState.id}`, formState, res => {
-        fnGetTableData();
-        fnNewDetail();
-      }, err => { })
-    }
-
+  const fnDeleteDetail = (item) => {
+    setCurrentItemDetail(item);
+    setMsgQuestionDeleteDetail(true);
   }
-
 
   const [table, setTable] = useState({
     title: '',
     columns: [
       { text: IntlMessages("page.paymentMethods.table.name"), dataField: "description", headerStyle: { 'width': '75%' } },
     ],
-    data: detailData,
+    data: [],
     actions: [{
       color: 'warning',
       icon: 'pencil',
@@ -88,57 +53,53 @@ export const useModalDetail = ({ setLoading, selectedItem }) => {
     }]
   })
 
+  const fnGetTableData = () => {
+    request.GET(buildUrl(DETAIL_PATH, { paymentTypeId: selectedItem }), res => {
+      setTable((prev) => ({ ...prev, data: res.data }));
+    }, () => { })
+  }
+
+  const fnSaveDetail = () => {
+    setSendForm(true);
+    if (Object.keys(errors).length > 0) return;
+
+    const data = buildDetailPayload(formState, selectedItem);
+    const done = () => {
+      fnGetTableData();
+      fnNewDetail();
+    };
+    if (validInt(formState.id) === 0) {
+      request.POST(DETAIL_PATH, data, done, () => { });
+    } else {
+      request.PUT(`${DETAIL_PATH}/${formState.id}`, data, done, () => { });
+    }
+  }
+
   const fnGetInitialData = () => {
-
     setLoading(true);
-    request.GET('accounting/settings/accountants/getSL', (resp) => {
-      const listAccount = resp.data.map((item) => {
-        return {
-          label: `${item.cta} - ${item.nombre}`,
-          value: item.cta
-        }
-      })
-      setContCtasList(listAccount);
+    request.GET('accounting/settings/accountants/getSL?status=1', (resp) => {
+      setContCtasList(resp.data.map((item) => ({ label: `${item.cta} - ${item.nombre}`, value: item.cta })));
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
 
-    request.GET('billing/settings/customers/findSL', res => {
-      const { data } = res;
-      setCustomerList(data.map(item => {
-        return {
-          label: `${item.nomcli}`,
-          value: item.id
-        }
-      }));
-    }, err => { fnNewDetail() });
-  }
-
-  const fnGetTableData = () => {
-    request.GET(buildUrl('billing/settings/paymentMethodsDetail', { idFather: selectedItem }), res => {
-      const { data } = res;
-      setDetailData(data);
-
-      setTable({ ...table, data })
-
-    }, err => {
-      fnNewDetail();
-
-    })
+    request.GET('billing/settings/customers/getSL', res => {
+      setCustomerList(res.data.map(item => ({ label: `${item.nomcli}`, value: item.id })));
+    }, () => { });
   }
 
   const fnDelete = () => {
+    setMsgQuestionDeleteDetail(false);
     if (validInt(currentItemDetail.id) === 0) return;
 
-    request.DELETE(`billing/settings/paymentMethodsDetail/${formState.id}`, res => {
-      fnGetTableData()
+    request.DELETE(`${DETAIL_PATH}/${currentItemDetail.id}`, () => {
+      fnGetTableData();
       fnNewDetail();
-    }, err => {
-      fnNewDetail()
+    }, () => {
+      // Rechazada (en uso): `request` ya mostró el mensaje real; el formulario no queda apuntando a esa línea.
+      fnNewDetail();
     })
-    setMsgQuestionDeleteDetail(false);
   }
 
   useEffect(() => {
@@ -150,7 +111,7 @@ export const useModalDetail = ({ setLoading, selectedItem }) => {
 
   return {
     formState,
-    formValidation,
+    errors,
     onInputChange,
     sendForm,
     contCtasList,
@@ -158,7 +119,6 @@ export const useModalDetail = ({ setLoading, selectedItem }) => {
     table,
     fnSaveDetail,
     fnNewDetail,
-    isFormValid,
     propsToMsgDeleteDetail
   }
 }

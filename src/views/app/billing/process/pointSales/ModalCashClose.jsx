@@ -200,12 +200,12 @@ const ModalCashclose = (props) => {
       // ESTA caja registradora (fac_formaspagctas.numcta === fac_cajas.numcta_caja), igual que
       // se resolvió para Salidas/Entradas de Efectivo.
       const selectedCashBox = listCashBoxes.find(item => validInt(item.id) === validInt(idCashClose));
-      const cashAccount = selectedCashBox ? selectedCashBox.idCtaCash : null;
+      const cashAccount = selectedCashBox ? selectedCashBox.cashCtaCode : null;
       const cashFromSales = detailCashClose.detailForPaymentMethod
-        .filter(item => cashAccount && item.paymentTypeDetail?.idCtaCont === cashAccount)
+        .filter(item => cashAccount && item.paymentTypeDetail?.paymentCtaCode === cashAccount)
         .map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0);
       const cashFromCancellations = (detailCashClose.resumeCancela || [])
-        .filter(item => cashAccount && item.paymentTypeDetail?.idCtaCont === cashAccount)
+        .filter(item => cashAccount && item.paymentTypeDetail?.paymentCtaCode === cashAccount)
         .map(item => validFloat(item.value)).reduce((prev, curr) => prev + curr, 0);
 
       // Total en Caja (teórico) = fondo inicial + efectivo real de ventas/cancelaciones +

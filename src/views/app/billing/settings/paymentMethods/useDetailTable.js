@@ -1,16 +1,7 @@
 import { useEffect, useState } from 'react'
 import { IntlMessages } from '@Helpers/Utils';
 
-export const useDetailTable = ({ onBulkForm, setOpenMsgQuestion, tableData }) => {
-
-  const fnDeleteItem = (item) => {
-    onBulkForm({ id: item.id });
-    setOpenMsgQuestion(true);
-  }
-
-  const fnEditItem = (item) => {
-    onBulkForm(item);
-  }
+export const useDetailTable = ({ fnEditItem, fnDeleteItem, tableData }) => {
 
   const [table, setTable] = useState({
     title: IntlMessages("page.paymentMethods.table.title"),
@@ -26,20 +17,15 @@ export const useDetailTable = ({ onBulkForm, setOpenMsgQuestion, tableData }) =>
       onClick: fnEditItem
     }, {
       color: 'danger',
-      icon: 'ban',
-      toolTip: IntlMessages('button.disable'),
+      icon: 'trash',
+      toolTip: IntlMessages('button.delete'),
       onClick: fnDeleteItem
     }]
   });
 
   useEffect(() => {
-    const dataTable = { ...table, data: tableData };
-    setTable(dataTable);
+    setTable((prev) => ({ ...prev, data: tableData }));
   }, [tableData]);
 
-  return (
-    {
-      table
-    }
-  )
+  return { table }
 }

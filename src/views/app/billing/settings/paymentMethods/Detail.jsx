@@ -4,11 +4,17 @@ import { InputField } from '@Components/inputFields';
 import { RadioGroup } from '@Components/radioGroup';
 import { IntlMessages } from '@Helpers/Utils';
 import { Button, Card, CardBody, Row } from 'reactstrap'
+import { useIntl } from 'react-intl';
 
-const Detail = ({formState, onInputChange, formValidation, fnSave, fnClearInputs, fnViewDetail, sendForm}) => {
+const Detail = ({formState, onInputChange, errors, fnSave, fnClearInputs, fnViewDetail, sendForm}) => {
 
   const { name, usageType, usageCriteria, isDefault } = formState;
-  const { nameValid, usageTypeValid, usageCriteriaValid } = formValidation;
+  const nameValid = errors.name;
+  const usageTypeValid = errors.usageType;
+  const usageCriteriaValid = errors.usageCriteria;
+  const t = useIntl();
+  // RadioGroup solo marca el borde: el texto del error se muestra debajo (un solo useIntl, nunca IntlMessages condicional).
+  const errorText = (key) => (sendForm && key ? <div className="text-danger small mb-2">{t.formatMessage({ id: key })}</div> : null);
 
   return (
     <Card>
@@ -20,6 +26,7 @@ const Detail = ({formState, onInputChange, formValidation, fnSave, fnClearInputs
               name="name"
               onChange={onInputChange}
               type="text"
+              maxLength={40}
               label="page.paymentMethods.input.name"
               invalid={sendForm && !!nameValid}
               feedbackText={sendForm && (nameValid || null)}
@@ -42,8 +49,8 @@ const Detail = ({formState, onInputChange, formValidation, fnSave, fnClearInputs
                 { id: 6, label: 'page.paymentMethods.radio.usageCriteria.accountsPayable' }
               ]}
               invalid={sendForm && !!usageCriteriaValid}
-              feedbackText={sendForm && (usageCriteriaValid || null)}
             />
+            {errorText(usageCriteriaValid)}
           </Colxx>
           <Colxx xxs="12" xs="6" sm="6" lg="6">
             <RadioGroup
@@ -57,8 +64,8 @@ const Detail = ({formState, onInputChange, formValidation, fnSave, fnClearInputs
                 { id: 3, label: 'page.paymentMethods.radio.usageType.bothCases' }
               ]}
               invalid={sendForm && !!usageTypeValid}
-              feedbackText={sendForm && (usageTypeValid || null)}
             />
+            {errorText(usageTypeValid)}
             <Button className='btn btn-info' onClick={fnViewDetail} >{IntlMessages("button.detail")} </Button>
           </Colxx>
         </Row>

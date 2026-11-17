@@ -7,24 +7,26 @@ import { Checkbox } from '@Components/checkbox';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import ReactTable from '@Components/reactTable';
 import { IntlMessages } from '@Helpers/Utils';
+import { MAX_DESCRIPTION } from './paymentMethodRules';
 
+// Cuentas de una forma de pago. Obligatorios: descripción y cuenta contable; la comisión (con su porcentaje) y el cliente de "Genera CxC" se validan con las reglas del back.
+// `feedbackText` recibe la CLAVE de traducción (el componente la traduce).
 export const ModalDetail = (props) => {
-  const { data, setOpen } = props;
-  const { selectedItem, setLoading } = data;
+  const { data } = props;
+  const { selectedItem, selectedName, setLoading } = data;
 
-  const { formState, onInputChange, sendForm, contCtasList, customerList, table, fnSaveDetail, fnNewDetail, formValidation, propsToMsgDeleteDetail } = useModalDetail({ setLoading, selectedItem })
+  const { formState, onInputChange, sendForm, contCtasList, customerList, table, fnSaveDetail, fnNewDetail, errors, propsToMsgDeleteDetail } = useModalDetail({ setLoading, selectedItem })
 
-  const { description, idCtaCont, percentComiss, idCtaComiss, isReceivable, customerId, status } = formState;
-  const { descriptionValid, idCtaContValid } = formValidation;
-
+  const { description, paymentCtaCode, percentComiss, commissionCtaCode, isReceivable, customerId, status } = formState;
+  const show = (key) => (sendForm && errors[key]) || null;
 
   return (
     <>
       <ModalBody>
         <Row>
           <Colxx xxs={12}>
-            <h5> {selectedItem.name}</h5>
-            <hr/>
+            <h5>{selectedName}</h5>
+            <hr />
           </Colxx>
         </Row>
         <Row>
@@ -36,21 +38,22 @@ export const ModalDetail = (props) => {
                   name="description"
                   value={description}
                   onChange={onInputChange}
-                  invalid={sendForm && !!descriptionValid}
-                  feedbackText={sendForm && (descriptionValid || null)}
+                  maxLength={MAX_DESCRIPTION}
+                  invalid={!!show('description')}
+                  feedbackText={show('description')}
                 />
               </Colxx>
             </Row>
             <Row>
               <Colxx xxs={12}>
                 <SearchSelect
-                  label='page.paymentMethods.detail.select.idCtaCont'
-                  name="idCtaCont"
-                  inputValue={idCtaCont}
+                  label='page.paymentMethods.detail.select.paymentCtaCode'
+                  name="paymentCtaCode"
+                  inputValue={paymentCtaCode}
                   onChange={onInputChange}
                   options={contCtasList}
-                  invalid={sendForm && !!idCtaContValid}
-                  feedbackText={sendForm && (idCtaContValid || null)}
+                  invalid={!!show('paymentCtaCode')}
+                  feedbackText={show('paymentCtaCode')}
                 />
               </Colxx>
             </Row>
@@ -62,13 +65,15 @@ export const ModalDetail = (props) => {
                   value={percentComiss}
                   onChange={onInputChange}
                   type='number'
+                  invalid={!!show('percentComiss')}
+                  feedbackText={show('percentComiss')}
                 />
               </Colxx>
               <Colxx xxs={12} sm={8}>
                 <SearchSelect
-                  label='page.paymentMethods.detail.select.idCtaCommiss'
-                  name="idCtaComiss"
-                  inputValue={idCtaComiss}
+                  label='page.paymentMethods.detail.select.commissionCtaCode'
+                  name="commissionCtaCode"
+                  inputValue={commissionCtaCode}
                   onChange={onInputChange}
                   options={contCtasList}
                 />
@@ -90,6 +95,8 @@ export const ModalDetail = (props) => {
                   inputValue={customerId}
                   onChange={onInputChange}
                   options={customerList}
+                  invalid={!!show('customerId')}
+                  feedbackText={show('customerId')}
                 />
               </Colxx>
             </Row>

@@ -2262,11 +2262,16 @@ const enLang = {
   "page.paymentMethods.table.name": "Name",
   "page.paymentMethods.modal.title": "Accountants",
   "page.paymentMethods.detail.input.description": "Description",
-  "page.paymentMethods.detail.select.idCtaCont": "Account",
+  "page.paymentMethods.detail.select.paymentCtaCode": "Account",
   "page.paymentMethods.detail.input.percentComiss": "% Commission",
-  "page.paymentMethods.detail.select.idCtaCommiss": "Account",
+  "page.paymentMethods.detail.select.commissionCtaCode": "Account",
   "page.paymentMethods.detail.select.isReceivable": "Generate CxC",
-  "page.paymentMethods.detail.select.customerId": "Customer"
+  "page.paymentMethods.detail.select.customerId": "Customer",
+  "page.paymentMethods.error.nameMax": "The name cannot exceed 40 characters",
+  "page.paymentMethods.error.descriptionMax": "The description cannot exceed 50 characters",
+  "page.paymentMethods.error.percent": "The commission percentage must be between 0 and 100",
+  "page.paymentMethods.error.percentRequired": "With a commission account the percentage must be greater than 0",
+  "page.paymentMethods.error.customerRequired": "Select the customer to charge the receivable to"
   ,/* 27. discounts page in */
   "page.discounts.input.description": "Description",
   "page.discounts.input.amount": "Amount %",

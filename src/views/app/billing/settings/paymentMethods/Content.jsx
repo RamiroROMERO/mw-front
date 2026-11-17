@@ -11,7 +11,7 @@ import Detail from './Detail';
 const PaymentMethods = (props) => {
   const { setLoading } = props;
 
-  const { recordId, propsToMsgDelete, propsToDetail, propsToDetailTable, openModalDetail, setOpenModalDetail } = usePaymentMethods({ setLoading });
+  const { recordId, recordName, propsToMsgDelete, propsToDetail, propsToDetailTable, openModalDetail, setOpenModalDetail } = usePaymentMethods({ setLoading });
 
   const {table} = useDetailTable({...propsToDetailTable});
 
@@ -23,6 +23,7 @@ const PaymentMethods = (props) => {
     maxWidth: 'lg',
     data: {
       selectedItem: recordId,
+      selectedName: recordName,
       setLoading
     }
   }
