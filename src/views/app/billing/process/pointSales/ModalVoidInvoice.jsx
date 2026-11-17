@@ -40,7 +40,7 @@ const ModalVoidInvoice = (props) => {
       <ModalBody>
         <Row>
           <Colxx xxs="12">
-            <p>{IntlMessages("msg.question.cancelInvoice.title")}</p>
+            <p>{IntlMessages("msg.question.voidDocument.title")}</p>
             <p><strong>{IntlMessages("page.invoicing.input.internalNumber")}:</strong> {invoiceNumber}</p>
             {numcai ? <p><strong>{IntlMessages("page.invoicing.input.fiscalNumber")}:</strong> {numcai}</p> : null}
           </Colxx>

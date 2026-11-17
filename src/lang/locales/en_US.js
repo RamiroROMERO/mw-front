@@ -336,6 +336,7 @@ const enLang = {
   "msg.delete.record.error": "Error Deleting Record",
   "msg.upload.record": "File Upload Successfully",
   "msg.question.cancelInvoice.title": "Are you sure you want to cancel this invoice?",
+  "msg.question.voidDocument.title": "Are you sure you want to void this document?",
   "msg.question.cancel.document.title": "Are you sure you want to cancel this document?",
   "msg.question.generateInvoice.title": "Are you sure you want to generate the tax document?",
   "msg.question.save.document.title": "Are you sure you want to save this document?",
