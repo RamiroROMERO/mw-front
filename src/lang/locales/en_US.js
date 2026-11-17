@@ -4126,6 +4126,7 @@ const enLang = {
   "page.inventoryAdjustment.modal.viewInventoryAd.title": "Inventory Adjustment",
   "page.inventoryAdjustment.input.systemQty": "System Qty.",
   "page.inventoryAdjustment.input.physicalQty": "Physical Qty.",
+  "page.inventoryAdjustment.msg.addManyRequires": "Select the warehouse (and the document must not be applied) before adding products",
   "page.inventoryAdjustment.error.qtyInvalid": "The counted quantity must be a number greater than or equal to 0",
   "page.inventoryAdjustment.error.lotRequired": "Products with lot or expiration control require one of the two",
   "page.inventoryAdjustment.error.duplicateLine": "A product is repeated in the detail",

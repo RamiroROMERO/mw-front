@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TabPane, Nav, NavItem, NavLink, TabContent, Button, ButtonGroup } from "reactstrap";
-import { IntlMessages } from "@Helpers/Utils";
+import { useIntl } from "react-intl";
 import classnames from 'classnames';
 import { SeparatorV } from '../common/CustomBootstrap';
 
@@ -8,6 +8,10 @@ import { SeparatorV } from '../common/CustomBootstrap';
 const ControlPanel = (props) => {
   const { fnNew = null, fnSearch = null, fnSave = null, fnPrint = null, fnDelete = null, fnCancel = null, buttonsHome = [], buttonsOptions = [],
     buttonsAdmin = [], activeTabDefault = '1', disableTab = [false, false, false], btnDeleteForDisable = false } = props;
+  // Un solo hook de traducción: el hook de traducción no puede llamarse dentro de condiciones ni de map (el orden de hooks cambiaba
+  // al aparecer o desaparecer botones, p. ej. tras contabilizar).
+  const intl = useIntl();
+  const t = (id) => intl.formatMessage({ id });
   const [activeTab, setActiveTab] = useState(activeTabDefault);
   const iconForDelete = btnDeleteForDisable ? "bi-bi-ban" : "bi bi-trash";
   const labelForDelete = btnDeleteForDisable ? "button.disable" : "button.delete"
@@ -24,7 +28,7 @@ const ControlPanel = (props) => {
             disabled={disableTab[0]}
           >
             <i className="bi bi-house" />
-            {` ${IntlMessages("menu.controlpanel.tab.home")}`}
+            {` ${t("menu.controlpanel.tab.home")}`}
           </NavLink>
         </NavItem>
         <NavItem>
@@ -37,7 +41,7 @@ const ControlPanel = (props) => {
             disabled={disableTab[1]}
           >
             <i className="bi bi-list-ul" />
-            {` ${IntlMessages("menu.controlpanel.tab.options")}`}
+            {` ${t("menu.controlpanel.tab.options")}`}
           </NavLink>
         </NavItem>
         <NavItem>
@@ -50,25 +54,25 @@ const ControlPanel = (props) => {
             disabled={disableTab[2]}
           >
             <i className="bi bi-shield-lock" />
-            {` ${IntlMessages("menu.controlpanel.tab.admin")}`}
+            {` ${t("menu.controlpanel.tab.admin")}`}
           </NavLink>
         </NavItem>
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId="1">
           <ButtonGroup className="me-2">
-            {fnNew ? <Button color="light" className="btn-control-panel" onClick={fnNew}><i className="bi bi-file-earmark-plus" /><br /> {IntlMessages('button.new')}</Button> : ''}
-            {fnSearch ? <Button color="light" className="btn-control-panel" onClick={fnSearch}><i className="bi bi-folder2-open" /><br /> {IntlMessages('button.search')}</Button> : ''}
-            {fnSave ? <Button color="light" className="btn-control-panel" onClick={fnSave}><i className="bi bi-floppy" /><br /> {IntlMessages('button.save')}</Button> : ''}
-            {fnPrint ? <Button color="light" className="btn-control-panel" onClick={fnPrint}><i className="bi bi-printer" /><br /> {IntlMessages('button.print')}</Button> : ''}
-            {fnDelete ? <Button color="light" className="btn-control-panel" onClick={fnDelete}><i className={iconForDelete} /><br /> {IntlMessages(labelForDelete)}</Button> : ""}
-            {fnCancel ? <Button color="light" className="btn-control-panel" onClick={fnCancel}><i className="bi bi-x-circle" /><br /> {IntlMessages('button.cancel2')}</Button> : ""}
+            {fnNew ? <Button color="light" className="btn-control-panel" onClick={fnNew}><i className="bi bi-file-earmark-plus" /><br /> {t('button.new')}</Button> : ''}
+            {fnSearch ? <Button color="light" className="btn-control-panel" onClick={fnSearch}><i className="bi bi-folder2-open" /><br /> {t('button.search')}</Button> : ''}
+            {fnSave ? <Button color="light" className="btn-control-panel" onClick={fnSave}><i className="bi bi-floppy" /><br /> {t('button.save')}</Button> : ''}
+            {fnPrint ? <Button color="light" className="btn-control-panel" onClick={fnPrint}><i className="bi bi-printer" /><br /> {t('button.print')}</Button> : ''}
+            {fnDelete ? <Button color="light" className="btn-control-panel" onClick={fnDelete}><i className={iconForDelete} /><br /> {t(labelForDelete)}</Button> : ""}
+            {fnCancel ? <Button color="light" className="btn-control-panel" onClick={fnCancel}><i className="bi bi-x-circle" /><br /> {t('button.cancel2')}</Button> : ""}
           </ButtonGroup>
           {/* {(fnNew || fnSearch || fnSave || fnPrint || fnDelete || fnCancel) ? <SeparatorV /> : ''} */}
           <ButtonGroup>
             {buttonsHome.map((item, key) => {
               return (
-                item ? <Button color="light" className="btn-control-panel" key={`buttonsHome-${key}`} onClick={item.onClick} disabled={Boolean(item.disabled)}><i className={item.icon} /><br /> {IntlMessages(item.title)}</Button> : ""
+                item ? <Button color="light" className="btn-control-panel" key={`buttonsHome-${key}`} onClick={item.onClick} disabled={Boolean(item.disabled)}><i className={item.icon} /><br /> {t(item.title)}</Button> : ""
               )
             })}
           </ButtonGroup>
@@ -77,7 +81,7 @@ const ControlPanel = (props) => {
           <ButtonGroup>
             {buttonsOptions.map((item, key) => {
               return (
-                item ? <Button color="light" className="btn-control-panel" key={`buttonsOptions-${key}`} onClick={item.onClick}><i className={item.icon} /><br /> {IntlMessages(item.title)}</Button> : ""
+                item ? <Button color="light" className="btn-control-panel" key={`buttonsOptions-${key}`} onClick={item.onClick}><i className={item.icon} /><br /> {t(item.title)}</Button> : ""
               )
             })}
           </ButtonGroup>
@@ -86,7 +90,7 @@ const ControlPanel = (props) => {
           <ButtonGroup>
             {buttonsAdmin.map((item, key) => {
               return (
-                item ? <Button color="light" className="btn-control-panel" key={`buttonsAdmin-${key}`} onClick={item.onClick}><i className={item.icon} /><br /> {IntlMessages(item.title)}</Button> : ""
+                item ? <Button color="light" className="btn-control-panel" key={`buttonsAdmin-${key}`} onClick={item.onClick}><i className={item.icon} /><br /> {t(item.title)}</Button> : ""
               )
             })}
           </ButtonGroup>

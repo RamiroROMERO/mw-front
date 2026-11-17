@@ -4142,6 +4142,7 @@ const esLang = {
   "page.inventoryAdjustment.modal.viewInventoryAd.title": "Ajustes de Inventario",
   "page.inventoryAdjustment.input.systemQty": "Cant. Sistema",
   "page.inventoryAdjustment.input.physicalQty": "Cant. Física",
+  "page.inventoryAdjustment.msg.addManyRequires": "Seleccione el almacén (y el documento no debe estar aplicado) antes de agregar productos",
   "page.inventoryAdjustment.error.qtyInvalid": "La cantidad contada debe ser un número mayor o igual que 0",
   "page.inventoryAdjustment.error.lotRequired": "Los productos con control de lote o vencimiento requieren uno de los dos",
   "page.inventoryAdjustment.error.duplicateLine": "Hay un producto repetido en el detalle",

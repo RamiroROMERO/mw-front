@@ -174,7 +174,7 @@ export const useInventory = ({ inventoryDetail, setInventoryDetail, setLoading }
 
   const fnOpenAddMany = () => {
     if (disabled || validInt(sourceStoreId) === 0) {
-      createNotification('warning', 'page.transfersToStores.msg.addManyRequires', 'alert.warning.title');
+      createNotification('warning', 'page.inventoryAdjustment.msg.addManyRequires', 'alert.warning.title');
       return;
     }
     setOpenModalAddMany(true);
