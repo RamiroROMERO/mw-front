@@ -1,16 +1,29 @@
 import { Row } from 'reactstrap';
+import { useIntl } from 'react-intl';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { RadioGroup } from '@Components/radioGroup';
 import { InputField } from '@Components/inputFields';
 import { Checkbox } from '@Components/checkbox';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { MAX_NAME } from './billingAreaRules';
 
-const BillingAreasDetail = ({ formState, listDocument, listLedgerAccount, listStores, onInputChange, sendForm, formValidation, isHospitalControl }) => {
+// Formulario de Áreas de facturación (fac_areas.sc2). Obligatorios con `*` (nombre, bodega, documento, precios y, con Contabilidad activa, la cuenta de ingreso);
+// `feedbackText` recibe la CLAVE de traducción (el componente la traduce). Los campos con buscador F1 del legacy (las cuentas) se conservan como combos con búsqueda.
+const BillingAreasDetail = ({ formState, listDocument, listLedgerAccount, listStores, onInputChange, sendForm, errors, accountingActive, isHospitalControl }) => {
 
-  const {name, idCtaIng, idCtaDiscount, idCtaTax, idCtaCxc, idCtaShortage, idStore, codeDocument, localPriceType, outsiderPriceType, isDefault, useBilling, useRrhh, useFixedAssets, isHospital, idCtaRrhhFourteenth, idCtaRrhhNotice, idCtaRrhhSeverance,idCtaRrhhThirteenth, idCtaRrhhVacation, idCtaFaCost, idCtaFaDeprec, status } = formState;
+  const { name, incomeCtaCode, discountCtaCode, taxCtaCode, receivableCtaCode, shortageCtaCode, storeId, codeDocument, localPriceType, outsiderPriceType, isDefault, useBilling, useRrhh,
+    useFixedAsset, isHospital, fourteenthCtaCode, noticeCtaCode, severanceCtaCode, thirteenthCtaCode, vacationCtaCode, depreciationCostCtaCode, depreciationCtaCode, status } = formState;
 
-  const {nameValid, idStoreValid, codeDocumentValid, localPriceTypeValid, outsiderPriceTypeValid} = formValidation;
+  const intl = useIntl();
+  const error = (field) => (sendForm ? errors[field] : undefined);
+  // RadioGroup solo marca el borde: el texto del error se muestra aquí (un solo useIntl, nunca IntlMessages dentro de una condición).
+  const radioError = (field) => (error(field) ? <div className="invalid-feedback d-block">{intl.formatMessage({ id: error(field) })}</div> : null);
+  const account = (label, field, value) => (
+    <Colxx xxs="12">
+      <SearchSelect label={label} name={field} inputValue={value} options={listLedgerAccount} onChange={onInputChange} invalid={!!error(field)} feedbackText={error(field)} />
+    </Colxx>
+  );
 
   return (
     <>
@@ -21,9 +34,10 @@ const BillingAreasDetail = ({ formState, listDocument, listLedgerAccount, listSt
             name="name"
             onChange={onInputChange}
             type="text"
-            label ="page.billingAreas.input.description"
-            invalid={sendForm && !!nameValid}
-            feedbackText={sendForm && (nameValid || null)}
+            maxLength={MAX_NAME}
+            label="page.billingAreas.input.descriptionRequired"
+            invalid={!!error('name')}
+            feedbackText={error('name')}
           />
         </Colxx>
         <Colxx xxs={12} md={12} lg={6}>
@@ -32,37 +46,19 @@ const BillingAreasDetail = ({ formState, listDocument, listLedgerAccount, listSt
               <ContainerWithLabel label="page.billingAreas.containerWithLabel.usage">
                 <Row>
                   <Colxx md={4}>
-                    <Checkbox
-                    label="check.useIn.billing"
-                    name="useBilling"
-                    value={useBilling}
-                    onChange={onInputChange}
-                    />
+                    <Checkbox label="check.useIn.billing" name="useBilling" value={useBilling} onChange={onInputChange} />
                   </Colxx>
                   <Colxx md={4}>
-                    <Checkbox
-                    label="check.useIn.humanResource"
-                    name="useRrhh"
-                    value={useRrhh}
-                    onChange={onInputChange}
-                    />
+                    <Checkbox label="check.useIn.humanResource" name="useRrhh" value={useRrhh} onChange={onInputChange} />
                   </Colxx>
                   <Colxx md={4}>
-                    <Checkbox
-                    label="check.useIn.fixedAssets"
-                    name="useFixedAssets"
-                    value={useFixedAssets}
-                    onChange={onInputChange}
-                    />
+                    <Checkbox label="check.useIn.fixedAssets" name="useFixedAsset" value={useFixedAsset} onChange={onInputChange} />
                   </Colxx>
-                  {isHospitalControl &&( <Colxx xxs={12}>
-                      <Checkbox
-                        label="check.isHospitalArea"
-                        name="isHospital"
-                        value={isHospital}
-                        onChange={onInputChange}
-                      />
-                    </Colxx>)}
+                  {isHospitalControl && (
+                    <Colxx xxs={12}>
+                      <Checkbox label="check.isHospitalArea" name="isHospital" value={isHospital} onChange={onInputChange} />
+                    </Colxx>
+                  )}
                 </Row>
               </ContainerWithLabel>
             </Colxx>
@@ -73,74 +69,34 @@ const BillingAreasDetail = ({ formState, listDocument, listLedgerAccount, listSt
         <Colxx xxs={12} sm={6}>
           <ContainerWithLabel label='page.billingAreas.ctLabel.billingCtas'>
             <Row>
-              <Colxx xxs="12">
-                <SearchSelect
-                  label='page.billingAreas.select.idCtaIng'
-                  name='idCtaIng'
-                  inputValue={idCtaIng}
-                  options={listLedgerAccount}
-                  onChange={onInputChange}
-                />
-              </Colxx>
-              <Colxx xxs="12">
-                <SearchSelect
-                  label="page.billingAreas.select.discountaccount"
-                  name="idCtaDiscount"
-                  inputValue={idCtaDiscount}
-                  options={listLedgerAccount}
-                  onChange={onInputChange}
-                  />
-              </Colxx>
-              <Colxx xxs="12">
-                <SearchSelect
-                  label="page.billingAreas.select.idCtaTax"
-                  name="idCtaTax"
-                  inputValue={idCtaTax}
-                  options={listLedgerAccount}
-                  onChange={onInputChange}
-                />
-              </Colxx>
-              <Colxx xxs="12">
-                <SearchSelect
-                  label="page.billingAreas.select.idCtaCxc"
-                  name="idCtaCxc"
-                  inputValue={idCtaCxc}
-                  options={listLedgerAccount}
-                  onChange={onInputChange}
-                />
-              </Colxx>
-              <Colxx xxs="12">
-                <SearchSelect
-                  label="page.billingAreas.select.idCtaShortage"
-                  name="idCtaShortage"
-                  inputValue={idCtaShortage}
-                  options={listLedgerAccount}
-                  onChange={onInputChange}
-                />
-              </Colxx>
+              {account(accountingActive ? 'page.billingAreas.select.incomeAccountRequired' : 'page.billingAreas.select.idCtaIng', 'incomeCtaCode', incomeCtaCode)}
+              {account('page.billingAreas.select.discountaccount', 'discountCtaCode', discountCtaCode)}
+              {account('page.billingAreas.select.idCtaTax', 'taxCtaCode', taxCtaCode)}
+              {account('page.billingAreas.select.idCtaCxc', 'receivableCtaCode', receivableCtaCode)}
+              {account('page.billingAreas.select.idCtaShortage', 'shortageCtaCode', shortageCtaCode)}
             </Row>
-            <hr/>
+            <hr />
             <Row>
               <Colxx xxs="12">
                 <SearchSelect
-                  label="page.billingAreas.select.idStore"
-                  name="idStore"
-                  inputValue={idStore}
+                  label="page.billingAreas.select.idStoreRequired"
+                  name="storeId"
+                  inputValue={storeId}
                   options={listStores}
                   onChange={onInputChange}
-                  invalid={sendForm && !!idStoreValid}
-                  feedbackText={sendForm && (idStoreValid || null)}
+                  invalid={!!error('storeId')}
+                  feedbackText={error('storeId')}
                 />
               </Colxx>
               <Colxx xxs="12">
                 <SearchSelect
-                  label="page.billingAreas.select.document"
+                  label="page.billingAreas.select.documentRequired"
                   name="codeDocument"
                   inputValue={codeDocument}
                   options={listDocument}
                   onChange={onInputChange}
-                  invalid={sendForm && !!codeDocumentValid}
-                  feedbackText={sendForm && (codeDocumentValid || null)}
+                  invalid={!!error('codeDocument')}
+                  feedbackText={error('codeDocument')}
                 />
               </Colxx>
             </Row>
@@ -150,41 +106,39 @@ const BillingAreasDetail = ({ formState, listDocument, listLedgerAccount, listSt
                   <Row className="mb-2" >
                     <Colxx xxs="12">
                       <RadioGroup
-                        label="page.billingAreas.title.localPriceType"
+                        label="page.billingAreas.title.localPriceTypeRequired"
                         name="localPriceType"
                         value={localPriceType}
                         onChange={onInputChange}
                         display="flex"
-                        options={
-                          [
-                            {id:1, label:'page.billingAreas.radio.localPriceType.minimum'},
-                            {id:2, label:'page.billingAreas.radio.localPriceType.medium'},
-                            {id:3, label:'page.billingAreas.radio.localPriceType.maximum'}
-                          ]
-                        }
-                        invalid={sendForm && !!localPriceTypeValid}
-                        feedbackText={sendForm && (localPriceTypeValid || null)}
+                        options={[
+                          { id: 1, label: 'page.billingAreas.radio.localPriceType.minimum' },
+                          { id: 2, label: 'page.billingAreas.radio.localPriceType.medium' },
+                          { id: 3, label: 'page.billingAreas.radio.localPriceType.maximum' }
+                        ]}
+                        invalid={!!error('localPriceType')}
+                        feedbackText={error('localPriceType')}
                       />
+                      {radioError('localPriceType')}
                     </Colxx>
                   </Row>
                   <Row>
                     <Colxx xxs="12">
                       <RadioGroup
-                          label="page.billingAreas.title.foreignClients"
-                          name="outsiderPriceType"
-                          value={outsiderPriceType}
-                          onChange={onInputChange}
-                          display="flex"
-                          options={
-                            [
-                              {id:1, label:'page.billingAreas.radio.foreignClients.minimum'},
-                              {id:2, label:'page.billingAreas.radio.foreignClients.medium'},
-                              {id:3, label:'page.billingAreas.radio.foreignClients.maximum'}
-                            ]
-                          }
-                          invalid={sendForm && !!outsiderPriceTypeValid}
-                          feedbackText={sendForm && (outsiderPriceTypeValid || null)}
-                        />
+                        label="page.billingAreas.title.foreignClientsRequired"
+                        name="outsiderPriceType"
+                        value={outsiderPriceType}
+                        onChange={onInputChange}
+                        display="flex"
+                        options={[
+                          { id: 1, label: 'page.billingAreas.radio.foreignClients.minimum' },
+                          { id: 2, label: 'page.billingAreas.radio.foreignClients.medium' },
+                          { id: 3, label: 'page.billingAreas.radio.foreignClients.maximum' }
+                        ]}
+                        invalid={!!error('outsiderPriceType')}
+                        feedbackText={error('outsiderPriceType')}
+                      />
+                      {radioError('outsiderPriceType')}
                     </Colxx>
                   </Row>
                 </ContainerWithLabel>
@@ -197,93 +151,27 @@ const BillingAreasDetail = ({ formState, listDocument, listLedgerAccount, listSt
             <Colxx xxs={12}>
               <ContainerWithLabel label='page.billingAreas.containerWithLabel.useHumanResources'>
                 <Row>
-                  <Colxx xxs={12}>
-                    <SearchSelect
-                      label='page.areas.select.idCtaRrhhSeverance'
-                      name='idCtaRrhhSeverance'
-                      inputValue={idCtaRrhhSeverance}
-                      options={listLedgerAccount}
-                      onChange={onInputChange}
-                    />
-                  </Colxx>
-                  <Colxx xxs={12}>
-                    <SearchSelect
-                      label='page.areas.select.idCtaRrhhNotice'
-                      name='idCtaRrhhSeverance'
-                      inputValue={idCtaRrhhNotice}
-                      options={listLedgerAccount}
-                      onChange={onInputChange}
-                    />
-                  </Colxx>
-                  <Colxx xxs={12}>
-                    <SearchSelect
-                      label='page.areas.select.idCtaRrhhVacation'
-                      name='idCtaRrhhVacation'
-                      inputValue={idCtaRrhhVacation}
-                      options={listLedgerAccount}
-                      onChange={onInputChange}
-                    />
-                  </Colxx>
-                  <Colxx xxs={12}>
-                    <SearchSelect
-                      label='page.areas.select.idCtaRrhhThirteenth'
-                      name='idCtaRrhhThirteenth'
-                      inputValue={idCtaRrhhThirteenth}
-                      options={listLedgerAccount}
-                      onChange={onInputChange}
-                    />
-                  </Colxx>
-                  <Colxx xxs={12}>
-                    <SearchSelect
-                      label='page.areas.select.idCtaRrhhFourteenth'
-                      name='idCtaRrhhFourteenth'
-                      inputValue={idCtaRrhhFourteenth}
-                      options={listLedgerAccount}
-                      onChange={onInputChange}
-                    />
-                  </Colxx>
+                  {account('page.areas.select.idCtaRrhhSeverance', 'severanceCtaCode', severanceCtaCode)}
+                  {account('page.areas.select.idCtaRrhhNotice', 'noticeCtaCode', noticeCtaCode)}
+                  {account('page.areas.select.idCtaRrhhVacation', 'vacationCtaCode', vacationCtaCode)}
+                  {account('page.areas.select.idCtaRrhhThirteenth', 'thirteenthCtaCode', thirteenthCtaCode)}
+                  {account('page.areas.select.idCtaRrhhFourteenth', 'fourteenthCtaCode', fourteenthCtaCode)}
                 </Row>
               </ContainerWithLabel>
             </Colxx>
             <Colxx xxs={12}>
               <ContainerWithLabel label="page.billingAreas.containerWithLabel.useFixedAssets">
                 <Row>
-                  <Colxx xxs={12}>
-                  <SearchSelect
-                      label='page.fixedAssets.input.accDeprecation'
-                      name='idCtaFaDeprec'
-                      inputValue={idCtaFaDeprec}
-                      options={listLedgerAccount}
-                      onChange={onInputChange}
-                    />
-                  </Colxx>
-                  <Colxx xxs={12}>
-                  <SearchSelect
-                      label='page.fixedAssets.input.accCost'
-                      name='idCtaFaCost'
-                      inputValue={idCtaFaCost}
-                      options={listLedgerAccount}
-                      onChange={onInputChange}
-                    />
-                  </Colxx>
+                  {account('page.fixedAssets.input.accDeprecation', 'depreciationCtaCode', depreciationCtaCode)}
+                  {account('page.fixedAssets.input.accCost', 'depreciationCostCtaCode', depreciationCostCtaCode)}
                 </Row>
               </ContainerWithLabel>
             </Colxx>
             <Colxx xxs={12} sm={6} lg={4}>
-              <Checkbox
-                label="page.billingAreas.check.active"
-                name="status"
-                value={status}
-                onChange={onInputChange}
-              />
+              <Checkbox label="page.billingAreas.check.active" name="status" value={status} onChange={onInputChange} />
             </Colxx>
             <Colxx xxs={12} sm={6} lg={4}>
-              <Checkbox
-                label="check.isDefault"
-                name="isDefault"
-                value={isDefault}
-                onChange={onInputChange}
-              />
+              <Checkbox label="check.isDefault" name="isDefault" value={isDefault} onChange={onInputChange} />
             </Colxx>
           </Row>
         </Colxx>

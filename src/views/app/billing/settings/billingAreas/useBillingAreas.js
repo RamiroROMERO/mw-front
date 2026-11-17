@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks';
-import { validInt } from '@Helpers/Utils';
+import { INITIAL_AREA_FORM, buildAreaPayload, mapAreaToForm, validateArea } from './billingAreaRules';
 
+// Áreas de facturación (fac_areas.sc2). Validación por campo con las mismas reglas del back (billingAreaRules.js): un filtro inválido se marca y NO llama al back.
+// "Eliminar" es una baja lógica con bloqueo por uso (DELETE /admin/areas/:id; el back rechaza con su mensaje si el área tiene facturas, cajas, empleados, etc.): la
+// casilla "Activa" sigue siendo independiente. Cuenta de ingreso obligatoria solo con Contabilidad activa (admin/companyInternalSettings).
 const useBillingAreas = ({ setLoading }) => {
   const companyData = JSON.parse(localStorage.getItem("mw_current_company"));
   const [tableData, setTableData] = useState([])
@@ -11,114 +14,80 @@ const useBillingAreas = ({ setLoading }) => {
   const [listStores, setListStores] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
-  const [isHospitalControl, setHospitalControl] = useState(companyData?.isHospitalControl || false);
+  // Mientras no se conoce la configuración se asume Contabilidad activa (el back decide; el valor real llega con admin/companyInternalSettings).
+  const [accountingActive, setAccountingActive] = useState(true);
+  const [isHospitalControl] = useState(companyData?.isHospitalControl || false);
   const [openModalViewDocument, setOpenModalViewDocument] = useState(false);
 
-  const billingAreasValid = {
-    name: [(val) => val.length > 5, "msg.required.input.description"],
-    idStore: [(val) => validInt(val) > 0, "msg.required.input.idStore"],
-    codeDocument: [(val) => val !== "", "msg.required.input.codeDocument"],
-    localPriceType: [(val) => validInt(val) > 0, "msg.required.input.localPriceType"],
-    outsiderPriceType: [(val) => validInt(val) > 0, "msg.required.input.localPriceType"]
+  const { formState, onInputChange, onResetForm, setBulkForm } = useForm({ ...INITIAL_AREA_FORM });
+  const errors = useMemo(() => validateArea(formState, { accountingActive }), [formState, accountingActive]);
+  const { id } = formState;
+
+  const fnClearInputs = () => {
+    setSendForm(false);
+    onResetForm();
   }
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
-    id: 0,
-    name: '',
-    idCtaIng: '',
-    idCtaDiscount: '',
-    idCtaTax: '',
-    idCtaCxc: '',
-    idCtaShortage: '',
-    idCtaRrhhFourteenth: '',
-    idCtaRrhhNotice: '',
-    idCtaRrhhSeverance: '',
-    idCtaRrhhThirteenth: '',
-    idCtaRrhhVacation: '',
-    idCtaFaCost: '',
-    idCtaFaDeprec: '',
-    idStore: 0,
-    codeDocument: '',
-    localPriceType: 0,
-    outsiderPriceType: 0,
-    useBilling: false,
-    useRrhh: false,
-    useFixedAssets: false,
-    isHospital: false,
-    isDefault: false,
-    status: true
-  }, billingAreasValid);
-
-  const { id, name, idCtaIng, idCtaDiscount, idCtaTax, idCtaCxc, idCtaShortage, idStore, codeDocument, localPriceType, outsiderPriceType, useBilling, useRrhh, useFixedAssets, isHospital, idCtaRrhhFourteenth, idCtaRrhhNotice, idCtaRrhhSeverance, idCtaRrhhThirteenth, idCtaRrhhVacation, idCtaFaCost, idCtaFaDeprec, isDefault, status } = formState;
-
-  const fnDeleteItem = (item) => {
-    setBulkForm(item);
+  const fnDeleteItem = () => {
+    if (!(id > 0)) return;
     setOpenMsgQuestion(true);
   }
 
   const fnNewDocument = () => {
-    setSendForm(false);
-    onResetForm();
+    fnClearInputs();
   }
 
   const fnSearchDocument = () => {
     setLoading(true);
     request.GET('admin/areas', (resp) => {
-      const { data } = resp
-      setTableData(data);
+      setTableData(resp.data);
       setOpenModalViewDocument(true);
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
   }
 
   const fnSaveDocument = () => {
     setSendForm(true);
-    if (!isFormValid) {
-      return;
-    }
+    if (Object.keys(errors).length > 0) return;
 
-    const data = {
-      name,
-      idCtaIng,
-      idCtaDiscount,
-      idCtaTax,
-      idCtaCxc,
-      idCtaShortage,
-      idStore,
-      codeDocument,
-      localPriceType,
-      outsiderPriceType,
-      isDefault,
-      isHospital,
-      useBilling, useRrhh, useFixedAssets, idCtaRrhhFourteenth, idCtaRrhhNotice, idCtaRrhhSeverance, idCtaRrhhThirteenth, idCtaRrhhVacation, idCtaFaCost, idCtaFaDeprec, status
-    }
+    const data = buildAreaPayload(formState);
+    setLoading(true);
     if (id && id > 0) {
-      setLoading(true);
       request.PUT(`admin/areas/${id}`, data, () => {
         fnClearInputs();
         setLoading(false);
-      }, (err) => {
-
+      }, () => {
         setLoading(false);
       });
     } else {
-      setLoading(true);
       request.POST('admin/areas', data, () => {
         fnClearInputs();
         setLoading(false);
-      }, (err) => {
-
+      }, () => {
         setLoading(false);
       });
     }
   }
 
   const fnViewDocument = (item) => {
-    setBulkForm(item);
+    setSendForm(false);
+    setBulkForm(mapAreaToForm(item));
     setOpenModalViewDocument(false);
+  }
+
+  // Baja lógica (elimina = 1). Si el back la rechaza (área en uso o predeterminada) `request.DELETE` ya muestra su mensaje real y el formulario conserva el área.
+  const fnDeleteDocument = () => {
+    setOpenMsgQuestion(false);
+    if (!(id > 0)) return;
+    setLoading(true);
+    request.DELETE(`admin/areas/${id}`, () => {
+      fnClearInputs();
+      setLoading(false);
+    }, () => {
+      setLoading(false);
+    });
   }
 
   const propsToControlPanel = {
@@ -132,72 +101,27 @@ const useBillingAreas = ({ setLoading }) => {
     disableTab: [false, true, true]
   }
 
-  const fnClearInputs = () => {
-    onResetForm();
-    setSendForm(false);
-  }
-
-  const fnDisableDocument = () => {
-    setOpenMsgQuestion(false);
-    setLoading(true);
-    const data = {
-      status: 0
-    }
-    if (id && id > 0) {
-      setLoading(true);
-      request.PUT(`admin/areas/${id}`, data, (resp) => {
-        fnClearInputs();
-        setLoading(false);
-      }, (err) => {
-
-        setLoading(false);
-      });
-    }
-  }
-
   useEffect(() => {
     setLoading(true);
     request.GET('accounting/settings/accountants/getSL', (resp) => {
-      const listAccount = resp.data.map((item) => {
-        return {
-          label: `${item.cta} - ${item.nombre}`,
-          value: item.cta
-        }
-      })
+      const listAccount = resp.data.map((item) => ({ label: `${item.cta} - ${item.nombre}`, value: item.cta }));
       setListLedgerAccount(listAccount);
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
-    setLoading(true);
     request.GET('inventory/settings/stores/getSL?type=1', (resp) => {
-      const store = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id
-        }
-      });
-      setListStores(store);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
+      setListStores(resp.data.map((item) => ({ label: item.name, value: item.id })));
     });
-    setLoading(true);
     request.GET(buildUrl('admin/documents/', { useBill: 1 }), (resp) => {
-      const documents = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.code
-        }
-      });
-      setListDocument(documents);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
+      setListDocument(resp.data.map((item) => ({ label: item.name, value: item.code })));
     });
+    if (companyData?.id) {
+      request.GET(`admin/companyInternalSettings?companyId=${companyData.id}`, (resp) => {
+        const [settings] = resp.data;
+        setAccountingActive(!!settings?.accountingMenu);
+      }, () => { });
+    }
   }, []);
 
   const propsToAreasDetail = {
@@ -207,7 +131,8 @@ const useBillingAreas = ({ setLoading }) => {
     listLedgerAccount,
     listStores,
     sendForm,
-    formValidation,
+    errors,
+    accountingActive,
     isHospitalControl
   };
 
@@ -219,7 +144,7 @@ const useBillingAreas = ({ setLoading }) => {
     propsToMsgDelete: {
       open: openMsgQuestion,
       setOpen: setOpenMsgQuestion,
-      fnOnOk: fnDisableDocument,
+      fnOnOk: fnDeleteDocument,
       title: "alert.question.title"
     },
     propsToAreasDetail,
