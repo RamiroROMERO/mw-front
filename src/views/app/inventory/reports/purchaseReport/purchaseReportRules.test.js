@@ -49,10 +49,15 @@ describe('buildReportRequest', () => {
 });
 
 describe('opciones del modal y columnas', () => {
-  test('las opciones implementadas apuntan a un tipo con columnas; 6, 10 y 11 quedan fuera', () => {
-    expect(Object.keys(RADIO_TO_TYPE).map(Number)).toEqual([1, 2, 3, 4, 5, 7, 8, 9, 12, 13]);
+  test('las 13 opciones del legacy apuntan a un tipo con columnas', () => {
+    expect(Object.keys(RADIO_TO_TYPE).map(Number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
     Object.values(RADIO_TO_TYPE).forEach((t) => expect(COLUMNS_BY_TYPE[t].length).toBeGreaterThan(0));
-    [6, 10, 11].forEach((n) => expect(RADIO_TO_TYPE[n]).toBeUndefined());
+    expect(RADIO_TO_TYPE[6]).toBe('monthlyDetail');
+    expect(RADIO_TO_TYPE[10]).toBe('taxDeclaration');
+    expect(RADIO_TO_TYPE[11]).toBe('adminExpenses');
+  });
+  test('el detallado mensual tiene las 12 columnas de meses', () => {
+    expect(COLUMNS_BY_TYPE.monthlyDetail.filter((c) => /^m\d+$/.test(c.field))).toHaveLength(12);
   });
   test('cada columna declara campo y etiqueta', () => {
     Object.values(COLUMNS_BY_TYPE).flat().forEach((c) => { expect(c.field && c.label).toBeTruthy(); });

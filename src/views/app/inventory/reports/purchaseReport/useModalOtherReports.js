@@ -5,8 +5,8 @@ import { useReportData } from './useReportData';
 import { buildColumns } from './reportTable';
 import { RADIO_TO_TYPE, REPORT_TITLES, normalizeReport } from './purchaseReportRules';
 
-// "Otros Reportes" (SPEC v2-57-sr): las 10 opciones de inv_repocompras.sc2 que ya existen en el back (1 a 5, 7 a 9, 12 y 13) usan el mismo
-// endpoint común y se pueden ver en pantalla, descargar en Excel o imprimir (PDF). 6, 10 y 11 llegan con la SPEC v2-58-sr.
+// "Otros Reportes" (SPEC v2-57-sr y v2-58-sr): las 13 opciones de inv_repocompras.sc2 usan el mismo
+// endpoint común y se pueden ver en pantalla, descargar en Excel o imprimir (PDF).
 export const useModalOtherReports = ({ setLoading, onProductSearch }) => {
   const intl = useIntl();
   const { formState, onInputChange } = useForm({ providerId: 0, storeId: 0, productId: 0, dateStart: '', dateEnd: '', typeReport: 0 });

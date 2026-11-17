@@ -3,9 +3,9 @@
 export const REPORT_BASE_URL = 'inventory/reports/purchases';
 export const MAX_RANGE_DAYS = 366;
 
-// Opción del modal "Otros reportes" (legacy inv_repocompras.sc2) -> tipo del back. 6, 10 y 11 llegan con la SPEC v2-58-sr.
+// Opción del modal "Otros reportes" (legacy inv_repocompras.sc2) -> tipo del back. 6, 10 y 11 son de la SPEC v2-58-sr.
 export const RADIO_TO_TYPE = {
-  1: 'byStore', 2: 'byProvider', 3: 'byStore', 4: 'byProvider', 5: 'detailByProduct', 7: 'bonus', 8: 'taxedDetail', 9: 'taxedSummary', 12: 'byProductQty', 13: 'services'
+  1: 'byStore', 2: 'byProvider', 3: 'byStore', 4: 'byProvider', 5: 'detailByProduct', 6: 'monthlyDetail', 7: 'bonus', 8: 'taxedDetail', 9: 'taxedSummary', 10: 'taxDeclaration', 11: 'adminExpenses', 12: 'byProductQty', 13: 'services'
 };
 
 const text = (value) => String(value ?? '').trim();
@@ -64,7 +64,8 @@ export const buildReportRequest = (type, { dateStart, dateEnd, storeId, provider
 export const REPORT_TITLES = {
   byStore: 'Reporte de Compras por Almacén', byProvider: 'Reporte de Compras por Proveedor', detailByProduct: 'Reporte de Compras Detallado por Producto',
   bonus: 'Reporte de Bonificaciones', taxedDetail: 'Compras Gravadas, Exentas y Exoneradas (Detallado)', taxedSummary: 'Compras Gravadas, Exentas y Exoneradas (Resumido)',
-  byProductQty: 'Reporte de Compras por Producto y Cantidad', services: 'Reporte de Compras de Servicios'
+  byProductQty: 'Reporte de Compras por Producto y Cantidad', services: 'Reporte de Compras de Servicios',
+  taxDeclaration: 'Compras para la Declaración de Impuestos', monthlyDetail: 'Compras Detallado Mensual por Producto', adminExpenses: 'Impuestos por Gastos Administrativos'
 };
 
 export const reportFileName = (title, format) => `${title}.${format === 'xlsx' ? 'xlsx' : 'pdf'}`;
@@ -79,7 +80,16 @@ const LINE_COLUMNS = [
   { field: 'productCode', label: 'table.column.code' }, { field: 'productName', label: 'page.purchaseReport.table.column.description' }, num('qty', 'table.column.qty'), ...MONEY
 ];
 
+const PRE = 'page.purchaseReport.table.column.';
+const MONTH_COLUMNS = Array.from({ length: 12 }, (_, i) => num('m' + (i + 1), PRE + 'month' + (i + 1)));
+
 export const COLUMNS_BY_TYPE = {
+  taxDeclaration: [date, { field: 'number', label: 'table.column.documentId' }, { field: 'providerRtn', label: 'table.column.rtn' }, { field: 'providerName', label: 'table.column.provider' },
+    num('exempt', 'table.column.exempt'), num('exonerated', PRE + 'exonerated'), num('taxed', PRE + 'taxed'), num('tax', 'table.column.tax'), num('total', 'table.column.total')],
+  monthlyDetail: [{ field: 'productCode', label: 'table.column.code' }, { field: 'productName', label: 'table.column.product' }, ...MONTH_COLUMNS,
+    num('totalQty', 'table.column.total'), num('cost', 'table.column.cost'), num('totalValue', 'table.column.value')],
+  adminExpenses: [{ field: 'number', label: 'table.column.documentId' }, date, { field: 'providerName', label: 'table.column.provider' },
+    num('exempt', 'table.column.exempt'), num('taxed', PRE + 'taxed'), num('tax', 'table.column.tax'), num('total', 'table.column.total')],
   byStore: HEADER_COLUMNS,
   byProvider: HEADER_COLUMNS,
   detailByProduct: LINE_COLUMNS,
