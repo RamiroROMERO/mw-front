@@ -12,7 +12,7 @@ const APPLY_TO_OPTIONS = [
   { id: 'Gasto', name: 'Gasto' }
 ]
 
-const FormInventory = ({documentId, documentCode, sourceStoreId, date, applyTo, listDocuments, listStores, onInputChange, sendForm, formValidation, disabled, isProcessed, isVoided, pdaNumber}) => {
+const FormInventory = ({documentId, documentCode, sourceStoreId, date, applyTo, listDocuments, listStores, onInputChange, sendForm, formValidation, disabled, isProcessed, isVoided, pdaNumber, dateWarning}) => {
 
   const {documentCodeValid, sourceStoreIdValid, applyToValid} = formValidation;
 
@@ -77,6 +77,13 @@ const FormInventory = ({documentId, documentCode, sourceStoreId, date, applyTo, 
               feedbackText={sendForm && (applyToValid || null)}
             />
           </Colxx>
+          {dateWarning && (
+            <Colxx xxs="12">
+              <span className="text-warning">
+                <i className="bi bi-exclamation-triangle-fill" /> {IntlMessages("page.inventoryAdjustment.warning.dateNotToday")}
+              </span>
+            </Colxx>
+          )}
           {isVoided && (
             <Colxx xxs="12">
               <span className="text-danger fw-bold">

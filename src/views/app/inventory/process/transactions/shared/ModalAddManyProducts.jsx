@@ -13,10 +13,12 @@ import { IntlMessages, formatNumber } from '@Helpers/Utils'
 const mapRow = (item) => ({ ...item, costText: formatNumber(item.cost), stockText: formatNumber(item.stock) })
 
 const ModalAddManyProducts = ({ data, setOpen }) => {
-  const { url, storeId, fnAddLine, employees, onEmployeeSearch } = data
+  const { url, storeId, fnAddLine, employees, onEmployeeSearch, showLot } = data
   const [qty, setQty] = useState('1')
   const [employeeId, setEmployeeId] = useState(0)
   const [added, setAdded] = useState(0)
+  const [lotCode, setLotCode] = useState('')
+  const [expirationDate, setExpirationDate] = useState('')
 
   // IntlMessages es un hook: se llama aquí arriba, no dentro de useMemo.
   const textCode = IntlMessages('table.column.code')
@@ -36,12 +38,12 @@ const ModalAddManyProducts = ({ data, setOpen }) => {
   // La tabla puede conservar el `onSelect` de un render anterior: cantidad, empleado y la función de agregar se leen de una ref
   // que siempre tiene lo vigente.
   const current = useRef({})
-  current.current = { qty, employeeId, employees, fnAddLine }
+  current.current = { qty, employeeId, employees, fnAddLine, lotCode, expirationDate }
 
   const onSelect = (row) => {
-    const { qty: currentQty, employeeId: currentEmployee, employees: list, fnAddLine: addLine } = current.current
+    const { qty: currentQty, employeeId: currentEmployee, employees: list, fnAddLine: addLine, lotCode: lot, expirationDate: expiration } = current.current
     const employee = list ? list.find((item) => item.value === currentEmployee) : null
-    if (addLine(row, currentQty, employee ? { id: employee.value, name: employee.label } : null)) setAdded((count) => count + 1)
+    if (addLine(row, currentQty, employee ? { id: employee.value, name: employee.label } : null, { lotCode: lot, expirationDate: expiration })) setAdded((count) => count + 1)
   }
 
   const config = useMemo(() => ({
@@ -68,6 +70,16 @@ const ModalAddManyProducts = ({ data, setOpen }) => {
                 onChange={(e) => setEmployeeId(Number(e.target.value) || 0)}
               />
             </Colxx>
+          )}
+          {showLot && (
+            <>
+              <Colxx xxs="6" sm="3">
+                <InputField name="lotAdd" label="input.lotCode" value={lotCode} onChange={(e) => setLotCode(e.target.value)} type="text" />
+              </Colxx>
+              <Colxx xxs="6" sm="3">
+                <InputField name="expirationAdd" label="input.dateOutProd" value={expirationDate} onChange={(e) => setExpirationDate(e.target.value)} type="date" />
+              </Colxx>
+            </>
           )}
           <Colxx xxs="6" sm={Array.isArray(employees) ? '3' : '9'} className="d-flex align-items-center">
             <span className="text-muted">{`${textAdded}: ${added}`}</span>

@@ -7,9 +7,7 @@ import ControlPanel from '@Components/controlPanel';
 import Modal from "@Components/modal";
 import Confirmation from '@Containers/ui/confirmationMsg';
 import ModalVoidInvoice from '@Views/app/billing/process/pointSales/ModalVoidInvoice';
-import { useTransfersDeta } from '../transactions/shared/useTransfersDeta';
-import ModalViewProd from '../../settings/productsCatalog/ModalViewProd';
-import DetailProduct from './DetailProduct';
+import ModalAddManyProducts from '../transactions/shared/ModalAddManyProducts';
 import FormInventory from './FormInventory';
 import DetailTable from '../transactions/shared/DetailTable';
 import ModalViewTransfers from '../transactions/shared/ModalViewTransfers';
@@ -17,19 +15,16 @@ import ModalViewTransfers from '../transactions/shared/ModalViewTransfers';
 const InventoryAdjustment = ({ setLoading }) => {
   const [inventoryDetail, setInventoryDetail] = useState([]);
 
-  const { formStateDeta, onInputChangeDeta, fnViewProducts, fnSelectProduct, openModalProducts, setOpenModalProducts, dataProducts, setBulkFormDeta, formValidationDeta, isFormValidDeta, onResetFormDeta } = useTransfersDeta({ setLoading });
-
   const {
     propsToControlPanel, formState, onInputChange, listDocuments, listStores, sendForm, setSendForm,
-    sendFormDeta, setSendFormDeta, isFormValid, formValidation, dataInventory, openModalViewInventoryAd,
+    isFormValid, formValidation, dataInventory, openModalViewInventoryAd,
     setOpenModalViewInventoryAd, onBulkForm, fnGetDataDetail, openMsgDeleteDocument, setOpenMsgDeleteDocument,
     fnOkDeleteDocument, disabled, isProcessed, isVoided, openMsgProcess, setOpenMsgProcess, fnProcessAdjustment,
-    openModalVoid, setOpenModalVoid, fnVoidAdjustment, openMsgAddRemaining, setOpenMsgAddRemaining, fnAddRemaining
-  } = useInventory({ inventoryDetail, setInventoryDetail, onResetFormDeta, setLoading });
+    openModalVoid, setOpenModalVoid, fnVoidAdjustment, openMsgAddRemaining, setOpenMsgAddRemaining, fnAddRemaining, openModalAddMany, setOpenModalAddMany, fnAddManyLine, dateWarning
+  } = useInventory({ inventoryDetail, setInventoryDetail, setLoading });
 
   const { sourceStoreId, documentCode, documentId, pdaNumber } = formState;
 
-  const { idProd } = formStateDeta;
 
   const propsToFormInventory = {
     ...formState,
@@ -41,43 +36,30 @@ const InventoryAdjustment = ({ setLoading }) => {
     disabled,
     isProcessed,
     isVoided,
-    pdaNumber
-  }
-
-  const propsToDetailProduct = {
-    ...formStateDeta,
-    sourceStoreId,
-    onInputChangeDeta,
-    fnViewProducts,
-    setBulkFormDeta,
-    transferDetail: inventoryDetail,
-    setTransferDetail: setInventoryDetail,
-    sendFormDeta,
-    setSendFormDeta,
-    isFormValidDeta,
-    formValidationDeta,
-    setSendForm,
-    isFormValid,
-    idProd,
-    disabled
+    pdaNumber,
+    dateWarning
   }
 
   const propsToDetailTable = {
     transferDetail: inventoryDetail,
     setTransferDetail: setInventoryDetail,
-    setBulkFormDeta,
-    disabled
+    setBulkFormDeta: () => { },
+    disabled,
+    showLot: true,
+    hideEdit: true
   }
 
-  const propsToModalViewProd = {
-    ModalContent: ModalViewProd,
-    title: "page.productsCatalog.modal.viewProduct.title",
-    open: openModalProducts,
-    setOpen: setOpenModalProducts,
+  const propsToModalAddMany = {
+    ModalContent: ModalAddManyProducts,
+    title: "page.transfersToStores.button.addMany",
+    open: openModalAddMany,
+    setOpen: setOpenModalAddMany,
     maxWidth: 'lg',
     data: {
-      dataProducts,
-      fnSelectItem: fnSelectProduct
+      url: 'inventory/process/adjustments/availableProducts',
+      storeId: sourceStoreId,
+      showLot: true,
+      fnAddLine: fnAddManyLine
     }
   }
 
@@ -136,13 +118,12 @@ const InventoryAdjustment = ({ setLoading }) => {
               <ControlPanel {...propsToControlPanel} />
               <Separator className="mt-2 mb-4" />
               <FormInventory {...propsToFormInventory} />
-              <DetailProduct {...propsToDetailProduct} />
               <DetailTable {...propsToDetailTable} />
             </CardBody>
           </Card>
         </Colxx>
       </Row>
-      <Modal {...propsToModalViewProd} />
+      <Modal {...propsToModalAddMany} />
       <Modal {...propsToModalViewInventoryAd} />
       <Modal {...propsToModalVoid} />
       <Confirmation {...propsToMsgDeleteDocument} />
