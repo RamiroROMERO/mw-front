@@ -2,7 +2,6 @@ import { useState } from "react";
 import { TabPane, Nav, NavItem, NavLink, TabContent, Button, ButtonGroup } from "reactstrap";
 import { useIntl } from "react-intl";
 import classnames from 'classnames';
-import { SeparatorV } from '../common/CustomBootstrap';
 
 
 const ControlPanel = (props) => {
