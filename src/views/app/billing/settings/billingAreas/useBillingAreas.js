@@ -103,7 +103,7 @@ const useBillingAreas = ({ setLoading }) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('accounting/settings/accountants/getSL', (resp) => {
+    request.GET('accounting/settings/accountants/getSL?status=1', (resp) => {
       const listAccount = resp.data.map((item) => ({ label: `${item.cta} - ${item.nombre}`, value: item.cta }));
       setListLedgerAccount(listAccount);
       setLoading(false);
