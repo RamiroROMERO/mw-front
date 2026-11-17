@@ -8,7 +8,7 @@ import { useIntl } from 'react-intl';
 
 const Detail = ({formState, onInputChange, errors, fnSave, fnClearInputs, fnViewDetail, sendForm}) => {
 
-  const { name, usageType, usageCriteria, isDefault } = formState;
+  const { name, usageType, usageCriteria, isDefault, status } = formState;
   const nameValid = errors.name;
   const usageTypeValid = errors.usageType;
   const usageCriteriaValid = errors.usageCriteria;
@@ -75,6 +75,13 @@ const Detail = ({formState, onInputChange, errors, fnSave, fnClearInputs, fnView
               label="page.paymentMethods.check.predetermined"
               name="isDefault"
               value={isDefault}
+              onChange={onInputChange}
+            />
+            {/* "Activa" saca la forma de los combos sin eliminarla (una forma con documentos no se puede eliminar). */}
+            <Checkbox
+              label="checkbox.active"
+              name="status"
+              value={status}
               onChange={onInputChange}
             />
           </Colxx>
