@@ -4,16 +4,15 @@ import { useModalOtherReports } from './useModalOtherReports'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import DateCalendar from '@Components/dateCalendar'
-import { Checkbox } from '@Components/checkbox'
 import { RadioGroup } from '@Components/radioGroup'
 import ReactTable from '@Components/reactTable'
 
 const ModalOtherReports = ({ setOpen, data }) => {
-  const { listProviders, listStores, listProducts, setLoading } = data;
+  const { listProviders, listStores, listProducts, onProductSearch, setLoading } = data;
 
-  const { formState, onInputChange, onTypeChange, fnSearchOtherReport, data: reportData, columns } = useModalOtherReports({ setLoading });
+  const { formState, errors, sendForm, downloading, onInputChange, onTypeChange, fnSearchOtherReport, fnDownloadOtherReport, data: reportData, columns } = useModalOtherReports({ setLoading, onProductSearch });
 
-  const { providerId, storeId, productId, dateStart, dateEnd, exportToXls, typeReport } = formState;
+  const { providerId, storeId, productId, dateStart, dateEnd, typeReport } = formState;
 
   return (
     <>
@@ -44,6 +43,7 @@ const ModalOtherReports = ({ setOpen, data }) => {
               inputValue={productId}
               options={listProducts}
               onChange={onInputChange}
+              onInputChange={onProductSearch}
             />
           </Colxx>
           <Colxx xxs="12" xs="6">
@@ -52,6 +52,7 @@ const ModalOtherReports = ({ setOpen, data }) => {
               label='select.dateStart'
               value={dateStart}
               onChange={onInputChange}
+              feedbackText={sendForm ? errors.dateStart : undefined}
             />
           </Colxx>
           <Colxx xxs="12" xs="6">
@@ -60,14 +61,7 @@ const ModalOtherReports = ({ setOpen, data }) => {
               label='select.dateEnd'
               value={dateEnd}
               onChange={onInputChange}
-            />
-          </Colxx>
-          <Colxx xxs="12" xs="6">
-            <Checkbox
-              name="exportToXls"
-              label='check.exportToXls'
-              value={exportToXls}
-              onChange={onInputChange}
+              feedbackText={sendForm ? errors.dateEnd : undefined}
             />
           </Colxx>
           <Colxx xxs="12">
@@ -105,6 +99,12 @@ const ModalOtherReports = ({ setOpen, data }) => {
       <ModalFooter>
         <Button color="primary" onClick={fnSearchOtherReport}>
           <i className="bi bi-search" /> {IntlMessages("button.search")}
+        </Button>
+        <Button color="secondary" disabled={downloading} onClick={() => fnDownloadOtherReport('xlsx')}>
+          <i className="bi bi-file-earmark-excel" /> {IntlMessages("page.purchaseReport.button.excel")}
+        </Button>
+        <Button color="info" disabled={downloading} onClick={() => fnDownloadOtherReport('pdf')}>
+          <i className="bi bi-printer" /> {IntlMessages("page.purchaseReport.button.pdf")}
         </Button>
         <Button color="danger" onClick={() => { setOpen(false) }} >
           <i className="bi bi-box-arrow-right" />{` ${IntlMessages('button.exit')}`}

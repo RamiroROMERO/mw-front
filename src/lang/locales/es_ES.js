@@ -4230,6 +4230,11 @@ const esLang = {
   "page.purchaseReport.modal.otherReports.radio.byExpenses": "Impuestos por Gastos Administrativos",
   "page.purchaseReport.modal.otherReports.radio.byProdQty": "Compras por Producto y Cantidad",
   "page.purchaseReport.modal.otherReports.radio.detailServices": "Detalle de Compras de Servicios",
+  "page.purchaseReport.report.error.tooLarge": "El rango no puede pasar de 366 días!",
+  "page.purchaseReport.msg.reportError": "No se pudo generar el reporte de compras.",
+  "page.purchaseReport.button.pdf": "PDF",
+  "page.purchaseReport.button.excel": "Excel",
+  "page.purchaseReport.table.column.order": "Orden",
   "page.purchaseReport.table.column.taxCategory": "Categoría Fiscal",
   "msg.purchaseReport.otherReports.notImplemented": "Este reporte todavía no está disponible",
   // 82. Inventory Report Page in Inventory

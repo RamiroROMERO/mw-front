@@ -9,7 +9,7 @@ import { usePurchaseReport } from './usePurchaseReport';
 
 const PurchaseReport = ({ setLoading }) => {
 
-  const { table, dataTotals, propsToHeaderReport, listProviders, listStores, listProducts, openModalOtherReport, setOpenModalOtherReport } = usePurchaseReport({ setLoading });
+  const { table, dataTotals, propsToHeaderReport, listProviders, listStores, listProducts, onProductSearch, openModalOtherReport, setOpenModalOtherReport } = usePurchaseReport({ setLoading });
 
   const propsToTotals = {
     ...dataTotals
@@ -25,6 +25,7 @@ const PurchaseReport = ({ setLoading }) => {
       listProviders,
       listStores,
       listProducts,
+      onProductSearch,
       setLoading
     }
   }

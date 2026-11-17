@@ -4,7 +4,7 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import DateCalendar from '@Components/dateCalendar'
 import { IntlMessages } from '@Helpers/Utils'
 
-const HeaderReport = ({providerId, dateStart, dateEnd, listProviders, onInputChange, fnSearchReport}) => {
+const HeaderReport = ({providerId, dateStart, dateEnd, options, errors, sendForm, onInputChange, fnSearchReport}) => {
 
   return (
     <>
@@ -14,7 +14,7 @@ const HeaderReport = ({providerId, dateStart, dateEnd, listProviders, onInputCha
           label='select.providerId'
           name='providerId'
           inputValue={providerId}
-          options={listProviders}
+          options={options}
           onChange={onInputChange}
         />
       </Colxx>
@@ -24,6 +24,7 @@ const HeaderReport = ({providerId, dateStart, dateEnd, listProviders, onInputCha
           label='select.dateStart'
           value={dateStart}
           onChange={onInputChange}
+          feedbackText={sendForm ? errors.dateStart : undefined}
         />
       </Colxx>
       <Colxx xxs="12" xs="6" lg="3">
@@ -32,6 +33,7 @@ const HeaderReport = ({providerId, dateStart, dateEnd, listProviders, onInputCha
           label='select.dateEnd'
           value={dateEnd}
           onChange={onInputChange}
+          feedbackText={sendForm ? errors.dateEnd : undefined}
         />
       </Colxx>
     </Row>

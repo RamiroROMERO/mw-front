@@ -7,9 +7,9 @@ import TotalsReport from '../purchaseReport/TotalsReport';
 
 const Content = ({ setLoading }) => {
 
-  const urlPost = 'inventory/reports/purchases/expenses';
+  const type = 'services';
 
-  const {table, dataTotals, propsToHeaderReport} = usePurchaseForProvider({setLoading, urlPost});
+  const {table, dataTotals, propsToHeaderReport} = usePurchaseForProvider({setLoading, type});
 
   const propsToTotals = {
     ...dataTotals

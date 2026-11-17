@@ -5,7 +5,7 @@ import DateCalendar from '@Components/dateCalendar'
 import { IntlMessages } from '@Helpers/Utils'
 import { Checkbox } from '@Components/checkbox'
 
-const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, isBonus, listProviders, listStores, listProducts, onInputChange, fnSearchReport, fnOpenOtherReports}) => {
+const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, isBonus, listProviders, listStores, listProducts, errors, sendForm, onInputChange, onProductSearch, fnSearchReport, fnOpenOtherReports}) => {
 
   return (
     <>
@@ -35,6 +35,7 @@ const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, isBon
           inputValue={productId}
           options={listProducts}
           onChange={onInputChange}
+          onInputChange={onProductSearch}
         />
       </Colxx>
       <Colxx xxs="12" md="6" lg="3">
@@ -43,6 +44,7 @@ const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, isBon
           label='select.dateStart'
           value={dateStart}
           onChange={onInputChange}
+          feedbackText={sendForm ? errors.dateStart : undefined}
         />
       </Colxx>
       <Colxx xxs="12" md="6" lg="3">
@@ -51,6 +53,7 @@ const HeaderReport = ({providerId, storeId, productId, dateStart, dateEnd, isBon
           label='select.dateEnd'
           value={dateEnd}
           onChange={onInputChange}
+          feedbackText={sendForm ? errors.dateEnd : undefined}
         />
       </Colxx>
       <Colxx xxs="12" md="6" lg="3">

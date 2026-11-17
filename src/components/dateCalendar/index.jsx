@@ -1,6 +1,11 @@
+import { createPortal } from 'react-dom';
 import ReactDatePicker from 'react-datepicker';
 import { InputLabel } from "@Components/inputLabel";
 import 'react-datepicker/dist/react-datepicker.css';
+
+// El popup se dibuja en `document.body`: dentro de su tarjeta quedaba en el contexto de apilamiento de ésta y la tarjeta siguiente (la tabla)
+// lo tapaba. Con el portal ningún contenedor lo recorta ni lo cubre (también dentro de modales).
+const renderInBody = ({ children }) => createPortal(children, document.body);
 
 const DateCalendar = (props) => {
   const { value, label = "calendar.input.title", onChange, disabled = false, name = "date", feedbackText = undefined, maxDate = undefined } = props;
@@ -20,6 +25,7 @@ const DateCalendar = (props) => {
         maxDate={maxDate}
         zone="00:00"
         isClearable
+        popperContainer={renderInBody}
       />
     </InputLabel>
   );
