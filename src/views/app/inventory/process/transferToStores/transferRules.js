@@ -137,3 +137,24 @@ export const linesFromSelection = (selected = {}) => Object.values(selected)
     lotCode: '',
     expirationDate: ''
   }));
+
+/**
+ * Estado del documento para decidir qué acciones ofrece la pantalla (SPEC v2-50-sr). "Aplicado" es `isApplied` o partida
+ * (con Contabilidad apagada se aplica sin partida); "anulado" es `status` falso en un documento guardado.
+ *  - canProcess: Contabilizar, solo en un traslado guardado, sin aplicar ni anular.
+ *  - canVoid: Anular, solo en uno aplicado y no anulado.
+ *  - locked: el documento no se edita ni se elimina (aplicado o anulado).
+ */
+export const transferState = ({ id, isApplied, pdaNumber, status } = {}) => {
+  const saved = Number(id) > 0;
+  const voided = saved && (status === false || Number(status) === 0);
+  const applied = saved && !voided && (isApplied === true || Number(isApplied) === 1 || Number(pdaNumber) > 0);
+  return {
+    saved,
+    applied,
+    voided,
+    canProcess: saved && !applied && !voided,
+    canVoid: applied,
+    locked: applied || voided
+  };
+};
