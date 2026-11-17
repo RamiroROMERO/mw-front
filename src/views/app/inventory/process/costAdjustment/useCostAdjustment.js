@@ -1,27 +1,32 @@
-import { useEffect, useState } from 'react';
-import { request, buildUrl } from '@Helpers/core';
-import { validInt, validFloat } from '@Helpers/Utils';
+import { useEffect, useMemo, useState } from 'react';
+import { request, buildUrl, notifyError } from '@Helpers/core';
 import DateHelper from '@Helpers/DateHelper';
 import createNotification from '@Containers/ui/Notifications';
+import useProductOptions from '../../settings/productsCatalog/useProductOptions';
+import { withSelectedOption } from '../../settings/productsCatalog/pagingRules';
+import {
+  ADJUST_PATH, MOVEMENTS_PATH, buildPayload, changeRow, collectEdits, summarizeResult, toRow, validateFilter, validateReason
+} from './costAdjustmentRules';
 
-// Ajustes a Costos y Cantidades (inv_proc_change_cost_qty.sc2) — corrige costo/cantidades
-// de líneas de inv_kardex ya contabilizadas para un Almacén+Producto+rango de fechas.
-// Herramienta de corrección de datos, no genera un movimiento/documento nuevo.
+const toFormValidation = (errors = {}) => Object.fromEntries(Object.entries(errors).map(([field, id]) => [`${field}Valid`, id]));
+
+// Ajuste de costos y cantidades del kardex (SPEC v2-56-sr). Todo lo decide el back; aquí se valida por campo (sin llamar al back si falla),
+// se calculan los valores en pantalla igual que el back, se pide un motivo y se confirma antes de guardar.
 export const useCostAdjustment = ({ setLoading }) => {
   const [listStores, setListStores] = useState([]);
   const [storeId, setStoreId] = useState(0);
-  const [productCode, setProductCode] = useState('');
-  const [productName, setProductName] = useState('');
+  const [product, setProduct] = useState(null); // { code, name }
   const [dateFrom, setDateFrom] = useState(DateHelper.format(new Date()));
   const [dateTo, setDateTo] = useState(DateHelper.format(new Date()));
   const [rows, setRows] = useState([]);
   const [searched, setSearched] = useState(false);
-
-  const [openModalProducts, setOpenModalProducts] = useState(false);
-  const [dataProducts, setDataProducts] = useState([]);
-
-  const [openMsgDelete, setOpenMsgDelete] = useState(false);
-  const [rowToDelete, setRowToDelete] = useState(null);
+  const [queried, setQueried] = useState(null); // filtro de la última consulta: el PUT usa ESTE, no lo que haya cambiado después
+  const [reason, setReason] = useState('');
+  const [sendFilter, setSendFilter] = useState(false);
+  const [sendSave, setSendSave] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [result, setResult] = useState(null);
+  const { options, onInputChange: onProductSearch } = useProductOptions();
 
   useEffect(() => {
     request.GET('inventory/settings/stores?type=1', (resp) => {
@@ -29,128 +34,88 @@ export const useCostAdjustment = ({ setLoading }) => {
     }, () => { });
   }, []);
 
+  const filter = { storeId, productCode: product?.code || '', dateFrom, dateTo };
+  const filterErrors = useMemo(() => validateFilter({ storeId, productCode: product?.code || '', dateFrom, dateTo }), [storeId, product, dateFrom, dateTo]);
+  const filterValidation = toFormValidation(filterErrors);
+  const { edited, errors: rowErrors } = useMemo(() => collectEdits(rows), [rows]);
+  const reasonError = validateReason(reason);
+  const productOptions = useMemo(
+    () => withSelectedOption(options, product?.code, product ? [{ value: product.code, label: `${product.code} - ${product.name}` }] : []),
+    [options, product]
+  );
+
+  const clearResults = () => { setRows([]); setSearched(false); setQueried(null); setResult(null); setSendSave(false); };
+
   const fnStoreChange = (e) => {
     setStoreId(e.target.value);
-    setProductCode('');
-    setProductName('');
-    setRows([]);
-    setSearched(false);
+    setSendFilter(false);
+    clearResults();
   }
 
-  const fnViewProducts = () => {
-    if (validInt(storeId) === 0) {
-      createNotification('warning', 'msg.required.select.warehouse', 'alert.warning.title');
-      return;
-    }
-    setLoading(true);
-    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId }), (resp) => {
-      const data = resp.data.map((item) => ({
-        ...item,
-        code: item.productCode,
-        name: item.productName,
-        presentation: item.undinName,
-        inputUnit: item.undinName
-      }));
-      setDataProducts(data);
-      setOpenModalProducts(true);
-      setLoading(false);
-    }, () => setLoading(false));
-  }
-
-  const fnSelectProduct = (item) => {
-    setProductCode(item.productCode);
-    setProductName(item.name);
-    setOpenModalProducts(false);
-    setRows([]);
-    setSearched(false);
+  // Elegir un producto del Catálogo (código y nombre; ya no se usa getStocks).
+  const fnProductChange = (e) => {
+    const code = e.target.value;
+    const option = productOptions.find((item) => item.value === code);
+    setProduct(code && code !== '0' ? { code, name: option ? option.label.replace(`${code} - `, '') : '' } : null);
+    setSendFilter(false);
+    clearResults();
   }
 
   const fnSearch = () => {
-    if (validInt(storeId) === 0) {
-      createNotification('warning', 'msg.required.select.warehouse', 'alert.warning.title');
-      return;
-    }
-    if (!productCode) {
-      createNotification('warning', 'msg.required.input.codeProduct', 'alert.warning.title');
-      return;
-    }
-    if (!dateFrom) {
-      createNotification('warning', 'msg.costAdjustment.dateFromRequired', 'alert.warning.title');
-      return;
-    }
-    if (!dateTo) {
-      createNotification('warning', 'msg.costAdjustment.dateToRequired', 'alert.warning.title');
-      return;
-    }
+    setSendFilter(true);
+    if (Object.keys(filterErrors).length > 0) return;
+    const asked = { ...filter };
     setLoading(true);
-    request.GET(buildUrl('inventory/process/costAdjustment/movements', { storeId, productCode, dateFrom, dateTo }), (resp) => {
-      setRows(resp.data.map((item) => ({ ...item, edited: false })));
+    request.GET(buildUrl(MOVEMENTS_PATH, asked), (resp) => {
+      setRows(resp.data.rows.map(toRow));
       setSearched(true);
+      setQueried(asked);
+      setResult(null);
+      setReason('');
+      setSendSave(false);
       setLoading(false);
-    }, () => setLoading(false));
+    }, (err) => {
+      notifyError(err, 'page.costAdjustment.msg.searchError'); // más de 500 líneas, rango, etc.: el mensaje real del back
+      setLoading(false);
+    });
   }
 
   const fnRowChange = (id, field, value) => {
-    setRows((prev) => prev.map((row) => {
-      if (row.id !== id) return row;
-      const updated = { ...row, [field]: value, edited: true };
-      updated.debitValue = validFloat(updated.costValue) * validFloat(updated.debitQty);
-      updated.creditValue = validFloat(updated.costValue) * validFloat(updated.creditQty);
-      return updated;
-    }));
+    setRows((prev) => prev.map((row) => (row.id === id ? changeRow(row, field, value) : row)));
   }
 
-  const fnSave = () => {
-    const edited = rows.filter((row) => row.edited);
+  // "Guardar": valida las filas editadas y el motivo (sin llamar al back si falla) y pide confirmación.
+  const fnAskSave = () => {
+    setSendSave(true);
     if (edited.length === 0) {
       createNotification('warning', 'msg.costAdjustment.noChanges', 'alert.warning.title');
       return;
     }
-    setLoading(true);
-    request.PUT('inventory/process/costAdjustment', { rows: edited }, () => {
-      setRows((prev) => prev.map((row) => ({ ...row, edited: false })));
-      createNotification('success', 'msg.costAdjustment.saveSuccess', 'alert.success.title');
-      setLoading(false);
-    }, () => setLoading(false));
+    if (Object.keys(rowErrors).length > 0 || reasonError) return;
+    setOpenConfirm(true);
   }
 
-  const fnAskDelete = (row) => {
-    setRowToDelete(row);
-    setOpenMsgDelete(true);
-  }
-
-  const fnOkDelete = () => {
-    setOpenMsgDelete(false);
+  // Confirmado ("Sí"): un solo PUT con el filtro consultado, el motivo y las filas editadas. Al terminar se recarga la consulta y se
+  // muestra la existencia nueva. Un rechazo (período cerrado, sin permiso, línea no editable) muestra su mensaje real y conserva lo digitado.
+  const fnConfirmSave = () => {
+    setOpenConfirm(false);
     setLoading(true);
-    request.DELETE(`inventory/process/costAdjustment/${rowToDelete.id}`, () => {
-      setRows((prev) => prev.filter((row) => row.id !== rowToDelete.id));
+    request.PUT(ADJUST_PATH, buildPayload(queried, reason, edited), (resp) => {
+      setResult(summarizeResult(resp.data));
+      setReason('');
+      setSendSave(false);
+      request.GET(buildUrl(MOVEMENTS_PATH, queried), (again) => {
+        setRows(again.data.rows.map(toRow));
+        setLoading(false);
+      }, () => setLoading(false));
+    }, () => {
       setLoading(false);
-    }, () => setLoading(false));
+    });
   }
 
   return {
-    listStores,
-    storeId,
-    fnStoreChange,
-    productCode,
-    productName,
-    dateFrom,
-    setDateFrom,
-    dateTo,
-    setDateTo,
-    rows,
-    searched,
-    openModalProducts,
-    setOpenModalProducts,
-    dataProducts,
-    fnViewProducts,
-    fnSelectProduct,
-    fnSearch,
-    fnRowChange,
-    fnSave,
-    openMsgDelete,
-    setOpenMsgDelete,
-    fnAskDelete,
-    fnOkDelete
+    listStores, storeId, fnStoreChange, product, productOptions, onProductSearch, fnProductChange, dateFrom, setDateFrom, dateTo, setDateTo,
+    filterValidation, sendFilter, rows, searched, fnSearch, fnRowChange, edited, rowErrors, reason, setReason, reasonError, sendSave,
+    fnAskSave, openConfirm, setOpenConfirm, fnConfirmSave, result
   }
 }
