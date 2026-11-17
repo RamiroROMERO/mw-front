@@ -1,75 +1,51 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { request } from '@Helpers/core';
-import { useForm } from '@Hooks'
-import { useEffect, useState } from 'react';
+import { useForm } from '@Hooks';
+import useProductOptions from '../../settings/productsCatalog/useProductOptions';
+import { useInventoryReportData } from './useInventoryReportData';
+import { buildColumns } from './reportTable';
 
+const DETAIL = 1; // La pantalla principal muestra el detallado por centro de destino; los demás están en "Otros reportes".
+
+// Reporte de inventario (SPEC v2-60-sr): detallado por centro de destino con sus filtros, Excel e Imprimir. Almacenes origen = tipo 1; centros de destino = tipo 2.
 export const useInventoryReport = ({ setLoading }) => {
+  const intl = useIntl();
   const [listStores, setListStores] = useState([]);
-  const [listProducts, setListProducts] = useState([]);
-  const [dataInventory, setDataInventory] = useState([]);
+  const [listDestinations, setListDestinations] = useState([]);
   const [openModalOtherReport, setOpenModalOtherReport] = useState(false);
+  const { options: listProducts, onInputChange: onProductSearch } = useProductOptions();
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
-    storeId: 0,
-    destinyId: 0,
-    productId: 0,
-    dateStart: '',
-    dateEnd: ''
-  });
+  const { formState, onInputChange } = useForm({ storeId: 0, destinationId: 0, productCode: 0, dateStart: '', dateEnd: '' });
+  const { report, errors, sendForm, downloading, fnSearch, fnDownload } = useInventoryReportData({ setLoading });
 
-  const fnSearchReport = () => { }
-
-  const fnExportToExcel = () => { }
-
-  const fnPrintReport = () => { }
-
-  const fnOtherReport = () => {
-    setOpenModalOtherReport(true);
-  }
+  const table = useMemo(() => ({
+    title: '',
+    columns: buildColumns(DETAIL, intl.formatMessage),
+    data: report.rows,
+    actions: [
+      { color: 'secondary', icon: 'file-earmark-excel', onClick: () => fnDownload(DETAIL, formState, 'xlsx'), title: 'Exportar', isFreeAction: true },
+      { color: 'info', icon: 'printer', onClick: () => fnDownload(DETAIL, formState, 'pdf'), title: 'Imprimir', isFreeAction: true }
+    ]
+  }), [report.rows, formState, downloading, intl.locale]);
 
   useEffect(() => {
-    setLoading(true);
-    request.GET('inventory/settings/stores?type=1', (resp) => {
-      const stores = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id
-        }
-      });
-      setListStores(stores);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-
-    request.GET(`inventory/process/stocks/getStocks`, (resp) => {
-      const data = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id
-        }
-      });
-      setListProducts(data);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
+    request.GET('inventory/settings/stores?type=1', (resp) => setListStores(resp.data.map((item) => ({ label: item.name, value: item.id }))));
+    request.GET('inventory/settings/stores?type=2', (resp) => setListDestinations(resp.data.map((item) => ({ label: item.name, value: item.id }))));
   }, []);
 
-  return (
-    {
-      formState,
-      onInputChange,
-      listStores,
-      listProducts,
-      dataInventory,
-      fnSearchReport,
-      fnExportToExcel,
-      fnPrintReport,
-      fnOtherReport,
-      openModalOtherReport,
-      setOpenModalOtherReport
-    }
-  )
-}
+  const propsToHeaderReport = {
+    ...formState,
+    listStores,
+    listDestinations,
+    listProducts,
+    errors,
+    sendForm,
+    onInputChange,
+    onProductSearch,
+    fnSearchReport: () => fnSearch(DETAIL, formState),
+    fnOtherReport: () => setOpenModalOtherReport(true)
+  };
+
+  return { table, propsToHeaderReport, listStores, listDestinations, listProducts, onProductSearch, openModalOtherReport, setOpenModalOtherReport };
+};

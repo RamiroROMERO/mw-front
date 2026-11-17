@@ -1,40 +1,22 @@
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import Modal from "@Components/modal";
+import ReactTable from '@Components/reactTable'
 import HeaderReport from './HeaderReport';
-import TableReport from './TableReport';
 import ModalOtherReports from './ModalOtherReports';
 import { useInventoryReport } from './useInventoryReport';
 
 const InventoryReport = ({ setLoading }) => {
 
-  const { formState, onInputChange, listStores, listProducts, dataInventory, fnSearchReport, fnExportToExcel, fnPrintReport, fnOtherReport, openModalOtherReport, setOpenModalOtherReport } = useInventoryReport({ setLoading });
-
-  const propsToHeaderReport = {
-    ...formState,
-    onInputChange,
-    listProducts,
-    listStores,
-    fnSearchReport,
-    fnExportToExcel,
-    fnPrintReport,
-    fnOtherReport
-  }
-
-  const propsToTable = {
-    dataInventory
-  }
+  const { table, propsToHeaderReport, listStores, listDestinations, listProducts, onProductSearch, openModalOtherReport, setOpenModalOtherReport } = useInventoryReport({ setLoading });
 
   const propsToModalOtherReports = {
     ModalContent: ModalOtherReports,
     title: "page.inventoryReport.modal.otherReports.title",
     open: openModalOtherReport,
     setOpen: setOpenModalOtherReport,
-    maxWidth: 'md',
-    data: {
-      listStores,
-      listProducts
-    }
+    maxWidth: 'xl',
+    data: { listStores, listDestinations, listProducts, onProductSearch, setLoading }
   }
 
   return (
@@ -48,7 +30,11 @@ const InventoryReport = ({ setLoading }) => {
           </Card>
         </Colxx>
       </Row>
-      <TableReport {...propsToTable} />
+      <Row>
+        <Colxx xxs="12" className="mb-3">
+          <ReactTable {...table} />
+        </Colxx>
+      </Row>
       <Modal {...propsToModalOtherReports} />
     </>
   );
