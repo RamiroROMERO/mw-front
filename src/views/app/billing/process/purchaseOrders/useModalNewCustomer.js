@@ -46,13 +46,13 @@ export const useModalNewCustomer = ({ setLoading, setOpen, setCustomer }) => {
     const { customerTypeId, customerCode, customerName, phone, email, address } = formState;
 
     const data = {
-      fechai: currentDate,
+      entryDate: currentDate,
       rtn: customerCode,
       nomcli: customerName,
       tel: phone,
       direcc: address,
-      correoc: email,
-      idTypeCont: customerTypeId
+      purchaseContactEmail: email,
+      customerTypeId
     };
     setLoading(true);
     request.POST('billing/settings/customers', data, resp => {

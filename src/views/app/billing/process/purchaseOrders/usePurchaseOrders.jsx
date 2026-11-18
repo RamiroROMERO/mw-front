@@ -324,8 +324,8 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
   }
 
   const setSelectedCustomer = (customer) => {
-    const { id, nomcli, rtn, tel, correoc, direcc } = customer;
-    onBulkForm({ ...formState, customerId: id, customerCode: rtn, customerName: nomcli, phone: tel, address: direcc, email: correoc })
+    const { id, nomcli, rtn, tel, purchaseContactEmail, direcc } = customer;
+    onBulkForm({ ...formState, customerId: id, customerCode: rtn, customerName: nomcli, phone: tel, address: direcc, email: purchaseContactEmail })
     setOpenSeekCustomer(false);
   }
 

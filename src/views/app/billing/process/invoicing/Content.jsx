@@ -994,7 +994,7 @@ const Invoicing = (props) => {
       return;
     }
     request.GET(`billing/settings/customers/${customerId}`, (resp) => {
-      setCreditLimit(validFloat(resp.data.limcred));
+      setCreditLimit(validFloat(resp.data.creditLimit));
     }, (err) => {
 
     });

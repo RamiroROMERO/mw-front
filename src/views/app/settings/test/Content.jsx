@@ -66,7 +66,7 @@ const Content = (props) => {
         elem.typeCustomer = item.customerTypeData ? item.customerTypeData.name : ""
         elem.dni = item.rtn
         elem.name = item.nomcli
-        elem.dateAdmission = item.fechai
+        elem.dateAdmission = item.entryDate
         elem.phone = item.tel
         return elem;
       });

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Row, Card, CardBody, FormGroup, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
-import { IntlMessages, validInt } from "@Helpers/Utils";
+import { IntlMessages } from "@Helpers/Utils";
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { SimpleSelect } from '@Components/simpleSelect';
 import { RadioGroup } from '@Components/radioGroup';
@@ -23,7 +23,6 @@ const Customers = (props) => {
   const [activeTab, setActiveTab] = useState('1');
 
   const { formState,
-    formValidation,
     setOpenModalViewCust,
     listLedgerAccounts,
     listTypeCustomers,
@@ -32,17 +31,12 @@ const Customers = (props) => {
     propsToControlPanel,
     openModalViewCust,
     isFarmControl,
-    isHospital, fnDelete, fnViewCustomer, onInputChange, listDepartments, listMunicipalities, onDeptoChange } = useCustomers({ setLoading });
+    isHospital, fnViewCustomer, fnLookupRtn, onInputChange, listDepartments, listMunicipalities, onDeptoChange, onTypeChange, errors, propsToMsgDelete, listSellers } = useCustomers({ setLoading });
 
-  const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
-
-  const { id, idTypeCont, tipocli, rtn, nomcli, fechai, tel, email, direcc, solcredi, diascre, limcred, payter, isInter, isPartner,
-    pagaiva, defaPos, nombrec, cargoc, telec, celuc, correoc, nombrep, cargop, telep, celup, correop, numccxc, numcdes, numcimp,
-    numcfle, numcbon, persem, permen, perqui, pertri, status, productor, prod_cert, exoneratedNumber, defaHosp, type, billOuts, deptoCode, municCode } = formState;
-
-  const { idTypeContValid, rtnValid, nomcliValid, fechaiValid, solcrediValid, numccxcValid, numcdesValid, numcimpValid, deptoCodeContValid, municCodeContValid } = formValidation;
-
-  const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDelete, title: "alert.question.title" }
+  const { rtn, nomcli, entryDate, tel, phone2, direcc, customerTypeId, locationType, sellerId, creditRequest, creditDays, creditLimit, paymentTerms, globalDiscount, memberLimit, isInternational,
+    isPartner, paysTax, isDefaultPos, purchaseContactName, purchaseContactPosition, purchaseContactPhone, purchaseContactMobile, purchaseContactEmail, paymentContactName,
+    paymentContactPosition, paymentContactPhone, paymentContactMobile, paymentContactEmail, receivableCtaCode, discountCtaCode, taxCtaCode, freightCtaCode, bonusCtaCode, weeklyPeriod,
+    monthlyPeriod, biweeklyPeriod, quarterlyPeriod, status, isProducer, isCertifiedProducer, exonerationNumber, isDefaultInsurer, kind, isOutsourcingBill, deptoCode, municCode } = formState;
 
   const propsToModalViewCust = {
     ModalContent: ModalViewCust,
@@ -107,12 +101,12 @@ const Customers = (props) => {
                         <Colxx xxs="12" sm="6" lg="12">
                           <SimpleSelect
                             label="page.customers.modal.modalNew.select.typeCustomer"
-                            name="idTypeCont"
-                            value={idTypeCont}
-                            onChange={onInputChange}
+                            name="customerTypeId"
+                            value={customerTypeId}
+                            onChange={onTypeChange}
                             options={listTypeCustomers}
-                            invalid={sendForm && !!idTypeContValid}
-                            feedbackText={sendForm && (idTypeContValid || null)}
+                            invalid={sendForm && !!errors.customerTypeId}
+                            feedbackText={sendForm && (errors.customerTypeId || null)}
                           />
                         </Colxx>
                         <Colxx xxs="12" sm="6" lg="12">
@@ -120,10 +114,12 @@ const Customers = (props) => {
                             value={rtn}
                             name="rtn"
                             onChange={onInputChange}
+                            onBlur={fnLookupRtn}
+                            maxLength={20}
                             type="text"
                             label="page.customers.modal.modalNew.input.dni"
-                            invalid={sendForm && !!rtnValid}
-                            feedbackText={sendForm && (rtnValid || null)}
+                            invalid={sendForm && !!errors.rtn}
+                            feedbackText={sendForm && (errors.rtn || null)}
                           />
                         </Colxx>
                       </Row>
@@ -134,19 +130,21 @@ const Customers = (props) => {
                             name="nomcli"
                             onChange={onInputChange}
                             type="text"
+                            maxLength={120}
                             label="page.customers.modal.modalNew.input.name"
-                            invalid={sendForm && !!nomcliValid}
-                            feedbackText={sendForm && (nomcliValid || null)}
+                            invalid={sendForm && !!errors.nomcli}
+                            feedbackText={sendForm && (errors.nomcli || null)}
                           />
                         </Colxx>
                         <Colxx xxs="12" sm="6" lg="12">
                           <DateCalendar
-                            value={fechai}
+                            value={entryDate}
                             label="page.customers.modal.modalNew.input.dateAdmission"
-                            name="fechai"
+                            name="entryDate"
+                            maxDate={new Date()}
                             onChange={onInputChange}
-                            invalid={sendForm && !!fechaiValid}
-                            feedbackText={sendForm && (fechaiValid || null)}
+                            invalid={sendForm && !!errors.entryDate}
+                            feedbackText={sendForm && (errors.entryDate || null)}
                           />
                         </Colxx>
                       </Row>
@@ -157,16 +155,18 @@ const Customers = (props) => {
                             name="tel"
                             onChange={onInputChange}
                             type="text"
+                            maxLength={60}
                             label="page.customers.modal.modalNew.input.phone"
                           />
                         </Colxx>
                         <Colxx xxs="12" sm="6" lg="12">
                           <InputField
-                            value={email}
-                            name="email"
+                            value={phone2}
+                            name="phone2"
                             onChange={onInputChange}
-                            type="email"
-                            label="page.customers.modal.modalNew.input.email"
+                            type="text"
+                            maxLength={45}
+                            label="page.customers.modal.modalNew.input.phone2"
                           />
                         </Colxx>
                       </Row>
@@ -181,8 +181,8 @@ const Customers = (props) => {
                                   value={deptoCode}
                                   onChange={onDeptoChange}
                                   options={listDepartments}
-                                  invalid={sendForm && !!deptoCodeContValid}
-                                  feedbackText={sendForm && (deptoCodeContValid || null)}
+                                  invalid={sendForm && !!errors.deptoCode}
+                                  feedbackText={sendForm && (errors.deptoCode || null)}
                                 />
                               </Colxx>
                               <Colxx xxs="12" md={6} lg={12}>
@@ -192,8 +192,8 @@ const Customers = (props) => {
                                   value={municCode}
                                   onChange={onInputChange}
                                   options={listMunicipalities}
-                                  invalid={sendForm && !!municCodeContValid}
-                                  feedbackText={sendForm && (municCodeContValid || null)}
+                                  invalid={sendForm && !!errors.municCode}
+                                  feedbackText={sendForm && (errors.municCode || null)}
                                 />
                               </Colxx>
                             </Row>
@@ -215,8 +215,8 @@ const Customers = (props) => {
                         <Colxx xxs="12">
                           <RadioGroup
                             label="page.customers.modal.modalNew.label.typeCustomer"
-                            name="tipocli"
-                            value={tipocli}
+                            name="locationType"
+                            value={locationType}
                             onChange={onInputChange}
                             options={[
                               { id: 1, label: 'page.customers.modal.modalNew.radio.custLocal' },
@@ -230,10 +230,33 @@ const Customers = (props) => {
                       <Row>
                         <Colxx xxs="12">
                           <InputField
-                            value={exoneratedNumber}
-                            name="exoneratedNumber"
+                            value={exonerationNumber}
+                            name="exonerationNumber"
                             onChange={onInputChange}
+                            maxLength={50}
                             label="page.customers.modal.modalNew.input.exoneratedNumber"
+                          />
+                        </Colxx>
+                      </Row>
+                      <Row>
+                        <Colxx xxs="12" sm="6" lg="12">
+                          <SimpleSelect
+                            label="table.column.seller"
+                            name="sellerId"
+                            value={sellerId}
+                            onChange={onInputChange}
+                            options={listSellers}
+                          />
+                        </Colxx>
+                        <Colxx xxs="12" sm="6" lg="12">
+                          <InputField
+                            value={globalDiscount}
+                            name="globalDiscount"
+                            onChange={onInputChange}
+                            type="number"
+                            label="page.customers.modal.modalNew.input.globalDiscount"
+                            invalid={sendForm && !!errors.globalDiscount}
+                            feedbackText={sendForm && (errors.globalDiscount || null)}
                           />
                         </Colxx>
                       </Row>
@@ -244,34 +267,38 @@ const Customers = (props) => {
                           <Colxx xxs="12" sm="5">
                             <RadioGroup
                               label="page.customers.modal.modalNew.input.creditRequest"
-                              name="solcredi"
-                              value={solcredi}
+                              name="creditRequest"
+                              value={creditRequest}
                               onChange={onInputChange}
                               options={[
                                 { id: 1, label: 'page.customers.modal.modalNew.input.creditRequest.yes' },
                                 { id: 2, label: 'page.customers.modal.modalNew.input.creditRequest.no' }
                               ]}
                               display='flex'
-                              invalid={sendForm && !!solcrediValid}
-                              feedbackText={sendForm && (solcrediValid || null)}
+                              invalid={sendForm && !!errors.creditRequest}
+                              feedbackText={sendForm && (errors.creditRequest || null)}
                             />
                           </Colxx>
                           <Colxx xxs="6" sm="3">
                             <InputField
-                              value={diascre}
-                              name="diascre"
+                              value={creditDays}
+                              name="creditDays"
                               onChange={onInputChange}
                               type="number"
                               label="page.customers.modal.modalNew.input.creditDays"
+                              invalid={sendForm && !!errors.creditDays}
+                              feedbackText={sendForm && (errors.creditDays || null)}
                             />
                           </Colxx>
                           <Colxx xxs="6" sm="4">
                             <InputField
-                              value={limcred}
-                              name="limcred"
+                              value={creditLimit}
+                              name="creditLimit"
                               onChange={onInputChange}
                               type="number"
                               label="page.customers.modal.modalNew.input.creditLimit"
+                              invalid={sendForm && !!errors.creditLimit}
+                              feedbackText={sendForm && (errors.creditLimit || null)}
                             />
                           </Colxx>
                           <Colxx xxs="12">
@@ -280,32 +307,32 @@ const Customers = (props) => {
                                 <Colxx xxs="6" sm="3">
                                   <Checkbox
                                     onChange={onInputChange}
-                                    name="persem"
-                                    value={persem}
+                                    name="weeklyPeriod"
+                                    value={weeklyPeriod}
                                     label="page.customers.modal.modalNew.check.weekly"
                                   />
                                 </Colxx>
                                 <Colxx xxs="6" sm="3">
                                   <Checkbox
                                     onChange={onInputChange}
-                                    name="permen"
-                                    value={permen}
+                                    name="monthlyPeriod"
+                                    value={monthlyPeriod}
                                     label="page.customers.modal.modalNew.check.monthly"
                                   />
                                 </Colxx>
                                 <Colxx xxs="6" sm="3">
                                   <Checkbox
                                     onChange={onInputChange}
-                                    name="perqui"
-                                    value={perqui}
+                                    name="biweeklyPeriod"
+                                    value={biweeklyPeriod}
                                     label="page.customers.modal.modalNew.check.biweekly"
                                   />
                                 </Colxx>
                                 <Colxx xxs="6" sm="3">
                                   <Checkbox
                                     onChange={onInputChange}
-                                    name="pertri"
-                                    value={pertri}
+                                    name="quarterlyPeriod"
+                                    value={quarterlyPeriod}
                                     label="page.customers.modal.modalNew.check.quarterly"
                                   />
                                 </Colxx>
@@ -316,8 +343,8 @@ const Customers = (props) => {
                         <Row>
                           <Colxx xxs="12">
                             <InputField
-                              value={payter}
-                              name="payter"
+                              value={paymentTerms}
+                              name="paymentTerms"
                               onChange={onInputChange}
                               type="textarea"
                               label="page.customers.modal.modalNew.input.paymentTerms"
@@ -332,8 +359,8 @@ const Customers = (props) => {
                               <Colxx xxs="5">
                                 <Checkbox
                                   onChange={onInputChange}
-                                  name="isInter"
-                                  value={isInter}
+                                  name="isInternational"
+                                  value={isInternational}
                                   label="page.customers.modal.modalNew.check.international"
                                 />
                               </Colxx>
@@ -350,16 +377,16 @@ const Customers = (props) => {
                               <Colxx xxs="5">
                                 <Checkbox
                                   onChange={onInputChange}
-                                  name="pagaiva"
-                                  value={pagaiva}
+                                  name="paysTax"
+                                  value={paysTax}
                                   label="page.customers.modal.modalNew.ckeck.payIVA"
                                 />
                               </Colxx>
                               <Colxx xxs="7">
                                 <Checkbox
                                   onChange={onInputChange}
-                                  name="defaPos"
-                                  value={defaPos}
+                                  name="isDefaultPos"
+                                  value={isDefaultPos}
                                   label="page.customers.modal.modalNew.check.defaultPOS"
                                 />
                               </Colxx>
@@ -369,16 +396,16 @@ const Customers = (props) => {
                                 <Colxx xxs="6">
                                   <Checkbox
                                     onChange={onInputChange}
-                                    name="productor"
-                                    value={productor}
-                                    label="page.customers.modal.modalNew.ckeck.productor"
+                                    name="isProducer"
+                                    value={isProducer}
+                                    label="page.customers.modal.modalNew.ckeck.isProducer"
                                   />
                                 </Colxx>
                                 <Colxx xxs="6">
                                   <Checkbox
                                     onChange={onInputChange}
-                                    name="prod_cert"
-                                    value={prod_cert}
+                                    name="isCertifiedProducer"
+                                    value={isCertifiedProducer}
                                     label="page.customers.modal.modalNew.check.productorCert"
                                   />
                                 </Colxx>
@@ -388,8 +415,8 @@ const Customers = (props) => {
                               <Colxx xxs="5">
                                 <Checkbox
                                   label="page.customers.checkbox.billOuts"
-                                  name="billOuts"
-                                  value={billOuts}
+                                  name="isOutsourcingBill"
+                                  value={isOutsourcingBill}
                                   onChange={onInputChange}
                                 />
                               </Colxx>
@@ -409,8 +436,8 @@ const Customers = (props) => {
                               <Colxx xxs={12} md={6}>
                                 <RadioGroup
                                   label="page.customers.input.patientType"
-                                  value={type}
-                                  name="type"
+                                  value={kind}
+                                  name="kind"
                                   onChange={onInputChange}
                                   options={
                                     [
@@ -421,10 +448,17 @@ const Customers = (props) => {
                                 />
                               </Colxx>
                               <Colxx xxs={12} md={6}>
+                                <InputField
+                                  value={memberLimit}
+                                  name="memberLimit"
+                                  onChange={onInputChange}
+                                  type="number"
+                                  label="page.customers.input.memberLimit"
+                                />
                                 <Checkbox
                                   label="page.customers.checkbox.defaSecurityHosp"
-                                  name="defaHosp"
-                                  value={defaHosp}
+                                  name="isDefaultInsurer"
+                                  value={isDefaultInsurer}
                                   onChange={onInputChange}
                                 />
                               </Colxx>
@@ -442,8 +476,8 @@ const Customers = (props) => {
                         <Row>
                           <Colxx xxs="12" sm="6" lg="12" xxl="6">
                             <InputField
-                              value={nombrec}
-                              name="nombrec"
+                              value={purchaseContactName}
+                              name="purchaseContactName"
                               onChange={onInputChange}
                               type="text"
                               label="page.customers.modal.modalNew.input.nameContact"
@@ -451,8 +485,8 @@ const Customers = (props) => {
                           </Colxx>
                           <Colxx xxs="12" sm="6" lg="12" xxl="6">
                             <InputField
-                              value={cargoc}
-                              name="cargoc"
+                              value={purchaseContactPosition}
+                              name="purchaseContactPosition"
                               onChange={onInputChange}
                               type="text"
                               label="page.customers.modal.modalNew.input.positionContact"
@@ -462,8 +496,8 @@ const Customers = (props) => {
                         <Row>
                           <Colxx xxs="12" sm="6" lg="12" xxl="6">
                             <InputField
-                              value={telec}
-                              name="telec"
+                              value={purchaseContactPhone}
+                              name="purchaseContactPhone"
                               onChange={onInputChange}
                               type="text"
                               label="page.customers.modal.modalNew.input.phoneContact"
@@ -471,8 +505,8 @@ const Customers = (props) => {
                           </Colxx>
                           <Colxx xxs="12" sm="6" lg="12" xxl="6">
                             <InputField
-                              value={celuc}
-                              name="celuc"
+                              value={purchaseContactMobile}
+                              name="purchaseContactMobile"
                               onChange={onInputChange}
                               type="text"
                               label="page.customers.modal.modalNew.input.celphoneContact"
@@ -482,12 +516,14 @@ const Customers = (props) => {
                         <Row>
                           <Colxx xxs="12" sm="6" lg="12" xxl="6">
                             <InputField
-                              value={correoc}
-                              id="correoc"
-                              name="correoc"
+                              value={purchaseContactEmail}
+                              id="purchaseContactEmail"
+                              name="purchaseContactEmail"
                               onChange={onInputChange}
                               type="text"
                               label="page.customers.modal.modalNew.input.emailContact"
+                              invalid={sendForm && !!errors.purchaseContactEmail}
+                              feedbackText={sendForm && (errors.purchaseContactEmail || null)}
                             />
                           </Colxx>
                         </Row>
@@ -498,8 +534,8 @@ const Customers = (props) => {
                         <Row>
                           <Colxx xxs="12" sm="6" lg="12" xxl="6">
                             <InputField
-                              value={nombrep}
-                              name="nombrep"
+                              value={paymentContactName}
+                              name="paymentContactName"
                               onChange={onInputChange}
                               type="text"
                               label="page.customers.modal.modalNew.input.nameContact"
@@ -507,8 +543,8 @@ const Customers = (props) => {
                           </Colxx>
                           <Colxx xxs="12" sm="6" lg="12" xxl="6">
                             <InputField
-                              value={cargop}
-                              name="cargop"
+                              value={paymentContactPosition}
+                              name="paymentContactPosition"
                               onChange={onInputChange}
                               type="text"
                               label="page.customers.modal.modalNew.input.positionContact"
@@ -518,8 +554,8 @@ const Customers = (props) => {
                         <Row>
                           <Colxx xxs="12" sm="6" lg="12" xxl="6">
                             <InputField
-                              value={telep}
-                              name="telep"
+                              value={paymentContactPhone}
+                              name="paymentContactPhone"
                               onChange={onInputChange}
                               type="text"
                               label="page.customers.modal.modalNew.input.phoneContact"
@@ -527,9 +563,9 @@ const Customers = (props) => {
                           </Colxx>
                           <Colxx xxs="12" sm="6" lg="12" xxl="6">
                             <InputField
-                              value={celup}
-                              id="celup"
-                              name="celup"
+                              value={paymentContactMobile}
+                              id="paymentContactMobile"
+                              name="paymentContactMobile"
                               onChange={onInputChange}
                               type="text"
                               label="page.customers.modal.modalNew.input.celphoneContact"
@@ -539,11 +575,13 @@ const Customers = (props) => {
                         <Row>
                           <Colxx xxs="12" sm="6" lg="12" xxl="6">
                             <InputField
-                              value={correop}
-                              name="correop"
+                              value={paymentContactEmail}
+                              name="paymentContactEmail"
                               onChange={onInputChange}
                               type="text"
                               label="page.customers.modal.modalNew.input.emailContact"
+                              invalid={sendForm && !!errors.paymentContactEmail}
+                              feedbackText={sendForm && (errors.paymentContactEmail || null)}
                             />
                           </Colxx>
                         </Row>
@@ -555,41 +593,41 @@ const Customers = (props) => {
                   <Row>
                     <Colxx xxs="12" sm="6" lg="4" xxl="3">
                       <SearchSelect
-                        name="numccxc"
-                        inputValue={numccxc}
+                        name="receivableCtaCode"
+                        inputValue={receivableCtaCode}
                         onChange={onInputChange}
                         options={listLedgerAccounts}
                         label="page.customers.modal.modalNew.check.receivable"
-                        invalid={sendForm && !!numccxcValid}
-                        feedbackText={sendForm && (numccxcValid || null)}
+                        invalid={sendForm && !!errors.receivableCtaCode}
+                        feedbackText={sendForm && (errors.receivableCtaCode || null)}
                       />
                     </Colxx>
                     <Colxx xxs="12" sm="6" lg="4" xxl="3">
                       <SearchSelect
-                        name="numcdes"
-                        inputValue={numcdes}
+                        name="discountCtaCode"
+                        inputValue={discountCtaCode}
                         onChange={onInputChange}
                         options={listLedgerAccounts}
                         label="page.customers.modal.modalNew.check.discountAccount"
-                        invalid={sendForm && !!numcdesValid}
-                        feedbackText={sendForm && (numcdesValid || null)}
+                        invalid={sendForm && !!errors.discountCtaCode}
+                        feedbackText={sendForm && (errors.discountCtaCode || null)}
                       />
                     </Colxx>
                     <Colxx xxs="12" sm="6" lg="4" xxl="3">
                       <SearchSelect
-                        name="numcimp"
-                        inputValue={numcimp}
+                        name="taxCtaCode"
+                        inputValue={taxCtaCode}
                         onChange={onInputChange}
                         options={listLedgerAccounts}
                         label="page.customers.modal.modalNew.check.taxAccount"
-                        invalid={sendForm && !!numcimpValid}
-                        feedbackText={sendForm && (numcimpValid || null)}
+                        invalid={sendForm && !!errors.taxCtaCode}
+                        feedbackText={sendForm && (errors.taxCtaCode || null)}
                       />
                     </Colxx>
                     <Colxx xxs="12" sm="6" lg="4" xxl="3">
                       <SearchSelect
-                        name="numcfle"
-                        inputValue={numcfle}
+                        name="freightCtaCode"
+                        inputValue={freightCtaCode}
                         onChange={onInputChange}
                         options={listLedgerAccounts}
                         label="page.customers.modal.modalNew.check.freightAccount"
@@ -597,8 +635,8 @@ const Customers = (props) => {
                     </Colxx>
                     <Colxx xxs="12" sm="6" lg="4" xxl="3">
                       <SearchSelect
-                        name="numcbon"
-                        inputValue={numcbon}
+                        name="bonusCtaCode"
+                        inputValue={bonusCtaCode}
                         onChange={onInputChange}
                         options={listLedgerAccounts}
                         label="page.customers.modal.modalNew.check.bonusAccount"

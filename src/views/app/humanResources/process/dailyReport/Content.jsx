@@ -211,7 +211,7 @@ const DailyReport = ({ setLoading }) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('billing/settings/customers?status=1&outsourcingBill=1', (resp) => {
+    request.GET('billing/settings/customers?status=1&isOutsourcingBill=1', (resp) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,
