@@ -12,6 +12,7 @@ import DateHelper from '@Helpers/DateHelper';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import Modal from "@Components/modal";
 import ModalProducts from './ModalProducts';
+import ModalGlobalDiscount from './ModalGlobalDiscount';
 import ModalInvoices from './ModalViewInvoi';
 import ModalChangePrice from './ModalChangePrice';
 import ModalPrintInvoice from './ModalPrintInvoice';
@@ -47,6 +48,7 @@ const Invoicing = (props) => {
   const [invoiceDetail, setInvoiceDetail] = useState([]);
   const [dataInvoicing, setDataInvoicing] = useState([]);
   const [openModalProducts, setOpenModalProducts] = useState(false);
+  const [openModalGlobalDiscount, setOpenModalGlobalDiscount] = useState(false);
   const [openModalInvoices, setOpenModalInvoices] = useState(false);
   const [openModalPrice, setOpenModalPrice] = useState(false);
   const [openModalPrint, setOpenModalPrint] = useState(false);
@@ -482,6 +484,21 @@ const Invoicing = (props) => {
     setPendingLoad(null);
   }
 
+  // Descuento global (SPEC v2-71-sr): solo en una factura sin guardar y con líneas; reemplaza el descuento de cada línea y recalcula los totales.
+  const fnGlobalDiscount = () => {
+    if (isInvoiceSaved) return;
+    if (invoiceDetail.length === 0) {
+      notification('warning', 'msg.required.select.product', 'alert.warning.title');
+      return;
+    }
+    setOpenModalGlobalDiscount(true);
+  }
+
+  const fnApplyGlobalDiscount = (newLines) => {
+    setInvoiceDetail(newLines);
+    setBulkFormIndex(totalsFromLines(newLines, documentExo === true || documentExo === 1));
+  }
+
   const fnSearchQuotationToLoad = () => {
     if (id > 0) {
       return;
@@ -872,6 +889,11 @@ const Invoicing = (props) => {
         onClick: fnSearchQuotationToLoad
       },
       {
+        title: "button.globalDiscount",
+        icon: "bi bi-percent",
+        onClick: fnGlobalDiscount
+      },
+      {
         title: "button.invoice",
         icon: "bi bi-receipt",
         onClick: fnInvoice
@@ -910,6 +932,18 @@ const Invoicing = (props) => {
       }
     ],
     buttonsAdmin: []
+  }
+
+  const propsToModalGlobalDiscount = {
+    ModalContent: ModalGlobalDiscount,
+    title: "page.invoicing.modal.globalDiscount.title",
+    open: openModalGlobalDiscount,
+    setOpen: setOpenModalGlobalDiscount,
+    maxWidth: 'sm',
+    data: {
+      lines: invoiceDetail,
+      fnApply: fnApplyGlobalDiscount
+    }
   }
 
   const propsToModalProducts = {
@@ -1215,6 +1249,7 @@ const Invoicing = (props) => {
       <Modal {...propsToModalPrint} />
       <Modal {...propsToModalGenerate} />
       <Modal {...propsToModalSeekQuotes} />
+      <Modal {...propsToModalGlobalDiscount} />
       <Modal {...propsToModalDeliveryDoc} />
       <Modal {...propsToModalVoidInvoice} />
       <Modal {...propsToModalCreditStatus} />

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import {
-  buildInvoicePayload, hasStockProblem, headerFromDocument, lineFromDocument, lineFromProduct, needsLotOrDate, priceByType, totalsFromLines, validateInvoice, validateLine, warningTexts
+  applyGlobalDiscount, buildInvoicePayload, GLOBAL_DISCOUNT_PERCENT, GLOBAL_DISCOUNT_VALUE, globalDiscountPercent, hasStockProblem, headerFromDocument, lineFromDocument, lineFromProduct, needsLotOrDate, priceByType, totalsFromLines, validateGlobalDiscount, validateInvoice, validateLine, warningTexts
 } from './invoicingRules';
 
 // SPEC v2-71-sr: captura de líneas y carga de una cotización u orden de compra de clientes.
@@ -147,5 +147,48 @@ describe('exoneración en la factura', () => {
     expect(validateInvoice({ ...FORM, documentExo: true, exonerationOrderNumber: 'EX-1' }, [LINE], { now: NOW })).toEqual({});
     expect(buildInvoicePayload({ ...FORM, documentExo: true, exonerationOrderNumber: ' EX-1 ' }, [LINE])).toMatchObject({ isExonerated: 1, exonerationOrderNumber: 'EX-1' });
     expect(buildInvoicePayload({ ...FORM, documentExo: false, exonerationOrderNumber: 'EX-1' }, [LINE])).toMatchObject({ isExonerated: 0, exonerationOrderNumber: '' });
+  });
+});
+
+describe('descuento global', () => {
+  const lines = [
+    { subtotal: 200, taxPercent: 15, discountPercent: 5, discountValue: 10, taxValue: 28.5, total: 218.5 },
+    { subtotal: 100, taxPercent: 0, discountPercent: 0, discountValue: 0, taxValue: 0, total: 100 }
+  ];
+
+  test('por porcentaje se aplica igual a todas las líneas y reemplaza el descuento anterior', () => {
+    const out = applyGlobalDiscount(lines, 10);
+    expect(out[0]).toMatchObject({ discountPercent: 10, discountValue: 20, taxValue: 27, subtotTaxValue: 180, subTotExeValue: 0, total: 207 });
+    expect(out[1]).toMatchObject({ discountPercent: 10, discountValue: 10, taxValue: 0, subtotTaxValue: 0, subTotExeValue: 90, total: 90 });
+  });
+
+  test('por valor el porcentaje es valor / subtotal y el descuento total queda en el valor', () => {
+    const percent = globalDiscountPercent({ type: GLOBAL_DISCOUNT_VALUE, value: 30 }, lines);
+    expect(percent).toBe(10);
+    const out = applyGlobalDiscount(lines, globalDiscountPercent({ type: GLOBAL_DISCOUNT_VALUE, value: 50 }, lines));
+    expect(totalsFromLines(out).discountValue).toBe(50);
+  });
+
+  test('un valor con porcentaje periódico igual suma el valor al centavo', () => {
+    const three = [100, 100, 100].map((subtotal) => ({ subtotal, taxPercent: 15, discountValue: 0, taxValue: 15, total: 115 }));
+    const out = applyGlobalDiscount(three, globalDiscountPercent({ type: GLOBAL_DISCOUNT_VALUE, value: 100 }, three));
+    expect(totalsFromLines(out).discountValue).toBe(100);
+  });
+
+  test('el porcentaje por tipo Porcentaje es el digitado', () => {
+    expect(globalDiscountPercent({ type: GLOBAL_DISCOUNT_PERCENT, value: '12.5' }, lines)).toBe(12.5);
+  });
+
+  test.each([
+    [{ type: 1, value: 0 }, 'page.invoicing.error.globalDiscount.value'],
+    [{ type: 1, value: 101 }, 'page.invoicing.error.globalDiscount.percent'],
+    [{ type: 2, value: 301 }, 'page.invoicing.error.globalDiscount.exceeds'],
+    [{ type: 3, value: 5 }, 'page.invoicing.error.globalDiscount.type']
+  ])('rechaza %j', (input, id) => expect(validateGlobalDiscount(input, lines)).toBe(id));
+
+  test('sin líneas se rechaza y un descuento válido no tiene error', () => {
+    expect(validateGlobalDiscount({ type: 1, value: 5 }, [])).toBe('msg.required.select.product');
+    expect(validateGlobalDiscount({ type: 1, value: 100 }, lines)).toBeNull();
+    expect(validateGlobalDiscount({ type: 2, value: 300 }, lines)).toBeNull();
   });
 });

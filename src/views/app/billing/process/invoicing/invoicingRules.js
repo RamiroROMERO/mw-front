@@ -278,3 +278,44 @@ export const totalsFromLines = (lines = [], isExonerated = false) => {
     total: cents(isExonerated ? total - taxes : total)
   };
 };
+
+/**
+ * Descuento global (SPEC v2-71-sr; "Descuento Global" del POS del legacy): un porcentaje o un valor que se reparte sobre todas las líneas. Por valor el porcentaje
+ * es valor / subtotal de las líneas (a 5 decimales), así el descuento total queda en el valor digitado (el legacy lo dividía entre el total con impuesto y quedaba
+ * corto). Reemplaza los descuentos que ya tengan las líneas; el servidor vuelve a calcular y validar todo al guardar.
+ */
+export const GLOBAL_DISCOUNT_PERCENT = 1;
+export const GLOBAL_DISCOUNT_VALUE = 2;
+
+export const validateGlobalDiscount = ({ type, value }, lines = []) => {
+  const amount = num(value);
+  if (lines.length === 0) return 'msg.required.select.product';
+  if (!(amount > 0)) return 'page.invoicing.error.globalDiscount.value';
+  if (type === GLOBAL_DISCOUNT_PERCENT) return amount > 100 ? 'page.invoicing.error.globalDiscount.percent' : null;
+  if (type !== GLOBAL_DISCOUNT_VALUE) return 'page.invoicing.error.globalDiscount.type';
+  const subtotal = lines.reduce((sum, line) => sum + num(line.subtotal), 0);
+  return amount > subtotal ? 'page.invoicing.error.globalDiscount.exceeds' : null;
+};
+
+export const globalDiscountPercent = ({ type, value }, lines = []) => {
+  if (type === GLOBAL_DISCOUNT_PERCENT) return num(value);
+  const subtotal = lines.reduce((sum, line) => sum + num(line.subtotal), 0);
+  return subtotal > 0 ? Math.min(100, round5((num(value) / subtotal) * 100)) : 0;
+};
+
+export const applyGlobalDiscount = (lines = [], percent = 0) => lines.map((line) => {
+  const subtotal = num(line.subtotal);
+  const discountValue = round5((subtotal * num(percent)) / 100);
+  const base = round5(subtotal - discountValue);
+  const taxValue = round5((base * num(line.taxPercent)) / 100);
+  const taxed = num(line.taxPercent) > 0;
+  return {
+    ...line,
+    discountPercent: num(percent),
+    discountValue,
+    taxValue,
+    subtotTaxValue: taxed ? base : 0,
+    subTotExeValue: taxed ? 0 : base,
+    total: round5(base + taxValue)
+  };
+});
