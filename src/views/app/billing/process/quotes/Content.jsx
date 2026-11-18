@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, CardBody, Nav, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
+import { Alert, Button, Card, CardBody, Nav, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import ControlPanel from '@Components/controlPanel';
@@ -14,14 +14,15 @@ import { useQuotes } from './useQuotes';
 import { SimpleSelect } from '@Components/simpleSelect';
 
 const Content = (props) => {
-  const { setLoading, screenControl = {} } = props;
+  const { setLoading, screenControl = {}, canDelete = false } = props;
   const [activeTab, setActiveTab] = useState('1');
+  // IntlMessages es un hook: se pide siempre arriba, nunca dentro de una condición.
+  const lockedText = IntlMessages('page.quotes.msg.locked');
 
-  const { propsToControlPanel, formState, formValidation, onInputChange, isFormValid, propsToMsgDelete, propsToMsgDeleteItem, columnDetails, dataDetails, fnAddItem, propsToModalSeekCustomers, propsToModalNewCustomer, propsToModalSeekProducts, propsToModalEditCurrentProduct, sellerList, storeList, isDateEditable, sendForm, propsToModalSeekDocuments, propsToModalSendEmail, propsToViewPDF } = useQuotes({ setLoading, setActiveTab, screenControl });
+  const { propsToControlPanel, formState, errors, totals, isLocked, onInputChange, propsToMsgDelete, propsToMsgDeleteItem, columnDetails, dataDetails, fnAddItem, propsToModalSeekCustomers, propsToModalNewCustomer, propsToModalSeekProducts, propsToModalEditCurrentProduct, sellerList, storeList, sendForm, propsToModalSeekDocuments, propsToModalSendEmail } = useQuotes({ setLoading, setActiveTab, screenControl, canDelete });
 
-  const { id, date, customerId, customerCode, customerName, phone, email, address, sellerId, storeId, notes, condDeliveryTime, condPaymentMethod, subtotal, discount, exoneratedValue, exemptValue, taxedValue, tax, total } = formState;
-
-  const { dateValid, sellerIdValid, customerNameValid, phoneValid, totalValid } = formValidation;
+  const { id, date, customerId, customerCode, customerName, customerPhone, customerEmail, customerAddress, sellerId, storeId, notes, deliveryTime, paymentTerms } = formState;
+  const { subtotal, discountValue, exoneratedValue, exemptValue, taxedValue, taxValue, total } = totals;
 
   return (
     <>
@@ -67,6 +68,8 @@ const Content = (props) => {
                   </div>
                   <TabContent activeTab={activeTab}>
                     <TabPane tabId="1">
+                      {isLocked && <Alert color="warning" className="mb-3">{lockedText}</Alert>}
+                      <fieldset disabled={isLocked} className="border-0 p-0 m-0">
                       <Row className='mb-2'>
                         <Colxx xxs={12} md={4} lg={3}>
                           <DateCalendar
@@ -74,9 +77,9 @@ const Content = (props) => {
                             name="date"
                             value={date}
                             onChange={onInputChange}
-                            disabled={!isDateEditable}
-                            invalid={sendForm && !!dateValid}
-                            feedbackText={sendForm && (dateValid || null)}
+                            disabled={isLocked}
+                            invalid={sendForm && !!errors.date}
+                            feedbackText={sendForm && (errors.date || null)}
                           />
                         </Colxx>
                         <Colxx xxs={12} md={4} lg={4}>
@@ -86,8 +89,8 @@ const Content = (props) => {
                             value={sellerId}
                             onChange={onInputChange}
                             options={sellerList}
-                            invalid={sendForm && !!sellerIdValid}
-                            feedbackText={sendForm && (sellerIdValid || null)}
+                            invalid={sendForm && !!errors.sellerId}
+                            feedbackText={sendForm && (errors.sellerId || null)}
                           />
                         </Colxx>
                         <Colxx xxs={12} md={4} lg={5}>
@@ -119,6 +122,8 @@ const Content = (props) => {
                                   name="customerCode"
                                   value={customerCode}
                                   onChange={onInputChange}
+                                  invalid={sendForm && !!errors.customerCode}
+                                  feedbackText={sendForm && (errors.customerCode || null)}
                                 />
                               </Colxx>
                             </Row>
@@ -129,8 +134,8 @@ const Content = (props) => {
                                   name="customerName"
                                   value={customerName}
                                   onChange={onInputChange}
-                                  invalid={sendForm && !!customerNameValid}
-                                  feedbackText={sendForm && (customerNameValid || null)}
+                                  invalid={sendForm && !!errors.customerName}
+                                  feedbackText={sendForm && (errors.customerName || null)}
                                 />
                               </Colxx>
                             </Row>
@@ -138,11 +143,11 @@ const Content = (props) => {
                               <Colxx xxs={12}>
                                 <InputField
                                   label='input.phone'
-                                  name="phone"
-                                  value={phone}
+                                  name="customerPhone"
+                                  value={customerPhone}
                                   onChange={onInputChange}
-                                  invalid={sendForm && !!phoneValid}
-                                  feedbackText={sendForm && (phoneValid || null)}
+                                  invalid={sendForm && !!errors.customerPhone}
+                                  feedbackText={sendForm && (errors.customerPhone || null)}
                                 />
                               </Colxx>
                             </Row>
@@ -150,8 +155,10 @@ const Content = (props) => {
                               <Colxx xxs={12}>
                                 <InputField
                                   label='input.email'
-                                  name="email"
-                                  value={email}
+                                  name="customerEmail"
+                                  value={customerEmail}
+                                  invalid={sendForm && !!errors.customerEmail}
+                                  feedbackText={sendForm && (errors.customerEmail || null)}
                                   onChange={onInputChange}
                                 />
                               </Colxx>
@@ -161,8 +168,8 @@ const Content = (props) => {
                                 <InputField
                                   label='input.address'
                                   type='textarea'
-                                  name="address"
-                                  value={address}
+                                  name="customerAddress"
+                                  value={customerAddress}
                                   onChange={onInputChange}
                                 />
                               </Colxx>
@@ -175,8 +182,8 @@ const Content = (props) => {
                               <Colxx xxs={12}>
                                 <InputField
                                   label='page.quotes.terms.deliveryTimes'
-                                  name="condDeliveryTime"
-                                  value={condDeliveryTime}
+                                  name="deliveryTime"
+                                  value={deliveryTime}
                                   onChange={onInputChange}
                                 />
                               </Colxx>
@@ -185,8 +192,8 @@ const Content = (props) => {
                               <Colxx xxs={12}>
                                 <InputField
                                   label='page.quotes.terms.paymentMethod'
-                                  name="condPaymentMethod"
-                                  value={condPaymentMethod}
+                                  name="paymentTerms"
+                                  value={paymentTerms}
                                   onChange={onInputChange}
                                 />
                               </Colxx>
@@ -205,14 +212,12 @@ const Content = (props) => {
                           </ContainerWithLabel>
                         </Colxx>
                       </Row>
-                      {/* <Row>
-                        
-                      </Row> */}
+                      </fieldset>
                     </TabPane>
                     <TabPane tabId="2">
                       <Row>
                         <Colxx xxs={12} className='text-end'>
-                          <Button onClick={fnAddItem} className='btn btn-success'> <i className='bi bi-plus' /> {IntlMessages('button.add')} </Button>
+                          <Button onClick={fnAddItem} disabled={isLocked} className='btn btn-success'> <i className='bi bi-plus' /> {IntlMessages('button.add')} </Button>
                         </Colxx>
                       </Row>
                       <Row>
@@ -242,8 +247,8 @@ const Content = (props) => {
                       <Colxx xxs={6} md={12}>
                         <InputField
                           label='input.discount'
-                          name="discount"
-                          value={formatNumber(discount, 'Lps. ', 2)}
+                          name="discountValue"
+                          value={formatNumber(discountValue, 'Lps. ', 2)}
                           onChange={onInputChange}
                           disabled
                           className='text-end'
@@ -274,8 +279,8 @@ const Content = (props) => {
                         />
                         <InputField
                           label='input.tax'
-                          name="tax"
-                          value={formatNumber(tax, 'Lps. ', 2)}
+                          name="taxValue"
+                          value={formatNumber(taxValue, 'Lps. ', 2)}
                           onChange={onInputChange}
                           disabled
                           className='text-end'
@@ -287,8 +292,6 @@ const Content = (props) => {
                           onChange={onInputChange}
                           disabled
                           className='text-end'
-                          invalid={sendForm && !!totalValid}
-                          feedbackText={sendForm && (totalValid || null)}
                         />
                       </Colxx>
                     </Row>
@@ -305,7 +308,6 @@ const Content = (props) => {
       <Modal {...propsToModalSeekProducts} />
       <Modal {...propsToModalEditCurrentProduct} />
       <Modal {...propsToModalSendEmail} />
-      <Modal {...propsToViewPDF} />
       <Confirmation {...propsToMsgDeleteItem} />
       <Confirmation {...propsToMsgDelete} />
       {/* <Modal {} */}

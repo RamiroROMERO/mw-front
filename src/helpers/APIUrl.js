@@ -1,6 +1,5 @@
 export const API_URLS = {
   "FAC_PROC_QUOTES": "billing/process/quotes/",
-  "FAC_PROC_QUOTES_DETAIL": "billing/process/quoteDetails/",
   "FAC_PROC_PURCHASE_ORDERS": "billing/process/purchaseOrders/",
   "FAC_PROC_PURCHASE_ORDERS_DETAIL": "billing/process/purchaseOrderDetails/",
   "HOTEL_PROC_QUOTES": 'hotel/process/quotes',

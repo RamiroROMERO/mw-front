@@ -42,7 +42,6 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
   const [customersList, setCustomersList] = useState([]);
   const [listProducts, setListProducts] = useState([]);
   const [dataSeekDocument, setDataSeekDocument] = useState([]);
-  const [dataSeekQuote, setDataSeekQuote] = useState([]);
   const [currentProduct, setCurrentProduct] = useState({});
   const [isEditItem, setIsEditItem] = useState(false);
 
@@ -445,46 +444,53 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
   // carga una cotización existente y vuelca sus datos a la Orden de Compra. A
   // diferencia del legacy (que guardaba nQuoteId siempre en 0, bug conocido), acá
   // sí se persiste el quoteId de origen.
+  // La búsqueda de cotizaciones es el modal compartido de la pantalla de Cotizaciones (páginas de 50 y búsqueda en el servidor).
   const fnSearchQuoteToLoad = () => {
-    setLoading(true);
-    request.GET(API_URLS.FAC_PROC_QUOTES, ({ data }) => {
-      setDataSeekQuote(data);
-      setOpenSeekQuote(true);
-      setLoading(false);
-    }, err => {
-      setLoading(false);
-    });
+    setOpenSeekQuote(true);
   }
 
+  // Una sola lectura (GET quotes/:id) trae la cabecera y las líneas con los nombres nuevos de Cotizaciones (SPEC v2-66-sr). Esta pantalla conserva sus propios
+  // nombres de campo (revisión de la pantalla #7 pendiente): aquí se traducen, tanto el encabezado como las líneas (undOutId, qtyDist, price1..3, typePrice, dateOut).
   const fnLoadQuote = (row) => {
     setOpenSeekQuote(false);
     const { id: quoteId } = row;
-    onBulkForm({
-      ...formState,
-      quoteId,
-      customerId: row.customerId,
-      customerCode: row.customerCode,
-      customerName: row.customerName,
-      phone: row.phone,
-      email: row.email,
-      address: row.address,
-      sellerId: row.sellerId,
-      storeId: row.storeId,
-      condDeliveryTime: row.condDeliveryTime,
-      condPaymentMethod: row.condPaymentMethod,
-      notes: row.notes
-    });
     setLoading(true);
-    request.GET(buildUrl(`${API_URLS.FAC_PROC_QUOTES_DETAIL}`, { idFather: quoteId }), ({ data }) => {
-      const currentData = data.map(elem => {
-        elem.productName = elem.productData?.name || "";
-        elem.unitProd = elem.undOutData?.name || "";
+    request.GET(`billing/process/quotes/${quoteId}`, ({ data }) => {
+      onBulkForm({
+        ...formState,
+        quoteId,
+        customerId: data.customerId,
+        customerCode: data.customerCode,
+        customerName: data.customerName,
+        phone: data.customerPhone,
+        email: data.customerEmail,
+        address: data.customerAddress,
+        sellerId: data.sellerId,
+        storeId: data.storeId,
+        condDeliveryTime: data.deliveryTime,
+        condPaymentMethod: data.paymentTerms,
+        notes: data.notes
+      });
+      const currentData = (data.details || []).map((line) => {
+        const elem = {
+          ...line,
+          undOutId: line.unitId,
+          qtyDist: line.unitFactor,
+          price1: line.minPrice,
+          price2: line.midPrice,
+          price3: line.maxPrice,
+          typePrice: line.priceType,
+          dateOut: line.expirationDate,
+          tempCode: line.tempCode || `Q${line.id}`
+        };
+        elem.productName = line.productData?.name || "";
+        elem.unitProd = line.unitData?.name || "";
         elem.buttons = fnAddButtonDeleteToItem(elem.tempCode, elem);
         return elem;
       });
       setDataDetails(currentData);
       setLoading(false);
-    }, err => {
+    }, () => {
       setDataDetails([]);
       setLoading(false);
     });
@@ -546,7 +552,6 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
     setOpen: setOpenSeekQuote,
     maxWidth: 'lg',
     data: {
-      dataQuotes: dataSeekQuote,
       fnViewItem: fnLoadQuote,
       dateFormat,
       setLoading
