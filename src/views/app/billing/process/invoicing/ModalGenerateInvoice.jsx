@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row, Alert } from "reactstrap";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages, formatNumber } from "@Helpers/Utils";
-import { request } from '@Helpers/core';
+import { request, notifyError } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import { RadioGroup } from "@Components/radioGroup";
 import { ContainerWithLabel } from "@Components/containerWithLabel";
@@ -42,7 +42,12 @@ const ModalGenerateInvoice = (props) => {
   const fnGenerateInvoice = () => {
     setLoading(true);
     setStockShortages([]);
-    request.POST(`billing/process/invoices/generateFiscalDocument/${id}`, { typeChange, exemptedCertificate, exemptedNumber, exemptedRecord }, (resp) => {
+    request.POST(`billing/process/invoices/generateFiscalDocument/${id}`, {
+      exchangeRate: typeChange,
+      exonerationOrderNumber: exemptedCertificate,
+      exonerationSerial: exemptedNumber,
+      exonerationRegistry: exemptedRecord
+    }, (resp) => {
       const newDocument = {
         cai: resp.data.cai,
         numcai: resp.data.numcai,
@@ -57,27 +62,25 @@ const ModalGenerateInvoice = (props) => {
         setDocumentPath(resp2);
         setOpenViewFile(true);
         setLoading(false);
-      }, (err) => {
-
+      }, () => {
         setLoading(false);
       });
     }, (err) => {
-      // Misma validación de existencias que ya corre GenerateFiscalDocumentService
-      // (fnValidExist del legacy) — antes fallaba en silencio, ahora se muestra el
-      // listado de faltantes (equivalente a fac_pos_no_exist.scx).
-      const errorInfo = err?.messages?.[0]?.description;
-      if (errorInfo?.name === 'stock.insufficient') {
+      // Existencias insuficientes (fnValidExist del legacy): la descripción del back trae el listado de faltantes como texto JSON (equivalente a
+      // fac_pos_no_exist.scx). Cualquier otro rechazo muestra su mensaje real (período cerrado, cuenta bloqueada, factura anulada, ...).
+      const first = err?.messages?.[0];
+      if (first?.message === 'stock.insufficient') {
         try {
-          setStockShortages(JSON.parse(errorInfo.description) || []);
-        } catch (parseErr) {
+          setStockShortages(JSON.parse(first.description) || []);
+        } catch {
           setStockShortages([]);
         }
         notification('error', 'msg.error.generateFiscalDocument.stockInsufficient', 'alert.error.title');
       } else {
-        notification('error', 'msg.error.generateFiscalDocument.generic', 'alert.error.title');
+        notifyError(err, 'msg.error.generateFiscalDocument.generic');
       }
       setLoading(false);
-    });
+    }, false);
   }
 
   const propsToViewPDF = {
