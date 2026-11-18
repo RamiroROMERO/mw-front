@@ -28,6 +28,7 @@ import ModalSendEmail from './ModalSendEmail';
 import InvoicingForm from './InvoicingForm';
 import InvoicingDetail from './InvoicingDetail';
 import InvoicingTable from './InvoicingTableProd';
+import { API_PATH, buildInvoicePayload, headerFromApi, lineFromApi, listParams, validateInvoice } from './invoicingRules';
 import ViewPdf from '@Components/ViewPDF/ViewPdf';
 
 const Invoicing = (props) => {
@@ -133,6 +134,7 @@ const Invoicing = (props) => {
     otherPriceProd: 0,
     unitedCoste: 0,
     unitedOut: 0,
+    unitId: 0,
     qtyDist: 0,
     haveComiss: 0,
     lotCode: '',
@@ -142,7 +144,7 @@ const Invoicing = (props) => {
   }, invoiceDetailValid);
 
   const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
-    total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, qtyDist,
+    total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, unitId, qtyDist,
     haveComiss, areaId, storeId, lotCode, dateOut, productType, existQty } = formDetail;
 
   const { id, customerId, customerDNI, customerName, notes, documentCode, documentType, currency, date, dateInProcess, cashierId,
@@ -288,148 +290,67 @@ const Invoicing = (props) => {
     setSendFormDetail(false);
   }
 
+  // GET /:id trae la cabecera y las líneas (nombres nuevos, SPEC v2-68-sr): se traducen a los nombres que usa el formulario.
   const fnViewInvoice = (item) => {
     onResetFormIndex();
-    setRecordSelected(item);
-
-    request.GET(buildUrl('billing/process/invoiceDetail', { idFather: item.id }), (resp) => {
-      const invoiceProducts = resp.data.map((item2) => {
-        return {
-          id: item2.id,
-          productCode: item2.productCode,
-          description: item2.invProduct.name,
-          qty: item2.qty,
-          price: item2.price,
-          subtotal: item2.subtotal,
-          discountPercent: item2.discountPercent,
-          taxPercent: item2.taxPercent,
-          discountValue: item2.discountValue,
-          subtotTaxValue: item2.taxValue > 0 ? item2.subtotal : 0,
-          subTotExeValue: item2.taxValue === 0 ? item2.subtotal : 0,
-          taxValue: item2.taxValue,
-          total: item2.total,
-          areaId: item2.areaId,
-          storeId: item2.storeId,
-          unitedCoste: item2.unitedCoste,
-          typePrice: item2.typePrice,
-          sellerCode: item2.sellerCode,
-          qtyDist: item2.qtyDist,
-          unitedOut: item2.unitedOut,
-          haveComiss: item2.haveComiss,
-          lotCode: item2.lotCode,
-          dateOut: item2.dateOut
-        }
-      });
-      setInvoiceDetail(invoiceProducts);
+    setLoading(true);
+    request.GET(`${API_PATH}/${item.id}`, (resp) => {
+      const { details, ...header } = resp.data;
+      setRecordSelected(headerFromApi(header));
+      setInvoiceDetail((details || []).map(lineFromApi));
       setOpenModalInvoices(false);
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
   }
 
+  // Listado paginado del servidor (las 100 más recientes; el servidor admite `search`, `limit` y `offset`).
   const fnSearchInvoicing = () => {
     setLoading(true);
-    request.GET('billing/process/invoices?isPos=0', (resp) => {
+    request.GET(buildUrl(API_PATH, listParams()), (resp) => {
       const invoices = resp.data.map((item) => {
         item.value = formatNumber(item.total);
-        item.customerName = item.facCliente ? item.facCliente.nomcli : ''
+        item.numcai = item.fiscalNumber;
         item.options = <TableButton color='primary' icon='eye' fnOnClick={() => fnViewInvoice(item)} />
         return item;
       });
       setDataInvoicing(invoices);
       setOpenModalInvoices(true);
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
   }
 
+  // Un solo POST (alta) o PUT (edición) con la cabecera y las líneas: el servidor las guarda en una transacción y calcula importes, costo y distribución
+  // (SPEC v2-68-sr). El formulario solo avisa lo que ya sabe que el servidor rechazaría; los errores de negocio los muestra `request` con su mensaje real.
   const fnSaveInvoicing = () => {
     setSendFormIndex(true);
     if (!isFormValidIndex) {
       return;
     }
 
-    if (invoiceDetail.length === 0) {
-      notification('warning', 'msg.required.select.product', 'alert.warning.title');
+    const errors = validateInvoice(formIndex, invoiceDetail, { hasSellerControl });
+    const firstError = Object.values(errors)[0];
+    if (firstError) {
+      notification('warning', firstError, 'alert.warning.title');
       return;
     }
 
-    const newData = {
-      documentCode,
-      notes,
-      date: date === '' ? DateHelper.format(new Date()) : date,
-      customerId,
-      subTotalValue,
-      discountValue: discount,
-      subtotTaxValue,
-      subTotExeValue,
-      subTotExoValue,
-      taxValue: taxValueInvoice,
-      total,
-      isPos: 0,
-      currency: validInt(currency),
-      customerDNI,
-      customerName,
-      documentType: validInt(documentType),
-      documentExo,
-      cashierId
-    }
-
-    invoiceDetail.map((item) => {
-      delete item.id;
-      return item;
-    });
-
+    const payload = buildInvoicePayload(formIndex, invoiceDetail);
+    setLoading(true);
+    // Se recarga lo guardado: los importes de las líneas son los que calculó el servidor.
+    const onSaved = (resp) => {
+      fnViewInvoice({ id: resp.data.id });
+    };
+    const onFailed = () => {
+      setLoading(false);
+    };
     if (id && id > 0) {
-      setLoading(true);
-      request.PUT(`billing/process/invoices/${id}`, newData, (resp) => {
-        setLoading(false);
-        // Eliminar productos
-        request.DELETE(buildUrl('billing/process/invoiceDetail', { idFather: id }), (resp2) => {
-          // guardar productos
-          const dataProducts = invoiceDetail.map((item) => {
-            item.idFather = id;
-            return item;
-          });
-          request.POST('billing/process/invoiceDetail/createMany', dataProducts, (resp3) => {
-            setLoading(false);
-          }, (err) => {
-
-            setLoading(false);
-          });
-          setLoading(false);
-        }, (err) => {
-
-          setLoading(false);
-        });
-      }, (err) => {
-
-        setLoading(false);
-      });
+      request.PUT(`${API_PATH}/${id}`, payload, onSaved, onFailed);
     } else {
-      setLoading(true);
-      request.POST('billing/process/invoices', newData, (resp) => {
-        onInputChangeIndex({ target: { name: 'id', value: resp.data.id } });
-        // guardar productos
-        const dataProducts = invoiceDetail.map((item) => {
-          item.idFather = resp.data.id;
-          return item;
-        });
-        request.POST('billing/process/invoiceDetail/createMany', dataProducts, (resp2) => {
-          setLoading(false);
-        }, (err) => {
-
-          setLoading(false);
-        });
-        setLoading(false);
-      }, (err) => {
-
-        setLoading(false);
-      });
+      request.POST(API_PATH, payload, onSaved, onFailed);
     }
   }
 
@@ -557,6 +478,7 @@ const Invoicing = (props) => {
             sellerCode: sellerData ? sellerData.code : "",
             qtyDist: validFloat(item.unitFactor),
             unitedOut: item.unitData?.name || '',
+            unitId: validInt(item.unitId),
             haveComiss: 1
           }
         });
@@ -679,6 +601,7 @@ const Invoicing = (props) => {
       priceLocalMax: item.max,
       unitedCoste: item.costValue,
       unitedOut: item.outputUnit,
+      unitId: validInt(item.undoutId),
       qtyDist: item.qtyDist,
       haveComiss: item.paymentComiss,
       productType: validInt(item.typeId),
@@ -775,6 +698,7 @@ const Invoicing = (props) => {
       sellerCode: filterSellers ? filterSellers.code : "",
       qtyDist: validFloat(qtyDist),
       unitedOut,
+      unitId: validInt(unitId),
       haveComiss: validInt(haveComiss),
       lotCode,
       dateOut: dateOut || null
@@ -831,6 +755,7 @@ const Invoicing = (props) => {
       unitedCoste: 0,
       qtyDist: 0,
       unitedOut: "",
+      unitId: 0,
       unitProd: "",
       lotCode: "",
       dateOut: ""
