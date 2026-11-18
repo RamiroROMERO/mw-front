@@ -69,15 +69,18 @@ const units = (value) => Math.round(round5(value) * 1e5);
 const money = (cents) => roundTo(cents / 1e5, 2);
 
 /** Totales de la cabecera: suma de las líneas con el redondeo a centavos UNA vez al final. Gravado = base de las líneas con impuesto; exento = las demás. */
-export const calculateTotals = (lines) => {
-  const sum = { subtotal: 0, discountValue: 0, taxValue: 0, total: 0, taxed: 0, exempt: 0 };
+export const calculateTotals = (lines, { isExonerated = false } = {}) => {
+  const sum = { subtotal: 0, discountValue: 0, taxValue: 0, total: 0, taxed: 0, exempt: 0, exonerated: 0 };
   (lines || []).forEach((line) => {
     sum.subtotal += units(line.subtotal);
     sum.discountValue += units(line.discountValue);
     sum.taxValue += units(line.taxValue);
     sum.total += units(line.total);
     const base = units(round5(num(line.subtotal) - num(line.discountValue)));
-    if (num(line.taxValue) !== 0) sum.taxed += base; else sum.exempt += base;
+    // Orden exonerada: la base de las líneas que llevarían impuesto (`taxPercent > 0`) pasa a exonerado y el impuesto queda en 0.
+    if (isExonerated && num(line.taxPercent) > 0) sum.exonerated += base;
+    else if (num(line.taxValue) !== 0) sum.taxed += base;
+    else sum.exempt += base;
   });
   return {
     subtotal: money(sum.subtotal),
@@ -86,7 +89,7 @@ export const calculateTotals = (lines) => {
     total: money(sum.total),
     taxedValue: money(sum.taxed),
     exemptValue: money(sum.exempt),
-    exoneratedValue: 0
+    exoneratedValue: money(sum.exonerated)
   };
 };
 

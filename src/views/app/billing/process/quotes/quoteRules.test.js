@@ -172,3 +172,16 @@ describe('línea nueva desde un producto del selector', () => {
     expect(priceChoices({ minPrice: 10, midPrice: 20, maxPrice: 30, taxPercent: 0 })).toEqual([10, 20, 30]);
   });
 });
+
+describe('totales de una orden exonerada (SPEC v2-67-sr)', () => {
+  const lines = [
+    { ...calculateLine({ qty: 1, price: 100, discountPercent: 0, taxPercent: 0 }), taxPercent: 15 },
+    { ...calculateLine({ qty: 2, price: 50, discountPercent: 0, taxPercent: 0 }), taxPercent: 0 }
+  ];
+  test('la base de las líneas con porcentaje pasa a exonerado y el impuesto es 0', () => {
+    expect(calculateTotals(lines, { isExonerated: true })).toEqual({ subtotal: 200, discountValue: 0, taxValue: 0, total: 200, taxedValue: 0, exemptValue: 100, exoneratedValue: 100 });
+  });
+  test('sin exoneración no hay exonerado', () => {
+    expect(calculateTotals(lines)).toMatchObject({ exoneratedValue: 0, exemptValue: 200 });
+  });
+});

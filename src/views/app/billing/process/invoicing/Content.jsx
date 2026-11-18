@@ -63,7 +63,6 @@ const Invoicing = (props) => {
   const [openModalCreditStatus, setOpenModalCreditStatus] = useState(false);
   const [openModalEditCostDist, setOpenModalEditCostDist] = useState(false);
   const [openModalSeekPurchaseOrders, setOpenModalSeekPurchaseOrders] = useState(false);
-  const [dataSeekPurchaseOrders, setDataSeekPurchaseOrders] = useState([]);
   const [dateFormat, setDateFormat] = useState('DMY');
   const [openModalProforma, setOpenModalProforma] = useState(false);
   const [documentPathProforma, setDocumentPathProforma] = useState('');
@@ -519,15 +518,8 @@ const Invoicing = (props) => {
       notification('warning', 'msg.required.areaStoreSeller', 'alert.warning.title');
       return;
     }
-    setLoading(true);
-    request.GET('billing/process/purchaseOrders', (resp) => {
-      setDataSeekPurchaseOrders(resp.data);
-      setOpenModalSeekPurchaseOrders(true);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
+    // El buscador de órdenes pide sus propias páginas al servidor (SPEC v2-67-sr).
+    setOpenModalSeekPurchaseOrders(true);
   }
 
   // Solo trae las líneas de productos de la Orden de Compra (se agregan al detalle
@@ -536,12 +528,12 @@ const Invoicing = (props) => {
   const fnLoadPurchaseOrder = (row) => {
     setOpenModalSeekPurchaseOrders(false);
     setLoading(true);
-    request.GET(buildUrl('billing/process/purchaseOrderDetails', { idFather: row.id }), (resp) => {
+    request.GET(`billing/process/purchaseOrders/${row.id}`, (resp) => {
       request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId, enableForSale: 1 }), (resp2) => {
         const costByCode = new Map(resp2.data.map((item) => [item.productCode, validFloat(item.costValue)]));
         const sellerData = listSellers.find((item) => item.value === cashierId);
 
-        const newLines = resp.data.map((item) => {
+        const newLines = (resp.data.details || []).map((item) => {
           const taxedValue = validFloat(item.taxValue) > 0 ? validFloat(item.subtotal) : 0;
           const exemptValue = validFloat(item.taxValue) === 0 ? validFloat(item.subtotal) : 0;
           return {
@@ -561,10 +553,10 @@ const Invoicing = (props) => {
             areaId: validInt(areaId),
             storeId: validInt(storeId),
             unitedCoste: costByCode.get(item.productCode) || 0,
-            typePrice: validInt(item.typePrice),
+            typePrice: validInt(item.priceType),
             sellerCode: sellerData ? sellerData.code : "",
-            qtyDist: validFloat(item.qtyDist),
-            unitedOut: item.undOutData?.name || '',
+            qtyDist: validFloat(item.unitFactor),
+            unitedOut: item.unitData?.name || '',
             haveComiss: 1
           }
         });
@@ -1194,7 +1186,6 @@ const Invoicing = (props) => {
     setOpen: setOpenModalSeekPurchaseOrders,
     maxWidth: 'lg',
     data: {
-      dataPurchaseOrders: dataSeekPurchaseOrders,
       fnViewItem: fnLoadPurchaseOrder,
       dateFormat
     }

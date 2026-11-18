@@ -4938,6 +4938,12 @@ const enLang = {
   "page.quotes.error.details.max": "The quote cannot have more than 500 lines!",
   "page.billingPurchaseOrders.modal.sendEmail.defaultSubject": "Purchase Order No.",
   "page.billingPurchaseOrders.modal.sendEmail.defaultBody": "Dear customer,\n\nPlease find attached the requested purchase order.\n\nRegards.",
+  "page.billingPurchaseOrders.msg.locked": "This order is older than the editing limit: it can only be viewed, printed or emailed.",
+  "page.billingPurchaseOrders.msg.loadQuote.savedOrder": "You cannot load a quote into an order that already exists!",
+  "page.billingPurchaseOrders.error.customer.required": "Select an existing customer: use Search Customer or New Customer!",
+  "page.billingPurchaseOrders.error.date.expired": "The date is earlier than the order editing limit!",
+  "page.billingPurchaseOrders.error.exonerationNumber.required": "The exoneration certificate number is missing!",
+  "page.billingPurchaseOrders.error.exonerationNumber.max": "The exoneration number cannot exceed 50 characters!",
   "page.invoicing.modal.sendEmail.defaultSubject": "Invoice No.",
   "page.invoicing.modal.sendEmail.defaultBody": "Dear customer,\n\nPlease find attached the requested invoice.\n\nRegards.",
 

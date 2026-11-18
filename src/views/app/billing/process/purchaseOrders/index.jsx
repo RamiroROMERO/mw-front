@@ -9,13 +9,15 @@ const Content = React.lazy(() =>
   import('./Content')
 );
 
-// Valida si el usuario puede anular/eliminar documentos (misma verificación que el
-// legacy hacía con fnVerificarV2("11.01.007") en fac_purchase_orders.sc2).
-const PRIVILEGE_CODE = "11.01.007";
+// Privilegio de la pantalla (menu.prg: validUser('01.03.031')). Eliminar exige además 11.01.007 (anular documentos, el mismo que verificaba fnVerificarV2("11.01.007") en
+// fac_purchase_orders.sc2): el back valida los dos.
+const PRIVILEGE_CODE = "01.03.031";
+const PRIVILEGE_DELETE = "11.01.007";
 
 const Format = (props) => {
   const dispatch = useDispatch();
   const screenControl = getPrivilegeData(PRIVILEGE_CODE);
+  const canDelete = Boolean(screenControl.fnDelete && getPrivilegeData(PRIVILEGE_DELETE).active);
 
   useEffect(() => {
     dispatch(onTitleEdit("menu.billingPurchaseOrders"))
@@ -25,7 +27,7 @@ const Format = (props) => {
   return (
     <Suspense fallback={<div className="loading" />}>
       <Breadcrumb />
-      <Content {...props} screenControl={screenControl} />
+      <Content {...props} screenControl={screenControl} canDelete={canDelete} />
     </Suspense>
   )
 };

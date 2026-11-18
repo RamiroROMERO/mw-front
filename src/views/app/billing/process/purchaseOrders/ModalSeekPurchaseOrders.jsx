@@ -1,53 +1,44 @@
-import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
-import { Colxx } from '@Components/common/CustomBootstrap';
+import { useMemo } from "react";
 import { formatNumber, IntlMessages } from "@Helpers/Utils";
 import DateHelper from "@Helpers/DateHelper";
-import ReactTable from "@Components/reactTable";
+import { ModalSearchContent } from "@Components/modalSearch";
+
+// Buscar orden de compra (revisión de pantalla #7, SPEC v2-67-sr): las órdenes se piden por páginas de 50 con búsqueda en el servidor (número, cliente, RTN o teléfono),
+// como Cotizaciones, Clientes y el Catálogo de productos; antes se bajaban todas y se filtraban en el navegador. Lo usan también Facturación (cargar una orden).
+const ORDERS_URL = 'billing/process/purchaseOrders';
 
 const ModalSeekPurchaseOrders = (props) => {
   const { data, setOpen } = props;
-  const { dataPurchaseOrders, fnViewItem, dateFormat } = data;
+  const { fnViewItem, dateFormat } = data;
 
-  const columns = [
+  // IntlMessages es un hook: se llama aquí arriba, no dentro de useMemo.
+  const textNumber = IntlMessages("input.number");
+  const textDate = IntlMessages("input.date");
+  const textName = IntlMessages("input.name");
+  const textTotal = IntlMessages("input.total");
+
+  const columns = useMemo(() => [
     {
-      text: IntlMessages("input.number"), dataField: "id", headerStyle: { 'width': '15%' },
+      text: textNumber, dataField: "id", headerStyle: { 'width': '15%' },
       classes: 'd-xs-none-table-cell', headerClasses: 'd-xs-none-table-cell'
     },
     {
-      text: IntlMessages("input.date"), dataField: "date", headerStyle: { 'width': '15%' },
+      text: textDate, dataField: "date", headerStyle: { 'width': '15%' },
       classes: 'd-xs-none-table-cell', headerClasses: 'd-xs-none-table-cell',
       cell: ({ row }) => DateHelper.formatCompany(row.original.date, dateFormat)
     },
-    { text: IntlMessages("input.name"), dataField: "customerName", headerStyle: { 'width': '40%' } },
+    { text: textName, dataField: "customerName", headerStyle: { 'width': '40%' } },
     {
-      text: IntlMessages("input.total"), dataField: "total", headerStyle: { 'width': '15%' },
-      classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell', cell: ({ row }) => { return formatNumber(row.original.total, "L. ", 2) }
+      text: textTotal, dataField: "total", headerStyle: { 'width': '15%' },
+      classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell', cell: ({ row }) => formatNumber(row.original.total, "L. ", 2)
     }
-  ];
-  const actions = [{
-    color: 'primary',
-    icon: 'eye',
-    toolTip: IntlMessages('button.view'),
-    onClick: fnViewItem
-  }];
+  ], [textNumber, textDate, textName, textTotal, dateFormat]);
 
-  return (
-    <>
-      <ModalBody>
-        <Row>
-          <Colxx xxs="12">
-            <ReactTable title='' columns={columns} data={dataPurchaseOrders} actions={actions} />
-          </Colxx>
-        </Row>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="danger" onClick={() => { setOpen(false) }} >
-          <i className="bi bi-box-arrow-right" />
-          {` ${IntlMessages('button.exit')}`}
-        </Button>
-      </ModalFooter>
-    </>
-  )
-}
+  const config = useMemo(() => ({
+    url: ORDERS_URL, columns, onSelect: fnViewItem
+  }), [columns, fnViewItem]);
+
+  return <ModalSearchContent data={config} setOpen={setOpen} />;
+};
 
 export default ModalSeekPurchaseOrders;

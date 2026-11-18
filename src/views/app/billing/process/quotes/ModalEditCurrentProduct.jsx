@@ -107,8 +107,8 @@ export const ModalEditCurrentProduct = (props) => {
                   <Table size='sm'>
                     <tbody>
                       <tr>
-                        {choices.map((value) => (
-                          <td key={value}>
+                        {choices.map((value, index) => (
+                          <td key={`${index}-${value}`}>
                             <Button color='light' size='sm' block onClick={() => { onInputChange({ target: { name: 'price', value } }) }}> {value} </Button>
                           </td>
                         ))}

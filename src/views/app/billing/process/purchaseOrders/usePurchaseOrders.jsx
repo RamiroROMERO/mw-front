@@ -1,26 +1,36 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from '@Hooks';
 import { Button } from 'reactstrap';
-import { IntlMessagesFn, validFloat, validInt } from '@Helpers/Utils';
-import { request, buildUrl } from '@Helpers/core';
+import { IntlMessagesFn, validInt } from '@Helpers/Utils';
+import { request } from '@Helpers/core';
 import { RandomCodeGenerator } from '@Helpers/UuIdGenerator';
-import { API_URLS } from '@Helpers/APIUrl';
-import DateHelper from '@Helpers/DateHelper';
+import { printDocument } from '@Helpers/printDocument';
+import notification from '@Containers/ui/Notifications';
 import TableButtons from '@Components/tableButtons';
 import ModalViewCust from '../customers/ModalViewCust';
 import ModalProducts from '../invoicing/ModalProducts';
 import ModalSeekQuotes from '../quotes/ModalSeekQuotes';
-import { ModalEditCurrentProduct } from './ModalEditCurrentProduct';
-import { ModalNewCustomer } from './ModalNewCustomer';
+import { ModalEditCurrentProduct } from '../quotes/ModalEditCurrentProduct';
+import { ModalNewCustomer } from '../quotes/ModalNewCustomer';
+import ModalSendEmail from '../quotes/ModalSendEmail';
 import ModalSeekPurchaseOrders from './ModalSeekPurchaseOrders';
-import ModalSendEmail from './ModalSendEmail';
-import ViewPdf from '@Components/ViewPDF/ViewPdf';
+import {
+  buildInitialForm, buildOrderPayload, formFromOrder, isQuoteLocked, lineFromApi, lineFromProduct, orderTotals, validateOrder
+} from './purchaseOrderRules';
 
-export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {} }) => {
+const ORDERS_URL = 'billing/process/purchaseOrders';
+const NO_SETTINGS = { canEditPrice: false, timeQuote: 0, limitDate: null, hasDateOutControl: false };
+
+// Órdenes de compra de clientes (fac_purchase_orders.sc2). Igual que Cotizaciones (SPEC v2-66-sr): guardar y eliminar son UNA llamada (el back guarda cabecera y líneas
+// en una transacción y calcula los importes), la pantalla valida lo mismo que el back antes de llamar y guarda en memoria `GET .../settings` (permiso de editar precio,
+// límite de edición y control de lote y fecha). Propio de la orden (SPEC v2-67-sr): cliente CREADO obligatorio, forma de pago y orden exonerada con su constancia.
+export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}, canDelete = false }) => {
 
   const [sendForm, setSendForm] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [openMsgDeleteItem, setOpenMsgDeleteItem] = useState(false);
+  const [openMsgLoadQuote, setOpenMsgLoadQuote] = useState(false);
+  const [pendingQuote, setPendingQuote] = useState(null);
   const [openSeekCustomer, setOpenSeekCustomer] = useState(false);
   const [openNewCustomer, setOpenNewCustomer] = useState(false);
   const [openSeekProducts, setOpenSeekProducts] = useState(false);
@@ -31,102 +41,23 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
   const [sellerList, setSellerList] = useState([]);
   const [storeList, setStoreList] = useState([]);
   const [paymentTypeList, setPaymentTypeList] = useState([]);
-  // Tiempo límite (en días) para poder seguir editando la fecha de una orden ya
-  // guardada — equivalente a nTimeOutQuote del legacy (time_quote en mw_setting).
-  const [timeQuote, setTimeQuote] = useState(0);
-  const [isDateEditable, setIsDateEditable] = useState(true);
-  // Formato de fecha configurado por el Administrador (mw_setting.form_date) — DMY es
-  // el default del legacy cuando el ajuste viene vacío.
+  const [settings, setSettings] = useState(NO_SETTINGS);
+  // Formato de fecha configurado por el Administrador (mw_setting.form_date) — DMY es el default del legacy cuando el ajuste viene vacío.
   const [dateFormat, setDateFormat] = useState('DMY');
   const [dataDetails, setDataDetails] = useState([]);
-  const [customersList, setCustomersList] = useState([]);
   const [listProducts, setListProducts] = useState([]);
-  const [dataSeekDocument, setDataSeekDocument] = useState([]);
   const [currentProduct, setCurrentProduct] = useState({});
   const [isEditItem, setIsEditItem] = useState(false);
 
   const [itemToDelete, setItemToDelete] = useState('');
   const [nameItemToDelete, setNameItemToDelete] = useState('');
 
-  const [openViewFile, setOpenViewFile] = useState(false);
-  const [documentPath, setDocumentPath] = useState("");
-
-  const validation = {
-    date: [(val) => val.length > 0, IntlMessagesFn("page.common.validation.date")],
-    sellerId: [val => validInt(val) > 0, IntlMessagesFn("msg.required.select.seller")],
-    paymentTypeId: [val => validInt(val) > 0, IntlMessagesFn("msg.required.select.paymentType")],
-    customerName: [val => val.length > 0, IntlMessagesFn("page.common.validation.customerName")],
-    phone: [val => val.length > 0, IntlMessagesFn("page.common.validation.phone")],
-    total: [val => validFloat(val) > 0, IntlMessagesFn("page.common.validation.total")]
-  };
-
-  const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
-    id: 0,
-    date: "",
-    customerId: 0,
-    customerCode: "",
-    customerName: "",
-    phone: "",
-    email: "",
-    address: "",
-    sellerId: 0,
-    storeId: 0,
-    paymentTypeId: 0,
-    condDeliveryTime: "",
-    condPaymentMethod: "",
-    notes: "",
-    subtotal: 0,
-    discount: 0,
-    exoneratedValue: 0,
-    exemptValue: 0,
-    taxedValue: 0,
-    tax: 0,
-    total: 0,
-    quoteId: 0,
-    isExonerated: false,
-    numberExonerated: "",
-    status: true
-  }, validation);
-
+  const { formState, onInputChange, onResetForm, onBulkForm } = useForm(buildInitialForm());
   const { id, isExonerated } = formState;
 
-  useEffect(() => {
-
-    const currTotals = dataDetails.reduce((acc, curr) => {
-      acc.subtotal += validFloat(curr.subtotal);
-      acc.discount += validFloat(curr.discountValue);
-      const netLine = validFloat(curr.subtotal) - validFloat(curr.discountValue);
-      if (validFloat(curr.taxValue) === 0) {
-        acc.exempt += netLine;
-      } else {
-        acc.taxed += netLine;
-        acc.tax += validFloat(curr.taxValue);
-      }
-      return acc;
-    }, {
-      subtotal: 0,
-      discount: 0,
-      exempt: 0,
-      taxed: 0,
-      tax: 0
-    });
-
-    // Igual que fncalculatetotal del legacy: si "Orden Exonerada" está marcada, el monto
-    // gravado completo se mueve a Exonerado y el impuesto queda en 0.
-    const exonerated = isExonerated ? currTotals.taxed : 0;
-    const taxed = isExonerated ? 0 : currTotals.taxed;
-    const tax = isExonerated ? 0 : currTotals.tax;
-
-    onBulkForm({
-      subtotal: currTotals.subtotal,
-      discount: currTotals.discount,
-      exoneratedValue: exonerated,
-      exemptValue: currTotals.exempt,
-      taxedValue: taxed,
-      tax,
-      total: currTotals.exempt + taxed + tax + exonerated
-    })
-  }, [dataDetails, isExonerated])
+  const isLocked = isQuoteLocked(formState, settings.timeQuote);
+  const errors = useMemo(() => validateOrder(formState, dataDetails, { timeQuote: settings.timeQuote }), [formState, dataDetails, settings.timeQuote]);
+  const totals = useMemo(() => orderTotals(dataDetails, isExonerated), [dataDetails, isExonerated]);
 
   const columnDetails = [
     { title: 'input.code', field: 'productCode', width: 15 },
@@ -138,25 +69,40 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
     { title: 'table.column.options', field: 'buttons', width: 15 },
   ]
 
+  const fnDeleteItem = (code, nameItem) => {
+    setItemToDelete(code);
+    setNameItemToDelete(nameItem);
+    setOpenMsgDeleteItem(true);
+  }
+
+  const fnEditItem = (line) => {
+    setIsEditItem(true);
+    setCurrentProduct(line);
+    setOpenEditCurrentProduct(true);
+  }
+
+  // Los botones se arman al pintar (no se guardan en el estado) y no existen en una orden de solo lectura.
+  const rows = useMemo(() => dataDetails.map((line) => ({
+    ...line,
+    buttons: isLocked ? null : (
+      <>
+        <Button type='button' color='outline-primary' className='btn-circle-table me-1' onClick={() => fnEditItem(line)}> <i className='bi bi-pencil' /> </Button>
+        <Button type='button' color='outline-danger' className='btn-circle-table' onClick={() => fnDeleteItem(line.tempCode, line.productName)}> <i className='bi bi-trash' /> </Button>
+      </>
+    )
+  })), [dataDetails, isLocked]);
+
   const fnEditDocument = (row) => {
     setOpenSeekDocument(false);
-    onBulkForm(row);
-    // Igual que el legacy (Textbox_hw2.Enabled = .F. si la fecha es más vieja que
-    // nTimeOutQuote días): pasado ese límite ya no se puede correr la fecha del documento.
-    setIsDateEditable(timeQuote <= 0 || !DateHelper.isBefore(row.date, DateHelper.subtract(DateHelper.now(), timeQuote, 'day')));
     setLoading(true);
-    const { id } = row;
-    request.GET(buildUrl(`${API_URLS.FAC_PROC_PURCHASE_ORDERS_DETAIL}`, { idFather: id }), ({ data }) => {
-      const currentData = data.map(elem => {
-        elem.productName = elem.productData?.name || "";
-        elem.unitProd = elem.undOutData?.name || "";
-        elem.buttons = fnAddButtonDeleteToItem(elem.tempCode, elem);
-        return elem;
-      });
-      setDataDetails(currentData);
+    request.GET(`${ORDERS_URL}/${row.id}`, ({ data }) => {
+      const form = formFromOrder(data);
+      onBulkForm(form);
+      setDataDetails((data.details || []).map(lineFromApi));
+      setSendForm(false);
       setLoading(false);
-    }, err => {
-      setDataDetails([]);
+      if (isQuoteLocked(form, settings.timeQuote)) notification('warning', 'page.billingPurchaseOrders.msg.locked', 'alert.warning.title');
+    }, () => {
       setLoading(false);
     });
   }
@@ -165,222 +111,137 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
     setSendForm(false);
     onResetForm();
     setDataDetails([]);
-    setIsDateEditable(true);
     setActiveTab("1")
   }
 
-  const fnSearchDocument = () => {
-    setLoading(true);
-    request.GET(API_URLS.FAC_PROC_PURCHASE_ORDERS, ({ data }) => {
-      setDataSeekDocument(data);
-      setOpenSeekDocument(true);
-      setLoading(false);
-    }, err => {
-      setLoading(false);
-    });
-  }
+  const fnSearchDocument = () => setOpenSeekDocument(true);
 
   const fnSaveDocument = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    if (isLocked) {
+      notification('warning', 'page.billingPurchaseOrders.msg.locked', 'alert.warning.title');
       return;
     }
+    if (Object.keys(errors).length > 0) {
+      // Los errores de las líneas no se ven en la pestaña de datos: se avisan aparte.
+      if (errors.details) notification('warning', errors.details, 'alert.warning.title');
+      return;
+    }
+    const payload = buildOrderPayload(formState, dataDetails);
     setLoading(true);
     if (validInt(id) === 0) {
-      request.POST(API_URLS.FAC_PROC_PURCHASE_ORDERS, formState, ({ data }) => {
+      request.POST(ORDERS_URL, payload, ({ data }) => {
+        onInputChange({ target: { name: 'id', value: data.id } });
         setLoading(false);
-        const { id: newId } = data;
-        onInputChange({ target: { name: 'id', value: newId } });
-        const saveDataDetails = dataDetails.map(elem => {
-          elem.idFather = newId;
-          return elem;
-        });
-
-        for (let i = 0; i < saveDataDetails.length; i++) {
-          const elem = saveDataDetails[i];
-          request.POST(API_URLS.FAC_PROC_PURCHASE_ORDERS_DETAIL, elem, (data) => { }, err => { }, false);
-        }
-        setLoading(false);
-      }, (err) => {
-        setLoading(false);
-      })
+      }, () => setLoading(false));
     } else {
-      const saveDataDetails = dataDetails.map(elem => {
-        elem.idFather = id;
-        return elem;
-      });
-      request.PUT(`${API_URLS.FAC_PROC_PURCHASE_ORDERS}${id}`, formState, () => {
-        request.DELETE(buildUrl(`${API_URLS.FAC_PROC_PURCHASE_ORDERS_DETAIL}`, { idFather: id }), () => {
-          for (let i = 0; i < saveDataDetails.length; i++) {
-            const elem = saveDataDetails[i];
-            request.POST(API_URLS.FAC_PROC_PURCHASE_ORDERS_DETAIL, elem, (data) => { }, err => { }, false);
-          }
-        }, () => { }, false);
-        setLoading(false);
-      }, (err) => {
-        setLoading(false);
-      });
+      request.PUT(`${ORDERS_URL}/${id}`, payload, () => setLoading(false), () => setLoading(false));
     }
   };
 
   const fnPrintDocument = () => {
-    if (validInt(id) <= 0) return;
-    request.GETPdfUrl('billing/process/purchaseOrders/exportPDF', { id }, (resp) => {
-      setDocumentPath(resp);
-      setOpenViewFile(true);
-    }, (err) => {
-
-      setLoading(false);
-    });
+    printDocument({ path: ORDERS_URL, id, fileName: 'Orden de Compra.pdf', setLoading });
   }
 
   const fnDeleteDocument = () => {
     if (validInt(id) <= 0) return;
+    if (isLocked) {
+      notification('warning', 'page.billingPurchaseOrders.msg.locked', 'alert.warning.title');
+      return;
+    }
     setOpenMsgQuestion(true);
   };
 
   const fnOpenSendEmail = () => {
-    if (validInt(id) <= 0) return;
+    if (validInt(id) <= 0) {
+      notification('warning', 'msg.print.saveFirst', 'alert.warning.title');
+      return;
+    }
     setOpenSendEmail(true);
   };
 
+  // Una sola llamada: el back borra las líneas y la orden en una transacción. Si lo rechaza (permiso, límite de edición) la orden se queda.
   const fnDelete = () => {
     setOpenMsgQuestion(false);
     if (validInt(id) === 0) {
       return;
     }
     setLoading(true);
-    request.DELETE(buildUrl(`${API_URLS.FAC_PROC_PURCHASE_ORDERS_DETAIL}`, { idFather: id }), () => { setLoading(false) }, () => { setLoading(false) }, false);
-    request.DELETE(`${API_URLS.FAC_PROC_PURCHASE_ORDERS}${id}`, () => { }, () => { setLoading(false) }, true);
-    fnNewDocument();
-  }
-
-  const fnSeekCustomerList = () => {
-    setLoading(true);
-    request.GET('billing/settings/customers/', (resp) => {
-      const data = resp.data.map((item) => {
-        item.typeCustomer = item.customerTypeData ? item.customerTypeData.name : ""
-        return item;
-      });
-      setCustomersList(data);
+    request.DELETE(`${ORDERS_URL}/${id}`, () => {
       setLoading(false);
-      setOpenSeekCustomer(true);
-    }, (err) => {
-
-      setLoading(false);
-    });
+      fnNewDocument();
+    }, () => { setLoading(false) });
   }
 
   const fnGetData = () => {
 
     request.getJSON("admin/users/getSellers", {}, (resp) => {
       const { data } = resp;
-      const currSellers = data.map(elem => {
-        const currItem = {
-          id: elem.id,
-          name: `${elem.sellerCode} - ${elem.name}`
-        }
-        return currItem;
-      });
-      setSellerList(currSellers);
+      setSellerList(data.map(elem => ({ id: elem.id, name: `${elem.sellerCode} - ${elem.name}` })));
     });
 
     request.GET('inventory/settings/stores?type=1', (resp) => {
       setStoreList(resp.data);
-    }, (err) => { });
+    }, () => { });
 
-    request.GET('admin/paymentTypes/getForCustomers', (resp) => {
+    // Formas de pago de facturación (uso 1 o 3), con el privilegio de esta pantalla.
+    request.GET(`${ORDERS_URL}/paymentTypes`, (resp) => {
       setPaymentTypeList(resp.data);
-    }, (err) => { });
+    }, () => { });
+
+    // Permiso de editar precio, límite de edición y control de lote y fecha: se guardan en memoria al entrar a la pantalla.
+    request.GET(`${ORDERS_URL}/settings`, (resp) => {
+      setSettings({ ...NO_SETTINGS, ...resp.data });
+    }, () => { });
 
     request.GET('admin/companies/getOperationalSettings', (resp) => {
-      setTimeQuote(validInt(resp.data.timeQuote));
       setDateFormat(resp.data.formatDate || 'DMY');
-    }, (err) => { });
+    }, () => { });
   }
 
   const fnNewCustomer = () => {
     setOpenNewCustomer(true);
   }
 
-  const fnDeleteItem = (code, nameItem) => {
-
-    setItemToDelete(code);
-    setNameItemToDelete(nameItem);
-    setOpenMsgDeleteItem(true);
-  }
+  const fnSeekCustomerList = () => setOpenSeekCustomer(true);
 
   const fnOkDeleteItem = () => {
-
     setOpenMsgDeleteItem(false);
     if (itemToDelete === '') return;
-    const currDetail = dataDetails.filter(item => item.tempCode !== itemToDelete);
-    setDataDetails(currDetail);
+    setDataDetails(dataDetails.filter(item => item.tempCode !== itemToDelete));
   }
 
   const fnCancelDeleteItem = () => {
     setItemToDelete('');
   }
 
+  // La orden exige un cliente CREADO: sus datos se copian a la orden (se pueden corregir a mano, pero `customerId` solo cambia eligiendo otro).
   const setSelectedCustomer = (customer) => {
-    const { id, nomcli, rtn, tel, purchaseContactEmail, direcc } = customer;
-    onBulkForm({ ...formState, customerId: id, customerCode: rtn, customerName: nomcli, phone: tel, address: direcc, email: purchaseContactEmail })
+    const { id: customerId, nomcli, rtn, tel, purchaseContactEmail, direcc } = customer;
+    onBulkForm({ ...formState, customerId, customerCode: rtn, customerName: nomcli, customerPhone: tel || '', customerAddress: direcc || '', customerEmail: purchaseContactEmail || '' })
     setOpenSeekCustomer(false);
-  }
-
-  const fnAddButtonDeleteToItem = (tempCode, product) => {
-    return <Button type='button' color='outline-danger' className='btn-circle-table' data-bs-toggle="tooltip" onClick={() => fnDeleteItem(tempCode, product.productName)}> <i className='bi bi-trash' /></Button>
   }
 
   const fnSelectProduct = (product) => {
     setOpenSeekProducts(false);
-    setCurrentProduct(product);
-    let currProduct = {};
-    if (isEditItem) {
-      setCurrentProduct(product);
-    } else {
-      let currPrice = validFloat(product.includeTaxPrice ? product.med / 1 + (validFloat(product.percentTax) !== 0 ? (validFloat(product.percentTax / 100)) : 0) : product.med, 2);
-      let currTaxValue = validFloat(currPrice * (validFloat(product.percentTax) !== 0 ? (validFloat(product.percentTax / 100)) : 0), 2)
-      let tempCode = RandomCodeGenerator(),
-        currProduct = {
-          tempCode,
-          productCode: product.productCode,
-          productName: product.productName,
-          undOutId: product.undoutId,
-          undOutName: product.undoutName,
-          qtyDist: product.valChange,
-          price: currPrice,
-          qty: 1,
-          subtotal: currPrice * 1,
-          discountPercent: 0,
-          discountValue: 0,
-          taxPercent: product.percentTax,
-          taxValue: currTaxValue,
-          total: validFloat(currPrice + currTaxValue, 2),
-          stock: product.stock,
-          price1: product.min,
-          price2: product.med,
-          price3: product.max,
-          ...product,
-          buttons: fnAddButtonDeleteToItem(tempCode, product)
-        }
-      delete currProduct['options'];
-      setCurrentProduct(currProduct);
-    }
+    setIsEditItem(false);
+    setCurrentProduct(lineFromProduct(product, RandomCodeGenerator()));
     setOpenEditCurrentProduct(true);
-
   }
 
   const fnSaveCurrentItem = (currentItem) => {
-
     setOpenEditCurrentProduct(false);
-    setDataDetails([...dataDetails, currentItem]);
+    setDataDetails(isEditItem
+      ? dataDetails.map((line) => (line.tempCode === currentItem.tempCode ? currentItem : line))
+      : [...dataDetails, currentItem]);
   }
 
-  // Igual que Textbox_hw8.KeyPress del legacy: sin almacén seleccionado se cotiza contra
-  // el catálogo general (sin existencia real, view_stock_for_quotes); con almacén
-  // seleccionado se usa el mismo buscador de productos que el POS, filtrado por esa bodega.
+  // Igual que Textbox_hw8.KeyPress del legacy: sin almacén seleccionado se cotiza contra el catálogo general (view_stock_for_quotes); con almacén se usa el buscador del POS.
   const fnAddItem = () => {
+    if (isLocked) {
+      notification('warning', 'page.billingPurchaseOrders.msg.locked', 'alert.warning.title');
+      return;
+    }
     setIsEditItem(false);
 
     if (validInt(formState.storeId) === 0) {
@@ -394,8 +255,7 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
         setListProducts(products);
         setOpenSeekProducts(true);
         setLoading(false);
-      }, (err) => {
-
+      }, () => {
         setLoading(false);
       });
       return;
@@ -421,77 +281,71 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
       return currProduct;
     }
 
-    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId: formState.storeId, inStock: true }), (resp) => {
+    request.GET(`inventory/process/stocks/getStocks?storeId=${formState.storeId}&inStock=true`, (resp) => {
       const products = resp.data.map(mapProduct);
       request.GET('inventory/process/stocks/getServices', (resp2) => {
         const services = resp2.data.map(mapProduct);
         setListProducts([...products, ...services]);
         setOpenSeekProducts(true);
         setLoading(false);
-      }, (err) => {
+      }, () => {
         setListProducts(products);
         setOpenSeekProducts(true);
         setLoading(false);
       });
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
-
   }
 
-  // Botón "Cotización" del ControlPanel: reemplaza al botón homónimo del legacy que
-  // carga una cotización existente y vuelca sus datos a la Orden de Compra. A
-  // diferencia del legacy (que guardaba nQuoteId siempre en 0, bug conocido), acá
-  // sí se persiste el quoteId de origen.
-  // La búsqueda de cotizaciones es el modal compartido de la pantalla de Cotizaciones (páginas de 50 y búsqueda en el servidor).
+  // "Cotización" del ControlPanel (Controlpanelbtn2 del legacy): solo en una orden nueva; con datos pide confirmación. A diferencia del legacy (quote_id siempre en 0)
+  // se guarda la cotización de origen.
   const fnSearchQuoteToLoad = () => {
+    if (validInt(id) !== 0) {
+      notification('warning', 'page.billingPurchaseOrders.msg.loadQuote.savedOrder', 'alert.warning.title');
+      return;
+    }
     setOpenSeekQuote(true);
   }
 
-  // Una sola lectura (GET quotes/:id) trae la cabecera y las líneas con los nombres nuevos de Cotizaciones (SPEC v2-66-sr). Esta pantalla conserva sus propios
-  // nombres de campo (revisión de la pantalla #7 pendiente): aquí se traducen, tanto el encabezado como las líneas (undOutId, qtyDist, price1..3, typePrice, dateOut).
+  // Una sola lectura (GET quotes/:id) trae la cabecera y las líneas; los nombres de las líneas ya son los de la orden.
   const fnLoadQuote = (row) => {
     setOpenSeekQuote(false);
-    const { id: quoteId } = row;
+    if (dataDetails.length > 0) {
+      setPendingQuote(row);
+      setOpenMsgLoadQuote(true);
+      return;
+    }
+    fnApplyQuote(row);
+  }
+
+  const fnApplyQuote = (row) => {
+    setOpenMsgLoadQuote(false);
     setLoading(true);
-    request.GET(`billing/process/quotes/${quoteId}`, ({ data }) => {
+    request.GET(`billing/process/quotes/${row.id}`, ({ data }) => {
       onBulkForm({
-        ...formState,
-        quoteId,
-        customerId: data.customerId,
-        customerCode: data.customerCode,
-        customerName: data.customerName,
-        phone: data.customerPhone,
-        email: data.customerEmail,
-        address: data.customerAddress,
-        sellerId: data.sellerId,
-        storeId: data.storeId,
-        condDeliveryTime: data.deliveryTime,
-        condPaymentMethod: data.paymentTerms,
-        notes: data.notes
+        ...buildInitialForm(),
+        date: formState.date,
+        quoteId: data.id,
+        customerId: data.customerId || 0,
+        customerCode: data.customerCode || '',
+        customerName: data.customerName || '',
+        customerPhone: data.customerPhone || '',
+        customerEmail: data.customerEmail || '',
+        customerAddress: data.customerAddress || '',
+        sellerId: data.sellerId || 0,
+        storeId: data.storeId || 0,
+        deliveryTime: data.deliveryTime || '',
+        notes: data.notes || ''
       });
-      const currentData = (data.details || []).map((line) => {
-        const elem = {
-          ...line,
-          undOutId: line.unitId,
-          qtyDist: line.unitFactor,
-          price1: line.minPrice,
-          price2: line.midPrice,
-          price3: line.maxPrice,
-          typePrice: line.priceType,
-          dateOut: line.expirationDate,
-          tempCode: line.tempCode || `Q${line.id}`
-        };
-        elem.productName = line.productData?.name || "";
-        elem.unitProd = line.unitData?.name || "";
-        elem.buttons = fnAddButtonDeleteToItem(elem.tempCode, elem);
-        return elem;
-      });
-      setDataDetails(currentData);
+      setDataDetails((data.details || []).map(lineFromApi));
       setLoading(false);
+      // La orden exige un cliente creado: si la cotización era para cualquier persona se abre el alta rápida (como el legacy).
+      if (!(Number(data.customerId) > 0)) {
+        notification('warning', 'page.billingPurchaseOrders.error.customer.required', 'alert.warning.title');
+        setOpenNewCustomer(true);
+      }
     }, () => {
-      setDataDetails([]);
       setLoading(false);
     });
   }
@@ -499,9 +353,10 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
   const propsToControlPanel = {
     fnNew: fnNewDocument,
     fnSearch: fnSearchDocument,
-    fnSave: fnSaveDocument,
+    fnSave: screenControl.fnCreate || screenControl.fnUpdate ? fnSaveDocument : null,
     fnPrint: fnPrintDocument,
-    fnDelete: screenControl.fnDelete ? fnDeleteDocument : null,
+    // Eliminar exige fn_delete de la pantalla (01.03.031) y 11.01.007 (anular documentos): el back lo vuelve a validar.
+    fnDelete: canDelete ? fnDeleteDocument : null,
     buttonsHome: [{
       title: "button.newCustomer",
       icon: "bi bi-person-plus",
@@ -531,6 +386,14 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
     fnOnNo: () => { }
   };
 
+  const propsToMsgLoadQuote = {
+    title: "alert.question.title",
+    open: openMsgLoadQuote,
+    setOpen: setOpenMsgLoadQuote,
+    fnOnOk: () => fnApplyQuote(pendingQuote),
+    fnOnNo: () => setPendingQuote(null)
+  };
+
   const propsToModalSeekDocuments = {
     ModalContent: ModalSeekPurchaseOrders,
     title: "menu.billingPurchaseOrders",
@@ -538,10 +401,8 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
     setOpen: setOpenSeekDocument,
     maxWidth: 'lg',
     data: {
-      dataPurchaseOrders: dataSeekDocument,
       fnViewItem: fnEditDocument,
-      dateFormat,
-      setLoading
+      dateFormat
     }
   }
 
@@ -565,7 +426,6 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
     setOpen: setOpenSeekCustomer,
     maxWidth: 'lg',
     data: {
-      dataCustomers: customersList,
       fnViewItem: setSelectedCustomer,
       setLoading
     }
@@ -598,14 +458,15 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
 
   const propsToModalEditCurrentProduct = {
     ModalContent: ModalEditCurrentProduct,
-    title: "button.addProduct",
+    title: isEditItem ? "button.edit" : "button.addProduct",
     open: openEditCurrentProduct,
     setOpen: setOpenEditCurrentProduct,
     maxWidth: 'sm',
     data: {
       setLoading,
       currentItem: currentProduct,
-      fnSave: fnSaveCurrentItem
+      fnSave: fnSaveCurrentItem,
+      canEditPrice: settings.canEditPrice
     }
   }
 
@@ -626,25 +487,12 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
     maxWidth: 'md',
     data: {
       setLoading,
-      sendUrl: 'billing/process/purchaseOrders/sendEmail',
+      sendUrl: `${ORDERS_URL}/${id}/email`,
       documentId: id,
-      attachmentName: `Orden_Compra_${id}.pdf`,
-      defaultTo: formState.email,
+      attachmentName: `Orden de Compra_${id}.pdf`,
+      defaultTo: formState.customerEmail,
       defaultSubject: `${IntlMessagesFn('page.billingPurchaseOrders.modal.sendEmail.defaultSubject')} ${id}`,
       defaultBody: IntlMessagesFn('page.billingPurchaseOrders.modal.sendEmail.defaultBody')
-    }
-  }
-
-  const propsToViewPDF = {
-    ModalContent: ViewPdf,
-    title: "modal.viewDocument.purchaseOrder",
-    valueTitle: id,
-    fullscreen: true,
-    open: openViewFile,
-    setOpen: setOpenViewFile,
-    maxWidth: 'xl',
-    data: {
-      documentPath
     }
   }
 
@@ -652,24 +500,25 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
     fnGetData();
   }, [])
 
-
   return {
     formState,
     sellerList,
     storeList,
     paymentTypeList,
-    isDateEditable,
+    isLocked,
+    settings,
+    errors,
+    totals,
     onInputChange,
     onResetForm,
     onBulkForm,
-    formValidation,
-    isFormValid,
     fnSaveDocument,
     sendForm,
     propsToMsgDelete,
+    propsToMsgLoadQuote,
     propsToControlPanel,
     columnDetails,
-    dataDetails,
+    dataDetails: rows,
     fnAddItem,
     propsToModalSeekCustomers,
     propsToModalSeekDocuments,
@@ -678,7 +527,6 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
     propsToModalSeekProducts,
     propsToModalEditCurrentProduct,
     propsToMsgDeleteItem,
-    propsToModalSendEmail,
-    propsToViewPDF
+    propsToModalSendEmail
   }
 }
