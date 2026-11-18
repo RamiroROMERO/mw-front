@@ -1,24 +1,29 @@
 import { useEffect, useState } from "react";
 import { Button, ModalBody, ModalFooter, Row, Table } from "reactstrap";
 import { Colxx } from '@Components/common/CustomBootstrap';
-import { IntlMessages, formatNumber, validFloat } from "@Helpers/Utils";
+import { IntlMessages, formatNumber } from "@Helpers/Utils";
+import { InputField } from '@Components/inputFields';
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
+import { API_PATH, buildCostBody, validateCostRows } from './postEditRules';
 
 // Equivalente a fac_pos_edit_cost_dist.sc2: herramienta para corregir el costo unitario
 // y el factor de distribución que quedaron grabados en el detalle de una factura ya
 // guardada, comparándolos contra los valores actuales del catálogo. Solo actualiza las
-// filas donde el usuario llena AMBOS valores nuevos — igual criterio que el legacy.
+// filas donde el usuario llena AMBOS valores nuevos — igual criterio que el legacy. SPEC v2-72-sr: pide motivo y el servidor regenera el kardex de la venta y la
+// partida de costo en la misma transacción.
 const ModalEditCostDist = (props) => {
   const { data, setOpen } = props;
   const { id, setLoading } = data;
 
   const [rows, setRows] = useState([]);
+  const [reason, setReason] = useState('');
+  const [send, setSend] = useState(false);
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    request.GET(`billing/process/invoices/editCostDistribution/${id}`, (resp) => {
+    request.GET(`${API_PATH}/${id}/costs`, (resp) => {
       setRows(resp.data.map((item) => ({ ...item, newCost: '', newQtyDist: '' })));
       setLoading(false);
     }, (err) => {
@@ -33,18 +38,19 @@ const ModalEditCostDist = (props) => {
   }
 
   const fnApply = () => {
-    const changedRows = rows.filter((row) => validFloat(row.newCost) !== 0 && validFloat(row.newQtyDist) !== 0);
-    if (changedRows.length === 0) {
-      notification('warning', 'page.invoicing.modal.editCostDist.msg.noChanges', 'alert.warning.title');
+    setSend(true);
+    const problem = validateCostRows(rows, reason);
+    if (problem) {
+      notification('warning', problem, 'alert.warning.title');
       return;
     }
     setLoading(true);
-    request.PUT(`billing/process/invoices/editCostDistribution/${id}`, changedRows, () => {
+    // El mensaje real del back (período cerrado, existencia, compuesto...) lo muestra `request.PUT`: aquí solo se libera la pantalla.
+    request.PUT(`${API_PATH}/${id}/costs`, buildCostBody(rows, reason), () => {
       notification('success', 'page.invoicing.modal.editCostDist.msg.success', 'alert.success.title');
       setLoading(false);
       setOpen(false);
-    }, (err) => {
-      notification('error', 'page.invoicing.modal.editCostDist.msg.error', 'alert.error.title');
+    }, () => {
       setLoading(false);
     });
   }
@@ -96,6 +102,12 @@ const ModalEditCostDist = (props) => {
                 ))}
               </tbody>
             </Table>
+          </Colxx>
+        </Row>
+        <Row className="mt-2">
+          <Colxx xxs="12">
+            <InputField value={reason} name="reason" onChange={(e) => setReason(e.target.value)} type="text" maxLength={200} label="page.invoicing.modal.postEdit.reason"
+              invalid={send && !reason.trim()} feedbackText={send && !reason.trim() ? 'page.invoicing.modal.postEdit.error.reason' : null} />
           </Colxx>
         </Row>
       </ModalBody>

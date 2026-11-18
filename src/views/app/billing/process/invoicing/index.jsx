@@ -16,11 +16,10 @@ const Content = React.lazy(() =>
 // - Editar Información de Factura: mismo código para "Editar Costo/Distribución" y
 //   "Editar Información" — son dos botones distintos en el legacy pero comparten
 //   privilegio.
-// - Cambio de Productos: código citado literalmente por el legacy, no confirmado contra
-//   el catálogo local de accesos (puede estar desactualizado).
+// - Cambio de Productos: 11.01.034 (SPEC v2-72-sr). El legacy citaba 11.01.033, pero ese código ya es "Ajustar Costos y Cantidades del Kardex" (SPEC v2-56-sr).
 const VOID_PRIVILEGE_CODE = "11.01.007";
 const EDIT_INFO_PRIVILEGE_CODE = "11.01.032";
-const CHANGE_PRODUCT_PRIVILEGE_CODE = "11.01.033";
+const CHANGE_PRODUCT_PRIVILEGE_CODE = "11.01.034";
 
 const Invoicing = (props) => {
   const dispatch = useDispatch();

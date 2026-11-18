@@ -532,16 +532,10 @@ const Invoicing = (props) => {
 
   // Refleja en el formulario los campos que el modal de "Editar Información" acaba de
   // guardar — evita tener que recargar toda la factura desde el backend.
-  const fnEditInfoSuccess = ({ customerDNI: newDNI, customerName: newName, notes: newNotes, documentType: newType, documentExo: newExo }) => {
-    setBulkFormIndex({
-      customerDNI: newDNI,
-      customerName: newName,
-      notes: newNotes,
-      documentType: newType,
-      documentExo: newExo
-    });
+  // Cambiar tipo de venta o exoneración regenera totales, partida y CxC en el servidor: se recarga la factura guardada.
+  const fnEditInfoSuccess = () => {
+    fnViewInvoice({ id });
   }
-
   const fnOpenSendEmail = () => {
     if (id === 0) {
       return;

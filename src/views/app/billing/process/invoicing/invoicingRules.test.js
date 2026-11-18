@@ -1,7 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import {
-  buildInvoicePayload, buildLinePayload, hasStockProblem, headerFromApi, headerFromDocument, lineFromApi, lineFromDocument, lineFromProduct, listParams, localToday,
-  needsLotOrDate, priceByType, validateInvoice, validateLine, warningTexts
+  buildInvoicePayload, buildLinePayload, headerFromApi, lineFromApi, listParams, localToday, validateInvoice, validateLine
 } from './invoicingRules';
 
 // Mismos casos que modules/billing/invoicing/__tests__ del back (InvoicingDTO).
