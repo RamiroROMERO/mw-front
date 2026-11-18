@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import {
-  buildInitialForm, validateCustomer, buildCustomerPayload, mapCustomerToForm, isRtnValid, shouldLookupRtn, accountsFromType, dropUnknownAccounts, localToday, hasAccountsPrivilege, ACCOUNTS_PRIVILEGE_CODE
+  buildInitialForm, validateCustomer, buildCustomerPayload, mapCustomerToForm, isRtnValid, shouldLookupRtn, accountsFromType, dropUnknownAccounts, localToday, hasAccountsPrivilege, ACCOUNTS_PRIVILEGE_CODE, isPhoneValid, cleanPhone
 } from './customerRules';
 
 // Mismos casos que dtos/__tests__/FacProcessCustomerDTO.test.js y services/__tests__/FacProcessCustomerService.test.js del back.
@@ -123,5 +123,28 @@ describe('privilegio de Actualizar Cuentas', () => {
     expect(hasAccountsPrivilege({ code: '11.01.030', active: false })).toBe(false);
     expect(hasAccountsPrivilege({ fnCreate: false, id: 0 })).toBe(false);
     expect(hasAccountsPrivilege(undefined)).toBe(false);
+  });
+});
+
+describe('teléfono (fnValidatePhone del legacy)', () => {
+  test.each(['9999-8888', '99998888', '2220 1234', '(9999)8888', '+504 9999-8888', '504 9999-8888', '38887777'])('válido %s', (tel) => {
+    expect(isPhoneValid(tel)).toBe(true);
+    expect(validateCustomer({ ...valid(), tel })).toEqual({});
+  });
+  test.each(['1999-8888', '9999-888', '9999-88888', '9971-9045 / 3180-7699', 'abc', '504 9999'])('inválido %s', (tel) => {
+    expect(isPhoneValid(tel)).toBe(false);
+    expect(validateCustomer({ ...valid(), tel }).tel).toBe('page.customers.error.phone');
+  });
+  test('vacío y cliente internacional no se validan', () => {
+    expect(validateCustomer({ ...valid(), tel: '' })).toEqual({});
+    expect(validateCustomer({ ...valid(), tel: '+1 305 555 0100', isInternational: true })).toEqual({});
+  });
+  test('solo se valida si cambió respecto del cliente cargado', () => {
+    const historic = '9971-9045 / 3180-7699';
+    expect(validateCustomer({ ...valid(), tel: historic }, { originalTel: historic })).toEqual({});
+    expect(validateCustomer({ ...valid(), tel: historic }, { originalTel: '' }).tel).toBeDefined();
+  });
+  test('cleanPhone quita espacios, guiones, paréntesis y el prefijo del país', () => {
+    expect(cleanPhone(' +504 (9999)-8888 ')).toBe('99998888');
   });
 });

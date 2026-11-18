@@ -6,6 +6,11 @@ export const MAX_RTN = 20;
 export const MAX_NAME = 120;
 export const FORBIDDEN_RTN_CHARS = /[-:,.]/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// fnValidatePhone del legacy: número de Honduras de 8 dígitos que empieza con 2, 3, 8 o 9 (sin espacios, guiones ni paréntesis ni el prefijo +504; aquí también se acepta 504).
+const PHONE_PATTERN = /^[2389]\d{7}$/;
+export const cleanPhone = (value) => String(value ?? '').trim().replace(/[ ()-]/g, '').replace(/^\+?504(?=\d{8}$)/, '');
+/** Teléfono válido: vacío no se valida (es opcional) y un cliente internacional tampoco. */
+export const isPhoneValid = (phone, isInternational = false) => String(phone ?? '').trim() === '' || (isInternational === true || isInternational === 1 || isInternational === '1') || PHONE_PATTERN.test(cleanPhone(phone));
 
 export const CREDIT_YES = 1;
 export const CREDIT_NO = 2;
@@ -89,7 +94,7 @@ const isCalendarDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value) && new Date(
  * Errores por campo (ids de traducción); un objeto vacío significa que se puede enviar. Obligatorios mínimos (decisión del usuario): tipo, RTN, nombre y fecha de ingreso; días y límite
  * solo si solicita crédito; las cuentas por cobrar, descuento e impuesto solo con Contabilidad activa (`accountingActive` se asume verdadero mientras no se conoce: el back decide).
  */
-export const validateCustomer = (form = {}, { accountingActive = true } = {}) => {
+export const validateCustomer = (form = {}, { accountingActive = true, originalTel = null } = {}) => {
   const errors = {};
   if (!(num(form.customerTypeId) > 0)) errors.customerTypeId = 'msg.required.input.typeCustomer';
 
@@ -102,6 +107,9 @@ export const validateCustomer = (form = {}, { accountingActive = true } = {}) =>
   const date = text(form.entryDate);
   if (date === '') errors.entryDate = 'msg.required.input.date';
   else if (!isCalendarDate(date) || date > localToday()) errors.entryDate = 'page.customers.error.entryDate';
+
+  // Como el back: el teléfono solo se valida si cambió respecto del cliente cargado (un cliente histórico con varios números sigue editándose).
+  if (text(form.tel) !== text(originalTel) && !isPhoneValid(form.tel, form.isInternational)) errors.tel = 'page.customers.error.phone';
 
   if (num(form.creditRequest) === CREDIT_YES) {
     if (!(num(form.creditDays) > 0)) errors.creditDays = 'msg.required.input.creditDays';

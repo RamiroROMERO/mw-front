@@ -113,6 +113,7 @@
     "customer.inUse",
     "customer.location.invalid",
     "customer.noCxcAccount",
+    "customer.phone.invalid",
     "customer.required",
     "customer.rtn.duplicate",
     "customer.rtn.invalid",

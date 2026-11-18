@@ -1600,6 +1600,8 @@ const esLang = {
   "page.customers.msg.exportError": "No se pudo exportar el listado de clientes a Excel.",
   "page.customers.msg.updateAccountsConfirm": "Se copiarán las cuentas contables del tipo {type} a {count} clientes de ese tipo. Esta acción cambia las cuentas de todos ellos. ¿Desea continuar?",
   "page.customers.msg.updateAccountsTitle": "¿Actualizar las cuentas contables de los clientes?",
+  "page.customers.error.phone": "El teléfono debe ser un número de Honduras de 8 dígitos que empiece con 2, 3, 8 o 9 (ejemplo 9999-8888)!",
+  "page.customers.msg.disableTitle": "¿Desactivar este cliente?",
   "page.customers.modal.modalNew.title.credit": "Credito",
   /* 11.Pagina de encargados en modulo de produccion */
   "page.managers.table.title": "Tabla de Responsables",

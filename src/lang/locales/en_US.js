@@ -4880,6 +4880,8 @@ const enLang = {
   "page.customers.msg.exportError": "The customer list could not be exported to Excel.",
   "page.customers.msg.updateAccountsConfirm": "The ledger accounts of type {type} will be copied to {count} customers of that type. This changes the accounts of all of them. Do you want to continue?",
   "page.customers.msg.updateAccountsTitle": "Update the ledger accounts of the customers?",
+  "page.customers.error.phone": "The phone must be an 8-digit Honduran number starting with 2, 3, 8 or 9 (e.g. 9999-8888)!",
+  "page.customers.msg.disableTitle": "Disable this customer?",
   "page.modules.privileges.select.clasificPrivileges": "Classification",
   "page.productsCatalog.modal.distProduct.undOut": "Output Units",
   "button.searchCustomer": "Search Customer",

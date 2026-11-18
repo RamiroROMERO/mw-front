@@ -19,6 +19,8 @@ export const useCustomers = ({ setLoading }) => {
   const [listLedgerAccounts, setListLedgerAccounts] = useState([]);
   const [listTypeCustomers, setListTypeCustomers] = useState([]);
   const [listSellers, setListSellers] = useState([]);
+  const [originalTel, setOriginalTel] = useState(null);
+  const [openMsgDisable, setOpenMsgDisable] = useState(false);
   const [pendingAccounts, setPendingAccounts] = useState(null);
   const [openMsgAccounts, setOpenMsgAccounts] = useState(false);
   const [sendForm, setSendForm] = useState(false);
@@ -31,7 +33,7 @@ export const useCustomers = ({ setLoading }) => {
   const intl = useIntl();
   const canUpdateAccounts = hasAccountsPrivilege(getPrivilegeData(ACCOUNTS_PRIVILEGE_CODE));
   const { formState, onInputChange, setBulkForm } = useForm(buildInitialForm());
-  const errors = useMemo(() => validateCustomer(formState, { accountingActive }), [formState, accountingActive]);
+  const errors = useMemo(() => validateCustomer(formState, { accountingActive, originalTel }), [formState, accountingActive, originalTel]);
 
   const onMunicRefresh = (deptoCode) => {
     if (!deptoCode) {
@@ -50,6 +52,7 @@ export const useCustomers = ({ setLoading }) => {
     let form = mapCustomerToForm(item);
     if (listLedgerAccounts.length > 0) form = dropUnknownAccounts(form, listLedgerAccounts);
     onMunicRefresh(form.deptoCode);
+    setOriginalTel(form.tel);
     setBulkForm(form);
     setOpenModalViewCust(false);
   }
@@ -92,6 +95,7 @@ export const useCustomers = ({ setLoading }) => {
   const fnNewCustomer = () => {
     setSendForm(false);
     setListMunicipalities([]);
+    setOriginalTel(null);
     setBulkForm(buildInitialForm());
   }
 
@@ -109,6 +113,7 @@ export const useCustomers = ({ setLoading }) => {
     setLoading(true);
     if (id > 0) {
       request.PUT(`billing/settings/customers/${id}`, data, () => {
+        setOriginalTel(data.tel);
         setSendForm(false);
         setLoading(false);
       }, () => {
@@ -117,6 +122,7 @@ export const useCustomers = ({ setLoading }) => {
     } else {
       request.POST('billing/settings/customers/', data, (resp) => {
         setSendForm(false);
+        setOriginalTel(data.tel);
         setBulkForm({ ...formState, id: resp.data.id });
         setLoading(false);
       }, () => {
@@ -143,6 +149,20 @@ export const useCustomers = ({ setLoading }) => {
       setLoading(false);
     }, () => {
       // Rechazada (en uso o predeterminado): `request` ya mostró el mensaje real; el cliente se conserva en pantalla.
+      setLoading(false);
+    });
+  }
+
+  // "Desactivar" del legacy (status = 0): un atajo con confirmación a la casilla "Activo"; solo toca el estado del cliente guardado.
+  const fnDisableCustomer = () => {
+    setOpenMsgDisable(false);
+    const { id } = formState;
+    if (!(validInt(id) > 0)) return;
+    setLoading(true);
+    request.PUT(`billing/settings/customers/${id}`, { status: false }, () => {
+      setBulkForm({ ...formState, status: false });
+      setLoading(false);
+    }, () => {
       setLoading(false);
     });
   }
@@ -245,6 +265,11 @@ export const useCustomers = ({ setLoading }) => {
         icon: "bi bi-journal-text",
         onClick: fnLedgerAccounts
       },
+      validInt(formState.id) > 0 && formState.status ? {
+        title: "button.disable",
+        icon: "bi bi-slash-circle",
+        onClick: () => setOpenMsgDisable(true)
+      } : null,
       accountingActive && canUpdateAccounts ? {
         title: "page.customers.button.updateAccounts",
         icon: "bi bi-arrow-repeat",
@@ -268,6 +293,7 @@ export const useCustomers = ({ setLoading }) => {
     title: "page.customers.msg.updateAccountsTitle",
     textLegend: pendingAccounts ? intl.formatMessage({ id: 'page.customers.msg.updateAccountsConfirm' }, { type: typeName, count: pendingAccounts.customers }) : ''
   }
+  const propsToMsgDisable = { open: openMsgDisable, setOpen: setOpenMsgDisable, fnOnOk: fnDisableCustomer, title: "page.customers.msg.disableTitle" }
   const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDelete, title: "alert.question.title" }
 
   return {
@@ -282,6 +308,7 @@ export const useCustomers = ({ setLoading }) => {
     propsToControlPanel,
     propsToMsgDelete,
     propsToMsgAccounts,
+    propsToMsgDisable,
     isFarmControl,
     isHospital,
     fnViewCustomer,

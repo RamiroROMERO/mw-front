@@ -30,7 +30,7 @@ const Customers = (props) => {
     propsToControlPanel,
     openModalViewCust,
     isFarmControl,
-    isHospital, fnViewCustomer, fnLookupRtn, onInputChange, listDepartments, listMunicipalities, onDeptoChange, onTypeChange, errors, propsToMsgDelete, propsToMsgAccounts, listSellers } = useCustomers({ setLoading });
+    isHospital, fnViewCustomer, fnLookupRtn, onInputChange, listDepartments, listMunicipalities, onDeptoChange, onTypeChange, errors, propsToMsgDelete, propsToMsgAccounts, propsToMsgDisable, listSellers } = useCustomers({ setLoading });
 
   const { rtn, nomcli, entryDate, tel, phone2, direcc, customerTypeId, locationType, sellerId, creditRequest, creditDays, creditLimit, paymentTerms, globalDiscount, memberLimit, isInternational,
     isPartner, paysTax, isDefaultPos, purchaseContactName, purchaseContactPosition, purchaseContactPhone, purchaseContactMobile, purchaseContactEmail, paymentContactName,
@@ -154,6 +154,8 @@ const Customers = (props) => {
                             onChange={onInputChange}
                             type="text"
                             maxLength={60}
+                            invalid={sendForm && !!errors.tel}
+                            feedbackText={sendForm && (errors.tel || null)}
                             label="page.customers.modal.modalNew.input.phone"
                           />
                         </Colxx>
@@ -649,6 +651,7 @@ const Customers = (props) => {
       </Row>
       <Confirmation {...propsToMsgDelete} />
       <Confirmation {...propsToMsgAccounts} />
+      <Confirmation {...propsToMsgDisable} />
       <Modal {...propsToModalViewCust} />
     </>
   );
