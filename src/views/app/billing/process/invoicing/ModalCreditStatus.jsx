@@ -1,56 +1,41 @@
 import { Row, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { InputField } from '@Components/inputFields';
-import { IntlMessages, formatNumber, validFloat } from '@Helpers/Utils';
+import { IntlMessages, formatNumber } from '@Helpers/Utils';
 
-// Equivalente a fac_pos_credit_status.sc2: Límite de Crédito vs. Crédito Actual
-// (suma de CxC pendientes del cliente, sin contar la venta en proceso). Igual criterio
-// de umbrales que el legacy: excedido si el saldo restante es <=0, advertencia si el uso
-// supera el 80% del límite.
+// Estado de crédito del cliente (fac_pos_credit_status.sc2; SPEC v2-73-sr): límite, crédito actual (saldo de la CxC), disponible y porcentaje de uso. Todo viene
+// calculado del servidor (`GET creditStatus`); aquí solo se muestra. Excedido = lo usado alcanza el límite; advertencia = pasa del 80 %; sin límite configurado
+// (límite 0) no hay alerta. Solo avisa.
 const ModalCreditStatus = (props) => {
   const { data, setOpen } = props;
-  const { creditLimit, creditCurrent } = data;
+  const status = data.creditStatus || {};
 
-  const limit = validFloat(creditLimit);
-  const current = validFloat(creditCurrent);
-  const rest = limit - current;
-  const usagePercent = limit > 0 ? (current / limit) * 100 : 0;
-
-  let warningLabel = null;
-  let warningClass = '';
-  if (rest <= 0) {
-    warningLabel = 'page.invoicing.modal.creditStatus.exceeded';
-    warningClass = 'text-danger';
-  } else if (usagePercent > 80) {
-    warningLabel = 'page.invoicing.modal.creditStatus.warning';
-    warningClass = 'text-warning';
-  }
+  const warningByLevel = {
+    exceeded: { label: 'page.invoicing.modal.creditStatus.exceeded', className: 'text-danger' },
+    warning: { label: 'page.invoicing.modal.creditStatus.warning', className: 'text-warning' },
+    none: { label: 'page.invoicing.modal.creditStatus.none', className: 'text-muted' }
+  };
+  const alert = warningByLevel[status.level] || null;
 
   return (
     <>
       <ModalBody>
         <Row>
           <Colxx xxs="12">
-            <InputField
-              value={formatNumber(limit)}
-              name="creditLimit"
-              disabled
-              type="text"
-              label="page.invoicing.modal.creditStatus.input.limit"
-            />
+            <InputField value={formatNumber(status.limit || 0)} name="creditLimit" disabled type="text" label="page.invoicing.modal.creditStatus.input.limit" />
           </Colxx>
           <Colxx xxs="12">
-            <InputField
-              value={formatNumber(current)}
-              name="creditCurrent"
-              disabled
-              type="text"
-              label="page.invoicing.modal.creditStatus.input.current"
-            />
+            <InputField value={formatNumber(status.balance || 0)} name="creditCurrent" disabled type="text" label="page.invoicing.modal.creditStatus.input.current" />
           </Colxx>
-          {warningLabel && (
+          <Colxx xxs="12" md="6">
+            <InputField value={formatNumber(status.available || 0)} name="creditAvailable" disabled type="text" label="page.invoicing.modal.creditStatus.input.available" />
+          </Colxx>
+          <Colxx xxs="12" md="6">
+            <InputField value={`${formatNumber(status.percent || 0)} %`} name="creditPercent" disabled type="text" label="page.invoicing.modal.creditStatus.input.percent" />
+          </Colxx>
+          {alert && (
             <Colxx xxs="12" className="mt-2">
-              <strong className={warningClass}>{IntlMessages(warningLabel)}</strong>
+              <strong className={alert.className}>{IntlMessages(alert.label)}</strong>
             </Colxx>
           )}
         </Row>

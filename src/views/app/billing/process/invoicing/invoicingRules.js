@@ -319,3 +319,25 @@ export const applyGlobalDiscount = (lines = [], percent = 0) => lines.map((line)
     total: round5(base + taxValue)
   };
 });
+
+/**
+ * Crédito del cliente y estado de pago (SPEC v2-73-sr). El nivel lo calcula el SERVIDOR (`GET creditStatus`: límite, saldo de la CxC, disponible, porcentaje y nivel
+ * `none` | `ok` | `warning` | `exceeded`); el front solo lo traduce. Sin límite configurado (`none`) no hay alerta. Solo avisa: nunca bloquea.
+ */
+export const CREDIT_STATUS_PATH = `${API_PATH}/creditStatus`;
+const CREDIT_ALERT_BY_LEVEL = { exceeded: 'over', warning: 'warning', ok: 'ok' };
+export const creditAlertLevel = (status) => CREDIT_ALERT_BY_LEVEL[status?.level] || null;
+
+const CREDIT_WARNING_IDS = {
+  'credit.exceeded': 'page.invoicing.modal.creditStatus.exceeded',
+  'credit.warning': 'page.invoicing.modal.creditStatus.warning'
+};
+// Avisos de crédito que el servidor devuelve al guardar y al generar (`warnings`): un id de traducción por aviso.
+export const creditWarningIds = (warnings = []) => (
+  (Array.isArray(warnings) ? warnings : []).filter((item) => item && CREDIT_WARNING_IDS[item.code]).map((item) => CREDIT_WARNING_IDS[item.code])
+);
+
+// Estado de pago de una factura fiscal (la anulada y el borrador tienen su propio aviso): pagada (saldo 0) o pendiente de pago.
+const PAYMENT_STATUS_IDS = { paid: 'page.invoicing.paymentStatus.paid', pending: 'page.invoicing.paymentStatus.pending' };
+export const paymentStatusId = (status) => PAYMENT_STATUS_IDS[status] || null;
+export const paymentStatusColor = (status) => (status === 'paid' ? 'success' : status === 'pending' ? 'warning' : 'secondary');

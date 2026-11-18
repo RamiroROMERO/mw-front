@@ -15,6 +15,11 @@ const ModalViewInvoi = (props) => {
     fiscal: IntlMessages("page.invoicing.state.fiscal"),
     draft: IntlMessages("page.invoicing.state.draft")
   };
+  // Estado de pago de las facturas fiscales (SPEC v2-73-sr, desde la CxC en el servidor).
+  const paymentText = {
+    paid: IntlMessages("page.invoicing.paymentStatus.paid"),
+    pending: IntlMessages("page.invoicing.paymentStatus.pending")
+  };
 
   const [table] = useState({
     title: IntlMessages("page.invoicing.table.title"),
@@ -33,10 +38,10 @@ const ModalViewInvoi = (props) => {
         text: IntlMessages("page.invoicing.table.invoice"), dataField: "numcai", headerStyle: { 'width': '18%' },
         classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell'
       },
-      { text: IntlMessages("page.invoicing.table.customer"), dataField: "customerName", headerStyle: { 'width': '22%' } },
+      { text: IntlMessages("page.invoicing.table.customer"), dataField: "customerName", headerStyle: { 'width': '18%' } },
       {
-        text: IntlMessages("page.invoicing.table.state"), dataField: "stateKey", headerStyle: { 'width': '8%' },
-        cell: ({ row }) => stateText[row.original.stateKey] || ''
+        text: IntlMessages("page.invoicing.table.state"), dataField: "stateKey", headerStyle: { 'width': '14%' },
+        cell: ({ row }) => [stateText[row.original.stateKey], row.original.stateKey === 'fiscal' ? paymentText[row.original.paymentStatus] : ''].filter(Boolean).join(' · ')
       },
       { text: IntlMessages("page.invoicing.table.value"), dataField: "value", headerStyle: { width: '10%' }, style: { textAlign: 'right' } },
       {

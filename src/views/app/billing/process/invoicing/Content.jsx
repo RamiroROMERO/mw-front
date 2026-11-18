@@ -30,7 +30,7 @@ import InvoicingForm from './InvoicingForm';
 import InvoicingDetail from './InvoicingDetail';
 import InvoicingTable from './InvoicingTableProd';
 import {
-  API_PATH, buildInvoicePayload, hasStockProblem, headerFromApi, headerFromDocument, lineFromApi, lineFromDocument, lineFromProduct, listParams, needsLotOrDate,
+  API_PATH, CREDIT_STATUS_PATH, buildInvoicePayload, creditAlertLevel, creditWarningIds, paymentStatusColor, paymentStatusId, hasStockProblem, headerFromApi, headerFromDocument, lineFromApi, lineFromDocument, lineFromProduct, listParams, needsLotOrDate,
   totalsFromLines, validateInvoice, warningTexts
 } from './invoicingRules';
 import ViewPdf from '@Components/ViewPDF/ViewPdf';
@@ -64,8 +64,7 @@ const Invoicing = (props) => {
   const [hasDateOutControl, setHasDateOutControl] = useState(false);
   const [hasStoreControl, setHasStoreControl] = useState(false);
   const [hasStockControl, setHasStockControl] = useState(false);
-  const [creditLimit, setCreditLimit] = useState(0);
-  const [creditCurrent, setCreditCurrent] = useState(0);
+  const [creditStatus, setCreditStatus] = useState(null);
   const [openModalCreditStatus, setOpenModalCreditStatus] = useState(false);
   const [openModalEditCostDist, setOpenModalEditCostDist] = useState(false);
   const [openModalSeekPurchaseOrders, setOpenModalSeekPurchaseOrders] = useState(false);
@@ -107,6 +106,7 @@ const Invoicing = (props) => {
     dateInProcess: DateHelper.format(new Date()),
     cashierId: 0,
     documentExo: false,
+    paymentStatus: null,
     exonerationOrderNumber: '',
     documentId: 0,
     isDeleted: 0,
@@ -157,7 +157,7 @@ const Invoicing = (props) => {
     haveComiss, areaId, storeId, lotCode, dateOut, productType, existQty, requireExpLot } = formDetail;
 
   const { id, customerId, notes, documentCode, documentType, currency, date, dateInProcess, cashierId,
-    documentExo, exonerationOrderNumber, documentId, isDeleted, nulledNotes, numcai, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue:
+    documentExo, paymentStatus, exonerationOrderNumber, documentId, isDeleted, nulledNotes, numcai, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue:
     taxValueInvoice, total } = formIndex;
 
   // Documento Fiscal ya fue Generado (CAI asignado) — igual que el legacy
@@ -167,22 +167,12 @@ const Invoicing = (props) => {
   const isVoided = validInt(isDeleted) === 1;
   const isInvoiceSaved = validInt(documentId) > 0 || isVoided;
   const voidedNotice = IntlMessages('page.invoicing.voided.notice');
+  // Estado de pago de una factura fiscal (SPEC v2-73-sr, desde la CxC en el servidor): el texto se pide siempre (IntlMessages es un hook) y se muestra solo si aplica.
+  const paymentStatusText = IntlMessages(paymentStatusId(paymentStatus) || 'page.invoicing.paymentStatus.pending');
 
-  // Estado del crédito del cliente (fac_pos_credit_status.sc2): "Crédito Actual" es la
-  // suma de CxC pendientes del cliente (sin contar la venta en proceso, que todavía no
-  // se ha generado). Solo aplica a ventas a Crédito, igual que el legacy
-  // (Optiongroup_hw1.InteractiveChange retorna de inmediato si el valor es Contado).
-  let creditStatusLevel = null;
-  if (validInt(documentType) === 2 && validInt(customerId) > 0) {
-    const creditRest = validFloat(creditLimit) - validFloat(creditCurrent);
-    if (creditRest <= 0) {
-      creditStatusLevel = 'over';
-    } else if (validFloat(creditLimit) > 0 && (validFloat(creditCurrent) / validFloat(creditLimit)) * 100 > 80) {
-      creditStatusLevel = 'warning';
-    } else {
-      creditStatusLevel = 'ok';
-    }
-  }
+  // Estado del crédito del cliente (SPEC v2-73-sr): el servidor calcula límite, saldo de la CxC, disponible, porcentaje y nivel (`GET creditStatus`); solo aplica a
+  // ventas a Crédito (como el legacy) y solo AVISA. Sin límite configurado no hay alerta.
+  const creditStatusLevel = validInt(documentType) === 2 && validInt(customerId) > 0 ? creditAlertLevel(creditStatus) : null;
 
   const fnViewCreditStatus = () => {
     setOpenModalCreditStatus(true);
@@ -361,6 +351,8 @@ const Invoicing = (props) => {
     const onSaved = (resp) => {
       // Existencia insuficiente: solo aviso (el servidor bloquea al generar el documento fiscal).
       warningTexts(resp.data?.warnings, (item) => `${item.productCode}: ${item.requested} / ${item.available}`).forEach((text) => notification('warning', { text }, 'alert.warning.title'));
+      // Crédito del cliente: solo avisa (SPEC v2-73-sr).
+      creditWarningIds(resp.data?.warnings).forEach((warningId) => notification('warning', warningId, 'alert.warning.title'));
       fnViewInvoice({ id: resp.data.id });
     };
     const onFailed = () => {
@@ -849,25 +841,22 @@ const Invoicing = (props) => {
     }
   }, [recordSelected]);
 
-  // Recalcula el estado de crédito cada vez que cambia el cliente o el tipo de venta,
-  // igual que el legacy (se dispara al elegir cliente y al alternar Contado/Crédito).
+  // Consulta el estado de crédito cada vez que cambia el cliente o el tipo de venta, igual que el legacy (al elegir cliente y al alternar Contado/Crédito).
+  const fnLoadCreditStatus = (customer) => {
+    request.GET(buildUrl(CREDIT_STATUS_PATH, { customerId: customer }), (resp) => {
+      setCreditStatus(resp.data);
+    }, () => {
+      setCreditStatus(null);
+    });
+  };
+
   useEffect(() => {
     if (validInt(documentType) !== 2 || validInt(customerId) === 0) {
-      setCreditLimit(0);
-      setCreditCurrent(0);
+      setCreditStatus(null);
       return;
     }
-    request.GET(`billing/settings/customers/${customerId}`, (resp) => {
-      setCreditLimit(validFloat(resp.data.creditLimit));
-    }, (err) => {
-
-    });
-    request.GET(buildUrl('accounting/process/cxc/pendingByCustomer', { customerId }), (resp) => {
-      const pending = resp.data.reduce((sum, item) => sum + validFloat(item.balance), 0);
-      setCreditCurrent(pending);
-    }, (err) => {
-
-    });
+    fnLoadCreditStatus(customerId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerId, documentType]);
 
   const propsToControlPanel = {
@@ -1057,8 +1046,7 @@ const Invoicing = (props) => {
     setOpen: setOpenModalCreditStatus,
     maxWidth: 'sm',
     data: {
-      creditLimit,
-      creditCurrent
+      creditStatus
     }
   }
 
@@ -1225,6 +1213,9 @@ const Invoicing = (props) => {
             <CardBody>
               <ControlPanel {...propsToControlPanel} />
               <Separator className="mt-2 mb-4" />
+              {!isVoided && paymentStatusId(paymentStatus) && (
+                <Alert color={paymentStatusColor(paymentStatus)} className="mb-3 py-2"><strong>{paymentStatusText}</strong></Alert>
+              )}
               {isVoided && (
                 <Alert color="danger" className="mb-3">
                   <strong>{voidedNotice}</strong>{nulledNotes ? `: ${nulledNotes}` : ''}

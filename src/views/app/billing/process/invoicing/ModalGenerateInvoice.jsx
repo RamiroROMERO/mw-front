@@ -11,6 +11,7 @@ import DateCalendar from '@Components/dateCalendar';
 import ViewPdf from "@Components/ViewPDF/ViewPdf";
 import Modal from "@Components/modal";
 import notification from '@Containers/ui/Notifications';
+import { creditWarningIds } from './invoicingRules';
 
 const ModalGenerateInvoice = (props) => {
   const { data, setOpen } = props;
@@ -54,6 +55,8 @@ const ModalGenerateInvoice = (props) => {
         range: resp.data.range,
         dateOut: resp.data.dateOut
       }
+      // Crédito del cliente: solo avisa (SPEC v2-73-sr).
+      creditWarningIds(resp.data.warnings).forEach((warningId) => notification('warning', warningId, 'alert.warning.title'));
       setBulkForm(newDocument);
       setDocumentGenerated(true);
       onInputChangeIndex({ target: { name: 'documentId', value: resp.data.documentId } });
