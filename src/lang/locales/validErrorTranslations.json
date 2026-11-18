@@ -195,6 +195,7 @@
     "invoice.price.notAllowed",
     "invoice.product.invalid",
     "invoice.seller.invalid",
+    "invoice.stateChanged",
     "invoice.store.invalid",
     "invoice.store.required",
     "invoice.tax.invalid",

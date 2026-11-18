@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Card, CardBody, Row } from 'reactstrap';
-import { validFloat, formatNumber, validInt, IntlMessagesFn } from "@Helpers/Utils";
+import { Alert, Card, CardBody, Row } from 'reactstrap';
+import { validFloat, formatNumber, validInt, IntlMessagesFn, IntlMessages } from "@Helpers/Utils";
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
-import { request, buildUrl } from '@Helpers/core';
+import { request, buildUrl, notifyError } from '@Helpers/core';
 import { getErrorCode } from '@Helpers/errorMessage';
 import { useForm } from '@Hooks'
 import ControlPanel from '@Components/controlPanel';
@@ -48,7 +48,6 @@ const Invoicing = (props) => {
   const [openModalGenerate, setOpenModalGenerate] = useState(false);
   const [openModalQuotation, setOpenModalQuotation] = useState(false);
   const [openModalDeliveryDoc, setOpenModalDeliveryDoc] = useState(false);
-  const [openMsgCancelInvoice, setOpenMsgCancelInvoice] = useState(false);
   const [openModalVoidInvoice, setOpenModalVoidInvoice] = useState(false);
   const [openMsgGenerateInvoice, setOpenMsgGenerateInvoice] = useState(false);
   const [sendFormIndex, setSendFormIndex] = useState(false);
@@ -103,6 +102,8 @@ const Invoicing = (props) => {
     cashierId: 0,
     documentExo: false,
     documentId: 0,
+    isDeleted: 0,
+    nulledNotes: '',
     numcai: '',
     subTotalValue: 0,
     discountValue: 0,
@@ -148,13 +149,16 @@ const Invoicing = (props) => {
     haveComiss, areaId, storeId, lotCode, dateOut, productType, existQty } = formDetail;
 
   const { id, customerId, customerDNI, customerName, notes, documentCode, documentType, currency, date, dateInProcess, cashierId,
-    documentExo, documentId, numcai, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue:
+    documentExo, documentId, isDeleted, nulledNotes, numcai, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue:
     taxValueInvoice, total } = formIndex;
 
   // Documento Fiscal ya fue Generado (CAI asignado) — igual que el legacy
   // (fac_facturacion.sc2: si Textbox_hw48/documentId != 0, bloquea modificar el
   // documento): ya no se puede editar la cabecera ni el detalle, solo consultar/imprimir.
-  const isInvoiceSaved = validInt(documentId) > 0;
+  // Anulada (SPEC v2-70-sr): también es de solo lectura.
+  const isVoided = validInt(isDeleted) === 1;
+  const isInvoiceSaved = validInt(documentId) > 0 || isVoided;
+  const voidedNotice = IntlMessages('page.invoicing.voided.notice');
 
   // Estado del crédito del cliente (fac_pos_credit_status.sc2): "Crédito Actual" es la
   // suma de CxC pendientes del cliente (sin contar la venta en proceso, que todavía no
@@ -312,6 +316,7 @@ const Invoicing = (props) => {
       const invoices = resp.data.map((item) => {
         item.value = formatNumber(item.total);
         item.numcai = item.fiscalNumber;
+        item.stateKey = validInt(item.isVoided) === 1 ? 'voided' : validInt(item.documentId) > 0 ? 'fiscal' : 'draft';
         item.options = <TableButton color='primary' icon='eye' fnOnClick={() => fnViewInvoice(item)} />
         return item;
       });
@@ -326,6 +331,10 @@ const Invoicing = (props) => {
   // Un solo POST (alta) o PUT (edición) con la cabecera y las líneas: el servidor las guarda en una transacción y calcula importes, costo y distribución
   // (SPEC v2-68-sr). El formulario solo avisa lo que ya sabe que el servidor rechazaría; los errores de negocio los muestra `request` con su mensaje real.
   const fnSaveInvoicing = () => {
+    if (isVoided) {
+      notification('warning', 'page.invoicing.voided.alreadyVoided', 'alert.warning.title');
+      return;
+    }
     setSendFormIndex(true);
     if (!isFormValidIndex) {
       return;
@@ -363,50 +372,32 @@ const Invoicing = (props) => {
     }
   }
 
-  // Documento sin CAI generado (borrador): nada se contabilizó todavía, un simple
-  // marcado alcanza. Documento ya timbrado: hay que revertir kardex/partida/CxC, igual
-  // que el POS (ver fnVoidInvoice más abajo).
+  // Anular (SPEC v2-70-sr): un borrador solo se marca anulado; un documento fiscal revierte además kardex, partida y CxC. En los dos casos pide el motivo.
   const fnCancelInvoicing = () => {
-    if (id > 0 && documentId > 0) {
-      setOpenModalVoidInvoice(true);
-    } else if (id > 0) {
-      setOpenMsgCancelInvoice(true);
+    if (!(id > 0)) return;
+    if (isVoided) {
+      notification('warning', 'page.invoicing.voided.alreadyVoided', 'alert.warning.title');
+      return;
     }
+    setOpenModalVoidInvoice(true);
   }
 
-  // Reversión transaccional (kardex, partida contable y CxC) — no un simple marcado de
-  // isDeleted como antes: eso dejaba el stock descontado, la partida contable vigente y
-  // la CxC cobrándole al cliente una factura anulada.
+  // DELETE .../:id/void?reason=: una transacción en el servidor (período, lock, reversa, bitácora y auditoría). Se recarga el documento anulado; los errores muestran su
+  // mensaje real (pagos aplicados, período cerrado, sin privilegio...).
   const fnVoidInvoice = (reason) => {
     setLoading(true);
-    request.DELETE(buildUrl(`billing/process/invoices/void/${id}`, { reason }), () => {
+    request.DELETE(buildUrl(`${API_PATH}/${id}/void`, { reason }), () => {
       setOpenModalVoidInvoice(false);
-      fnNewInvoicing();
       notification('success', 'msg.success.voidInvoice', 'alert.success.title');
-      setLoading(false);
+      fnViewInvoice({ id });
     }, (err) => {
-      const errorCode = getErrorCode(err);
-      if (errorCode === 'invoice.hasPayments') {
+      if (getErrorCode(err) === 'invoice.hasPayments') {
         notification('error', 'msg.error.voidInvoice.hasPayments', 'alert.error.title');
       } else {
-        notification('error', 'msg.delete.record.error', 'alert.error.title');
+        notifyError(err, 'msg.delete.record.error');
       }
       setLoading(false);
     }, false);
-  }
-
-  const fnCancelInvoice = () => {
-    const dataCancel = {
-      isDeleted: 1
-    }
-    setLoading(true);
-    request.PUT(`billing/process/invoices/${id}`, dataCancel, (resp) => {
-      setOpenMsgCancelInvoice(false);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
   }
 
   const fnQuotation = () => {
@@ -416,7 +407,9 @@ const Invoicing = (props) => {
   }
 
   const fnInvoice = () => {
-    if (id > 0 && documentId === 0) {
+    if (isVoided) {
+      notification('warning', 'page.invoicing.voided.alreadyVoided', 'alert.warning.title');
+    } else if (id > 0 && documentId === 0) {
       setOpenMsgGenerateInvoice(true);
     } else if (documentId > 0) {
       notification('warning', 'msg.generateInvoice', 'alert.warning.title');
@@ -1220,14 +1213,7 @@ const Invoicing = (props) => {
 
   const propsToInvoicingTable = {
     invoiceDetail, subTotalValue, discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValueInvoice, total, onInputChangeIndex,
-    fnDeleteProduct, isInvoiceSaved, hasDateOutControl, fnOpenChangeProduct, canChangeProduct: changeProductControl.fnUpdate
-  }
-
-  const propsToMsgCancelInvoice = {
-    open: openMsgCancelInvoice,
-    setOpen: setOpenMsgCancelInvoice,
-    fnOnOk: fnCancelInvoice,
-    title: "msg.question.cancelInvoice.title"
+    fnDeleteProduct, isInvoiceSaved, hasDateOutControl, fnOpenChangeProduct, canChangeProduct: changeProductControl.fnUpdate && !isVoided
   }
 
   const propsToModalVoidInvoice = {
@@ -1237,7 +1223,7 @@ const Invoicing = (props) => {
     setOpen: setOpenModalVoidInvoice,
     maxWidth: "md",
     data: {
-      invoiceNumber: `${documentCode}-${documentId}`,
+      invoiceNumber: validInt(documentId) > 0 ? `${documentCode}-${documentId}` : `${documentCode} #${id}`,
       numcai,
       fnConfirm: fnVoidInvoice
     }
@@ -1265,6 +1251,11 @@ const Invoicing = (props) => {
             <CardBody>
               <ControlPanel {...propsToControlPanel} />
               <Separator className="mt-2 mb-4" />
+              {isVoided && (
+                <Alert color="danger" className="mb-3">
+                  <strong>{voidedNotice}</strong>{nulledNotes ? `: ${nulledNotes}` : ''}
+                </Alert>
+              )}
               <InvoicingForm {...propsToInvoicingForm} />
               <InvoicingDetail {...propsToInvoicingDetail} />
               <InvoicingTable {...propsToInvoicingTable} />
@@ -1288,7 +1279,6 @@ const Invoicing = (props) => {
       <Modal {...propsToModalEditInfo} />
       <Modal {...propsToModalSendEmail} />
       <Confirmation {...propsToMsgDelete} />
-      <Confirmation {...propsToMsgCancelInvoice} />
       <Confirmation {...propsToMsgGenerateInvoice} />
     </>
   );

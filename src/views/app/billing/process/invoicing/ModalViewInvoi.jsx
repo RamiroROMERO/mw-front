@@ -9,7 +9,14 @@ const ModalViewInvoi = (props) => {
   const { data, setOpen } = props;
   const { dataInvoicing } = data;
 
-  const [table, setTable] = useState({
+  // Los textos del estado se piden aquí, siempre y en el mismo orden (un hook dentro de la celda cambiaría el orden de los hooks).
+  const stateText = {
+    voided: IntlMessages("page.invoicing.state.voided"),
+    fiscal: IntlMessages("page.invoicing.state.fiscal"),
+    draft: IntlMessages("page.invoicing.state.draft")
+  };
+
+  const [table] = useState({
     title: IntlMessages("page.invoicing.table.title"),
     columns: [
       {
@@ -26,7 +33,11 @@ const ModalViewInvoi = (props) => {
         text: IntlMessages("page.invoicing.table.invoice"), dataField: "numcai", headerStyle: { 'width': '18%' },
         classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell'
       },
-      { text: IntlMessages("page.invoicing.table.customer"), dataField: "customerName", headerStyle: { 'width': '25%' } },
+      { text: IntlMessages("page.invoicing.table.customer"), dataField: "customerName", headerStyle: { 'width': '22%' } },
+      {
+        text: IntlMessages("page.invoicing.table.state"), dataField: "stateKey", headerStyle: { 'width': '8%' },
+        cell: ({ row }) => stateText[row.original.stateKey] || ''
+      },
       { text: IntlMessages("page.invoicing.table.value"), dataField: "value", headerStyle: { width: '10%' }, style: { textAlign: 'right' } },
       {
         text: IntlMessages("page.invoicing.table.doc"), dataField: "documentCode", headerStyle: { 'width': '5%' },

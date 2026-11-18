@@ -11,15 +11,14 @@ const Content = React.lazy(() =>
 
 // Facturación general usa tres privilegios distintos, cada uno gateando una acción
 // puntual (no todo el screenControl.fnDelete genérico como Cotizaciones/POS):
-// - Anular Facturas: específico de esta pantalla, distinto del genérico "Eliminar/Anular
-//   de Documentos" que usa Cotizaciones (ver memoria del proyecto, confirmado por el
-//   usuario 2026-09-10).
+// - Anular: el genérico "Eliminar/Anular de Documentos" (11.01.007, el del legacy; SPEC v2-70-sr). Antes usaba 11.01.008 ("Anular Facturas"); el back
+//   lo valida con 11.01.007 y falla cerrado, así que el botón se muestra con el mismo privilegio.
 // - Editar Información de Factura: mismo código para "Editar Costo/Distribución" y
 //   "Editar Información" — son dos botones distintos en el legacy pero comparten
 //   privilegio.
 // - Cambio de Productos: código citado literalmente por el legacy, no confirmado contra
 //   el catálogo local de accesos (puede estar desactualizado).
-const VOID_PRIVILEGE_CODE = "11.01.008";
+const VOID_PRIVILEGE_CODE = "11.01.007";
 const EDIT_INFO_PRIVILEGE_CODE = "11.01.032";
 const CHANGE_PRODUCT_PRIVILEGE_CODE = "11.01.033";
 
