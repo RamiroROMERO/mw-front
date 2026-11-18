@@ -1,9 +1,13 @@
 import { Row, Form, Button, Table } from 'reactstrap';
-import { IntlMessages, formatNumber } from "@Helpers/Utils";
+import { useIntl } from 'react-intl';
+import { formatNumber } from "@Helpers/Utils";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 
 const InvoicingTable = (props) => {
+  // Un solo hook: antes cada texto llamaba a `IntlMessages` (un hook) y varios dentro de condiciones y de un `.map`, lo que cambiaba el orden de los hooks.
+  const intl = useIntl();
+  const t = (id) => intl.formatMessage({ id });
   const { invoiceDetail, subTotalValue, discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValueInvoice, total,
     fnDeleteProduct, isInvoiceSaved, hasDateOutControl, fnOpenChangeProduct, canChangeProduct } = props;
 
@@ -18,21 +22,21 @@ const InvoicingTable = (props) => {
                   <Table bordered hover size='sm'>
                     <thead>
                       <tr>
-                        <th className='d-md-none-table-cell'>{IntlMessages("page.invoicing.table.code")}</th>
-                        <th>{IntlMessages("page.invoicing.input.descriptionProd")}</th>
-                        <th className='d-xxs-none-table-cell'>{IntlMessages("page.invoicing.input.qtyProd")}</th>
-                        <th className='d-xs-none-table-cell'>{IntlMessages("page.invoicing.input.priceProd")}</th>
-                        <th className='d-md-none-table-cell'>{IntlMessages("page.invoicing.input.subtotal")}</th>
-                        <th className='d-xs-none-table-cell'>{IntlMessages("page.invoicing.input.discValue")}</th>
-                        <th className='d-md-none-table-cell'>{IntlMessages("page.invoicing.input.taxValue")}</th>
-                        <th>{IntlMessages("page.invoicing.input.totalProd")}</th>
+                        <th className='d-md-none-table-cell'>{t("page.invoicing.table.code")}</th>
+                        <th>{t("page.invoicing.input.descriptionProd")}</th>
+                        <th className='d-xxs-none-table-cell'>{t("page.invoicing.input.qtyProd")}</th>
+                        <th className='d-xs-none-table-cell'>{t("page.invoicing.input.priceProd")}</th>
+                        <th className='d-md-none-table-cell'>{t("page.invoicing.input.subtotal")}</th>
+                        <th className='d-xs-none-table-cell'>{t("page.invoicing.input.discValue")}</th>
+                        <th className='d-md-none-table-cell'>{t("page.invoicing.input.taxValue")}</th>
+                        <th>{t("page.invoicing.input.totalProd")}</th>
                         {hasDateOutControl && (
                           <>
-                            <th className='d-md-none-table-cell'>{IntlMessages("page.invoicing.input.lotCode")}</th>
-                            <th className='d-md-none-table-cell'>{IntlMessages("page.invoicing.input.dateOut")}</th>
+                            <th className='d-md-none-table-cell'>{t("page.invoicing.input.lotCode")}</th>
+                            <th className='d-md-none-table-cell'>{t("page.invoicing.input.dateOut")}</th>
                           </>
                         )}
-                        <th>{IntlMessages("page.invoicing.options")}</th>
+                        <th>{t("page.invoicing.options")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -61,7 +65,7 @@ const InvoicingTable = (props) => {
                                 </Button>
                               )}
                               {isInvoiceSaved && canChangeProduct && (
-                                <Button type="button" className="btn-circle-table" color="outline-primary" title={IntlMessages("page.invoicing.modal.changeProduct.title")}
+                                <Button type="button" className="btn-circle-table" color="outline-primary" title={t("page.invoicing.modal.changeProduct.title")}
                                   onClick={() => { fnOpenChangeProduct(item) }} key={`buttons-change-${idx}`}>
                                   <i className='bi bi-arrow-left-right' />
                                 </Button>
@@ -79,13 +83,13 @@ const InvoicingTable = (props) => {
                   <Table bordered hover size='sm'>
                     <thead>
                       <tr>
-                        <th>{IntlMessages("page.invoicing.input.subtotal2")}</th>
-                        <th className='d-sm-none-table-cell'>{IntlMessages("page.invoicing.input.discount")}</th>
-                        <th className='d-md-none-table-cell'>{IntlMessages("page.invoicing.input.exempt")}</th>
-                        <th className='d-md-none-table-cell'>{IntlMessages("page.invoicing.input.exonerated")}</th>
-                        <th className='d-md-none-table-cell'>{IntlMessages("page.invoicing.input.taxed")}</th>
-                        <th>{IntlMessages("page.invoicing.input.taxes")}</th>
-                        <th>{IntlMessages("page.invoicing.input.total")}</th>
+                        <th>{t("page.invoicing.input.subtotal2")}</th>
+                        <th className='d-sm-none-table-cell'>{t("page.invoicing.input.discount")}</th>
+                        <th className='d-md-none-table-cell'>{t("page.invoicing.input.exempt")}</th>
+                        <th className='d-md-none-table-cell'>{t("page.invoicing.input.exonerated")}</th>
+                        <th className='d-md-none-table-cell'>{t("page.invoicing.input.taxed")}</th>
+                        <th>{t("page.invoicing.input.taxes")}</th>
+                        <th>{t("page.invoicing.input.total")}</th>
                       </tr>
                     </thead>
                     <tbody>

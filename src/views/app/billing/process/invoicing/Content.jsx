@@ -590,7 +590,11 @@ const Invoicing = (props) => {
 
   const fnSelectProduct = (item) => {
     onResetFormDetail();
+    // El reinicio del formulario del producto borraba el área, el almacén y el tipo de precio elegidos arriba: se conservan (la línea los necesita).
     const newProduct = {
+      areaId,
+      storeId,
+      typePrice,
       productCode: item.productCode,
       description: item.name,
       unitProd: item.unitProd,
