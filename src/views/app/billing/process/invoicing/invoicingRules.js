@@ -3,9 +3,12 @@
 //
 // La pantalla conserva internamente los nombres anteriores del formulario (`documentType`, `documentExo`, `cashierId`, `numcai`, ...). Este archivo es la frontera con
 // la API nueva (`/billing/process/invoicing`, nombres nuevos sin alias): `buildInvoicePayload` traduce lo que se envía y `headerFromApi` / `lineFromApi` lo que llega.
+import { round5, roundTo } from '../../../inventory/process/purchaseOrders/purchaseOrderRules';
+
 export const MAX_LINES = 500;
 export const CONSUMER_CUSTOMER_ID = 1;
 export const API_PATH = 'billing/process/invoicing';
+export const PRODUCTS_PATH = `${API_PATH}/products`;
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const pad = (n) => String(n).padStart(2, '0');
@@ -53,6 +56,7 @@ export const validateInvoice = (form, details, { hasSellerControl = false, now =
   else if (date > localToday(now)) errors.date = 'page.invoicing.error.date.future';
   if (!(num(form?.customerId) > 0)) errors.customerId = 'msg.required.select.customer';
   else if (num(form.customerId) === CONSUMER_CUSTOMER_ID && isBlank(form.customerName)) errors.customerName = 'page.invoicing.error.consumerName';
+  if (truthy(form?.documentExo) && isBlank(form?.exonerationOrderNumber)) errors.exonerationOrderNumber = 'page.invoicing.error.exonerationNumber';
   if (![1, 2].includes(num(form?.documentType))) errors.documentType = 'msg.required.select.salesType';
   if (![1, 2].includes(num(form?.currency))) errors.currency = 'msg.required.select.currency';
   if (hasSellerControl && !(num(form?.cashierId) > 0)) errors.cashierId = 'msg.required.select.seller';
@@ -91,6 +95,7 @@ export const buildInvoicePayload = (form, details, { today = localToday() } = {}
   saleType: num(form.documentType),
   currency: num(form.currency) || 1,
   isExonerated: truthy(form.documentExo) ? 1 : 0,
+  exonerationOrderNumber: truthy(form.documentExo) ? String(form.exonerationOrderNumber ?? '').trim() : '',
   notes: String(form.notes ?? ''),
   details: details.map(buildLinePayload)
 });
@@ -146,4 +151,130 @@ export const listParams = ({ limit = 100, offset = 0, search = '' } = {}) => {
   const params = { limit, offset };
   if (!isBlank(search)) params.search = String(search).trim();
   return params;
+};
+
+// ----- Captura de líneas (SPEC v2-71-sr) -----
+
+/** Precio de la distribución según el tipo de precio elegido (1 mínimo, 2 medio, 3 máximo); sin tipo válido, 0. */
+export const priceByType = (product, priceType) => {
+  const price = { 1: product?.minPrice, 2: product?.midPrice, 3: product?.maxPrice }[num(priceType)];
+  return num(price);
+};
+
+/**
+ * Valores del formulario de la línea al elegir un producto del buscador. Los precios del buscador ya vienen sin el ISV incluido (los que acepta el guardado sin el
+ * permiso de editar precio). El costo y la comisión los fija el back: aquí no se calculan. El área, el almacén y el tipo de precio elegidos arriba se conservan.
+ */
+export const lineFromProduct = (product, { areaId = 0, storeId = 0, typePrice = 2 } = {}) => {
+  const price = priceByType(product, typePrice);
+  const taxPercent = num(product?.taxPercent);
+  const taxValue = round5(price * (taxPercent > 0 ? taxPercent / 100 : 0));
+  return {
+    areaId,
+    storeId,
+    typePrice,
+    productCode: product.code,
+    description: product.name,
+    unitProd: product.unitName,
+    unitedOut: product.unitName,
+    unitId: num(product.unitId),
+    qtyDist: num(product.unitFactor) || 1,
+    taxPercent,
+    qty: 1,
+    priceLocalMin: num(product.minPrice),
+    priceLocalMid: num(product.midPrice),
+    priceLocalMax: num(product.maxPrice),
+    price,
+    subtotal: price,
+    taxValue,
+    total: round5(price + taxValue),
+    unitedCoste: 0,
+    haveComiss: product.hasCommission ? 1 : 0,
+    productType: num(product.kind),
+    existQty: num(product.stock),
+    requireExpLot: product.requireExpLot ? 1 : 0
+  };
+};
+
+/** Existencia insuficiente al agregar: solo productos (tipo 1), con el control de almacén y de existencias de la empresa; lo que sale es cantidad x factor de la unidad. */
+export const hasStockProblem = ({ productType, qty, qtyDist, existQty }, { hasStoreControl = false, hasStockControl = false } = {}) => (
+  hasStoreControl && hasStockControl && num(productType) === 1 && num(existQty) < num(qty) * (num(qtyDist) || 1)
+);
+
+/** Lote o vencimiento obligatorio al agregar: la empresa controla la fecha de salida y el producto lo exige. */
+export const needsLotOrDate = ({ requireExpLot, lotCode, dateOut }, { hasDateOutControl = false } = {}) => (
+  hasDateOutControl && truthy(requireExpLot) && isBlank(lotCode) && isBlank(dateOut)
+);
+
+/** Avisos de existencia que devuelve el guardado: un texto por producto (el aviso no bloquea; generar el documento sí). */
+export const warningTexts = (warnings = [], format = (item) => `${item.productCode}: ${item.requested} / ${item.available}`) => (
+  (Array.isArray(warnings) ? warnings : []).filter((item) => item && item.code === 'stock.insufficient').map(format)
+);
+
+// ----- Cargar una cotización u orden de compra de clientes (SPEC v2-71-sr) -----
+
+/** Línea del detalle de una cotización u orden (GET quotes/:id, purchaseOrders/:id) con los nombres del detalle de la pantalla. Se conservan sus precios. */
+export const lineFromDocument = (line = {}, { areaId = 0, storeId = 0, sellerCode = '', seed = Date.now() } = {}) => ({
+  id: `${seed}-${line.id ?? Math.random()}`,
+  productCode: line.productCode,
+  description: line.productData?.name || line.productName || '',
+  unitId: num(line.unitId),
+  unitedOut: line.unitData?.name || '',
+  qty: num(line.qty),
+  price: num(line.price),
+  subtotal: num(line.subtotal),
+  discountPercent: num(line.discountPercent),
+  discountValue: num(line.discountValue),
+  taxPercent: num(line.taxPercent),
+  taxValue: num(line.taxValue),
+  subtotTaxValue: num(line.taxValue) > 0 ? num(line.subtotal) - num(line.discountValue) : 0,
+  subTotExeValue: num(line.taxValue) === 0 ? num(line.subtotal) - num(line.discountValue) : 0,
+  total: num(line.total),
+  areaId,
+  storeId,
+  unitedCoste: 0,
+  typePrice: num(line.priceType) || 2,
+  sellerCode,
+  qtyDist: num(line.unitFactor) || 1,
+  haveComiss: 0,
+  lotCode: line.lotCode || '',
+  dateOut: line.expirationDate || null
+});
+
+/**
+ * Cabecera que se copia al cargar una cotización u orden en una factura nueva: cliente (con su nombre y RTN digitados), vendedor, y de la orden la exoneración con su
+ * constancia. Solo trae lo que el documento tiene (no pisa con vacío); la fecha, el documento, el área y el almacén los elige el usuario.
+ */
+export const headerFromDocument = (document = {}) => {
+  const patch = {};
+  if (num(document.customerId) > 0) patch.customerId = num(document.customerId);
+  if (!isBlank(document.customerName)) patch.customerName = String(document.customerName).trim();
+  if (!isBlank(document.customerCode)) patch.customerDNI = String(document.customerCode).trim();
+  if (num(document.sellerId) > 0) patch.cashierId = num(document.sellerId);
+  if (truthy(document.isExonerated)) {
+    patch.documentExo = true;
+    patch.exonerationOrderNumber = String(document.exonerationNumber ?? '').trim();
+  }
+  return patch;
+};
+
+/**
+ * Totales del formulario a partir de las líneas (nombres del formulario): suma de las líneas con el redondeo a centavos una sola vez al final. Una factura exonerada
+ * pasa el gravado a exonerado, sin impuesto (el servidor calcula lo mismo al guardar y esos valores son los que se recargan).
+ */
+export const totalsFromLines = (lines = [], isExonerated = false) => {
+  const sum = (field) => lines.reduce((total, line) => total + num(line[field]), 0);
+  const cents = (value) => roundTo(round5(value), 2);
+  const taxed = sum('subtotTaxValue');
+  const taxes = sum('taxValue');
+  const total = sum('total');
+  return {
+    subTotalValue: cents(sum('subtotal')),
+    discountValue: cents(sum('discountValue')),
+    subTotExeValue: cents(sum('subTotExeValue')),
+    subTotExoValue: isExonerated ? cents(taxed) : 0,
+    subtotTaxValue: isExonerated ? 0 : cents(taxed),
+    taxValue: isExonerated ? 0 : cents(taxes),
+    total: cents(isExonerated ? total - taxes : total)
+  };
 };

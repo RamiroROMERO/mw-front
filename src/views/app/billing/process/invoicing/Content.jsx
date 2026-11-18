@@ -16,7 +16,7 @@ import ModalInvoices from './ModalViewInvoi';
 import ModalChangePrice from './ModalChangePrice';
 import ModalPrintInvoice from './ModalPrintInvoice';
 import ModalGenerateInvoice from './ModalGenerateInvoice';
-import ModalQuotation from './ModalQuotation';
+import ModalSeekQuotes from '../quotes/ModalSeekQuotes';
 import ModalDeliveryDoc from './ModalDeliveryDoc';
 import ModalVoidInvoice from '../pointSales/ModalVoidInvoice';
 import ModalCreditStatus from './ModalCreditStatus';
@@ -28,7 +28,10 @@ import ModalSendEmail from './ModalSendEmail';
 import InvoicingForm from './InvoicingForm';
 import InvoicingDetail from './InvoicingDetail';
 import InvoicingTable from './InvoicingTableProd';
-import { API_PATH, buildInvoicePayload, headerFromApi, lineFromApi, listParams, validateInvoice } from './invoicingRules';
+import {
+  API_PATH, buildInvoicePayload, hasStockProblem, headerFromApi, headerFromDocument, lineFromApi, lineFromDocument, lineFromProduct, listParams, needsLotOrDate,
+  totalsFromLines, validateInvoice, warningTexts
+} from './invoicingRules';
 import ViewPdf from '@Components/ViewPDF/ViewPdf';
 
 const Invoicing = (props) => {
@@ -38,7 +41,9 @@ const Invoicing = (props) => {
   const [listAreas, setListAreas] = useState([]);
   const [listWarehouse, setListWarehouse] = useState([]);
   const [listSellers, setListSellers] = useState([]);
-  const [listProducts, setListProducts] = useState([]);
+  const [pendingLoad, setPendingLoad] = useState(null);
+  const [openMsgLoadDocument, setOpenMsgLoadDocument] = useState(false);
+  const [openModalSeekQuotes, setOpenModalSeekQuotes] = useState(false);
   const [invoiceDetail, setInvoiceDetail] = useState([]);
   const [dataInvoicing, setDataInvoicing] = useState([]);
   const [openModalProducts, setOpenModalProducts] = useState(false);
@@ -46,7 +51,6 @@ const Invoicing = (props) => {
   const [openModalPrice, setOpenModalPrice] = useState(false);
   const [openModalPrint, setOpenModalPrint] = useState(false);
   const [openModalGenerate, setOpenModalGenerate] = useState(false);
-  const [openModalQuotation, setOpenModalQuotation] = useState(false);
   const [openModalDeliveryDoc, setOpenModalDeliveryDoc] = useState(false);
   const [openModalVoidInvoice, setOpenModalVoidInvoice] = useState(false);
   const [openMsgGenerateInvoice, setOpenMsgGenerateInvoice] = useState(false);
@@ -101,6 +105,7 @@ const Invoicing = (props) => {
     dateInProcess: DateHelper.format(new Date()),
     cashierId: 0,
     documentExo: false,
+    exonerationOrderNumber: '',
     documentId: 0,
     isDeleted: 0,
     nulledNotes: '',
@@ -141,15 +146,16 @@ const Invoicing = (props) => {
     lotCode: '',
     dateOut: '',
     productType: 0,
-    existQty: 0
+    existQty: 0,
+    requireExpLot: 0
   }, invoiceDetailValid);
 
   const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
     total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, unitId, qtyDist,
-    haveComiss, areaId, storeId, lotCode, dateOut, productType, existQty } = formDetail;
+    haveComiss, areaId, storeId, lotCode, dateOut, productType, existQty, requireExpLot } = formDetail;
 
-  const { id, customerId, customerDNI, customerName, notes, documentCode, documentType, currency, date, dateInProcess, cashierId,
-    documentExo, documentId, isDeleted, nulledNotes, numcai, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue:
+  const { id, customerId, notes, documentCode, documentType, currency, date, dateInProcess, cashierId,
+    documentExo, exonerationOrderNumber, documentId, isDeleted, nulledNotes, numcai, subTotalValue, discountValue: discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValue:
     taxValueInvoice, total } = formIndex;
 
   // Documento Fiscal ya fue Generado (CAI asignado) — igual que el legacy
@@ -351,6 +357,8 @@ const Invoicing = (props) => {
     setLoading(true);
     // Se recarga lo guardado: los importes de las líneas son los que calculó el servidor.
     const onSaved = (resp) => {
+      // Existencia insuficiente: solo aviso (el servidor bloquea al generar el documento fiscal).
+      warningTexts(resp.data?.warnings, (item) => `${item.productCode}: ${item.requested} / ${item.available}`).forEach((text) => notification('warning', { text }, 'alert.warning.title'));
       fnViewInvoice({ id: resp.data.id });
     };
     const onFailed = () => {
@@ -400,12 +408,6 @@ const Invoicing = (props) => {
     }, false);
   }
 
-  const fnQuotation = () => {
-    if (id > 0) {
-      setOpenModalQuotation(true);
-    }
-  }
-
   const fnInvoice = () => {
     if (isVoided) {
       notification('warning', 'page.invoicing.voided.alreadyVoided', 'alert.warning.title');
@@ -439,72 +441,56 @@ const Invoicing = (props) => {
   // Solo trae las líneas de productos de la Orden de Compra (se agregan al detalle
   // actual, sin reemplazarlo) — igual que el flujo activo del legacy, que NO copia
   // cliente/cabecera de la orden, solo sus productos.
-  const fnLoadPurchaseOrder = (row) => {
-    setOpenModalSeekPurchaseOrders(false);
+  // Cargar una cotización o una orden de compra de clientes en una factura NUEVA (SPEC v2-71-sr): copia las líneas (con los precios del documento; el servidor
+  // vuelve a validar todo al guardar) y la cabecera (cliente, vendedor y, de la orden, la exoneración con su constancia). Con líneas ya agregadas pide confirmación
+  // y las reemplaza.
+  const fnDoLoadDocument = (kind, row) => {
     setLoading(true);
-    request.GET(`billing/process/purchaseOrders/${row.id}`, (resp) => {
-      request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId, enableForSale: 1 }), (resp2) => {
-        const costByCode = new Map(resp2.data.map((item) => [item.productCode, validFloat(item.costValue)]));
-        const sellerData = listSellers.find((item) => item.value === cashierId);
-
-        const newLines = (resp.data.details || []).map((item) => {
-          const taxedValue = validFloat(item.taxValue) > 0 ? validFloat(item.subtotal) : 0;
-          const exemptValue = validFloat(item.taxValue) === 0 ? validFloat(item.subtotal) : 0;
-          return {
-            id: new Date().getTime() + Math.random(),
-            productCode: item.productCode,
-            description: item.productData?.name || '',
-            qty: validFloat(item.qty),
-            price: validFloat(item.price),
-            subtotal: validFloat(item.subtotal),
-            discountPercent: validFloat(item.discountPercent),
-            discountValue: validFloat(item.discountValue),
-            subtotTaxValue: taxedValue,
-            subTotExeValue: exemptValue,
-            taxPercent: validFloat(item.taxPercent),
-            taxValue: validFloat(item.taxValue),
-            total: validFloat(item.total),
-            areaId: validInt(areaId),
-            storeId: validInt(storeId),
-            unitedCoste: costByCode.get(item.productCode) || 0,
-            typePrice: validInt(item.priceType),
-            sellerCode: sellerData ? sellerData.code : "",
-            qtyDist: validFloat(item.unitFactor),
-            unitedOut: item.unitData?.name || '',
-            unitId: validInt(item.unitId),
-            haveComiss: 1
-          }
-        });
-
-        const mergedDetail = [...invoiceDetail, ...newLines];
-        setInvoiceDetail(mergedDetail);
-
-        const sumSubtotal = mergedDetail.reduce((sum, item) => sum + validFloat(item.subtotal), 0);
-        const sumDiscount = mergedDetail.reduce((sum, item) => sum + validFloat(item.discountValue), 0);
-        const sumExempt = mergedDetail.reduce((sum, item) => sum + validFloat(item.subTotExeValue), 0);
-        const sumTaxes = mergedDetail.reduce((sum, item) => sum + validFloat(item.taxValue), 0);
-        const sumTaxed = mergedDetail.reduce((sum, item) => sum + validFloat(item.subtotTaxValue), 0);
-        const sumTotal = mergedDetail.reduce((sum, item) => sum + validFloat(item.total), 0);
-
-        const isExo = documentExo === true || documentExo === 1;
-        setBulkFormIndex({
-          subTotalValue: sumSubtotal,
-          discountValue: sumDiscount,
-          subTotExeValue: sumExempt,
-          subTotExoValue: isExo ? sumTaxed : 0,
-          subtotTaxValue: isExo ? 0 : sumTaxed,
-          taxValue: isExo ? 0 : sumTaxes,
-          total: isExo ? (sumTotal - sumTaxes) : sumTotal
-        });
-        setLoading(false);
-      }, (err) => {
-
-        setLoading(false);
-      });
-    }, (err) => {
-
+    const url = kind === 'order' ? `billing/process/purchaseOrders/${row.id}` : `billing/process/quotes/${row.id}`;
+    request.GET(url, (resp) => {
+      const document = resp.data || {};
+      const headerPatch = headerFromDocument(document);
+      const sellerId = headerPatch.cashierId || cashierId;
+      const sellerData = listSellers.find((item) => item.value === sellerId);
+      const newLines = (document.details || []).map((line) => lineFromDocument(line, { areaId: validInt(areaId), storeId: validInt(storeId), sellerCode: sellerData ? sellerData.code : '' }));
+      const isExo = headerPatch.documentExo === true || documentExo === true || documentExo === 1;
+      setInvoiceDetail(newLines);
+      setBulkFormIndex({ ...headerPatch, ...totalsFromLines(newLines, isExo) });
+      setLoading(false);
+    }, () => {
       setLoading(false);
     });
+  }
+
+  const fnLoadDocument = (kind, row) => {
+    setOpenModalSeekPurchaseOrders(false);
+    setOpenModalSeekQuotes(false);
+    if (invoiceDetail.length > 0) {
+      setPendingLoad({ kind, row });
+      setOpenMsgLoadDocument(true);
+      return;
+    }
+    fnDoLoadDocument(kind, row);
+  }
+
+  const fnLoadPurchaseOrder = (row) => fnLoadDocument('order', row);
+  const fnLoadQuotation = (row) => fnLoadDocument('quote', row);
+
+  const fnConfirmLoadDocument = () => {
+    setOpenMsgLoadDocument(false);
+    if (pendingLoad) fnDoLoadDocument(pendingLoad.kind, pendingLoad.row);
+    setPendingLoad(null);
+  }
+
+  const fnSearchQuotationToLoad = () => {
+    if (id > 0) {
+      return;
+    }
+    if (validInt(areaId) === 0 || validInt(storeId) === 0 || (hasSellerControl && validInt(cashierId) === 0)) {
+      notification('warning', 'msg.required.areaStoreSeller', 'alert.warning.title');
+      return;
+    }
+    setOpenModalSeekQuotes(true);
   }
 
   const fnDeliver = () => {
@@ -581,70 +567,17 @@ const Invoicing = (props) => {
     )));
   }
 
+  // Línea nueva a partir de un producto del buscador (SPEC v2-71-sr): precios sin el ISV incluido, costo y comisión los fija el servidor.
   const fnSelectProduct = (item) => {
     onResetFormDetail();
     // El reinicio del formulario del producto borraba el área, el almacén y el tipo de precio elegidos arriba: se conservan (la línea los necesita).
-    const newProduct = {
-      areaId,
-      storeId,
-      typePrice,
-      productCode: item.productCode,
-      description: item.name,
-      unitProd: item.unitProd,
-      taxPercent: validFloat(item.taxPercent),
-      qty: 1,
-      priceLocalMin: item.min,
-      priceLocalMid: item.med,
-      priceLocalMax: item.max,
-      unitedCoste: item.costValue,
-      unitedOut: item.outputUnit,
-      unitId: validInt(item.undoutId),
-      qtyDist: item.qtyDist,
-      haveComiss: item.paymentComiss,
-      productType: validInt(item.typeId),
-      existQty: validFloat(item.qtyStock)
-    }
-    if (validInt(typePrice) === 1) {
-      newProduct.price = validFloat(item.min);
-      newProduct.subtotal = validFloat(item.min);
-    } else if (validInt(typePrice) === 2) {
-      newProduct.price = validFloat(item.med);
-      newProduct.subtotal = validFloat(item.med);
-    } else if (validInt(typePrice) === 3) {
-      newProduct.price = validFloat(item.max);
-      newProduct.subtotal = validFloat(item.max);
-    } else {
-      newProduct.price = 0;
-      newProduct.subtotal = 0;
-    }
-    newProduct.taxValue = newProduct.subtotal * (newProduct.taxPercent > 0 ? newProduct.taxPercent / 100 : 0);
-    newProduct.total = newProduct.subtotal + newProduct.taxValue;
-    setBulkFormDetail(newProduct);
+    setBulkFormDetail(lineFromProduct(item, { areaId, storeId, typePrice }));
     setOpenModalProducts(false);
   }
 
+  // El buscador pide sus propias páginas al servidor, con la existencia del almacén elegido (antes bajaba el catálogo completo).
   const fnViewProducts = () => {
-    setLoading(true);
-    setListProducts([]);
-    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId, enableForSale: 1 }), (resp) => {
-      const products = resp.data.map((item) => {
-        item.taxPercent = item.percentTax
-        item.name = item.productName
-        item.unitProd = item.undoutName
-        item.min = item.localMinPrice
-        item.med = item.localMedPrice
-        item.max = item.localMaxPrice
-        item.stock = formatNumber(item.qtyStock)
-        item.options = <TableButton color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
-        return item;
-      });
-      setListProducts(products);
-      setOpenModalProducts(true);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
+    setOpenModalProducts(true);
   }
 
   const fnAddProduct = () => {
@@ -661,7 +594,12 @@ const Invoicing = (props) => {
     // Igual que el legacy (fac_facturacion.sc2:2941): solo bloquea si el almacén y la
     // empresa tienen control de existencia activos, y solo para productos físicos
     // (type=1) — servicios y materia prima no se validan.
-    if (hasStoreControl && hasStockControl && validInt(productType) === 1 && validFloat(existQty) < validFloat(qty)) {
+    if (needsLotOrDate({ requireExpLot, lotCode, dateOut }, { hasDateOutControl })) {
+      notification('warning', 'page.invoicing.error.line.lot', 'alert.warning.title');
+      return;
+    }
+
+    if (hasStockProblem({ productType, qty, qtyDist, existQty }, { hasStoreControl, hasStockControl })) {
       notification('warning', 'msg.error.insufficientStock', 'alert.warning.title');
       return;
     }
@@ -755,7 +693,8 @@ const Invoicing = (props) => {
       unitId: 0,
       unitProd: "",
       lotCode: "",
-      dateOut: ""
+      dateOut: "",
+      requireExpLot: 0
     }
     setBulkFormDetail(cleanProd);
     setSendFormDetail(false);
@@ -930,7 +869,7 @@ const Invoicing = (props) => {
       {
         title: "button.quotation",
         icon: "bi bi-file-text",
-        onClick: fnQuotation
+        onClick: fnSearchQuotationToLoad
       },
       {
         title: "button.invoice",
@@ -980,7 +919,8 @@ const Invoicing = (props) => {
     setOpen: setOpenModalProducts,
     maxWidth: 'lg',
     data: {
-      listProducts
+      storeId: validInt(storeId),
+      fnSelect: fnSelectProduct
     }
   }
 
@@ -1049,18 +989,23 @@ const Invoicing = (props) => {
     }
   }
 
-  const propsToModalQuotation = {
-    ModalContent: ModalQuotation,
-    title: "page.invoicing.modal.generateQuotation.title",
-    open: openModalQuotation,
-    setOpen: setOpenModalQuotation,
-    maxWidth: 'md',
+  const propsToModalSeekQuotes = {
+    ModalContent: ModalSeekQuotes,
+    title: "page.invoicing.modal.seekQuotes.title",
+    open: openModalSeekQuotes,
+    setOpen: setOpenModalSeekQuotes,
+    maxWidth: 'lg',
     data: {
-      id,
-      customerId,
-      listCustomers,
-      setLoading
+      fnViewItem: fnLoadQuotation,
+      dateFormat
     }
+  }
+
+  const propsToMsgLoadDocument = {
+    open: openMsgLoadDocument,
+    setOpen: setOpenMsgLoadDocument,
+    fnOnOk: fnConfirmLoadDocument,
+    title: "page.invoicing.msg.loadDocument.title"
   }
 
   const propsToModalDeliveryDoc = {
@@ -1192,6 +1137,7 @@ const Invoicing = (props) => {
     listSellers,
     handleAreaChange,
     handleExemptChange,
+    exonerationOrderNumber,
     recordSelected,
     onInputChangeIndex,
     formValidationIndex,
@@ -1268,7 +1214,7 @@ const Invoicing = (props) => {
       <Modal {...propsToModalPrices} />
       <Modal {...propsToModalPrint} />
       <Modal {...propsToModalGenerate} />
-      <Modal {...propsToModalQuotation} />
+      <Modal {...propsToModalSeekQuotes} />
       <Modal {...propsToModalDeliveryDoc} />
       <Modal {...propsToModalVoidInvoice} />
       <Modal {...propsToModalCreditStatus} />
@@ -1280,6 +1226,7 @@ const Invoicing = (props) => {
       <Modal {...propsToModalSendEmail} />
       <Confirmation {...propsToMsgDelete} />
       <Confirmation {...propsToMsgGenerateInvoice} />
+      <Confirmation {...propsToMsgLoadDocument} />
     </>
   );
 }

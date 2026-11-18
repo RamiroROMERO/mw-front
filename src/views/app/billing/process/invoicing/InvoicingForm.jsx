@@ -10,7 +10,7 @@ import DateCalendar from '@Components/dateCalendar'
 import { IntlMessages } from '@Helpers/Utils';
 
 const InvoicingForm = (props) => {
-  const { documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, cashierId, storeId, documentExo, documentId, numcai, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, onInputDetaChange, hasSellerControl, isInvoiceSaved, creditStatusLevel, fnViewCreditStatus } = props;
+  const { documentCode, customerId, notes, documentType, currency, printType, date, dateInProcess, areaId, cashierId, storeId, documentExo, exonerationOrderNumber, documentId, numcai, listTypeDocuments, listCustomers, listAreas, listWarehouse, listSellers, handleAreaChange, handleExemptChange, onInputChangeIndex, formValidationIndex, sendFormIndex, setBulkFormIndex, onInputDetaChange, hasSellerControl, isInvoiceSaved, creditStatusLevel, fnViewCreditStatus } = props;
 
   const { documentCodeValid, customerIdValid, documentTypeValid, currencyValid } = formValidationIndex;
 
@@ -157,6 +157,19 @@ const InvoicingForm = (props) => {
                   onChange={handleExemptChange}
                 />
               </Colxx>
+              {(documentExo === true || documentExo === 1) && (
+                <Colxx xxs="12">
+                  <InputField
+                    value={exonerationOrderNumber}
+                    name="exonerationOrderNumber"
+                    disabled={isInvoiceSaved}
+                    onChange={onInputChangeIndex}
+                    type="text"
+                    maxLength={50}
+                    label="page.invoicing.input.exonerationOrderNumber"
+                  />
+                </Colxx>
+              )}
             </Row>
           </Colxx>
           <Colxx xxs="12" xs="12" sm="12" md="12" lg="4">

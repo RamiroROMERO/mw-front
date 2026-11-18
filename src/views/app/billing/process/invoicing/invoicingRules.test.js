@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import {
-  buildInvoicePayload, buildLinePayload, headerFromApi, lineFromApi, listParams, localToday, validateInvoice, validateLine
+  buildInvoicePayload, buildLinePayload, hasStockProblem, headerFromApi, headerFromDocument, lineFromApi, lineFromDocument, lineFromProduct, listParams, localToday,
+  needsLotOrDate, priceByType, validateInvoice, validateLine, warningTexts
 } from './invoicingRules';
 
 // Mismos casos que modules/billing/invoicing/__tests__ del back (InvoicingDTO).
@@ -52,7 +53,7 @@ describe('validateInvoice', () => {
 describe('buildInvoicePayload', () => {
   test('cabecera con los nombres nuevos y sin importes, número fiscal ni usuarios', () => {
     const payload = buildInvoicePayload({ ...FORM, total: 999, subTotalValue: 9, numcai: 'X', documentId: 7, id: 3 }, [LINE]);
-    expect(Object.keys(payload).sort()).toEqual(['currency', 'customerDNI', 'customerId', 'customerName', 'date', 'details', 'documentCode', 'isExonerated', 'notes', 'saleType', 'sellerId'].sort());
+    expect(Object.keys(payload).sort()).toEqual(['currency', 'customerDNI', 'customerId', 'customerName', 'date', 'details', 'documentCode', 'exonerationOrderNumber', 'isExonerated', 'notes', 'saleType', 'sellerId'].sort());
     expect(payload).toMatchObject({ saleType: 1, sellerId: 13, isExonerated: 0, currency: 1 });
   });
   test('isExonerated se normaliza y la fecha vacía toma hoy', () => {
