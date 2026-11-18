@@ -1,57 +1,42 @@
-import { useState } from "react";
-import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
-import { Colxx } from '@Components/common/CustomBootstrap';
+import { useMemo } from "react";
 import { IntlMessages } from "@Helpers/Utils";
-import ReactTable from "@Components/reactTable"
+import { ModalSearchContent } from "@Components/modalSearch";
+
+// Buscar (revisión de pantalla #5, Fase 4): los clientes se piden por páginas de 50 con búsqueda en el servidor (RTN, nombre o teléfono), como el Catálogo de productos. La tabla, la
+// búsqueda incremental y la paginación son el modal compartido `@Components/modalSearch`; aquí solo se configura.
+const CUSTOMERS_URL = 'billing/settings/customers';
+const mapCustomer = (item) => ({ ...item, typeCustomer: item.customerTypeData ? item.customerTypeData.name : '' });
 
 const ModalViewCust = (props) => {
   const { data, setOpen } = props;
-  const { dataCustomers, fnViewItem } = data;
+  const { fnViewItem } = data;
 
-  const [table, setTable] = useState({
-    title: IntlMessages("page.customers.table.title"),
-    columns: [
-      {
-        text: IntlMessages("page.customers.table.typeCustomer"), dataField: "typeCustomer", headerStyle: { 'width': '15%' },
-        classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell'
-      },
-      { text: IntlMessages("page.customers.table.dni"), dataField: "rtn", headerStyle: { 'width': '20%' } },
-      { text: IntlMessages("page.customers.table.name"), dataField: "nomcli", headerStyle: { 'width': '25%' } },
-      {
-        text: IntlMessages("page.customers.table.phone"), dataField: "tel", headerStyle: { 'width': '15%' },
-        classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell'
-      },
-      { text: IntlMessages("page.customers.table.status"), dataField: "status", type: 'boolean', headerStyle: { 'width': '10%' } },
-      // { text: IntlMessages("table.column.options"), dataField: "options", headerStyle: { 'width': '10%' }, style: { textAlign: 'right' } }
-    ],
-    data: dataCustomers,
-    actions: [{
-      color: 'primary',
-      icon: 'eye',
-      toolTip: IntlMessages('button.view'),
-      onClick: fnViewItem
-    }]
-  });
+  // IntlMessages es un hook: se llama aquí arriba, no dentro de useMemo.
+  const textType = IntlMessages("page.customers.table.typeCustomer");
+  const textDni = IntlMessages("page.customers.table.dni");
+  const textName = IntlMessages("page.customers.table.name");
+  const textPhone = IntlMessages("page.customers.table.phone");
+  const textStatus = IntlMessages("page.customers.table.status");
 
-  return (
-    <>
-      <ModalBody>
-        <Row>
-          <Colxx xxs="12">
-            <ReactTable
-              {...table}
-            />
-          </Colxx>
-        </Row>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="danger" onClick={() => { setOpen(false) }} >
-          <i className="bi bi-box-arrow-right" />
-          {` ${IntlMessages('button.exit')}`}
-        </Button>
-      </ModalFooter>
-    </>
-  )
-}
+  const columns = useMemo(() => [
+    {
+      text: textType, dataField: "typeCustomer", headerStyle: { 'width': '15%' },
+      classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell'
+    },
+    { text: textDni, dataField: "rtn", headerStyle: { 'width': '20%' } },
+    { text: textName, dataField: "nomcli", headerStyle: { 'width': '25%' } },
+    {
+      text: textPhone, dataField: "tel", headerStyle: { 'width': '15%' },
+      classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell'
+    },
+    { text: textStatus, dataField: "status", type: 'boolean', headerStyle: { 'width': '10%' } }
+  ], [textType, textDni, textName, textPhone, textStatus]);
+
+  const config = useMemo(() => ({
+    url: CUSTOMERS_URL, columns, onSelect: fnViewItem, mapRow: mapCustomer
+  }), [columns, fnViewItem]);
+
+  return <ModalSearchContent data={config} setOpen={setOpen} />;
+};
 
 export default ModalViewCust;

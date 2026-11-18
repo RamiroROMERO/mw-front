@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { request, buildUrl } from '@Helpers/core';
+import { useIntl } from 'react-intl';
+import { request, buildUrl, notifyError } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
-import { validInt } from "@Helpers/Utils";
+import { validInt, getPrivilegeData } from "@Helpers/Utils";
 import {
-  accountsFromType, buildCustomerPayload, buildInitialForm, dropUnknownAccounts, mapCustomerToForm, shouldLookupRtn, validateCustomer
+  ACCOUNTS_PRIVILEGE_CODE, accountsFromType, buildCustomerPayload, hasAccountsPrivilege, buildInitialForm, dropUnknownAccounts, mapCustomerToForm, shouldLookupRtn, validateCustomer
 } from './customerRules';
 
 // Clientes (fac_clientes.sc2). Validación por campo con las mismas reglas del back (customerRules.js): un formulario inválido se marca y NO llama al back. Las cuentas por cobrar, de
@@ -18,7 +19,8 @@ export const useCustomers = ({ setLoading }) => {
   const [listLedgerAccounts, setListLedgerAccounts] = useState([]);
   const [listTypeCustomers, setListTypeCustomers] = useState([]);
   const [listSellers, setListSellers] = useState([]);
-  const [dataCustomers, setDataCustomers] = useState([]);
+  const [pendingAccounts, setPendingAccounts] = useState(null);
+  const [openMsgAccounts, setOpenMsgAccounts] = useState(false);
   const [sendForm, setSendForm] = useState(false);
   const [isFarmControl, setIsFarmControl] = useState(false);
   const [isHospital, setIsHospital] = useState(false);
@@ -26,6 +28,8 @@ export const useCustomers = ({ setLoading }) => {
   const [listDepartments, setListDepartments] = useState([]);
   const [listMunicipalities, setListMunicipalities] = useState([]);
 
+  const intl = useIntl();
+  const canUpdateAccounts = hasAccountsPrivilege(getPrivilegeData(ACCOUNTS_PRIVILEGE_CODE));
   const { formState, onInputChange, setBulkForm } = useForm(buildInitialForm());
   const errors = useMemo(() => validateCustomer(formState, { accountingActive }), [formState, accountingActive]);
 
@@ -48,17 +52,6 @@ export const useCustomers = ({ setLoading }) => {
     onMunicRefresh(form.deptoCode);
     setBulkForm(form);
     setOpenModalViewCust(false);
-  }
-
-  const fnGetData = () => {
-    setLoading(true);
-    request.GET('billing/settings/customers/', (resp) => {
-      setDataCustomers(resp.data.map((item) => ({ ...item, typeCustomer: item.customerTypeData ? item.customerTypeData.name : "" })));
-      setOpenModalViewCust(true);
-      setLoading(false);
-    }, () => {
-      setLoading(false);
-    });
   }
 
   useEffect(() => {
@@ -102,8 +95,9 @@ export const useCustomers = ({ setLoading }) => {
     setBulkForm(buildInitialForm());
   }
 
+  // Buscar: el modal pide las páginas al servidor.
   const fnSearchCustomer = () => {
-    fnGetData();
+    setOpenModalViewCust(true);
   }
 
   const fnSaveCustomer = () => {
@@ -189,6 +183,51 @@ export const useCustomers = ({ setLoading }) => {
     }
   }
 
+  // Excel "Listado de Clientes": el back exporta lo guardado en la DB (activos, no eliminados), no lo que está en el formulario. Es un GET (solo lectura). GETPdf no notifica por sí
+  // mismo: el error se avisa aquí.
+  const fnExport = () => {
+    setLoading(true);
+    const stop = () => setLoading(false);
+    request.GETPdf('billing/settings/customers/export', {}, 'Listado de Clientes.xlsx', (err) => {
+      stop();
+      notifyError(err, 'page.customers.msg.exportError');
+    }, 'GET', stop);
+  }
+
+  // "Actualizar Cuentas" del legacy (privilegio 11.01.030, solo con Contabilidad activa): copia las cuentas del tipo elegido a TODOS sus clientes. Primero se consulta cuántos cambiarían
+  // y se pide confirmación; el back vuelve a exigir el privilegio y valida el tipo y sus cuentas.
+  const fnUpdateAccounts = () => {
+    const typeId = validInt(formState.customerTypeId);
+    if (typeId === 0) {
+      notification('warning', 'msg.required.input.typeCustomer', 'alert.warning.title');
+      return;
+    }
+    setLoading(true);
+    request.GET(`billing/settings/customers/accountsFromType/${typeId}`, (resp) => {
+      setPendingAccounts({ typeId, ...resp.data });
+      setOpenMsgAccounts(true);
+      setLoading(false);
+    }, () => {
+      setLoading(false);
+    });
+  }
+
+  const fnConfirmUpdateAccounts = () => {
+    setOpenMsgAccounts(false);
+    if (!pendingAccounts) return;
+    setLoading(true);
+    request.PUT(`billing/settings/customers/accountsFromType/${pendingAccounts.typeId}`, {}, () => {
+      // El cliente en pantalla (si es de ese tipo y está guardado) muestra ya las cuentas del tipo.
+      if (validInt(formState.id) > 0 && validInt(formState.customerTypeId) === pendingAccounts.typeId) {
+        setBulkForm({ ...formState, ...accountsFromType(listTypeCustomers.find(item => item.id === pendingAccounts.typeId)) });
+      }
+      setPendingAccounts(null);
+      setLoading(false);
+    }, () => {
+      setLoading(false);
+    });
+  }
+
   const onDeptoChange = ({ target }) => {
     const { value } = target;
     setBulkForm({ ...formState, deptoCode: value, municCode: '' });
@@ -205,12 +244,30 @@ export const useCustomers = ({ setLoading }) => {
         title: "button.ledgerAccounts",
         icon: "bi bi-journal-text",
         onClick: fnLedgerAccounts
+      },
+      accountingActive && canUpdateAccounts ? {
+        title: "page.customers.button.updateAccounts",
+        icon: "bi bi-arrow-repeat",
+        onClick: fnUpdateAccounts
+      } : null,
+      {
+        title: "button.export",
+        icon: "bi bi-file-earmark-excel",
+        onClick: fnExport
       }
     ],
     buttonsOptions: [],
     buttonsAdmin: []
   }
 
+  const typeName = pendingAccounts ? (listTypeCustomers.find(item => item.id === pendingAccounts.typeId)?.name || '') : '';
+  const propsToMsgAccounts = {
+    open: openMsgAccounts,
+    setOpen: setOpenMsgAccounts,
+    fnOnOk: fnConfirmUpdateAccounts,
+    title: "page.customers.msg.updateAccountsTitle",
+    textLegend: pendingAccounts ? intl.formatMessage({ id: 'page.customers.msg.updateAccountsConfirm' }, { type: typeName, count: pendingAccounts.customers }) : ''
+  }
   const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDelete, title: "alert.question.title" }
 
   return {
@@ -220,11 +277,11 @@ export const useCustomers = ({ setLoading }) => {
     listLedgerAccounts,
     listTypeCustomers,
     listSellers,
-    dataCustomers,
     sendForm,
     fnNewCustomer,
     propsToControlPanel,
     propsToMsgDelete,
+    propsToMsgAccounts,
     isFarmControl,
     isHospital,
     fnViewCustomer,

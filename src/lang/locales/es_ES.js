@@ -1596,6 +1596,10 @@ const esLang = {
   "page.customers.input.memberLimit": "Límite de Miembros",
   "page.customers.msg.rtnExists": "Ya existe un cliente con ese RTN: se cargó para que lo edite.",
   "page.customers.msg.selectCustomer": "Seleccione primero un cliente guardado.",
+  "page.customers.button.updateAccounts": "Actualizar Cuentas",
+  "page.customers.msg.exportError": "No se pudo exportar el listado de clientes a Excel.",
+  "page.customers.msg.updateAccountsConfirm": "Se copiarán las cuentas contables del tipo {type} a {count} clientes de ese tipo. Esta acción cambia las cuentas de todos ellos. ¿Desea continuar?",
+  "page.customers.msg.updateAccountsTitle": "¿Actualizar las cuentas contables de los clientes?",
   "page.customers.modal.modalNew.title.credit": "Credito",
   /* 11.Pagina de encargados en modulo de produccion */
   "page.managers.table.title": "Tabla de Responsables",

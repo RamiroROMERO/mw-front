@@ -26,12 +26,11 @@ const Customers = (props) => {
     setOpenModalViewCust,
     listLedgerAccounts,
     listTypeCustomers,
-    dataCustomers,
     sendForm,
     propsToControlPanel,
     openModalViewCust,
     isFarmControl,
-    isHospital, fnViewCustomer, fnLookupRtn, onInputChange, listDepartments, listMunicipalities, onDeptoChange, onTypeChange, errors, propsToMsgDelete, listSellers } = useCustomers({ setLoading });
+    isHospital, fnViewCustomer, fnLookupRtn, onInputChange, listDepartments, listMunicipalities, onDeptoChange, onTypeChange, errors, propsToMsgDelete, propsToMsgAccounts, listSellers } = useCustomers({ setLoading });
 
   const { rtn, nomcli, entryDate, tel, phone2, direcc, customerTypeId, locationType, sellerId, creditRequest, creditDays, creditLimit, paymentTerms, globalDiscount, memberLimit, isInternational,
     isPartner, paysTax, isDefaultPos, purchaseContactName, purchaseContactPosition, purchaseContactPhone, purchaseContactMobile, purchaseContactEmail, paymentContactName,
@@ -45,7 +44,6 @@ const Customers = (props) => {
     setOpen: setOpenModalViewCust,
     maxWidth: 'lg',
     data: {
-      dataCustomers,
       fnViewItem: fnViewCustomer
     }
   }
@@ -650,6 +648,7 @@ const Customers = (props) => {
         </Colxx>
       </Row>
       <Confirmation {...propsToMsgDelete} />
+      <Confirmation {...propsToMsgAccounts} />
       <Modal {...propsToModalViewCust} />
     </>
   );

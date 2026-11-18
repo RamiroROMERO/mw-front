@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import {
-  buildInitialForm, validateCustomer, buildCustomerPayload, mapCustomerToForm, isRtnValid, shouldLookupRtn, accountsFromType, dropUnknownAccounts, localToday
+  buildInitialForm, validateCustomer, buildCustomerPayload, mapCustomerToForm, isRtnValid, shouldLookupRtn, accountsFromType, dropUnknownAccounts, localToday, hasAccountsPrivilege, ACCOUNTS_PRIVILEGE_CODE
 } from './customerRules';
 
 // Mismos casos que dtos/__tests__/FacProcessCustomerDTO.test.js y services/__tests__/FacProcessCustomerService.test.js del back.
@@ -113,5 +113,15 @@ describe('cuentas por tipo y catálogo', () => {
   test('dropUnknownAccounts quita las cuentas que no están en el catálogo', () => {
     const next = dropUnknownAccounts({ receivableCtaCode: '1', discountCtaCode: '9', taxCtaCode: '' }, [{ value: '1' }]);
     expect(next).toMatchObject({ receivableCtaCode: '1', discountCtaCode: '', taxCtaCode: '' });
+  });
+});
+
+describe('privilegio de Actualizar Cuentas', () => {
+  test('es 11.01.030 y solo cuenta si está activo', () => {
+    expect(ACCOUNTS_PRIVILEGE_CODE).toBe('11.01.030');
+    expect(hasAccountsPrivilege({ code: '11.01.030', active: true })).toBe(true);
+    expect(hasAccountsPrivilege({ code: '11.01.030', active: false })).toBe(false);
+    expect(hasAccountsPrivilege({ fnCreate: false, id: 0 })).toBe(false);
+    expect(hasAccountsPrivilege(undefined)).toBe(false);
   });
 });

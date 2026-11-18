@@ -106,6 +106,8 @@
     "creditNote.type.invalid",
     "customer.account.invalid",
     "customer.account.required",
+    "customer.accounts.accountingOff",
+    "customer.accounts.typeIncomplete",
     "customer.credit.required",
     "customer.default.noDelete",
     "customer.inUse",
