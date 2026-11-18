@@ -8,19 +8,23 @@ import Confirmation from '@Containers/ui/confirmationMsg';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { useTableConfig } from '@Hooks';
 import useDiscounts from './useDiscounts';
+import { MAX_NAME } from './discountRules';
 
+// Formulario de Descuentos (fac_desc.sc2). Obligatorios con `*` (nombre y porcentaje; la cuenta solo con Contabilidad activa). `feedbackText` recibe la CLAVE de traducción
+// (el componente la traduce).
 const Discounts = (props) => {
   const { setLoading } = props;
 
-  const { formState, formValidation, sendForm, onInputChange, listLedgerAccount, fnSave, propsToMsgDelete, tableData, fnClearInputs, fnEditItem, fnDeleteItem } = useDiscounts({ setLoading });
+  const { formState, errors, sendForm, onInputChange, listLedgerAccount, fnSave, propsToMsgDelete, tableData, fnClearInputs, fnEditItem, fnDeleteItem } = useDiscounts({ setLoading });
 
-  const { id, name, percentValue, idCtaAccount, status } = formState;
-  const { nameValid, percentValueValid, idCtaAccountValid } = formValidation;
+  const { name, percentValue, discountCtaCode, status } = formState;
+  const show = (key) => (sendForm && errors[key]) || null;
   const { tableInfo } = useTableConfig({
     title: IntlMessages("page.discounts.table.title"),
     columns: [
       { text: IntlMessages("page.discounts.table.description"), dataField: "description", headerStyle: { 'width': '45%' } },
-      { text: IntlMessages("page.discounts.table.amount"), dataField: "amount", headerStyle: { 'width': '30%' } },
+      { text: IntlMessages("page.discounts.table.amount"), dataField: "amount", headerStyle: { 'width': '25%' } },
+      { text: IntlMessages("table.column.status"), dataField: "status", type: 'boolean', headerStyle: { 'width': '15%' } },
     ],
     data: tableData,
     actions: [{
@@ -50,8 +54,9 @@ const Discounts = (props) => {
                     type='text'
                     onChange={onInputChange}
                     label="page.discounts.input.description"
-                    invalid={sendForm && !!nameValid}
-                    feedbackText={sendForm && (nameValid || null)}
+                    maxLength={MAX_NAME}
+                    invalid={!!show('name')}
+                    feedbackText={show('name')}
                   />
                 </Colxx>
                 <Colxx xxs="12" xs="4" sm="4" lg="4">
@@ -61,19 +66,20 @@ const Discounts = (props) => {
                     type='text'
                     label="page.discounts.input.amount"
                     onChange={onInputChange}
-                    invalid={sendForm && !!percentValueValid}
-                    feedbackText={sendForm && (percentValueValid || null)}
+                    maxLength={6}
+                    invalid={!!show('percentValue')}
+                    feedbackText={show('percentValue')}
                   />
                 </Colxx>
                 <Colxx sm="12" lg="8">
                   <SearchSelect
                     label='page.discounts.select.account'
-                    name='idCtaAccount'
-                    inputValue={idCtaAccount}
+                    name='discountCtaCode'
+                    inputValue={discountCtaCode}
                     options={listLedgerAccount}
                     onChange={onInputChange}
-                    invalid={sendForm && !!idCtaAccountValid}
-                    feedbackText={sendForm && (idCtaAccountValid || null)}
+                    invalid={!!show('discountCtaCode')}
+                    feedbackText={show('discountCtaCode')}
                   />
                 </Colxx>
               </Row>

@@ -2279,6 +2279,10 @@ const enLang = {
   "page.discounts.table.title": "Discounts Table",
   "page.discounts.table.description": "Description",
   "page.discounts.table.amount": " % ",
+  "page.discounts.error.name": "The name must have at least 5 characters",
+  "page.discounts.error.nameMax": "The name cannot exceed 50 characters",
+  "page.discounts.error.percent": "The percentage must be greater than 0 and at most 100, with up to 2 decimals",
+  "page.discounts.error.accountMax": "The account cannot exceed 20 characters",
   /* 28. companyInformation page in */
   "page.companyInformation.input.rtn": "R.T.N.",
   "page.companyInformation.input.name": "Name",

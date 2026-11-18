@@ -2289,12 +2289,16 @@ const esLang = {
   "page.paymentMethods.error.percentRequired": "Con cuenta de comisión el porcentaje debe ser mayor que 0",
   "page.paymentMethods.error.customerRequired": "Seleccione el cliente al que se cargará la cuenta por cobrar",
   /* 27. discounts page in */
-  "page.discounts.input.description": "Description",
+  "page.discounts.input.description": "Descripción",
   "page.discounts.input.amount": "Cantidad %",
   "page.discounts.select.account": "Cuenta",
   "page.discounts.table.title": "Tabla de Descuentos",
   "page.discounts.table.description": "Descripcion",
   "page.discounts.table.amount": "%",
+  "page.discounts.error.name": "El nombre debe tener al menos 5 caracteres",
+  "page.discounts.error.nameMax": "El nombre no puede tener más de 50 caracteres",
+  "page.discounts.error.percent": "El porcentaje debe ser mayor que 0 y no mayor que 100, con máximo 2 decimales",
+  "page.discounts.error.accountMax": "La cuenta no puede tener más de 20 caracteres",
   /* 28. companyInformation page in */
   "page.companyInformation.input.rtn": "R.T.N.",
   "page.companyInformation.input.name": "Nombre",
