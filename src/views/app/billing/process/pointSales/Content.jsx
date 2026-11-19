@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Badge, Card, CardBody, Row } from 'reactstrap';
-import { validFloat, validInt, IntlMessages } from "@Helpers/Utils";
+import { validFloat, validInt, IntlMessages, getPrivilegeData } from "@Helpers/Utils";
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { request, buildUrl, notifyError } from '@Helpers/core';
 import { useForm } from '@Hooks';
@@ -27,6 +27,11 @@ import ModalGlobalDiscount from './ModalGlobalDiscount';
 import InvoicingForm from '../invoicing/InvoicingForm';
 import InvoicingDetail from '../invoicing/InvoicingDetail';
 import InvoicingTable from '../invoicing/InvoicingTableProd';
+import ModalEditInvoiceInfo from '../invoicing/ModalEditInvoiceInfo';
+import ModalEditCostDist from '../invoicing/ModalEditCostDist';
+import ModalChangeProduct from '../invoicing/ModalChangeProduct';
+import { POS_API_PATH } from '../invoicing/postEditRules';
+import { PRODUCTS_PATH as POS_PRODUCTS_PATH } from './posCaptureRules';
 import ViewPdf from '@Components/ViewPDF/ViewPdf';
 
 const PointSales = (props) => {
@@ -59,6 +64,10 @@ const PointSales = (props) => {
   const [pendingLoad, setPendingLoad] = useState(null);
   const [openMsgLoadDocument, setOpenMsgLoadDocument] = useState(false);
   const [openModalGlobalDiscount, setOpenModalGlobalDiscount] = useState(false);
+  const [openModalEditInfo, setOpenModalEditInfo] = useState(false);
+  const [openModalEditCostDist, setOpenModalEditCostDist] = useState(false);
+  const [openModalChangeProduct, setOpenModalChangeProduct] = useState(false);
+  const [selectedChangeLine, setSelectedChangeLine] = useState(null);
   const [openModalPayment, setOpenModalPayment] = useState(false);
   const [sendFormIndex, setSendFormIndex] = useState(false);
   const [sendFormDetail, setSendFormDetail] = useState(false);
@@ -712,6 +721,33 @@ const PointSales = (props) => {
     };
   }
 
+  // Edición posterior de una factura emitida (SPEC v2-83-sr): las pantallas de Facturación con la ruta del POS y la sesión de caja. Los privilegios puntuales ya los entrega
+  // el login (11.01.032 información, costo y distribución; 11.01.034 cambio de producto); el back decide (alcance de la sesión, período y cierre aplicado).
+  const editInfoControl = getPrivilegeData('11.01.032');
+  const changeProductControl = getPrivilegeData('11.01.034');
+  const isVoidedInvoice = validInt(recordSelected?.isDeleted) === 1;
+  const canEditPosted = isInvoiceSaved && validInt(documentId) > 0 && !isVoidedInvoice;
+
+  const fnEditInfo = () => {
+    if (canEditPosted) setOpenModalEditInfo(true);
+  }
+  const fnEditCostDist = () => {
+    if (canEditPosted) setOpenModalEditCostDist(true);
+  }
+  const fnEditInfoSuccess = () => {
+    fnViewInvoice({ id });
+  }
+  const fnOpenChangeProduct = (item) => {
+    if (!canEditPosted) return;
+    setSelectedChangeLine(item);
+    setOpenModalChangeProduct(true);
+  }
+  const fnChangeProductSuccess = (lineId, newProductCode, newProductName) => {
+    setInvoiceDetail((current) => current.map((item) => (
+      item.id === lineId ? { ...item, productCode: newProductCode, description: newProductName } : item
+    )));
+  }
+
   const fnOpenModalGlobalDiscount = () => {
     if (isInvoiceSaved || invoiceDetail.length === 0) {
       return;
@@ -943,6 +979,10 @@ const PointSales = (props) => {
       }
     ],
     buttonsOptions: [
+      ...(editInfoControl.fnUpdate && canEditPosted ? [
+        { title: "button.editInfo", icon: "bi bi-pencil-square", onClick: fnEditInfo },
+        { title: "button.editCostDistribution", icon: "bi bi-diagram-3", onClick: fnEditCostDist }
+      ] : []),
       {
         title: "button.globalDiscount",
         icon: "bi bi-tag",
@@ -1097,6 +1137,35 @@ const PointSales = (props) => {
     title: "page.invoicing.msg.loadDocument.title"
   }
 
+  const posEditData = { apiPath: POS_API_PATH, sessionId: dataCashBox ? dataCashBox.sessionId : 0, setLoading };
+
+  const propsToModalEditCostDist = {
+    ModalContent: ModalEditCostDist,
+    title: "page.invoicing.modal.editCostDist.title",
+    open: openModalEditCostDist,
+    setOpen: setOpenModalEditCostDist,
+    maxWidth: 'xl',
+    data: { ...posEditData, id }
+  }
+
+  const propsToModalChangeProduct = {
+    ModalContent: ModalChangeProduct,
+    title: "page.invoicing.modal.changeProduct.title",
+    open: openModalChangeProduct,
+    setOpen: setOpenModalChangeProduct,
+    maxWidth: 'lg',
+    data: { ...posEditData, invoiceId: id, line: selectedChangeLine, productsPath: POS_PRODUCTS_PATH, fnSuccess: fnChangeProductSuccess }
+  }
+
+  const propsToModalEditInfo = {
+    ModalContent: ModalEditInvoiceInfo,
+    title: "page.invoicing.modal.editInfo.title",
+    open: openModalEditInfo,
+    setOpen: setOpenModalEditInfo,
+    maxWidth: 'lg',
+    data: { ...posEditData, id, hasSellerControl, listSellers, fnSuccess: fnEditInfoSuccess }
+  }
+
   const propsToPayment = {
     ModalContent: ModalPayment,
     title: "page.pointSales.modal.payment.title",
@@ -1161,7 +1230,7 @@ const PointSales = (props) => {
 
   const propsToInvoicingTable = {
     invoiceDetail, subTotalValue, discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValueInvoice, total, onInputChangeIndex,
-    fnDeleteProduct, isInvoiceSaved
+    fnDeleteProduct, isInvoiceSaved, fnOpenChangeProduct, canChangeProduct: Boolean(changeProductControl.fnUpdate) && canEditPosted
   }
 
   const propsToModalVoidInvoice = {
@@ -1245,6 +1314,9 @@ const PointSales = (props) => {
       <Modal {...propsToViewPDF} />
       <Modal {...propsToModalVoidInvoice} />
       <Modal {...propsToModalGlobalDiscount} />
+      <Modal {...propsToModalEditCostDist} />
+      <Modal {...propsToModalChangeProduct} />
+      <Modal {...propsToModalEditInfo} />
     </>
   );
 }

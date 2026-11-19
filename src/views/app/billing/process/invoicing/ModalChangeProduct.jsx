@@ -6,7 +6,7 @@ import { IntlMessages, formatNumber } from "@Helpers/Utils";
 import { request, buildUrl } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
 import { PRODUCTS_PATH } from './invoicingRules';
-import { API_PATH, buildChangeProductBody, validateChangeProduct } from './postEditRules';
+import { API_PATH, withSession, buildChangeProductBody, validateChangeProduct } from './postEditRules';
 
 const DEBOUNCE_MS = 300;
 
@@ -15,7 +15,7 @@ const DEBOUNCE_MS = 300;
 // partida de costo en una transacción. Los productos se buscan en el servidor y solo se listan los que ofrecen la unidad de la línea.
 const ModalChangeProduct = (props) => {
   const { data, setOpen } = props;
-  const { invoiceId, line, storeId, setLoading, fnSuccess } = data;
+  const { invoiceId, line, storeId, setLoading, fnSuccess, apiPath = API_PATH, sessionId, productsPath = PRODUCTS_PATH } = data;
 
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
@@ -29,7 +29,7 @@ const ModalChangeProduct = (props) => {
     setReason('');
     setSend(false);
     const timer = setTimeout(() => {
-      request.GET(buildUrl(PRODUCTS_PATH, { storeId, search: search.trim(), limit: 50 }), (resp) => {
+      request.GET(buildUrl(productsPath, sessionId ? { sessionId, search: search.trim(), limit: 50 } : { storeId, search: search.trim(), limit: 50 }), (resp) => {
         setProducts(resp.data || []);
       }, () => {
         setProducts([]);
@@ -53,7 +53,7 @@ const ModalChangeProduct = (props) => {
     }
     setLoading(true);
     // El mensaje real del back (otro impuesto, unidad, existencia, período...) lo muestra `request.PUT`: aquí solo se libera la pantalla.
-    request.PUT(`${API_PATH}/${invoiceId}/changeProduct`, buildChangeProductBody({ detailId: line.id, selectedCode, reason }), (resp) => {
+    request.PUT(withSession(`${apiPath}/${invoiceId}/changeProduct`, sessionId), buildChangeProductBody({ detailId: line.id, selectedCode, reason }), (resp) => {
       notification('success', 'page.invoicing.modal.changeProduct.msg.success', 'alert.success.title');
       setLoading(false);
       fnSuccess(line.id, resp.data.productCode, resp.data.productName);

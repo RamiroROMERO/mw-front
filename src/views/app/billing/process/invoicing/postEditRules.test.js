@@ -85,3 +85,15 @@ describe('cambio de producto', () => {
     expect(buildChangeProductBody({ detailId: 11, selectedCode: ' B ', reason: ' x ' })).toEqual({ detailId: 11, newProductCode: 'B', reason: 'x' });
   });
 });
+
+describe('edición posterior del POS (SPEC v2-83-sr)', () => {
+  test('la ruta del POS y la sesión de caja en la consulta', async () => {
+    const { POS_API_PATH, API_PATH, withSession } = await import('./postEditRules');
+    expect(POS_API_PATH).toBe('billing/process/pointSales/postEdit');
+    expect(API_PATH).toBe('billing/process/invoicePostEdit');
+    expect(withSession('a/5/info', 9)).toBe('a/5/info?sessionId=9');
+    expect(withSession('a/5/info?x=1', '9')).toBe('a/5/info?x=1&sessionId=9');
+    expect(withSession('a/5/info', 0)).toBe('a/5/info');
+    expect(withSession('a/5/info', undefined)).toBe('a/5/info');
+  });
+});

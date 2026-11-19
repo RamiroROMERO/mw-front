@@ -11,7 +11,7 @@ import { IntlMessages } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import notification from '@Containers/ui/Notifications';
-import { API_PATH, buildInfoBody, buildInfoPatch, regeneratesAccounting, validateInfoForm } from './postEditRules';
+import { API_PATH, withSession, buildInfoBody, buildInfoPatch, regeneratesAccounting, validateInfoForm } from './postEditRules';
 
 // El grupo de radios del tipo de venta se llama distinto al del formulario principal: con el mismo nombre los `id` (y el `for` de cada etiqueta) chocaban y el clic
 // caía en el radio deshabilitado de la factura.
@@ -19,7 +19,7 @@ import { API_PATH, buildInfoBody, buildInfoPatch, regeneratesAccounting, validat
 // tipo de venta o la exoneración regenera la partida (con el mismo número) y la CxC: pide motivo y la CxC no puede tener pagos aplicados.
 const ModalEditInvoiceInfo = (props) => {
   const { data, setOpen } = props;
-  const { id, hasSellerControl, listSellers, setLoading, fnSuccess } = data;
+  const { id, hasSellerControl, listSellers, setLoading, fnSuccess, apiPath = API_PATH, sessionId } = data;
 
   const [readOnlyInfo, setReadOnlyInfo] = useState({ documentCode: '', documentId: 0, numcai: '', date: '', total: 0 });
   const [original, setOriginal] = useState({});
@@ -38,7 +38,7 @@ const ModalEditInvoiceInfo = (props) => {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    request.GET(`${API_PATH}/${id}/info`, (resp) => {
+    request.GET(withSession(`${apiPath}/${id}/info`, sessionId), (resp) => {
       const info = resp.data;
       setReadOnlyInfo({ documentCode: info.documentCode, documentId: info.documentId, numcai: info.numcai, date: info.date, total: info.total });
       const loaded = {
@@ -67,7 +67,7 @@ const ModalEditInvoiceInfo = (props) => {
     }
     setLoading(true);
     // El mensaje real del back (período cerrado, pagos aplicados, etc.) lo muestra `request.PUT`: aquí solo se libera la pantalla.
-    request.PUT(`${API_PATH}/${id}/info`, buildInfoBody(patch, reason), () => {
+    request.PUT(withSession(`${apiPath}/${id}/info`, sessionId), buildInfoBody(patch, reason), () => {
       notification('success', 'page.invoicing.modal.editInfo.msg.success', 'alert.success.title');
       setLoading(false);
       fnSuccess();

@@ -5,7 +5,7 @@ import { IntlMessages, formatNumber } from "@Helpers/Utils";
 import { InputField } from '@Components/inputFields';
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
-import { API_PATH, buildCostBody, validateCostRows } from './postEditRules';
+import { API_PATH, withSession, buildCostBody, validateCostRows } from './postEditRules';
 
 // Equivalente a fac_pos_edit_cost_dist.sc2: herramienta para corregir el costo unitario
 // y el factor de distribución que quedaron grabados en el detalle de una factura ya
@@ -14,7 +14,7 @@ import { API_PATH, buildCostBody, validateCostRows } from './postEditRules';
 // partida de costo en la misma transacción.
 const ModalEditCostDist = (props) => {
   const { data, setOpen } = props;
-  const { id, setLoading } = data;
+  const { id, setLoading, apiPath = API_PATH, sessionId } = data;
 
   const [rows, setRows] = useState([]);
   const [reason, setReason] = useState('');
@@ -23,7 +23,7 @@ const ModalEditCostDist = (props) => {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    request.GET(`${API_PATH}/${id}/costs`, (resp) => {
+    request.GET(withSession(`${apiPath}/${id}/costs`, sessionId), (resp) => {
       setRows(resp.data.map((item) => ({ ...item, newCost: '', newQtyDist: '' })));
       setLoading(false);
     }, (err) => {
@@ -46,7 +46,7 @@ const ModalEditCostDist = (props) => {
     }
     setLoading(true);
     // El mensaje real del back (período cerrado, existencia, compuesto...) lo muestra `request.PUT`: aquí solo se libera la pantalla.
-    request.PUT(`${API_PATH}/${id}/costs`, buildCostBody(rows, reason), () => {
+    request.PUT(withSession(`${apiPath}/${id}/costs`, sessionId), buildCostBody(rows, reason), () => {
       notification('success', 'page.invoicing.modal.editCostDist.msg.success', 'alert.success.title');
       setLoading(false);
       setOpen(false);

@@ -2,6 +2,10 @@
 export const REASON_MAX = 200;
 export const API_PATH = 'billing/process/invoicePostEdit';
 
+// Edición posterior de facturas del POS (SPEC v2-83-sr): las mismas pantallas de Facturación con otra ruta y la sesión de caja en la consulta.
+export const POS_API_PATH = 'billing/process/pointSales/postEdit';
+export const withSession = (url, sessionId) => (Number(sessionId) > 0 ? `${url}${url.includes('?') ? '&' : '?'}sessionId=${Number(sessionId)}` : url);
+
 const num = (value) => {
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
