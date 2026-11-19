@@ -363,18 +363,21 @@ const request = {
         return err;
       });
   },
-  GETPdfUrl: (url, data, fnSuccess, fnError) => {
+  // `method` 'GET' envía `data` como query string y sin body (impresiones de solo lectura que no exigen el permiso de crear).
+  GETPdfUrl: (url, data, fnSuccess, fnError, method = 'POST') => {
     const token = fnGetToken();
-    fetchWithTimeout(`${urlAPI}${url}`, {
+    const isGet = method === 'GET';
+    const query = isGet && data ? `?${new URLSearchParams(data).toString()}` : '';
+    fetchWithTimeout(`${urlAPI}${url}${query}`, {
       async: true,
       crossDomain: true,
-      method: 'POST',
+      method: isGet ? 'GET' : 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       contentType: 'JSON',
-      body: JSON.stringify(data),
+      body: isGet ? undefined : JSON.stringify(data),
     })
       .then(parseBlobResponse)
       .then((response) => {

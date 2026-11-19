@@ -7,6 +7,7 @@ import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
 import ControlPanel from '@Components/controlPanel';
 import notification from '@Containers/ui/Notifications';
+import { buildPosPrintRequest, canPrint } from './posPrintRules';
 import Modal from "@Components/modal";
 import ModalSeekProducts from './ModalSeekProducts';
 import ModalSeekPosInvoices from './ModalSeekPosInvoices';
@@ -346,37 +347,33 @@ const PointSales = (props) => {
     setOpenModalPayment(true);
   }
 
-  const fnCheckoutSuccess = (resultData) => {
-    onInputChangeIndex({ target: { name: 'id', value: resultData.id } });
-    onInputChangeIndex({ target: { name: 'documentId', value: resultData.documentId } });
-    onInputChangeIndex({ target: { name: 'numcai', value: resultData.numcai } });
-    const dataPrint = {
-      id: resultData.id, userName: userData.name, typePrint: printType
-    }
+  // Impresión de la factura del POS (SPEC v2-84-sr): por GET, desde lo guardado y con el formato de la sesión. Sin usuario ni cifras del navegador.
+  const fnOpenPosInvoicePdf = (invoiceId) => {
+    const { url, params } = buildPosPrintRequest({ id: invoiceId, sessionId: dataCashBox?.sessionId, printFormat: printType });
     setLoading(true);
-    request.GETPdfUrl('billing/process/invoices/exportInvoicePDF', dataPrint, (resp) => {
+    request.GETPdfUrl(url, params, (resp) => {
       setDocumentPath(resp);
       setOpenViewFile(true);
       setLoading(false);
     }, (err) => {
+      notifyError(err, 'msg.print.error');
       setLoading(false);
-    });
+    }, 'GET');
+  }
+
+  const fnCheckoutSuccess = (resultData) => {
+    onInputChangeIndex({ target: { name: 'id', value: resultData.id } });
+    onInputChangeIndex({ target: { name: 'documentId', value: resultData.documentId } });
+    onInputChangeIndex({ target: { name: 'numcai', value: resultData.numcai } });
+    fnOpenPosInvoicePdf(resultData.id);
   }
 
   const fnPrintInvoicing = () => {
-    if (id > 0) {
-      const dataPrint = {
-        id, userName: userData.name, typePrint: printType
-      }
-
-      request.GETPdfUrl('billing/process/invoices/exportInvoicePDF', dataPrint, (resp) => {
-        setDocumentPath(resp);
-        setOpenViewFile(true);
-      }, (err) => {
-
-        setLoading(false);
-      });
+    if (!canPrint(id)) {
+      notification('warning', 'msg.print.saveFirst', 'alert.warning.title');
+      return;
     }
+    fnOpenPosInvoicePdf(id);
   }
 
   const fnCancelInvoicing = () => {
