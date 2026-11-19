@@ -2374,6 +2374,7 @@ const enLang = {
   "page.pointSales.status.cashClosed": "Cash Register Closed",
   "page.pointSales.status.cashName": "Cash Register",
   "page.pointSales.status.cashierName": "Cashier",
+  "msg.required.cashOpening": "Open the cash register before invoicing!",
   "msg.required.cashierEmail": "The cashier email is required!",
   "msg.required.cashierPass": "The cashier password is required!",
   "msg.required.select.invoiceFormat": "Select the invoice format!",

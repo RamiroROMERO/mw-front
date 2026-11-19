@@ -7,11 +7,12 @@ import { EditValuesTable } from "@Components/editValuesTable";
 import { request } from "@Helpers/core";
 import { ContainerWithLabel } from "@Components/containerWithLabel";
 import createNotification from "@Containers/ui/Notifications";
+import { buildCheckoutPayload, hasSession } from "./posCheckoutRules";
 
 const ModalPayment = (props) => {
   const { data, setOpen } = props;
   const { id, dateInProcess, total, cashId, cashierId, customerId, customerDNI, customerName, userName, typePrint, listTypePayments, setListTypePayments,
-    setLoading, invoiceHeader, invoiceDetail, fnCheckoutSuccess } = data;
+    setLoading, invoiceHeader, invoiceDetail, fnCheckoutSuccess, sessionId } = data;
 
   const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     valueCustomer: 0,
@@ -87,23 +88,19 @@ const ModalPayment = (props) => {
       return;
     }
 
-    // Venta nueva: checkout atómico — valida stock, genera factura, detalle, kardex,
-    // partida contable y CxC en una sola transacción (todo o nada).
-    const paymentMethods = listTypePayments
-      .filter(item => validFloat(item.value) > 0)
-      .map(item => ({ paymentTypeDetailId: item.id, total: validFloat(item.value), reference: '' }));
-
-    const checkoutPayload = {
-      invoice: {
-        ...invoiceHeader,
-        valueCustomer,
-        valueRestore,
-        customerDNI: newCustomerDNI,
-        customerName: newCustomerName
-      },
-      detail: invoiceDetail,
-      paymentMethods
+    // Venta nueva: checkout atómico (SPEC v2-79-sr). Solo se envía lo que digita el cajero y la sesión de caja; el servidor calcula precios, impuestos, costo, totales,
+    // caja, cajero, fecha, área, almacén y documento, y valida existencias, período y cuentas.
+    if (!hasSession({ sessionId })) {
+      createNotification('warning', 'msg.required.cashOpening', 'alert.warning.title');
+      return;
     }
+    const checkoutPayload = buildCheckoutPayload({
+      sessionId,
+      header: { ...invoiceHeader, customerDNI: newCustomerDNI, customerName: newCustomerName },
+      details: invoiceDetail,
+      payments: listTypePayments,
+      amountReceived: valueCustomer
+    });
 
     setLoading(true);
     request.POST('billing/process/pointSales/checkout', checkoutPayload, (resp) => {

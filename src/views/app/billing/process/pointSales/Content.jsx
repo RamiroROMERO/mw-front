@@ -1162,7 +1162,9 @@ const PointSales = (props) => {
       listTypePayments,
       setListTypePayments,
       setLoading,
+      sessionId: dataCashBox ? dataCashBox.sessionId : 0,
       invoiceHeader: {
+        sellerId: validInt(cashierId),
         documentCode,
         notes,
         date: dateInProcess === '' ? DateHelper.format(new Date()) : dateInProcess,
