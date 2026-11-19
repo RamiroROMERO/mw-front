@@ -352,8 +352,8 @@ const PointSales = (props) => {
   }
 
   // Impresión de la factura del POS (SPEC v2-84-sr): por GET, desde lo guardado y con el formato de la sesión. Sin usuario ni cifras del navegador.
-  const fnOpenPosInvoicePdf = (invoiceId) => {
-    const { url, params } = buildPosPrintRequest({ id: invoiceId, sessionId: dataCashBox?.sessionId, printFormat: printType });
+  const fnOpenPosInvoicePdf = (invoiceId, kind = 'print') => {
+    const { url, params } = buildPosPrintRequest({ id: invoiceId, sessionId: dataCashBox?.sessionId, printFormat: printType, kind });
     setLoading(true);
     request.GETPdfUrl(url, params, (resp) => {
       setDocumentPath(resp);
@@ -401,6 +401,15 @@ const PointSales = (props) => {
       return;
     }
     fnOpenPosInvoicePdf(id);
+  }
+
+  // Documento de entrega (SPEC v2-84-sr): del documento guardado; el servidor exige el número fiscal y su mensaje real se muestra tal cual.
+  const fnPrintDelivery = () => {
+    if (!canPrint(id)) {
+      notification('warning', 'msg.print.saveFirst', 'alert.warning.title');
+      return;
+    }
+    fnOpenPosInvoicePdf(id, 'delivery');
   }
 
   const fnCancelInvoicing = () => {
@@ -999,6 +1008,7 @@ const PointSales = (props) => {
       }
     ],
     buttonsOptions: [
+      { title: "button.deliveryDoc", icon: "bi bi-truck", onClick: fnPrintDelivery },
       ...(editInfoControl.fnUpdate && canEditPosted ? [
         { title: "button.editInfo", icon: "bi bi-pencil-square", onClick: fnEditInfo },
         { title: "button.editCostDistribution", icon: "bi bi-diagram-3", onClick: fnEditCostDist }

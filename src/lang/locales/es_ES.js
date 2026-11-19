@@ -445,6 +445,7 @@ const esLang = {
   "button.cashClosing": "Cierre de Caja",
   "button.cashOut": "Salida Efectivo",
   "button.cancellations": "Cancelaciones",
+  "button.deliveryDoc": "Documento de entrega",
   "button.importInvoice": "Importar",
   "button.addition": "Adición",
   "button.globalDiscount": "Descuento",

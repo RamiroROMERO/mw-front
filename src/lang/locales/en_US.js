@@ -443,6 +443,7 @@ const enLang = {
   "button.cashClosing": "Cash Closing",
   "button.cashOut": "Cash Out",
   "button.cancellations": "Cancellations",
+  "button.deliveryDoc": "Delivery document",
   "button.importInvoice": "Import",
   "button.addition": "Addition",
   "button.globalDiscount": "Discount",
