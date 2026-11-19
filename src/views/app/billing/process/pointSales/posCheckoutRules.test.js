@@ -6,9 +6,9 @@ describe('posCheckoutRules', () => {
   const details = [{ productCode: 'P1', unitedOut: 'UND', qty: '2', price: 100, discountPercent: 0, total: 1, unitedCoste: 0, areaId: 9, storeId: 9, taxValue: 0 }];
 
   test('solo manda lo que digita el cajero y la sesión; ningún monto calculado, caja, cajero, área, almacén ni fecha', () => {
-    const payload = buildCheckoutPayload({ sessionId: '12', header, details, payments: [{ id: 1, value: 230 }, { id: 2, value: 0 }], amountReceived: 300 });
+    const payload = buildCheckoutPayload({ sessionId: '12', header, details, payments: [{ id: 1, value: 230 }, { id: 2, value: 0 }], receivedValue: 300 });
     expect(payload).toEqual({
-      sessionId: 12, customerId: 7, customerName: 'Ana', customerDNI: '08', saleType: 1, sellerId: 3, notes: 'n', amountReceived: '300',
+      sessionId: 12, customerId: 7, customerName: 'Ana', customerDNI: '08', saleType: 1, sellerId: 3, notes: 'n', receivedValue: '300',
       details: [{ productCode: 'P1', unitName: 'UND', qty: 2, price: 100, discountPercent: 0, isBonus: false, lotCode: '', expirationDate: null }],
       payments: [{ paymentTypeDetailId: 1, amount: 230, reference: '' }]
     });
@@ -19,8 +19,8 @@ describe('posCheckoutRules', () => {
   });
 
   test('sin monto recibido manda vacío y los pagos en 0 no se envían', () => {
-    const payload = buildCheckoutPayload({ sessionId: 1, header, details, payments: [{ id: 1, value: 0 }], amountReceived: undefined });
-    expect(payload.amountReceived).toBe('');
+    const payload = buildCheckoutPayload({ sessionId: 1, header, details, payments: [{ id: 1, value: 0 }], receivedValue: undefined });
+    expect(payload.receivedValue).toBe('');
     expect(payload.payments).toEqual([]);
   });
 

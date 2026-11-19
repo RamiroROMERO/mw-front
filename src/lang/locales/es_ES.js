@@ -2407,6 +2407,8 @@ const esLang = {
   "page.pointSales.status.cashName": "Caja",
   "page.pointSales.status.cashierName": "Cajero",
   "msg.required.cashOpening": "Abra la caja antes de facturar!",
+  "msg.error.pos.receivedLess": "Lo recibido no puede ser menor que el total!",
+  "msg.error.pos.changeNotCash": "El cambio solo puede salir de la forma en efectivo!",
   "msg.required.cashierEmail": "El correo del cajero es requerido!",
   "msg.required.cashierPass": "La contraseña del cajero es requerida!",
   "msg.required.select.invoiceFormat": "Seleccione el formato de factura!",

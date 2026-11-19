@@ -5,7 +5,7 @@ const toNumber = (value) => {
   return Number.isFinite(number) ? number : 0;
 };
 
-export const buildCheckoutPayload = ({ sessionId, header, details, payments, amountReceived }) => ({
+export const buildCheckoutPayload = ({ sessionId, header, details, payments, receivedValue }) => ({
   sessionId: Number(sessionId),
   customerId: Number(header.customerId) || 0,
   customerName: header.customerName ?? '',
@@ -13,7 +13,7 @@ export const buildCheckoutPayload = ({ sessionId, header, details, payments, amo
   saleType: Number(header.documentType),
   sellerId: Number(header.sellerId) || 0,
   notes: header.notes ?? '',
-  amountReceived: amountReceived === undefined || amountReceived === null || amountReceived === '' ? '' : String(amountReceived),
+  receivedValue: receivedValue === undefined || receivedValue === null || receivedValue === '' ? '' : String(receivedValue),
   details: details.map((line) => ({
     productCode: line.productCode,
     unitName: line.unitedOut,

@@ -14,6 +14,7 @@ import ModalProducts from '../invoicing/ModalProducts';
 import ModalChangePrice from '../invoicing/ModalChangePrice';
 import ModalViewInvoi from '../invoicing/ModalViewInvoi';
 import ModalCashOpening from './ModalCashOpening';
+import { PAYMENT_METHODS_PATH } from './posPaymentRules';
 import ModalCashclose from './ModalCashClose';
 import ModalCashOut from './ModalCashOut';
 import ModalCancellations from './ModalCancellations';
@@ -905,11 +906,12 @@ const PointSales = (props) => {
 
       setLoading(false);
     });
-    request.GET('billing/settings/paymentTypeDetails?status=1', (resp) => {
+    request.GET(PAYMENT_METHODS_PATH, (resp) => {
       const payments = resp.data.map(item => {
         return {
           id: item.id,
           name: item.description,
+          isDefault: item.isDefault,
           value: 0
         }
       });
