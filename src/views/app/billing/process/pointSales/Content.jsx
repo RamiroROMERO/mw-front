@@ -1,27 +1,29 @@
 import { useState, useEffect } from 'react';
 import { Badge, Card, CardBody, Row } from 'reactstrap';
-import { validFloat, formatNumber, validInt, IntlMessages } from "@Helpers/Utils";
+import { validFloat, validInt, IntlMessages } from "@Helpers/Utils";
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { request, buildUrl } from '@Helpers/core';
 import { getErrorCode } from '@Helpers/errorMessage';
 import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
 import ControlPanel from '@Components/controlPanel';
-import TableButton from "@Components/tableButtons";
 import notification from '@Containers/ui/Notifications';
 import Modal from "@Components/modal";
-import ModalProducts from '../invoicing/ModalProducts';
+import ModalSeekProducts from './ModalSeekProducts';
+import ModalSeekPosInvoices from './ModalSeekPosInvoices';
+import { fromSearchRow } from './posCaptureRules';
 import ModalChangePrice from '../invoicing/ModalChangePrice';
-import ModalViewInvoi from '../invoicing/ModalViewInvoi';
 import ModalCashOpening from './ModalCashOpening';
 import { PAYMENT_METHODS_PATH } from './posPaymentRules';
 import ModalCashclose from './ModalCashClose';
 import ModalCashOut from './ModalCashOut';
 import ModalCancellations from './ModalCancellations';
-import ModalQuotation from '../invoicing/ModalQuotation';
+import ModalSeekQuotes from '../quotes/ModalSeekQuotes';
+import ModalSeekPurchaseOrders from '../purchaseOrders/ModalSeekPurchaseOrders';
+import Confirmation from '@Containers/ui/confirmationMsg';
+import { headerFromDocument, lineFromDocument, totalsFromLines } from '../invoicing/invoicingRules';
 import ModalPayment from './ModalPayment';
 import ModalVoidInvoice from './ModalVoidInvoice';
-import ModalAddition from './ModalAddition';
 import ModalGlobalDiscount from './ModalGlobalDiscount';
 import InvoicingForm from '../invoicing/InvoicingForm';
 import InvoicingDetail from '../invoicing/InvoicingDetail';
@@ -38,15 +40,12 @@ const PointSales = (props) => {
   const [listWarehouse, setListWarehouse] = useState([]);
   const [listSellers, setListSellers] = useState([]);
   const [listCashiers, setListCashiers] = useState([]);
-  const [listProducts, setListProducts] = useState([]);
   const [listCashBoxes, setListCashBoxes] = useState([]);
   const [listTypeExpenses, setListTypeExpenses] = useState([]);
   const [listTypePayments, setListTypePayments] = useState([]);
   const [listLedgerAccount, setListLedgerAccount] = useState([]);
   const [hasSellerControl, setHasSellerControl] = useState(false);
-  const [roundInPos, setRoundInPos] = useState(false);
   const [invoiceDetail, setInvoiceDetail] = useState([]);
-  const [dataInvoicing, setDataInvoicing] = useState([]);
   const [recordSelected, setRecordSelected] = useState({});
   const [openModalProducts, setOpenModalProducts] = useState(false);
   const [openModalInvoices, setOpenModalInvoices] = useState(false);
@@ -56,8 +55,10 @@ const PointSales = (props) => {
   const [openModalCashClose, setOpenModalCashClose] = useState(false);
   const [openModalCashOut, setOpenModalCashOut] = useState(false);
   const [openModalCancellations, setOpenModalCancellations] = useState(false);
-  const [openModalQuotation, setOpenModalQuotation] = useState(false);
-  const [openModalAddition, setOpenModalAddition] = useState(false);
+  const [openModalSeekQuotes, setOpenModalSeekQuotes] = useState(false);
+  const [openModalSeekPurchaseOrders, setOpenModalSeekPurchaseOrders] = useState(false);
+  const [pendingLoad, setPendingLoad] = useState(null);
+  const [openMsgLoadDocument, setOpenMsgLoadDocument] = useState(false);
   const [openModalGlobalDiscount, setOpenModalGlobalDiscount] = useState(false);
   const [openModalPayment, setOpenModalPayment] = useState(false);
   const [sendFormIndex, setSendFormIndex] = useState(false);
@@ -262,29 +263,19 @@ const PointSales = (props) => {
     setSendFormDetail(false);
   }
 
+  // Listado de facturas del POS (SPEC v2-80-sr): el modal pide las páginas al servidor (día de la sesión; el cajero ve solo las suyas).
   const fnSearchInvoicing = () => {
     if (!dataCashBox?.cashId) {
       return;
     }
-    setLoading(true);
-    request.GET('billing/process/invoices', (resp) => {
-      const invoices = resp.data.map((item) => {
-        item.value = formatNumber(item.total);
-        item.options = <TableButton color='primary' icon='eye' fnOnClick={() => fnViewInvoice(item)} />
-        return item;
-      });
-      setDataInvoicing(invoices);
-      setOpenModalInvoices(true);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
+    setOpenModalInvoices(true);
   }
 
-  const fnViewInvoice = (item) => {
+  const fnViewInvoice = (row) => {
     onResetFormIndex();
-    setRecordSelected(item);
+    setLoading(true);
+    request.GET(`billing/process/invoices/${row.id}`, (resp) => setRecordSelected(resp.data), () => setLoading(false));
+    const item = row;
 
     request.GET(buildUrl('billing/process/invoiceDetail', { idFather: item.id }), (resp) => {
       const invoiceProducts = resp.data.map((item2) => {
@@ -438,13 +429,53 @@ const PointSales = (props) => {
     setOpenModalCancellations(true);
   }
 
-  const fnQuotation = () => {
-    if (id > 0) {
-      setOpenModalQuotation(true);
+  // Cargar una cotización u orden de compra de clientes (SPEC v2-80-sr): solo en un documento nuevo (sin factura abierta), con el área, el almacén y el vendedor de la
+  // sesión. Copia cliente, vendedor y líneas con los precios del documento; el servidor vuelve a validar todo al cobrar (v2-79-sr). Con líneas ya agregadas pide
+  // confirmación y las reemplaza.
+  const fnOpenLoadDocument = (kind) => {
+    if (!dataCashBox?.cashId || isInvoiceSaved) {
+      return;
     }
+    if (kind === 'order') setOpenModalSeekPurchaseOrders(true);
+    else setOpenModalSeekQuotes(true);
   }
 
-  const fnSelectProduct = (item) => {
+  const fnDoLoadDocument = (kind, row) => {
+    setLoading(true);
+    const url = kind === 'order' ? `billing/process/purchaseOrders/${row.id}` : `billing/process/quotes/${row.id}`;
+    request.GET(url, (resp) => {
+      const document = resp.data || {};
+      const headerPatch = headerFromDocument(document);
+      const sellerId = headerPatch.cashierId || cashierId;
+      const sellerData = listSellers.find((item) => item.value === sellerId);
+      const newLines = (document.details || []).map((line) => lineFromDocument(line, { areaId: validInt(areaId), storeId: validInt(storeId), sellerCode: sellerData ? sellerData.code : '' }));
+      setInvoiceDetail(newLines);
+      setBulkFormIndex({ ...headerPatch, ...totalsFromLines(newLines, false) });
+      setLoading(false);
+    }, () => {
+      setLoading(false);
+    });
+  }
+
+  const fnLoadDocument = (kind, row) => {
+    setOpenModalSeekPurchaseOrders(false);
+    setOpenModalSeekQuotes(false);
+    if (invoiceDetail.length > 0) {
+      setPendingLoad({ kind, row });
+      setOpenMsgLoadDocument(true);
+      return;
+    }
+    fnDoLoadDocument(kind, row);
+  }
+
+  const fnConfirmLoadDocument = () => {
+    setOpenMsgLoadDocument(false);
+    if (pendingLoad) fnDoLoadDocument(pendingLoad.kind, pendingLoad.row);
+    setPendingLoad(null);
+  }
+
+  const fnSelectProduct = (searchRow) => {
+    const item = fromSearchRow(searchRow);
     // No se usa onResetFormDetail() acá: reseteaba TODO el formulario de detalle,
     // incluyendo areaId/storeId/typePrice — el usuario los elige una vez y agrega
     // varios productos contra esa misma área/almacén, así que no deben perderse al
@@ -488,41 +519,12 @@ const PointSales = (props) => {
     setOpenModalProducts(false);
   }
 
+  // Buscador de productos (SPEC v2-80-sr): paginado en el servidor con el almacén de la sesión; ya no se baja el catálogo del almacén.
   const fnViewProducts = () => {
     if (!dataCashBox?.cashId) {
       return;
     }
-    setLoading(true);
-    setListProducts([]);
-    // El buscador del legacy (getProductsForSale) trae productos y servicios juntos en
-    // un solo listado — acá el backend los expone en dos endpoints separados
-    // (getStocks/getServices), así que se combinan del lado del cliente.
-    const mapProduct = (item) => {
-      item.taxPercent = item.percentTax
-      item.unitProd = item.undoutName
-      item.min = item.localMinPrice
-      item.med = item.localMedPrice
-      item.max = item.localMaxPrice
-      item.stock = formatNumber(item.qtyStock)
-      item.options = <TableButton color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
-      return item;
-    }
-    request.GET(buildUrl('inventory/process/stocks/getStocks', { storeId, inStock: true }), (resp) => {
-      const products = resp.data.map(mapProduct);
-      request.GET('inventory/process/stocks/getServices', (resp2) => {
-        const services = resp2.data.map(mapProduct);
-        setListProducts([...products, ...services]);
-        setOpenModalProducts(true);
-        setLoading(false);
-      }, (err) => {
-        setListProducts(products);
-        setOpenModalProducts(true);
-        setLoading(false);
-      });
-    }, (err) => {
-
-      setLoading(false);
-    });
+    setOpenModalProducts(true);
   }
 
   const fnChangePrice = () => {
@@ -716,66 +718,6 @@ const PointSales = (props) => {
     };
   }
 
-  const fnOpenModalAddition = () => {
-    if (isInvoiceSaved || invoiceDetail.length === 0) {
-      return;
-    }
-    setOpenModalAddition(true);
-  }
-
-  // Controlpanelbtn1 ("Adición") de fac_pos.sc2: aumenta el precio unitario de todas las
-  // líneas un mismo porcentaje y recalcula subtotal/descuento/impuesto/total en cascada —
-  // solo mientras se edita, nunca sobre un documento ya guardado.
-  const fnApplyAddition = (percent) => {
-    let newDetail = invoiceDetail.map(item => {
-      const newPrice = validFloat(item.price) + (validFloat(item.price) * (percent / 100));
-      const newSubtotal = newPrice * validFloat(item.qty);
-      const discountValue = validFloat(item.discountPercent) !== 0 ? newSubtotal * (validFloat(item.discountPercent) / 100) : 0;
-      const taxValue = validFloat(item.taxPercent) !== 0 ? (newSubtotal - discountValue) * (validFloat(item.taxPercent) / 100) : 0;
-      const total = newSubtotal - discountValue + taxValue;
-      return {
-        ...item,
-        price: newPrice,
-        subtotal: newSubtotal,
-        discountValue,
-        taxValue,
-        total,
-        subtotTaxValue: taxValue > 0 ? newSubtotal : 0,
-        subTotExeValue: taxValue === 0 ? newSubtotal : 0
-      };
-    });
-
-    // Empresas con "redondeo en POS" activo: el total de cada línea se redondea al Lempira
-    // entero y precio/descuento/impuesto se recalculan hacia atrás desde ese total redondeado
-    // (en vez de simplemente truncar), para que sigan cuadrando exactos entre sí.
-    if (roundInPos) {
-      newDetail = newDetail.map(item => {
-        const qty = validFloat(item.qty) || 1;
-        const taxPercent = validFloat(item.taxPercent);
-        const discountPercent = validFloat(item.discountPercent);
-        const roundedTotal = Math.round(validFloat(item.total));
-        const tax = taxPercent !== 0 ? roundedTotal - (roundedTotal / (1 + (taxPercent / 100))) : 0;
-        const subtotal = discountPercent !== 0 ? (roundedTotal - tax) * (100 / (100 - discountPercent)) : roundedTotal - tax;
-        const discountValue = discountPercent !== 0 ? subtotal * (discountPercent / 100) : 0;
-        const price = subtotal / qty;
-        return {
-          ...item,
-          price,
-          subtotal,
-          discountValue,
-          taxValue: tax,
-          total: roundedTotal,
-          subtotTaxValue: tax > 0 ? subtotal : 0,
-          subTotExeValue: tax === 0 ? subtotal : 0
-        };
-      });
-    }
-
-    setInvoiceDetail(newDetail);
-    setBulkFormIndex(fnRecalculateHeaderTotals(newDetail));
-    setOpenModalAddition(false);
-  }
-
   const fnOpenModalGlobalDiscount = () => {
     if (isInvoiceSaved || invoiceDetail.length === 0) {
       return;
@@ -944,7 +886,6 @@ const PointSales = (props) => {
     });
     request.GET('admin/companies/getOperationalSettings', (resp) => {
       setHasSellerControl(!!resp.data.hasSellerControl);
-      setRoundInPos(!!resp.data.roundInPos);
     }, (err) => {
 
     });
@@ -999,15 +940,15 @@ const PointSales = (props) => {
       {
         title: "button.quotation",
         icon: "bi bi-file-text",
-        onClick: fnQuotation
+        onClick: () => fnOpenLoadDocument('quote')
+      },
+      {
+        title: "button.loadPurchaseOrder",
+        icon: "bi bi-file-earmark-text",
+        onClick: () => fnOpenLoadDocument('order')
       }
     ],
     buttonsOptions: [
-      {
-        title: "button.addition",
-        icon: "bi bi-percent",
-        onClick: fnOpenModalAddition
-      },
       {
         title: "button.globalDiscount",
         icon: "bi bi-tag",
@@ -1018,13 +959,14 @@ const PointSales = (props) => {
   }
 
   const propsToModalProducts = {
-    ModalContent: ModalProducts,
+    ModalContent: ModalSeekProducts,
     title: "page.invoicing.modal.products.title",
     open: openModalProducts,
     setOpen: setOpenModalProducts,
     maxWidth: 'lg',
     data: {
-      listProducts
+      sessionId: dataCashBox ? dataCashBox.sessionId : 0,
+      fnSelect: fnSelectProduct
     }
   }
 
@@ -1049,14 +991,15 @@ const PointSales = (props) => {
   }
 
   const propsToModalInvoices = {
-    ModalContent: ModalViewInvoi,
+    ModalContent: ModalSeekPosInvoices,
     title: "page.invoicing.modal.invoices.title",
     open: openModalInvoices,
     setOpen: setOpenModalInvoices,
     maxWidth: 'xl',
     classNames: "modal-fullscreen-lg-down",
     data: {
-      dataInvoicing
+      sessionId: dataCashBox ? dataCashBox.sessionId : 0,
+      fnSelect: fnViewInvoice
     }
   }
 
@@ -1129,19 +1072,35 @@ const PointSales = (props) => {
     }
   }
 
-  const propsToModalQuotation = {
-    ModalContent: ModalQuotation,
-    title: "page.invoicing.modal.generateQuotation.title",
-    open: openModalQuotation,
-    setOpen: setOpenModalQuotation,
-    maxWidth: 'md',
+  const propsToModalSeekQuotes = {
+    ModalContent: ModalSeekQuotes,
+    title: "page.invoicing.modal.seekQuotes.title",
+    open: openModalSeekQuotes,
+    setOpen: setOpenModalSeekQuotes,
+    maxWidth: 'lg',
     data: {
-      id,
-      dateInProcess,
-      customerDNI,
-      customerName,
-      setLoading
+      fnViewItem: (row) => fnLoadDocument('quote', row),
+      dateFormat: 'DMY'
     }
+  }
+
+  const propsToModalSeekPurchaseOrders = {
+    ModalContent: ModalSeekPurchaseOrders,
+    title: "page.invoicing.modal.seekPurchaseOrders.title",
+    open: openModalSeekPurchaseOrders,
+    setOpen: setOpenModalSeekPurchaseOrders,
+    maxWidth: 'lg',
+    data: {
+      fnViewItem: (row) => fnLoadDocument('order', row),
+      dateFormat: 'DMY'
+    }
+  }
+
+  const propsToMsgLoadDocument = {
+    open: openMsgLoadDocument,
+    setOpen: setOpenMsgLoadDocument,
+    fnOnOk: fnConfirmLoadDocument,
+    title: "page.invoicing.msg.loadDocument.title"
   }
 
   const propsToPayment = {
@@ -1224,17 +1183,6 @@ const PointSales = (props) => {
     }
   }
 
-  const propsToModalAddition = {
-    ModalContent: ModalAddition,
-    title: "button.addition",
-    open: openModalAddition,
-    setOpen: setOpenModalAddition,
-    maxWidth: "sm",
-    data: {
-      fnConfirm: fnApplyAddition
-    }
-  }
-
   const propsToModalGlobalDiscount = {
     ModalContent: ModalGlobalDiscount,
     title: "button.globalDiscount",
@@ -1296,11 +1244,12 @@ const PointSales = (props) => {
       <Modal {...propsToModalCashClose} />
       <Modal {...propsToModalCashOut} />
       <Modal {...propsToModalCancellations} />
-      <Modal {...propsToModalQuotation} />
+      <Modal {...propsToModalSeekQuotes} />
+      <Modal {...propsToModalSeekPurchaseOrders} />
+      <Confirmation {...propsToMsgLoadDocument} />
       <Modal {...propsToPayment} />
       <Modal {...propsToViewPDF} />
       <Modal {...propsToModalVoidInvoice} />
-      <Modal {...propsToModalAddition} />
       <Modal {...propsToModalGlobalDiscount} />
     </>
   );

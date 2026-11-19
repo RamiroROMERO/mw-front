@@ -2377,6 +2377,8 @@ const enLang = {
   "msg.required.cashOpening": "Open the cash register before invoicing!",
   "msg.error.pos.receivedLess": "The amount received cannot be less than the total!",
   "msg.error.pos.changeNotCash": "Change can only come from the cash payment!",
+  "page.pointSales.state.closed": "Closed",
+  "page.pointSales.table.payment": "Payment",
   "msg.required.cashierEmail": "The cashier email is required!",
   "msg.required.cashierPass": "The cashier password is required!",
   "msg.required.select.invoiceFormat": "Select the invoice format!",
