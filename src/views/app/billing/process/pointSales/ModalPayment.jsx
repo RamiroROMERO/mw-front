@@ -10,10 +10,11 @@ import { ContainerWithLabel } from "@Components/containerWithLabel";
 import createNotification from "@Containers/ui/Notifications";
 import { buildCheckoutPayload, hasSession } from "./posCheckoutRules";
 import { formatCents, receivedAndChange, validatePosPayment } from "./posPaymentRules";
+import { IMPORT_PATH, buildImportPayload } from "./posImportRules";
 
 const ModalPayment = (props) => {
   const { data, setOpen } = props;
-  const { total, customerDNI, customerName, listTypePayments, setListTypePayments, setLoading, invoiceHeader, invoiceDetail, fnCheckoutSuccess, sessionId } = data;
+  const { total, customerDNI, customerName, listTypePayments, setListTypePayments, setLoading, invoiceHeader, invoiceDetail, fnCheckoutSuccess, sessionId, importInvoiceId } = data;
 
   const { formState, onInputChange } = useForm({
     valueCustomer: '',
@@ -40,6 +41,18 @@ const ModalPayment = (props) => {
     const paymentError = validatePosPayment({ rows: listTypePayments, total, receivedValue: valueCustomer });
     if (paymentError) {
       createNotification('warning', paymentError, 'alert.warning.title');
+      return;
+    }
+    // Importar un borrador de Facturación (SPEC v2-90-sr): mismas formas de pago y recibido, pero el servidor toma la factura ya guardada; no se envía ninguna línea.
+    if (importInvoiceId > 0) {
+      setLoading(true);
+      request.POST(IMPORT_PATH(importInvoiceId), buildImportPayload({ sessionId, payments: listTypePayments, receivedValue: valueCustomer }), (resp) => {
+        setLoading(false);
+        setOpen(false);
+        fnCheckoutSuccess(resp.data);
+      }, () => {
+        setLoading(false);
+      });
       return;
     }
     const checkoutPayload = buildCheckoutPayload({

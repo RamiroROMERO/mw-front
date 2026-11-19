@@ -11,6 +11,7 @@ import { buildPosPrintRequest, canPrint } from './posPrintRules';
 import Modal from "@Components/modal";
 import ModalSeekProducts from './ModalSeekProducts';
 import ModalSeekPosInvoices from './ModalSeekPosInvoices';
+import ModalImportInvoice from './ModalImportInvoice';
 import { fromSearchRow } from './posCaptureRules';
 import ModalChangePrice from '../invoicing/ModalChangePrice';
 import ModalCashOpening from './ModalCashOpening';
@@ -53,6 +54,9 @@ const PointSales = (props) => {
   const [recordSelected, setRecordSelected] = useState({});
   const [openModalProducts, setOpenModalProducts] = useState(false);
   const [openModalInvoices, setOpenModalInvoices] = useState(false);
+  const [openModalImport, setOpenModalImport] = useState(false);
+  const [openModalImportPayment, setOpenModalImportPayment] = useState(false);
+  const [importInvoice, setImportInvoice] = useState(null);
   const [openModalPrice, setOpenModalPrice] = useState(false);
   const [openModalCashOpening, setOpenModalCashOpening] = useState(false);
   const [openModalVoidInvoice, setOpenModalVoidInvoice] = useState(false);
@@ -359,6 +363,29 @@ const PointSales = (props) => {
       notifyError(err, 'msg.print.error');
       setLoading(false);
     }, 'GET');
+  }
+
+  // Importar un borrador de Facturación (SPEC v2-90-sr): se elige en el buscador, se cobra con el mismo diálogo de pago y el servidor genera el documento en una sola
+  // operación. Sin selectores de caja ni cajero (salen de la sesión). El aviso de que no se puede revertir va en el título del diálogo.
+  const fnImport = () => {
+    if (!dataCashBox || !(Number(dataCashBox.sessionId) > 0)) {
+      notification('warning', 'msg.required.cashOpening', 'alert.warning.title');
+      return;
+    }
+    setOpenModalImport(true);
+  }
+
+  const fnImportSelect = (row) => {
+    setImportInvoice(row);
+    setListTypePayments(listTypePayments.map((item) => ({ ...item, value: 0 })));
+    setOpenModalImport(false);
+    setOpenModalImportPayment(true);
+  }
+
+  const fnImportSuccess = (resultData) => {
+    setImportInvoice(null);
+    fnViewInvoice({ id: resultData.id });
+    fnOpenPosInvoicePdf(resultData.id);
   }
 
   const fnCheckoutSuccess = (resultData) => {
@@ -964,6 +991,11 @@ const PointSales = (props) => {
         title: "button.loadPurchaseOrder",
         icon: "bi bi-file-earmark-text",
         onClick: () => fnOpenLoadDocument('order')
+      },
+      {
+        title: "button.importInvoice",
+        icon: "bi bi-box-arrow-in-down",
+        onClick: fnImport
       }
     ],
     buttonsOptions: [
@@ -1022,6 +1054,37 @@ const PointSales = (props) => {
     data: {
       sessionId: dataCashBox ? dataCashBox.sessionId : 0,
       fnSelect: fnViewInvoice
+    }
+  }
+
+  const propsToModalImport = {
+    ModalContent: ModalImportInvoice,
+    title: "page.pointSales.import.title",
+    open: openModalImport,
+    setOpen: setOpenModalImport,
+    maxWidth: 'xl',
+    classNames: "modal-fullscreen-lg-down",
+    data: { sessionId: dataCashBox ? dataCashBox.sessionId : 0, fnSelect: fnImportSelect }
+  }
+
+  const propsToImportPayment = {
+    ModalContent: ModalPayment,
+    title: "page.pointSales.import.payment.title",
+    open: openModalImportPayment,
+    setOpen: setOpenModalImportPayment,
+    maxWidth: "md",
+    data: {
+      total: importInvoice ? importInvoice.total : 0,
+      customerDNI: importInvoice ? importInvoice.customerDNI : '',
+      customerName: importInvoice ? importInvoice.customerName : '',
+      listTypePayments,
+      setListTypePayments,
+      setLoading,
+      sessionId: dataCashBox ? dataCashBox.sessionId : 0,
+      importInvoiceId: importInvoice ? importInvoice.id : 0,
+      invoiceHeader: {},
+      invoiceDetail: [],
+      fnCheckoutSuccess: fnImportSuccess
     }
   }
 
@@ -1286,6 +1349,8 @@ const PointSales = (props) => {
       <Modal {...propsToModalProducts} />
       <Modal {...propsToModalPrices} />
       <Modal {...propsToModalInvoices} />
+      <Modal {...propsToModalImport} />
+      <Modal {...propsToImportPayment} />
       <Modal {...propsToModalCashOpening} />
       <Modal {...propsToModalCashClose} />
       <Modal {...propsToModalCashOut} />
