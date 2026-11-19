@@ -1051,8 +1051,11 @@ const PointSales = (props) => {
     setOpen: setOpenModalCashClose,
     maxWidth: "lg",
     data: {
+      sessionId: dataCashBox ? dataCashBox.sessionId : 0,
+      dateInProcess,
       cashId: dataCashBox ? dataCashBox.cashId : 0,
-      cashierId: dataCashBox ? dataCashBox.cashierId : 0,
+      sessionCashierId: dataCashBox ? dataCashBox.cashierId : 0,
+      isSupervisor: Boolean(dataCashBox?.permissions?.seesAllInvoices),
       listCashBoxes,
       listCashiers,
       printType,
