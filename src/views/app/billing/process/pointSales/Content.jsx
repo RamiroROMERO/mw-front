@@ -45,7 +45,6 @@ const PointSales = (props) => {
   const [listSellers, setListSellers] = useState([]);
   const [listCashiers, setListCashiers] = useState([]);
   const [listCashBoxes, setListCashBoxes] = useState([]);
-  const [listTypeExpenses, setListTypeExpenses] = useState([]);
   const [listTypePayments, setListTypePayments] = useState([]);
   const [listLedgerAccount, setListLedgerAccount] = useState([]);
   const [hasSellerControl, setHasSellerControl] = useState(false);
@@ -906,14 +905,6 @@ const PointSales = (props) => {
 
       setLoading(false);
     });
-    request.GET('billing/settings/expensesTypes', (resp) => {
-      const cashOut = resp.data;
-      setListTypeExpenses(cashOut);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
     request.GET('admin/companies/getOperationalSettings', (resp) => {
       setHasSellerControl(!!resp.data.hasSellerControl);
     }, (err) => {
@@ -1077,9 +1068,8 @@ const PointSales = (props) => {
     maxWidth: "md",
     data: {
       dateInProcess,
-      cashId: dataCashBox ? dataCashBox.cashId : 0,
-      cashierId: dataCashBox ? dataCashBox.cashierId : 0,
-      listTypeExpenses,
+      sessionId: dataCashBox ? dataCashBox.sessionId : 0,
+      listLedgerAccount,
       setLoading
     }
   }
