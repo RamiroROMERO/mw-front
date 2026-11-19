@@ -358,8 +358,6 @@
     "pos.void.notOwner",
     "posPrint.copies.invalid",
     "posPrint.format.invalid",
-    "posPrint.notOwner",
-    "posPrint.reprintForbidden",
     "product.classification.notFound",
     "product.code.duplicate",
     "product.code.exhausted",
