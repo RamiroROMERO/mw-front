@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
+import { useEffect, useState } from "react";
+import { Button, Input, Label, ModalBody, ModalFooter, Row } from "reactstrap";
 import { Colxx } from '@Components/common/CustomBootstrap';
-import { IntlMessages, validInt } from "@Helpers/Utils";
+import { IntlMessages } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import { SimpleSelect } from "@Components/simpleSelect";
@@ -10,89 +10,63 @@ import { InputField } from "@Components/inputFields";
 import DateCalendar from "@Components/dateCalendar";
 import notification from "@Containers/ui/Notifications";
 import DateHelper from '@Helpers/DateHelper';
+import { buildOpenRequest, buildStoredSession, localToday, needsDateConfirm, validateOpening } from './posSessionRules';
 
+const SESSION_URL = 'billing/process/pointSales/session';
+
+// Apertura de caja del POS (SPEC v2-78-sr): el cajero se identifica con correo y contraseña, el servidor valida y persiste la apertura y devuelve caja, área,
+// almacén, documento, precios, permisos y configuración; lo digitado solo es caja, día, monto inicial y formato.
 const ModalCashOpening = (props) => {
   const { data, setOpen } = props;
-  const { listCashBoxes, listAreas, setBulkFormDetail, setBulkFormIndex, setLoading, userData } = data;
+  const { setBulkFormDetail, setBulkFormIndex, setLoading, userData } = data;
   const [sendForm, setSendForm] = useState(false);
+  const [registers, setRegisters] = useState([]);
+  const [confirmDate, setConfirmDate] = useState(false);
+  const incompleteText = IntlMessages('msg.error.pos.registerIncomplete');
 
-  const cashOpeningValid = {
-    cashBox: [(val) => validInt(val) > 0, "msg.required.select.cashBox"]
-  }
-
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkform } = useForm({
-    cashBox: 1,
+  const { formState, onInputChange } = useForm({
+    cashBox: 0,
+    email: userData?.email || '',
     dateCashOpen: DateHelper.format(new Date()),
     cashierPass: '',
+    initialValue: '',
     typePrint: 1
-  }, cashOpeningValid);
+  }, {});
+  const { cashBox, email, dateCashOpen, cashierPass, initialValue, typePrint } = formState;
+  const errors = validateOpening(formState);
+  const hasErrors = Object.keys(errors).length > 0;
 
-  const { cashBox, dateCashOpen, cashierPass, typePrint } = formState;
-
-  const { cashBoxValid } = formValidation;
+  useEffect(() => {
+    request.GET(`${SESSION_URL}/registers`, (resp) => {
+      const list = resp.data || [];
+      setRegisters(list);
+      const first = list.find((item) => item.complete);
+      if (first) onInputChange({ target: { name: 'cashBox', value: first.id } });
+    });
+  }, []);
 
   const fnSaveCashBox = () => {
     setSendForm(true);
-    if (!isFormValid) {
-      return;
-    }
-    const filterCash = listCashBoxes.filter((item) => {
-      return item.id === validInt(cashBox);
-    });
+    if (hasErrors) return;
+    if (needsDateConfirm(formState) && !confirmDate) return;
 
-    let valueStore = "0";
-    let typePricelocal = 2;
-    let documentCode = "";
-    let areaId = 0;
-    if (filterCash[0].billingAreaId > 0) {
-      const dataArea = listAreas.filter((item) => {
-        return item.id === parseInt(filterCash[0].billingAreaId, 10);
-      });
-      valueStore = dataArea[0].invStore !== null ? dataArea[0].invStore.id : "0";
-      typePricelocal = dataArea[0].localPriceType;
-      documentCode = dataArea[0].codeDocument;
-      areaId = filterCash[0].billingAreaId
-    } else {
-      valueStore = "0";
-      typePricelocal = 2;
-    }
-
-    const dataCashBox = {
-      cashId: cashBox,
-      cashierId: userData.id,
-      areaId,
-      storeId: valueStore,
-      typePrice: typePricelocal,
-      documentCode,
-      dateInProcess: dateCashOpen,
-      printType: typePrint
-    }
-
-    const formDetail = {
-      areaId,
-      storeId: valueStore,
-      typePrice: typePricelocal
-    }
-    const formIndex = {
-      documentCode,
-      dateInProcess: dateCashOpen,
-      printType: typePrint
-    }
-
-    localStorage.setItem('dataCashBox_current', JSON.stringify({}));
     setLoading(true);
-    request.POST('validCashier', { email: userData.email, password: cashierPass }, (resp) => {
-      localStorage.setItem('dataCashBox_current', JSON.stringify(dataCashBox));
-      setBulkFormDetail(formDetail);
-      setBulkFormIndex(formIndex);
+    request.POST(`${SESSION_URL}/open`, buildOpenRequest(formState, confirmDate), (resp) => {
+      const stored = buildStoredSession(resp.data);
+      localStorage.setItem('dataCashBox_current', JSON.stringify(stored));
+      setBulkFormDetail({ areaId: stored.areaId, storeId: stored.storeId, typePrice: stored.typePrice });
+      setBulkFormIndex({ documentCode: stored.documentCode, dateInProcess: stored.dateInProcess, printType: stored.printType });
+      const stale = resp.data.warnings?.find((item) => item.code === 'pos.open.staleSessions');
+      if (stale) notification('warning', 'msg.warning.pos.staleSessions', 'alert.warning.title');
       setOpen(false);
       setLoading(false);
-    }, (err) => {
-
-      notification('error', 'msg.error.userPass', 'alert.error.title');
+    }, () => {
       setLoading(false);
-    }, false);
-  }
+    });
+  };
+
+  const registerOptions = registers.map((item) => ({ id: item.id, name: item.complete ? item.name : `${item.name} (${incompleteText})` }));
+  const dateNotToday = needsDateConfirm(formState);
 
   return (
     <>
@@ -104,17 +78,20 @@ const ModalCashOpening = (props) => {
               label="page.pointSales.modal.cashOpening.select.cashBox"
               value={cashBox}
               onChange={onInputChange}
-              options={listCashBoxes}
-              invalid={sendForm && !!cashBoxValid}
-              feedbackText={sendForm && (cashBoxValid || null)}
+              options={registerOptions}
+              invalid={sendForm && !!errors.cashBox}
+              feedbackText={sendForm && (errors.cashBox || null)}
             />
           </Colxx>
           <Colxx xxs="12">
-            <DateCalendar
-              value={dateCashOpen}
-              name="dateCashOpen"
-              label="page.invoicing.input.dateInProcess"
+            <InputField
+              value={email}
+              id="email"
+              name="email"
               onChange={onInputChange}
+              label="page.pointSales.modal.cashOpening.input.cashierEmail"
+              invalid={sendForm && !!errors.email}
+              feedbackText={sendForm && (errors.email || null)}
             />
           </Colxx>
           <Colxx xxs="12">
@@ -125,6 +102,36 @@ const ModalCashOpening = (props) => {
               onChange={onInputChange}
               type="password"
               label="page.pointSales.modal.cashOpening.input.cashierPass"
+              invalid={sendForm && !!errors.cashierPass}
+              feedbackText={sendForm && (errors.cashierPass || null)}
+            />
+          </Colxx>
+          <Colxx xxs="12">
+            <DateCalendar
+              value={dateCashOpen}
+              name="dateCashOpen"
+              label="page.invoicing.input.dateInProcess"
+              onChange={(event) => { setConfirmDate(false); onInputChange(event); }}
+              maxDate={localToday()}
+            />
+            {sendForm && errors.dateCashOpen ? <small className="text-danger">{IntlMessages(errors.dateCashOpen)}</small> : null}
+            {dateNotToday && !errors.dateCashOpen ? (
+              <div className="mb-2">
+                <Input type="checkbox" id="confirmDate" checked={confirmDate} onChange={(event) => setConfirmDate(event.target.checked)} />
+                {' '}<Label for="confirmDate">{IntlMessages('page.pointSales.modal.cashOpening.confirmDate')}</Label>
+                {sendForm && !confirmDate ? <div><small className="text-danger">{IntlMessages('msg.error.pos.dateConfirm')}</small></div> : null}
+              </div>
+            ) : null}
+          </Colxx>
+          <Colxx xxs="12">
+            <InputField
+              value={initialValue}
+              id="initialValue"
+              name="initialValue"
+              onChange={onInputChange}
+              label="page.pointSales.modal.cashOpening.input.initialValue"
+              invalid={sendForm && !!errors.initialValue}
+              feedbackText={sendForm && (errors.initialValue || null)}
             />
           </Colxx>
           <Colxx xxs="12">
