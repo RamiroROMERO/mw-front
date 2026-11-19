@@ -1,91 +1,27 @@
 import { useState } from "react";
-import { Colxx } from "@Components/common/CustomBootstrap";
-import { IntlMessages, validInt } from "@Helpers/Utils";
 import { Button, ModalBody, ModalFooter, Row } from "reactstrap";
+import { Colxx } from "@Components/common/CustomBootstrap";
+import { IntlMessages } from "@Helpers/Utils";
 import { RadioGroup } from "@Components/radioGroup";
-import { request } from "@Helpers/core";
+import { request, notifyError } from "@Helpers/core";
+import { CASH_CLOSE_PATH } from "./posCashCloseRules";
+import { availableTypes, sheetAllowed, buildPrintRequest } from "./posCashClosePrintRules";
 
+// Impresión del cierre de caja (SPEC v2-88-sr): el servidor arma el reporte con lo guardado (o la vista previa si aún no se guardó); aquí solo se elige el tipo y la hoja.
 const ModalPrintCashClose = (props) => {
   const { data, setOpen } = props;
-  const { id, date, idCashier, idCash, listCashiers, listCashBoxes, initValue, cashValue, total, missingExcess, printType, setLoading } = data;
-  const userData = JSON.parse(localStorage.getItem('mw_current_user'));
+  const { id, sessionId, date, cashierId, allCashiers, cashValue, isSupervisor, printType, setLoading } = data;
+  const [type, setType] = useState("summary");
+  const [sheet, setSheet] = useState(Number(printType) === 1 ? "thermal" : "letter");
 
-  const [typePrint, setTypePrint] = useState(1);
-  const [typeSheet, setTypeSheet] = useState(printType);
+  const thermalAllowed = sheetAllowed(type, "thermal");
 
-  const mapSetValue = {
-    typePrint: { setValue: setTypePrint },
-    typeSheet: { setValue: setTypeSheet }
-  }
-
-  const handleInputChange = e => {
-    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
-    mapSetValue[e.target.name].setValue(value);
-  }
-
-  const fnPrintDocument = () => {
-    const filterCashier = listCashiers.filter((item) => {
-      return item.value === validInt(idCashier);
-    });
-    const filterCashBoxes = listCashBoxes.filter((item) => {
-      return item.id === validInt(idCash);
-    });
-    const dataPrint = {
-      id,
-      userName: userData.name,
-      date,
-      cashierId: idCashier,
-      cashId: idCash,
-      cashName: filterCashBoxes[0].name,
-      cashier: filterCashier[0].name,
-      initValue,
-      cashValue,
-      total,
-      missingExcess,
-      typePrint: typeSheet
-    }
-    if (validInt(typePrint) === 1) {
-      request.GETPdf('billing/process/cashClose/exportPDFSummary', dataPrint, 'Cierre de Caja Resumido.pdf', (err) => {
-
-        setLoading(false);
-      });
-    } else if (validInt(typePrint) === 2) {
-      request.GETPdf('billing/process/cashClose/exportPDFDetail', dataPrint, 'Cierre de Caja Detallado.pdf', (err) => {
-
-        setLoading(false);
-      });
-    } else if (validInt(typePrint) === 3) {
-      request.GETPdf('billing/process/cashClose/exportPDFByArea', dataPrint, 'Cierre de Caja por Area de Facturación', (err) => {
-
-        setLoading(false);
-      });
-    } else if (validInt(typePrint) === 5) {
-      request.GETPdf('billing/process/cashClose/exportPDFDaily', dataPrint, 'Cierre de Caja Global', (err) => {
-
-        setLoading(false);
-      });
-    } else if (validInt(typePrint) === 4) {
-      request.GETPdf('billing/process/cashClose/exportPDFPaymentMethod', dataPrint, 'Cierre de Caja por Forma de Pago.pdf', (err) => {
-
-        setLoading(false);
-      });
-    } else if (validInt(typePrint) === 7) {
-      request.GETPdf('billing/process/cashClose/exportPDFExpenses', dataPrint, 'Detalle de Gastos', (err) => {
-
-        setLoading(false);
-      });
-    } else if (validInt(typePrint) === 8) {
-      request.GETPdf('billing/process/cashClose/exportPDFCancellations', dataPrint, 'Detalle de Cancelaciones', (err) => {
-
-        setLoading(false);
-      });
-    } else if (validInt(typePrint) === 9) {
-      request.GETPdf('billing/process/cashClose/exportPDFOthers', dataPrint, 'Otras Entradas y Salidas.pdf', (err) => {
-
-        setLoading(false);
-      });
-    }
-  }
+  const fnPrint = () => {
+    const { url, params, fileName } = buildPrintRequest({ path: CASH_CLOSE_PATH, id, sessionId, type, sheet, date, cashierId, allCashiers, cashValue });
+    const stop = () => setLoading(false);
+    setLoading(true);
+    request.GETPdf(url, params, fileName, (err) => { stop(); notifyError(err, "msg.print.error"); }, "GET", stop);
+  };
 
   return (
     <>
@@ -95,48 +31,35 @@ const ModalPrintCashClose = (props) => {
             <RadioGroup
               label="page.pointSales.modal.printCashClose.title.type"
               name="typePrint"
-              value={typePrint}
-              onChange={handleInputChange}
-              options={
-                [
-                  { id: 1, label: "page.pointSales.modal.printCashClose.summary" },
-                  { id: 2, label: "page.pointSales.modal.printCashClose.detailed" },
-                  { id: 3, label: "page.pointSales.modal.printCashClose.billingArea" },
-                  { id: 4, label: "page.pointSales.modal.printCashClose.paymentMethod" },
-                  { id: 5, label: "page.pointSales.modal.printCashClose.totalDailyClosings" },
-                  { id: 7, label: "page.pointSales.modal.printCashClose.detailExpenses" },
-                  { id: 8, label: "page.pointSales.modal.printCashClose.cancellations" },
-                  { id: 9, label: "page.pointSales.modal.printCashClose.others" },
-                ]
-              }
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              options={availableTypes(isSupervisor).map((item) => ({ id: item.id, label: item.label }))}
             />
           </Colxx>
           <Colxx xxs="12" md="6">
             <RadioGroup
               label="page.pointSales.modal.printCashClose.title.typeSheet"
               name="typeSheet"
-              value={typeSheet}
-              onChange={handleInputChange}
-              options={
-                [
-                  { id: 1, label: "page.invoicing.radio.ticket" },
-                  { id: 3, label: "page.invoicing.radio.letter" }
-                ]
-              }
+              value={thermalAllowed ? sheet : "letter"}
+              onChange={(e) => setSheet(e.target.value)}
+              options={[
+                ...(thermalAllowed ? [{ id: "thermal", label: "page.invoicing.radio.ticket" }] : []),
+                { id: "letter", label: "page.invoicing.radio.letter" }
+              ]}
             />
           </Colxx>
         </Row>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={fnPrintDocument}>
+        <Button color="primary" onClick={fnPrint}>
           <i className="iconsminds-printer" /> {IntlMessages("button.print")}
         </Button>
-        <Button color="danger" onClick={() => { setOpen(false) }}>
-          <i className="bi bi-box-arrow-right" /> {` ${IntlMessages('button.exit')}`}
+        <Button color="danger" onClick={() => setOpen(false)}>
+          <i className="bi bi-box-arrow-right" /> {` ${IntlMessages("button.exit")}`}
         </Button>
       </ModalFooter>
     </>
   );
-}
+};
 
 export default ModalPrintCashClose;

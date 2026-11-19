@@ -29,7 +29,7 @@ const money = (value) => formatNumber(value || 0, "", 2);
 // de la caja (la sesión del cajero termina) y anular, solo el supervisor, la reabre.
 const ModalCashclose = (props) => {
   const { data, setOpen } = props;
-  const { sessionId, dateInProcess, sessionCashierId, isSupervisor, listCashBoxes, listCashiers, printType, setLoading } = data;
+  const { sessionId, dateInProcess, sessionCashierId, isSupervisor, printType, setLoading } = data;
   const [activeTab, setActiveTab] = useState("1");
   const [rows, setRows] = useState([]);
   const [current, setCurrent] = useState(null);
@@ -165,9 +165,7 @@ const ModalCashclose = (props) => {
   ];
   const listData = rows.map((item) => ({ ...item, options: <TableButton color="primary" icon="eye" fnOnClick={() => fnView(item)} /> }));
 
-  const printData = {
-    id, date, idCashier: cashierId, listCashBoxes, idCash: data.cashId, listCashiers, initValue: preview.initialValue, cashValue: Number(cashValue) || 0, total: figures.paymentsTotal, missingExcess: preview.difference, printType, setLoading
-  };
+  const printData = { id, sessionId, date, cashierId, allCashiers, cashValue, isSupervisor, printType, setLoading };
   const propsToModalPrint = { ModalContent: ModalPrintCashClose, title: "page.pointSales.modal.printCashClose.title", open: openModalPrint, setOpen: setOpenModalPrint, maxWidth: "md", data: printData };
   const propsToMsgApply = { open: openMsgApply, setOpen: setOpenMsgApply, fnOnOk: fnApply, title: "msg.question.applyCashClose.title" };
   const propsToMsgVoid = { open: openMsgVoid, setOpen: setOpenMsgVoid, fnOnOk: fnVoid, title: "msg.question.cancel.document.title" };
@@ -200,7 +198,7 @@ const ModalCashclose = (props) => {
                 <Button color="success" disabled={!canApply(current)} onClick={() => setOpenMsgApply(true)}><i className="bi bi-check2-circle" />{IntlMessages("button.applyCashClose")}</Button>
                 <Button color="warning" disabled={!canVoid(current, isSupervisor)} onClick={() => { setVoidReason(""); setSendVoidForm(false); setOpenMsgVoid(true); }}><i className="bi bi-x-circle" />{IntlMessages("button.cancel2")}</Button>
                 <Button color="danger" disabled={!canDelete(current)} onClick={fnDelete}><i className="bi bi-trash" />{IntlMessages("button.delete")}</Button>
-                <Button color="info" disabled={!saved} onClick={() => setOpenModalPrint(true)}><i className="iconsminds-printer" />{IntlMessages("button.print")}</Button>
+                <Button color="info" onClick={() => setOpenModalPrint(true)}><i className="iconsminds-printer" />{IntlMessages("button.print")}</Button>
               </Colxx>
             </Row>
             <Row className="mt-3">
