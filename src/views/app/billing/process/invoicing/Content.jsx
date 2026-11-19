@@ -18,7 +18,8 @@ import ModalChangePrice from './ModalChangePrice';
 import ModalPrintInvoice from './ModalPrintInvoice';
 import ModalGenerateInvoice from './ModalGenerateInvoice';
 import ModalSeekQuotes from '../quotes/ModalSeekQuotes';
-import ModalDeliveryDoc from './ModalDeliveryDoc';
+import { printDocument } from '@Helpers/printDocument';
+import { proformaPrintOptions, deliveryPrintOptions, canDeliver, emailUrl } from './invoicePrintRules';
 import ModalVoidInvoice from '../pointSales/ModalVoidInvoice';
 import ModalCreditStatus from './ModalCreditStatus';
 import ModalEditCostDist from './ModalEditCostDist';
@@ -33,7 +34,6 @@ import {
   API_PATH, CREDIT_STATUS_PATH, buildInvoicePayload, creditAlertLevel, creditWarningIds, paymentStatusColor, paymentStatusId, hasStockProblem, headerFromApi, headerFromDocument, lineFromApi, lineFromDocument, lineFromProduct, listParams, needsLotOrDate,
   totalsFromLines, validateInvoice, warningTexts
 } from './invoicingRules';
-import ViewPdf from '@Components/ViewPDF/ViewPdf';
 
 const Invoicing = (props) => {
   const { setLoading, voidControl, editInfoControl, changeProductControl } = props;
@@ -53,7 +53,6 @@ const Invoicing = (props) => {
   const [openModalPrice, setOpenModalPrice] = useState(false);
   const [openModalPrint, setOpenModalPrint] = useState(false);
   const [openModalGenerate, setOpenModalGenerate] = useState(false);
-  const [openModalDeliveryDoc, setOpenModalDeliveryDoc] = useState(false);
   const [openModalVoidInvoice, setOpenModalVoidInvoice] = useState(false);
   const [openMsgGenerateInvoice, setOpenMsgGenerateInvoice] = useState(false);
   const [sendFormIndex, setSendFormIndex] = useState(false);
@@ -69,8 +68,6 @@ const Invoicing = (props) => {
   const [openModalEditCostDist, setOpenModalEditCostDist] = useState(false);
   const [openModalSeekPurchaseOrders, setOpenModalSeekPurchaseOrders] = useState(false);
   const [dateFormat, setDateFormat] = useState('DMY');
-  const [openModalProforma, setOpenModalProforma] = useState(false);
-  const [documentPathProforma, setDocumentPathProforma] = useState('');
   const [openModalChangeProduct, setOpenModalChangeProduct] = useState(false);
   const [selectedChangeLine, setSelectedChangeLine] = useState(null);
   const [openModalEditInfo, setOpenModalEditInfo] = useState(false);
@@ -502,10 +499,11 @@ const Invoicing = (props) => {
     setOpenModalSeekQuotes(true);
   }
 
+  // Documento de entrega (SPEC v2-74-sr): el back lo arma de lo guardado y exige documento fiscal, teléfono y dirección del cliente (su mensaje llega a pantalla).
   const fnDeliver = () => {
-    if (id > 0 && documentId > 0) {
-      setOpenModalDeliveryDoc(true);
-    } else if (documentId === 0) {
+    if (canDeliver({ id, documentId })) {
+      printDocument({ ...deliveryPrintOptions({ id }), setLoading });
+    } else if (id > 0) {
       notification('warning', 'msg.deliveryDoc', 'alert.warning.title');
     }
   }
@@ -539,19 +537,7 @@ const Invoicing = (props) => {
   // que normalmente todavía no existen en este punto) — igual que el legacy, que
   // permite (y espera) usar esto ANTES de generar el documento fiscal.
   const fnPrintProforma = () => {
-    if (id === 0) {
-      notification('warning', 'msg.required.saveDocument', 'alert.warning.title');
-      return;
-    }
-    setLoading(true);
-    request.GETPdfUrl('billing/process/invoices/exportPDFProforma', { id, userName: userData.name }, (resp) => {
-      setDocumentPathProforma(resp);
-      setOpenModalProforma(true);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
+    printDocument({ ...proformaPrintOptions({ id }), setLoading });
   }
 
   // Solo aplica a una factura con documento fiscal ya generado — antes de eso no hay
@@ -1025,20 +1011,6 @@ const Invoicing = (props) => {
     title: "page.invoicing.msg.loadDocument.title"
   }
 
-  const propsToModalDeliveryDoc = {
-    ModalContent: ModalDeliveryDoc,
-    title: "page.invoicing.modal.deliveryDoc.title",
-    open: openModalDeliveryDoc,
-    setOpen: setOpenModalDeliveryDoc,
-    maxWidth: 'md',
-    data: {
-      id,
-      customerId,
-      listCustomers,
-      setLoading
-    }
-  }
-
   const propsToModalCreditStatus = {
     ModalContent: ModalCreditStatus,
     title: "page.invoicing.modal.creditStatus.title",
@@ -1071,17 +1043,6 @@ const Invoicing = (props) => {
     data: {
       fnViewItem: fnLoadPurchaseOrder,
       dateFormat
-    }
-  }
-
-  const propsToModalProforma = {
-    ModalContent: ViewPdf,
-    title: "page.invoicing.modal.proforma.title",
-    open: openModalProforma,
-    setOpen: setOpenModalProforma,
-    maxWidth: 'xl',
-    data: {
-      documentPath: documentPathProforma
     }
   }
 
@@ -1123,7 +1084,7 @@ const Invoicing = (props) => {
     maxWidth: 'md',
     data: {
       setLoading,
-      sendUrl: 'billing/process/invoices/sendEmail',
+      sendUrl: emailUrl(id),
       documentId: id,
       attachmentName: `Factura_${id}.pdf`,
       defaultTo: listCustomers.find((item) => item.value === customerId)?.email || '',
@@ -1235,12 +1196,10 @@ const Invoicing = (props) => {
       <Modal {...propsToModalGenerate} />
       <Modal {...propsToModalSeekQuotes} />
       <Modal {...propsToModalGlobalDiscount} />
-      <Modal {...propsToModalDeliveryDoc} />
       <Modal {...propsToModalVoidInvoice} />
       <Modal {...propsToModalCreditStatus} />
       <Modal {...propsToModalEditCostDist} />
       <Modal {...propsToModalSeekPurchaseOrders} />
-      <Modal {...propsToModalProforma} />
       <Modal {...propsToModalChangeProduct} />
       <Modal {...propsToModalEditInfo} />
       <Modal {...propsToModalSendEmail} />

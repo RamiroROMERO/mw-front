@@ -2,54 +2,30 @@ import { useState } from "react";
 import { Button, ModalBody, ModalFooter, Row, } from "reactstrap";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from "@Helpers/Utils";
-import { request } from '@Helpers/core';
+import { printDocument } from '@Helpers/printDocument';
 import { RadioGroup } from "@Components/radioGroup";
-import ViewPdf from "@Components/ViewPDF/ViewPdf";
-import Modal from "@Components/modal";
+import { invoicePrintOptions } from './invoicePrintRules';
 
-// Antes desconectado de cualquier botón (código muerto) — ahora lo abre el botón
-// "Imprimir" del panel principal (fnPrintInvoicing en Content.jsx), igual que el
-// legacy (btnPrintDocument ofrecía varios layouts de impresión al imprimir).
+// Imprimir la factura (SPEC v2-74-sr): el back imprime lo GUARDADO por GET; aquí solo se elige el formato (Detallada o Resumida por Tipo) y la moneda de impresión
+// (la de la factura por defecto; en Dólares el back usa el tipo de cambio guardado y rechaza si falta, con su mensaje).
 const ModalPrintInvoice = (props) => {
   const { data, setOpen } = props;
   const { id, setLoading } = data;
-  const userData = JSON.parse(localStorage.getItem('mw_current_user'));
 
   const [typePrint, setTypePrint] = useState("1");
-  const [openViewFile, setOpenViewFile] = useState(false);
-  const [documentPath, setDocumentPath] = useState("");
+  const [currency, setCurrency] = useState("0");
 
   const mapSetValue = {
-    typePrint: { setValue: setTypePrint }
+    typePrint: { setValue: setTypePrint },
+    currency: { setValue: setCurrency }
   }
 
   const handleInputChange = e => {
-    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value
-    mapSetValue[e.target.name].setValue(value)
+    mapSetValue[e.target.name].setValue(e.target.value)
   }
 
   const fnPrintInvoice = () => {
-    setLoading(true);
-    const endpoint = typePrint === "3" ? 'billing/process/invoices/exportPDFByType' : 'billing/process/invoices/exportPDF';
-    request.GETPdfUrl(endpoint, { id, userName: userData.name }, (resp) => {
-      setDocumentPath(resp);
-      setOpenViewFile(true);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-  }
-
-  const propsToViewPDF = {
-    ModalContent: ViewPdf,
-    title: "page.invoicing.modal.printInvoice.title",
-    open: openViewFile,
-    setOpen: setOpenViewFile,
-    maxWidth: 'xl',
-    data: {
-      documentPath
-    }
+    printDocument({ ...invoicePrintOptions({ id, format: typePrint === "3" ? 'byType' : 'detailed', currency }), setLoading });
   }
 
   return (
@@ -70,6 +46,21 @@ const ModalPrintInvoice = (props) => {
               }
             />
           </Colxx>
+          <Colxx xxs="12">
+            <RadioGroup
+              label="page.invoicing.title.printCurrency"
+              name="currency"
+              value={currency}
+              onChange={handleInputChange}
+              options={
+                [
+                  { id: 0, label: "page.invoicing.modal.printInvoice.radio.currencyInvoice" },
+                  { id: 1, label: "page.invoicing.modal.printInvoice.radio.lempiras" },
+                  { id: 2, label: "page.invoicing.modal.printInvoice.radio.dollars" }
+                ]
+              }
+            />
+          </Colxx>
         </Row>
       </ModalBody>
       <ModalFooter>
@@ -79,7 +70,6 @@ const ModalPrintInvoice = (props) => {
           {` ${IntlMessages('button.exit')}`}
         </Button>
       </ModalFooter>
-      <Modal {...propsToViewPDF} />
     </>
   )
 }
