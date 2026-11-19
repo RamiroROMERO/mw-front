@@ -1081,18 +1081,11 @@ const PointSales = (props) => {
     setOpen: setOpenModalCancellations,
     maxWidth: "lg",
     data: {
-      cashId: dataCashBox ? dataCashBox.cashId : 0,
-      cashierId: dataCashBox ? dataCashBox.cashierId : 0,
-      listTypeDocuments,
+      sessionId: dataCashBox ? dataCashBox.sessionId : 0,
+      dateInProcess,
       listCustomers,
-      listCashBoxes,
-      listCashiers,
-      listTypePayments,
-      setListTypePayments,
       listLedgerAccount,
-      printType,
-      setLoading,
-      userData
+      setLoading
     }
   }
 
