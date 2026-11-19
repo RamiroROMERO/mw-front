@@ -986,8 +986,8 @@ const Invoicing = (props) => {
       taxValueInvoice,
       total,
       currency,
+      documentType,
       setLoading,
-      userData,
       onInputChangeIndex
     }
   }

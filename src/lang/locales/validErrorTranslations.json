@@ -192,6 +192,8 @@
     "invoice.lot.required",
     "invoice.not.found",
     "invoice.notGenerated",
+    "invoice.payment.amount.invalid",
+    "invoice.payment.invalid",
     "invoice.price.notAllowed",
     "invoice.product.invalid",
     "invoice.product.restricted",

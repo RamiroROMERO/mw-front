@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, ModalBody, ModalFooter, Row, Alert } from "reactstrap";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages, formatNumber } from "@Helpers/Utils";
@@ -8,21 +8,35 @@ import { RadioGroup } from "@Components/radioGroup";
 import { ContainerWithLabel } from "@Components/containerWithLabel";
 import { InputField } from "@Components/inputFields";
 import DateCalendar from '@Components/dateCalendar';
-import ViewPdf from "@Components/ViewPDF/ViewPdf";
-import Modal from "@Components/modal";
+import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
 import { creditWarningIds } from './invoicingRules';
+import { invoicePrintOptions } from './invoicePrintRules';
+import { PAYMENTS_PATH, needsPayments, buildRows, validatePayments, buildPayments } from './invoicePaymentRules';
 
 const ModalGenerateInvoice = (props) => {
   const { data, setOpen } = props;
-  const { id, subTotalValue, discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValueInvoice, total, currency,
-    setLoading, userData, onInputChangeIndex } = data;
+  const { id, subTotalValue, discount, subTotExeValue, subTotExoValue, subtotTaxValue, taxValueInvoice, total, currency, documentType,
+    setLoading, onInputChangeIndex } = data;
 
-  //print invoice
-  const [openViewFile, setOpenViewFile] = useState(false);
-  const [documentPath, setDocumentPath] = useState("");
   const [documentGenerated, setDocumentGenerated] = useState(false);
   const [stockShortages, setStockShortages] = useState([]);
+
+  // Formas de pago de una venta de Contado (SPEC v2-76-sr): una fila por forma activa; la primera lleva el total. A Crédito no se piden.
+  const askPayments = needsPayments(documentType);
+  const [paymentRows, setPaymentRows] = useState([]);
+
+  useEffect(() => {
+    if (!askPayments) return;
+    request.GET(PAYMENTS_PATH, (resp) => {
+      setPaymentRows(buildRows(resp.data, total));
+    }, () => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [askPayments]);
+
+  const onPaymentChange = (rowId, field, value) => {
+    setPaymentRows((rows) => rows.map((row) => (row.id === rowId ? { ...row, [field]: value } : row)));
+  };
 
   const { formState, onInputChange, onResetForm, setBulkForm } = useForm({
     cai: "",
@@ -41,13 +55,21 @@ const ModalGenerateInvoice = (props) => {
   // el kardex de salida, la partida contable y la CxC del cliente — reemplaza el flujo
   // anterior de "previsualizar número" + PUT suelto, que nunca contabilizaba nada.
   const fnGenerateInvoice = () => {
+    if (askPayments) {
+      const problem = validatePayments(paymentRows, total);
+      if (problem) {
+        notification('warning', problem, 'alert.warning.title');
+        return;
+      }
+    }
     setLoading(true);
     setStockShortages([]);
     request.POST(`billing/process/invoices/generateFiscalDocument/${id}`, {
       exchangeRate: typeChange,
       exonerationOrderNumber: exemptedCertificate,
       exonerationSerial: exemptedNumber,
-      exonerationRegistry: exemptedRecord
+      exonerationRegistry: exemptedRecord,
+      ...(askPayments ? { payments: buildPayments(paymentRows) } : {})
     }, (resp) => {
       const newDocument = {
         cai: resp.data.cai,
@@ -61,13 +83,8 @@ const ModalGenerateInvoice = (props) => {
       setDocumentGenerated(true);
       onInputChangeIndex({ target: { name: 'documentId', value: resp.data.documentId } });
       onInputChangeIndex({ target: { name: 'numcai', value: resp.data.numcai } });
-      request.GETPdfUrl('billing/process/invoices/exportPDF', { id, userName: userData.name }, (resp2) => {
-        setDocumentPath(resp2);
-        setOpenViewFile(true);
-        setLoading(false);
-      }, () => {
-        setLoading(false);
-      });
+      // La factura recién generada se descarga por el GET de impresión del back (SPEC v2-74-sr).
+      printDocument({ ...invoicePrintOptions({ id }), setLoading });
     }, (err) => {
       // Existencias insuficientes (fnValidExist del legacy): la descripción del back trae el listado de faltantes como texto JSON (equivalente a
       // fac_pos_no_exist.scx). Cualquier otro rechazo muestra su mensaje real (período cerrado, cuenta bloqueada, factura anulada, ...).
@@ -84,17 +101,6 @@ const ModalGenerateInvoice = (props) => {
       }
       setLoading(false);
     }, false);
-  }
-
-  const propsToViewPDF = {
-    ModalContent: ViewPdf,
-    title: "page.invoicing.modal.printInvoice.title",
-    open: openViewFile,
-    setOpen: setOpenViewFile,
-    maxWidth: 'xl',
-    data: {
-      documentPath
-    }
   }
 
   return (
@@ -288,6 +294,27 @@ const ModalGenerateInvoice = (props) => {
             </ContainerWithLabel>
           </Colxx>
         </Row>
+        {askPayments && (
+          <Row>
+            <Colxx xxs="12">
+              <ContainerWithLabel label="page.invoicing.modal.generateInvoice.title.payments">
+                {paymentRows.map((row) => (
+                  <Row key={`payment-${row.id}`}>
+                    <Colxx xxs="12" md="4">
+                      <InputField value={row.name} name={`paymentName-${row.id}`} disabled onChange={() => {}} type="text" label="page.invoicing.modal.generateInvoice.input.paymentMethod" />
+                    </Colxx>
+                    <Colxx xxs="12" md="4">
+                      <InputField value={row.value} name={`paymentValue-${row.id}`} disabled={documentGenerated} onChange={(e) => onPaymentChange(row.id, 'value', e.target.value)} type="text" label="page.invoicing.modal.generateInvoice.input.paymentValue" />
+                    </Colxx>
+                    <Colxx xxs="12" md="4">
+                      <InputField value={row.reference} name={`paymentReference-${row.id}`} disabled={documentGenerated} onChange={(e) => onPaymentChange(row.id, 'reference', e.target.value)} type="text" maxLength={50} label="page.invoicing.modal.generateInvoice.input.paymentReference" />
+                    </Colxx>
+                  </Row>
+                ))}
+              </ContainerWithLabel>
+            </Colxx>
+          </Row>
+        )}
         {stockShortages.length > 0 && (
           <Row>
             <Colxx xxs="12">
@@ -314,7 +341,6 @@ const ModalGenerateInvoice = (props) => {
           {` ${IntlMessages('button.exit')}`}
         </Button>
       </ModalFooter>
-      <Modal {...propsToViewPDF} />
     </>
   )
 }
