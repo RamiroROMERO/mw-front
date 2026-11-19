@@ -306,6 +306,7 @@
     "pos.session.locked",
     "pos.session.notCashier",
     "pos.session.notFound",
+    "pos.void.notOwner",
     "product.classification.notFound",
     "product.code.duplicate",
     "product.code.exhausted",

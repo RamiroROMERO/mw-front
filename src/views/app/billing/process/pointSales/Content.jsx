@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { Badge, Card, CardBody, Row } from 'reactstrap';
 import { validFloat, validInt, IntlMessages } from "@Helpers/Utils";
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
-import { request, buildUrl } from '@Helpers/core';
-import { getErrorCode } from '@Helpers/errorMessage';
+import { request, buildUrl, notifyError } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
 import ControlPanel from '@Components/controlPanel';
@@ -382,21 +381,16 @@ const PointSales = (props) => {
   // isDeleted como antes: eso dejaba el stock descontado, la partida contable vigente y
   // la CxC cobrándole al cliente una factura anulada.
   const fnVoidInvoice = (reason) => {
+    // SPEC v2-82-sr: pide la sesión de caja y el back valida el permiso del cajero, el alcance (su caja, su día y sus facturas; el supervisor, cualquiera de la caja),
+    // el período, el cierre aplicado y los pagos; su mensaje real se muestra tal cual.
     setLoading(true);
-    request.DELETE(buildUrl(`billing/process/pointSales/voidInvoice/${id}`, { reason }), () => {
+    request.DELETE(buildUrl(`billing/process/pointSales/voidInvoice/${id}`, { sessionId: dataCashBox?.sessionId, reason }), () => {
       setOpenModalVoidInvoice(false);
       fnNewInvoicing();
       notification('success', 'msg.success.voidInvoice', 'alert.success.title');
       setLoading(false);
     }, (err) => {
-      const errorCode = getErrorCode(err);
-      if (errorCode === 'invoice.hasPayments') {
-        notification('error', 'msg.error.voidInvoice.hasPayments', 'alert.error.title');
-      } else if (errorCode === 'invoice.cashClosed') {
-        notification('error', 'msg.error.voidInvoice.cashClosed', 'alert.error.title');
-      } else {
-        notification('error', 'msg.delete.record.error', 'alert.error.title');
-      }
+      notifyError(err, 'msg.delete.record.error');
       setLoading(false);
     }, false);
   }
@@ -915,7 +909,7 @@ const PointSales = (props) => {
     fnSearch: fnSearchInvoicing,
     fnSave: fnSaveInvoicing,
     fnPrint: fnPrintInvoicing,
-    fnCancel: screenControl.fnDelete ? fnCancelInvoicing : null,
+    fnCancel: screenControl.fnDelete && dataCashBox?.permissions?.canVoid ? fnCancelInvoicing : null,
     buttonsHome: [
       {
         title: "button.cashOpening",
