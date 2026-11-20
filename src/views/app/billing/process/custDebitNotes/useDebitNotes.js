@@ -4,7 +4,8 @@ import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
 import { validFloat, validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
-import { findHeaderProblem, findDetailProblem, buildNotePayload, isNoteLocked } from './debitNoteRules';
+import { printDocument } from '@Helpers/printDocument';
+import { findHeaderProblem, findDetailProblem, buildNotePayload, isNoteLocked, PRINT_PATH, PRINT_FILE_NAME } from './debitNoteRules';
 
 export const TYPE_LATE_FEE = 1;
 export const TYPE_OTHER_CHARGE = 2;
@@ -19,12 +20,9 @@ const debitNoteValid = {
 // Toda nota de débito requiere CAI fiscal — a diferencia de Notas de Crédito,
 // fac_ndebito.sc2 no tiene una variante `_mixed` (confirmado, sin toggle de moneda/CAI).
 export const useDebitNotes = ({ setLoading, screenControl }) => {
-  const userData = JSON.parse(localStorage.getItem('mw_current_user'));
   const [listTypeDocuments, setListTypeDocuments] = useState([]);
   const [listCustomers, setListCustomers] = useState([]);
   const [listAccounts, setListAccounts] = useState([]);
-  const [openModalPrint, setOpenModalPrint] = useState(false);
-  const [documentPathPrint, setDocumentPathPrint] = useState('');
   const [detail1, setDetail1] = useState([]); // facturas de referencia (tipos 1/2/4)
   const [detail2, setDetail2] = useState([]); // ajuste de productos (tipo 3)
   const [originInvoice, setOriginInvoice] = useState(null); // factura origen (tipo 3)
@@ -478,14 +476,9 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
     }, false);
   }
 
+  // SPEC v2-94-sr: el PDF sale de lo GUARDADO (GET /:id/print); una nota sin guardar avisa que hay que guardar primero.
   const fnPrintDebitNote = () => {
-    if (id === 0) return;
-    setLoading(true);
-    request.GETPdfUrl('billing/process/debitNotes/exportPDF', { id, userName: userData.name }, (resp) => {
-      setDocumentPathPrint(resp);
-      setOpenModalPrint(true);
-      setLoading(false);
-    }, () => { setLoading(false); });
+    printDocument({ path: PRINT_PATH, id, fileName: PRINT_FILE_NAME, setLoading });
   }
 
   const propsToControlPanel = {
@@ -521,7 +514,6 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
     openModalVoid, setOpenModalVoid, fnVoidDebitNote,
     openMsgProcess, setOpenMsgProcess, fnProcessDebitNote,
     openMsgDelete, setOpenMsgDelete, fnDeleteDebitNote,
-    openModalPrint, setOpenModalPrint, documentPathPrint,
     propsToControlPanel
   }
 }

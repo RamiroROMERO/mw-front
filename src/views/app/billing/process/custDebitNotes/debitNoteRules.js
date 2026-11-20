@@ -71,3 +71,7 @@ export const buildNotePayload = (form, { originInvoice = null, detail1 = [], det
 
 // Una nota con número fiscal o partida ya no se edita ni se elimina (se anula): el back responde debitNote.locked.fiscal.
 export const isNoteLocked = ({ pdaNumber, numberCAI }) => num(pdaNumber) > 0 || !blank(numberCAI);
+
+// Impresión (SPEC v2-94-sr): GET billing/process/debitNotes/:id/print descarga el PDF de lo guardado.
+export const PRINT_PATH = 'billing/process/debitNotes';
+export const PRINT_FILE_NAME = 'Nota de Debito.pdf';

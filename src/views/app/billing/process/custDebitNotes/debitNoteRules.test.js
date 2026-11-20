@@ -1,5 +1,6 @@
 import { describe, test, expect } from 'vitest';
-import { findHeaderProblem, findDetailProblem, buildNotePayload, isNoteLocked, TYPE } from './debitNoteRules';
+import { buildPrintRequest, canPrint } from '@Helpers/printDocument';
+import { findHeaderProblem, findDetailProblem, buildNotePayload, isNoteLocked, PRINT_PATH, PRINT_FILE_NAME, TYPE } from './debitNoteRules';
 
 const TODAY = '2026-08-12';
 const base = (o = {}) => ({ date: TODAY, documentCode: 'NDB', customerId: 5, typeId: 1, incomeCtaCode: '4201', valueLps: 50, currencyId: 1, exchangeRate: 1, typeOther: '', ...o });
@@ -67,5 +68,16 @@ describe('isNoteLocked', () => {
     expect(isNoteLocked({ pdaNumber: 0, numberCAI: '000-002-01-00000030' })).toBe(true);
     expect(isNoteLocked({ pdaNumber: 0, numberCAI: '' })).toBe(false);
     expect(isNoteLocked({ pdaNumber: 0, numberCAI: '   ' })).toBe(false);
+  });
+});
+
+describe('impresión', () => {
+  test('GET /:id/print sin cuerpo ni parámetros; el nombre del archivo es el del back', () => {
+    expect(buildPrintRequest({ path: PRINT_PATH, id: 7 })).toEqual({ url: 'billing/process/debitNotes/7/print', params: undefined });
+    expect(PRINT_FILE_NAME).toBe('Nota de Debito.pdf');
+  });
+  test('una nota sin guardar (id 0) no se imprime', () => {
+    expect(canPrint(0)).toBe(false);
+    expect(canPrint(7)).toBe(true);
   });
 });

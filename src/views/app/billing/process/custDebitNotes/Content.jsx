@@ -6,7 +6,6 @@ import Confirmation from '@Containers/ui/confirmationMsg';
 import ModalVoidInvoice from '../pointSales/ModalVoidInvoice';
 import ModalAddInvoices from '../custCreditNotes/ModalAddInvoices';
 import ModalSeekOriginInvoice from '../custCreditNotes/ModalSeekOriginInvoice';
-import ViewPdf from '@Components/ViewPDF/ViewPdf';
 import DebitNoteForm from './DebitNoteForm';
 import DebitNoteInvoicesTable from './DebitNoteInvoicesTable';
 import DebitNoteProductsTable from './DebitNoteProductsTable';
@@ -28,7 +27,6 @@ const CustDebitNotes = ({ setLoading, screenControl }) => {
     openModalVoid, setOpenModalVoid, fnVoidDebitNote,
     openMsgProcess, setOpenMsgProcess, fnProcessDebitNote,
     openMsgDelete, setOpenMsgDelete, fnDeleteDebitNote,
-    openModalPrint, setOpenModalPrint, documentPathPrint,
     propsToControlPanel
   } = useDebitNotes({ setLoading, screenControl });
 
@@ -118,17 +116,6 @@ const CustDebitNotes = ({ setLoading, screenControl }) => {
     }
   }
 
-  const propsToModalPrint = {
-    ModalContent: ViewPdf,
-    title: "page.custDebitNotes.modal.print.title",
-    open: openModalPrint,
-    setOpen: setOpenModalPrint,
-    maxWidth: 'xl',
-    data: {
-      documentPath: documentPathPrint
-    }
-  }
-
   const propsToMsgProcess = {
     open: openMsgProcess,
     setOpen: setOpenMsgProcess,
@@ -164,7 +151,6 @@ const CustDebitNotes = ({ setLoading, screenControl }) => {
       <Modal {...propsToModalSeekOrigin} />
       <Modal {...propsToModalSeekDebitNotes} />
       <Modal {...propsToModalVoid} />
-      <Modal {...propsToModalPrint} />
       <Confirmation {...propsToMsgProcess} />
       <Confirmation {...propsToMsgDelete} />
     </>
