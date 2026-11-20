@@ -15,24 +15,25 @@ import { useCreditNotes } from './useCreditNotes';
 
 const CustCreditNotes = ({ setLoading, screenControl }) => {
   const {
-    formState, formValidation, onInputChange, setBulkForm, sendForm,
+    formState, formValidation, onInputChange, sendForm,
     listTypeDocuments, listCustomers, listAccounts,
     detail1, detail2, originInvoice,
-    onMixedChange, onCustomerChange, onTypeChange,
+    onCustomerChange, onTypeChange,
     fnAddInvoices, onChangeDetail1Row, fnApplyPercentToAll, fnDeleteDetail1Row,
     fnSeekOriginInvoice, onChangeDetail2Qty, fnDeleteDetail2Row,
-    isProcessed, isVoided, isReturn,
+    isVoided, isReturn, isLocked,
     openModalAddInvoices, setOpenModalAddInvoices, dataCreditNotes, fnConfirmAddInvoices,
     openModalSeekOrigin, setOpenModalSeekOrigin, fnSelectOriginInvoice,
     openModalSeekCreditNotes, setOpenModalSeekCreditNotes, fnViewCreditNote,
     openModalVoid, setOpenModalVoid, fnVoidCreditNote,
     openMsgProcess, setOpenMsgProcess, fnProcessCreditNote,
+    openMsgDelete, setOpenMsgDelete, fnDeleteCreditNote,
     openModalPrint, setOpenModalPrint, documentPathPrint,
     propsToControlPanel
   } = useCreditNotes({ setLoading, screenControl });
 
   const { documentCode, documentId, numberCAI } = formState;
-  const disabled = isProcessed || isVoided;
+  const disabled = isLocked || isVoided;
 
   const propsToCreditNoteForm = {
     ...formState,
@@ -40,8 +41,6 @@ const CustCreditNotes = ({ setLoading, screenControl }) => {
     listCustomers,
     listAccounts,
     onInputChange,
-    setBulkForm,
-    onMixedChange,
     onCustomerChange,
     onTypeChange,
     formValidation,
@@ -101,7 +100,6 @@ const CustCreditNotes = ({ setLoading, screenControl }) => {
     setOpen: setOpenModalSeekCreditNotes,
     maxWidth: 'xl',
     data: {
-      dataCreditNotes,
       fnView: fnViewCreditNote
     }
   }
@@ -137,6 +135,13 @@ const CustCreditNotes = ({ setLoading, screenControl }) => {
     title: "msg.question.processCreditNote.title"
   }
 
+  const propsToMsgDelete = {
+    open: openMsgDelete,
+    setOpen: setOpenMsgDelete,
+    fnOnOk: fnDeleteCreditNote,
+    title: 'alert.question.title'
+  }
+
   return (
     <>
       <Row>
@@ -160,6 +165,7 @@ const CustCreditNotes = ({ setLoading, screenControl }) => {
       <Modal {...propsToModalVoid} />
       <Modal {...propsToModalPrint} />
       <Confirmation {...propsToMsgProcess} />
+      <Confirmation {...propsToMsgDelete} />
     </>
   );
 }

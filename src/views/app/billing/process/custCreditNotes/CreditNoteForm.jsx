@@ -3,30 +3,33 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { RadioGroup } from '@Components/radioGroup';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { SimpleSelect } from '@Components/simpleSelect';
-import { Checkbox } from '@Components/checkbox';
 import { InputField } from '@Components/inputFields';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import DateCalendar from '@Components/dateCalendar';
 import { IntlMessages } from '@Helpers/Utils';
-import { TYPE_OTHER } from './useCreditNotes';
+import { TYPE_OTHER, TYPE_RETURN } from './useCreditNotes';
 
 const CreditNoteForm = (props) => {
   const {
-    documentCode, documentId, numberCAI, date, clientId, clientRtn, clientName, typeId, typeOther, name,
-    valueLps, docValueUSD, exchangeRate, accCode, currenId, isMixed, pdaNumber,
+    documentCode, documentId, numberCAI, date, customerId, clientRtn, clientName, typeId, typeOther, description,
+    valueLps, valueUsd, exchangeRate, incomeCtaCode, currencyId, pdaNumber,
     listTypeDocuments, listCustomers, listAccounts,
-    onInputChange, onMixedChange, onCustomerChange, onTypeChange,
+    onInputChange, onCustomerChange, onTypeChange,
     formValidation, sendForm, disabled, isVoided
   } = props;
 
-  const { documentCodeValid, clientIdValid } = formValidation;
+  const { documentCodeValid, customerIdValid } = formValidation;
+  const isReturn = typeId === TYPE_RETURN;
+  // IntlMessages es un hook: se piden aquí arriba, no dentro de una condición (orden de hooks).
+  const textVoided = IntlMessages('page.custCreditNotes.status.voided');
+  const textProcessed = IntlMessages('page.custCreditNotes.status.processed');
 
   return (
     <Form>
       <Row>
         <Colxx xxs="12" xs="12" sm="8" md="8" lg="5">
           <Row>
-            <Colxx xxs="8">
+            <Colxx xxs="12">
               <SimpleSelect
                 name="documentCode"
                 label="page.custCreditNotes.select.typeDocument"
@@ -36,15 +39,6 @@ const CreditNoteForm = (props) => {
                 disabled={disabled}
                 invalid={sendForm && !!documentCodeValid}
                 feedbackText={sendForm && (documentCodeValid || null)}
-              />
-            </Colxx>
-            <Colxx xxs="4">
-              <Checkbox
-                label="page.custCreditNotes.check.isMixed"
-                name="isMixed"
-                value={isMixed}
-                onChange={onMixedChange}
-                disabled={disabled}
               />
             </Colxx>
           </Row>
@@ -73,13 +67,13 @@ const CreditNoteForm = (props) => {
               <ContainerWithLabel label="page.custCreditNotes.title.customer">
                 <SearchSelect
                   label="page.custCreditNotes.select.clientId"
-                  name="clientId"
-                  inputValue={clientId}
+                  name="customerId"
+                  inputValue={customerId}
                   onChange={onCustomerChange}
                   options={listCustomers}
                   isDisabled={disabled}
-                  invalid={sendForm && !!clientIdValid}
-                  feedbackText={sendForm && (clientIdValid || null)}
+                  invalid={sendForm && !!customerIdValid}
+                  feedbackText={sendForm && (customerIdValid || null)}
                 />
                 <Row>
                   <Colxx xxs="5">
@@ -95,8 +89,8 @@ const CreditNoteForm = (props) => {
           <Row>
             <Colxx xxs="12">
               <InputField
-                value={name}
-                name="name"
+                value={description}
+                name="description"
                 onChange={onInputChange}
                 type="textarea"
                 label="page.custCreditNotes.input.concept"
@@ -122,34 +116,34 @@ const CreditNoteForm = (props) => {
               />
             </Colxx>
             {typeId === TYPE_OTHER && (
-              <>
-                <Colxx xxs="12">
-                  <InputField
-                    name="typeOther"
-                    label="page.custCreditNotes.input.specifyOther"
-                    value={typeOther}
-                    onChange={onInputChange}
-                    type="text"
-                    disabled={disabled}
-                  />
-                </Colxx>
-                <Colxx xxs="12">
-                  <SimpleSelect
-                    name="accCode"
-                    label="page.custCreditNotes.select.account"
-                    value={accCode}
-                    onChange={onInputChange}
-                    options={listAccounts}
-                    disabled={disabled}
-                  />
-                </Colxx>
-              </>
+              <Colxx xxs="12">
+                <InputField
+                  name="typeOther"
+                  label="page.custCreditNotes.input.specifyOther"
+                  value={typeOther}
+                  onChange={onInputChange}
+                  type="text"
+                  disabled={disabled}
+                />
+              </Colxx>
+            )}
+            {!isReturn && (
+              <Colxx xxs="12">
+                <SimpleSelect
+                  name="incomeCtaCode"
+                  label="page.custCreditNotes.select.account"
+                  value={incomeCtaCode}
+                  onChange={onInputChange}
+                  options={listAccounts}
+                  disabled={disabled}
+                />
+              </Colxx>
             )}
             <Colxx xxs="12">
               <RadioGroup
                 label="page.custCreditNotes.title.currency"
-                name="currenId"
-                value={currenId}
+                name="currencyId"
+                value={currencyId}
                 onChange={onInputChange}
                 options={[
                   { id: 1, label: "page.invoicing.radio.lempira" },
@@ -181,11 +175,10 @@ const CreditNoteForm = (props) => {
             </Colxx>
             <Colxx xxs="12" sm="6" md="6" lg="6">
               <InputField
-                value={docValueUSD}
-                name="docValueUSD"
-                onChange={onInputChange}
+                value={valueUsd}
+                name="valueUsd"
                 type="text"
-                disabled={disabled}
+                disabled
                 label="page.custCreditNotes.input.valueUsd"
               />
             </Colxx>
@@ -202,14 +195,14 @@ const CreditNoteForm = (props) => {
             {isVoided && (
               <Colxx xxs="12">
                 <span className="text-danger fw-bold">
-                  <i className="bi bi-x-octagon-fill" /> {IntlMessages("page.custCreditNotes.status.voided")}
+                  <i className="bi bi-x-octagon-fill" /> {textVoided}
                 </span>
               </Colxx>
             )}
             {!isVoided && pdaNumber > 0 && (
               <Colxx xxs="12">
                 <span className="text-success">
-                  <i className="bi bi-check-circle-fill" /> {IntlMessages("page.custCreditNotes.status.processed")} #{pdaNumber}
+                  <i className="bi bi-check-circle-fill" /> {textProcessed} #{pdaNumber}
                 </span>
               </Colxx>
             )}

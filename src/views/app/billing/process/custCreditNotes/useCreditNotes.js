@@ -5,6 +5,7 @@ import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
 import { validFloat, validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
+import { findHeaderProblem, findDetailProblem, buildNotePayload, isNoteLocked, calculateReturnLine } from './creditNoteRules';
 
 export const TYPE_DISCOUNT = 1;
 export const TYPE_CANCEL = 2;
@@ -13,9 +14,10 @@ export const TYPE_OTHER = 4;
 
 const creditNoteValid = {
   documentCode: [(val) => val !== '', 'msg.required.select.typeDocument'],
-  clientId: [(val) => validInt(val) > 0, 'msg.required.select.customer']
+  customerId: [(val) => validInt(val) > 0, 'msg.required.select.customer']
 }
 
+// SPEC v2-95-sr: las notas mixtas (con documento sin CAI) tienen su propio formulario y no se manejan aquí: toda nota de esta pantalla requiere documento fiscal.
 export const useCreditNotes = ({ setLoading, screenControl }) => {
   const userData = JSON.parse(localStorage.getItem('mw_current_user'));
   const [listTypeDocuments, setListTypeDocuments] = useState([]);
@@ -32,6 +34,7 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
   const [openModalSeekCreditNotes, setOpenModalSeekCreditNotes] = useState(false);
   const [openModalVoid, setOpenModalVoid] = useState(false);
   const [openMsgProcess, setOpenMsgProcess] = useState(false);
+  const [openMsgDelete, setOpenMsgDelete] = useState(false);
   const [dataCreditNotes, setDataCreditNotes] = useState([]);
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
@@ -40,33 +43,34 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
     documentId: 0,
     numberCAI: '',
     date: DateHelper.format(new Date()),
-    clientId: 0,
+    customerId: 0,
     clientRtn: '',
     clientName: '',
     typeId: TYPE_DISCOUNT,
     typeOther: '',
-    name: '',
+    description: '',
     valueLps: 0,
-    docValueUSD: 0,
+    valueUsd: 0,
     exchangeRate: 1,
     discountPercent: 0,
-    accCode: '',
-    currenId: 1,
-    isMixed: 0,
+    incomeCtaCode: '',
+    currencyId: 1,
     pdaNumber: 0,
     status: 1
   }, creditNoteValid);
 
-  const { id, documentCode, clientId, typeId, pdaNumber, status } = formState;
+  const { id, customerId, typeId, pdaNumber, status, numberCAI } = formState;
 
   const isProcessed = validInt(pdaNumber) > 0;
+  // Con número fiscal o partida la nota no se edita ni se elimina (se anula): el back responde creditNote.locked.fiscal.
+  const isLocked = isNoteLocked({ pdaNumber, numberCAI });
   const isVoided = validInt(status) === 0;
   const isSaved = validInt(id) > 0;
   const isReturn = validInt(typeId) === TYPE_RETURN;
 
-  const fnLoadDocuments = (mixedValue) => {
-    const url = mixedValue ? 'admin/documents?status=1&useBill=1' : 'admin/documents?status=1&useBill=1&useTaxDocument=1';
-    request.GET(url, (resp) => {
+  useEffect(() => {
+    setLoading(true);
+    request.GET('admin/documents?status=1&useBill=1&useTaxDocument=1', (resp) => {
       const documents = resp.data.map((item) => ({
         id: item.code,
         code: item.code,
@@ -74,11 +78,6 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
       }));
       setListTypeDocuments(documents);
     }, () => { });
-  }
-
-  useEffect(() => {
-    setLoading(true);
-    fnLoadDocuments(false);
     request.GET('billing/settings/customers/?status=1', (resp) => {
       const customers = resp.data.map((item) => ({
         id: item.id,
@@ -101,24 +100,14 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
     }, () => { });
   }, []);
 
-  // Reobtiene el combo de documentos al alternar el toggle de CAI (`isMixed`): con CAI
-  // solo entran documentos con `usacai=1` (igual que la forma principal del legacy);
-  // sin CAI, cualquier documento con `use_bill=1` (igual que fac_ncredito_mixed.sc2).
-  const onMixedChange = (e) => {
-    const checked = e.target.checked;
-    setBulkForm({ isMixed: checked ? 1 : 0, documentCode: '' });
-    fnLoadDocuments(checked);
-  }
-
   const onCustomerChange = (e) => {
     const idCust = e.target.value;
     const found = listCustomers.find((item) => item.id === idCust);
-    setBulkForm({ clientId: idCust, clientRtn: found ? found.rtn : '', clientName: found ? found.name : '' });
+    setBulkForm({ customerId: idCust, clientRtn: found ? found.rtn : '', clientName: found ? found.name : '' });
   }
 
-  // Igual que el legacy (Optiongroup_hw1.InteractiveChange): cambiar el tipo alterna la
-  // pestaña activa y descarta el detalle de la pestaña que deja de aplicar, para no
-  // guardar líneas huérfanas de un tipo que ya no corresponde.
+  // Igual que el legacy (Optiongroup_hw1.InteractiveChange): cambiar el tipo alterna la pestaña activa y descarta el detalle de la pestaña que deja de
+  // aplicar, para no guardar líneas huérfanas de un tipo que ya no corresponde.
   const onTypeChange = (e) => {
     const newType = validInt(e.target.value);
     if (newType === TYPE_RETURN) {
@@ -130,25 +119,24 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
     setBulkForm({ typeId: newType, valueLps: 0 });
   }
 
-  // Recalcula el total de encabezado (`valueLps`) como suma del detalle activo — igual
-  // que `nTotal` en el legacy, recalculado en cada LostFocus de las columnas editables.
+  // El total de la cabecera se muestra como suma del detalle activo; el back lo recalcula al guardar y lo devuelve.
   const recalcTotalFromDetail1 = (rows) => {
-    const sum = rows.reduce((acc, item) => acc + validFloat(item.valuePayment), 0);
+    const sum = rows.reduce((acc, item) => acc + validFloat(item.appliedValue), 0);
     setBulkForm({ valueLps: sum });
   }
   const recalcTotalFromDetail2 = (rows) => {
-    const sum = rows.reduce((acc, item) => acc + validFloat(item.valueTotal1), 0);
+    const sum = rows.reduce((acc, item) => acc + validFloat(item.total), 0);
     setBulkForm({ valueLps: sum });
   }
 
   const fnAddInvoices = () => {
-    if (validInt(clientId) === 0) {
+    if (validInt(customerId) === 0) {
       notification('warning', 'msg.required.select.customer', 'alert.warning.title');
       return;
     }
     setLoading(true);
-    request.GET(buildUrl('accounting/process/cxc/pendingByCustomer', { customerId: clientId }), (resp) => {
-      const existingCodes = detail1.map((item) => item.invoiceCode);
+    request.GET(buildUrl('accounting/process/cxc/pendingByCustomer', { customerId }), (resp) => {
+      const existingCodes = detail1.map((item) => item.invoiceNumber);
       const pending = resp.data
         .filter((item) => !existingCodes.includes(item.documentCode))
         .map((item) => ({
@@ -167,14 +155,14 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
     const newRows = selectedRows.map((item) => ({
       id: new Date().getTime() + Math.random(),
       cxcId: item.cxcId,
-      dateDocument: item.date,
-      customerId: clientId,
-      invoiceCode: item.documentCode,
-      invoiceVal: item.balance,
+      invoiceDate: item.date,
+      customerId,
+      invoiceNumber: item.documentCode,
+      invoiceBalance: item.balance,
       percent: 100,
-      valuePayment: item.balance,
-      docValueUSD: 0,
-      docValuePaymentUSD: 0
+      appliedValue: item.balance,
+      valueUsd: 0,
+      appliedValueUsd: 0
     }));
     const merged = [...detail1, ...newRows];
     setDetail1(merged);
@@ -182,17 +170,18 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
     setOpenModalAddInvoices(false);
   }
 
+  // El valor aplicado no puede exceder el saldo de la factura (el back lo rechaza con creditNote.value.exceeded): el porcentaje se topa en 100.
   const onChangeDetail1Row = (rowId, field, value) => {
     const updated = detail1.map((item) => {
       if (item.id !== rowId) return item;
       if (field === 'percent') {
-        const percent = validFloat(value);
-        return { ...item, percent, valuePayment: validFloat((percent * item.invoiceVal) / 100) };
+        const percent = Math.min(validFloat(value), 100);
+        return { ...item, percent, appliedValue: validFloat((percent * item.invoiceBalance) / 100) };
       }
-      if (field === 'valuePayment') {
-        const valuePayment = validFloat(value);
-        const percent = item.invoiceVal > 0 ? validFloat((valuePayment * 100) / item.invoiceVal) : 0;
-        return { ...item, valuePayment, percent };
+      if (field === 'appliedValue') {
+        const appliedValue = Math.min(validFloat(value), item.invoiceBalance);
+        const percent = item.invoiceBalance > 0 ? validFloat((appliedValue * 100) / item.invoiceBalance) : 0;
+        return { ...item, appliedValue, percent };
       }
       return item;
     });
@@ -201,12 +190,11 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
   }
 
   const fnApplyPercentToAll = () => {
-    const { discountPercent } = formState;
-    const percent = validFloat(discountPercent);
+    const percent = Math.min(validFloat(formState.discountPercent), 100);
     const updated = detail1.map((item) => ({
       ...item,
       percent,
-      valuePayment: validFloat((percent * item.invoiceVal) / 100)
+      appliedValue: validFloat((percent * item.invoiceBalance) / 100)
     }));
     setDetail1(updated);
     recalcTotalFromDetail1(updated);
@@ -219,41 +207,41 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
   }
 
   const fnSeekOriginInvoice = () => {
-    if (validInt(clientId) === 0) {
+    if (validInt(customerId) === 0) {
       notification('warning', 'msg.required.select.customer', 'alert.warning.title');
       return;
     }
     setLoading(true);
-    request.GET(buildUrl('billing/process/invoices', { customerId: clientId, isPos: 0 }), (resp) => {
-      const invoices = resp.data.filter((item) => validInt(item.documentId) > 0);
-      setDataCreditNotes(invoices);
-      setOpenModalSeekOrigin(true);
-      setLoading(false);
+    // Solo las facturas con saldo pendiente en la CxC del cliente: el back rechaza una devolución sobre una factura ya cobrada (creditNote.origin.invalid).
+    request.GET(buildUrl('accounting/process/cxc/pendingByCustomer', { customerId }), (respPending) => {
+      const pendingCodes = new Set(respPending.data.map((row) => row.documentCode));
+      request.GET(buildUrl('billing/process/invoices', { customerId, isPos: 0 }), (resp) => {
+        const invoices = resp.data.filter((item) => validInt(item.documentId) > 0
+          && (pendingCodes.has(item.numcai) || pendingCodes.has(`${item.documentCode}-${item.documentId}`)));
+        setDataCreditNotes(invoices);
+        setOpenModalSeekOrigin(true);
+        setLoading(false);
+      }, () => { setLoading(false); });
     }, () => { setLoading(false); });
   }
+
+  // Cada línea de la factura carga con su cantidad completa (devolución total); el usuario baja la cantidad de lo que no se devuelve. Precio, descuento % e
+  // impuesto % son los de la factura (solo se muestran: el back los toma de la factura al guardar).
+  const toReturnLine = (item, invoiceId) => calculateReturnLine({
+    id: new Date().getTime() + Math.random(),
+    invoiceId,
+    productCode: item.productCode,
+    description: item.invProduct ? item.invProduct.name : item.productCode,
+    quantityInvoiced: validFloat(item.qty),
+    price: validFloat(item.price),
+    discountPercent: validFloat(item.discountPercent),
+    taxPercent: validFloat(item.taxPercent)
+  }, validFloat(item.qty));
 
   const fnSelectOriginInvoice = (invoice) => {
     setLoading(true);
     request.GET(buildUrl('billing/process/invoiceDetail', { idFather: invoice.id }), (resp) => {
-      const lines = resp.data.map((item) => {
-        const qty = validFloat(item.qty);
-        return {
-          id: new Date().getTime() + Math.random(),
-          invoiceId: invoice.id,
-          productCode: item.productCode,
-          description: item.invProduct ? item.invProduct.name : item.productCode,
-          quantityInvoiced: qty,
-          quantity: qty,
-          price: validFloat(item.price),
-          discountPercent: validFloat(item.discountPercent),
-          taxPercent: validFloat(item.taxPercent),
-          cost: validFloat(item.unitedCoste),
-          subtotal: validFloat(item.subtotal),
-          discountValue: validFloat(item.discountValue),
-          taxValue: validFloat(item.taxValue),
-          valueTotal1: validFloat(item.total)
-        }
-      });
+      const lines = resp.data.map((item) => toReturnLine(item, invoice.id));
       setDetail2(lines);
       recalcTotalFromDetail2(lines);
       setOriginInvoice({
@@ -268,17 +256,7 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
   }
 
   const onChangeDetail2Qty = (rowId, value) => {
-    const updated = detail2.map((item) => {
-      if (item.id !== rowId) return item;
-      let qty = validFloat(value);
-      if (qty > item.quantityInvoiced) qty = item.quantityInvoiced;
-      if (qty < 0) qty = 0;
-      const subtotal = validFloat(qty * item.price);
-      const discountValue = validFloat((item.discountPercent * subtotal) / 100);
-      const taxValue = validFloat((item.taxPercent * (subtotal - discountValue)) / 100);
-      const valueTotal1 = validFloat((subtotal - discountValue) + taxValue);
-      return { ...item, quantity: qty, subtotal, discountValue, taxValue, valueTotal1 };
-    });
+    const updated = detail2.map((item) => (item.id === rowId ? calculateReturnLine(item, value) : item));
     setDetail2(updated);
     recalcTotalFromDetail2(updated);
   }
@@ -296,76 +274,70 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
     setDetail2([]);
     setOriginInvoice(null);
     setSendForm(false);
-    fnLoadDocuments(false);
   }
 
-  const fnSearchCreditNotes = () => {
-    setLoading(true);
-    request.GET('billing/process/creditNotes', (resp) => {
-      setDataCreditNotes(resp.data);
-      setOpenModalSeekCreditNotes(true);
-      setLoading(false);
-    }, () => { setLoading(false); });
-  }
+  // Buscar: el modal pide páginas de 50 con búsqueda en el servidor (SPEC v2-95-sr).
+  const fnSearchCreditNotes = () => setOpenModalSeekCreditNotes(true);
 
-  const fnViewCreditNote = (item) => {
+  // La fila del buscador trae solo la cabecera: el detalle (facturas aplicadas o productos devueltos) llega con GET /:id.
+  const fnViewCreditNote = (row) => {
     setOpenModalSeekCreditNotes(false);
     setLoading(true);
-    fnLoadDocuments(!!item.isMixed);
-    setBulkForm({
-      id: item.id,
-      documentCode: item.documentCode,
-      documentId: item.documentId,
-      numberCAI: item.numberCAI,
-      date: item.date,
-      clientId: item.clientId,
-      clientRtn: item.clientData ? item.clientData.rtn : '',
-      clientName: item.clientData ? item.clientData.nomcli : '',
-      typeId: item.typeId,
-      typeOther: item.typeOther,
-      name: item.name,
-      valueLps: item.valueLps,
-      docValueUSD: item.docValueUSD,
-      exchangeRate: item.exchangeRate,
-      discountPercent: 0,
-      accCode: item.accCode,
-      currenId: item.currenId,
-      isMixed: item.isMixed,
-      pdaNumber: item.pdaNumber,
-      status: item.status
-    });
+    request.GET(`billing/process/creditNotes/${row.id}`, (resp) => {
+      const item = resp.data;
+      setBulkForm({
+        id: item.id,
+        documentCode: item.documentCode,
+        documentId: item.documentId,
+        numberCAI: item.numberCAI,
+        date: item.date,
+        customerId: item.customerId,
+        clientRtn: item.clientData ? item.clientData.rtn : '',
+        clientName: item.clientData ? item.clientData.nomcli : '',
+        typeId: item.typeId,
+        typeOther: item.typeOther,
+        description: item.description,
+        valueLps: item.valueLps,
+        valueUsd: item.valueUsd,
+        exchangeRate: item.exchangeRate,
+        discountPercent: 0,
+        incomeCtaCode: item.incomeCtaCode,
+        currencyId: item.currencyId,
+        pdaNumber: item.pdaNumber,
+        status: item.status
+      });
 
-    if (validInt(item.typeId) === TYPE_RETURN) {
-      request.GET(buildUrl('billing/process/creditNoteProducts', { fatherId: item.id }), (resp) => {
-        const lines = resp.data.map((line) => {
-          const qty = validFloat(line.quantity);
-          const subtotal = validFloat(line.subtotal);
-          const discountValue = validFloat(line.discountValue);
-          const taxValue = validFloat(line.taxValue);
-          // El detalle guardado no persiste price/discountPercent/taxPercent (solo los
-          // valores ya calculados) — se re-derivan para poder seguir editando la
-          // cantidad a devolver sin perder la proporción de descuento/impuesto original.
-          return {
-            id: line.id,
-            invoiceId: line.invoiceId,
-            productCode: line.productCode,
-            description: line.invProduct ? line.invProduct.name : line.productCode,
-            quantityInvoiced: qty,
-            quantity: qty,
-            price: qty > 0 ? subtotal / qty : 0,
-            discountPercent: subtotal > 0 ? (discountValue * 100) / subtotal : 0,
-            taxPercent: (subtotal - discountValue) > 0 ? (taxValue * 100) / (subtotal - discountValue) : 0,
-            cost: validFloat(line.cost),
-            subtotal,
-            discountValue,
-            taxValue,
-            valueTotal1: validFloat(line.valueTotal1)
-          };
-        });
+      if (validInt(item.typeId) === TYPE_RETURN) {
+        const lines = item.products.map((line) => ({
+          id: line.id,
+          invoiceId: line.invoiceId,
+          productCode: line.productCode,
+          description: line.invProduct ? line.invProduct.name : line.productCode,
+          quantityInvoiced: validFloat(line.quantity),
+          quantity: validFloat(line.quantity),
+          price: 0,
+          discountPercent: 0,
+          taxPercent: 0,
+          subtotal: validFloat(line.subtotal),
+          discountValue: validFloat(line.discountValue),
+          taxValue: validFloat(line.taxValue),
+          total: validFloat(line.total)
+        }));
         setDetail2(lines);
         setDetail1([]);
-        if (lines.length > 0) {
-          request.GET(`billing/process/invoices/${lines[0].invoiceId}`, (respInv) => {
+        if (lines.length === 0) {
+          setLoading(false);
+          return;
+        }
+        // Cantidad facturada y precio salen de la factura de origen (la nota guarda solo lo devuelto).
+        const invoiceId = lines[0].invoiceId;
+        request.GET(`billing/process/invoices/${invoiceId}`, (respInv) => {
+          request.GET(buildUrl('billing/process/invoiceDetail', { idFather: invoiceId }), (respDet) => {
+            const byProduct = new Map(respDet.data.map((d) => [d.productCode, d]));
+            setDetail2((current) => current.map((line) => {
+              const origin = byProduct.get(line.productCode);
+              return origin ? { ...line, quantityInvoiced: validFloat(origin.qty), price: validFloat(origin.price), discountPercent: validFloat(origin.discountPercent), taxPercent: validFloat(origin.taxPercent) } : line;
+            }));
             setOriginInvoice({
               id: respInv.data.id,
               invoiceNumber: `${respInv.data.documentCode}-${respInv.data.documentId}`,
@@ -374,132 +346,78 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
             });
             setLoading(false);
           }, () => { setLoading(false); });
-        } else {
-          setLoading(false);
-        }
-      }, () => { setLoading(false); });
-    } else {
-      request.GET(buildUrl('billing/process/creditNoteInvoices', { fatherId: item.id }), (resp) => {
-        const lines = resp.data.map((line) => ({
+        }, () => { setLoading(false); });
+      } else {
+        setDetail1(item.invoices.map((line) => ({
           id: line.id,
-          cxcId: line.cxcId,
-          dateDocument: line.dateDocument,
+          invoiceDate: line.invoiceDate,
           customerId: line.customerId,
-          invoiceCode: line.invoiceCode,
-          invoiceVal: validFloat(line.invoiceVal),
+          invoiceNumber: line.invoiceNumber,
+          invoiceBalance: validFloat(line.invoiceBalance),
           percent: validFloat(line.percent),
-          valuePayment: validFloat(line.valuePayment),
-          docValueUSD: validFloat(line.docValueUSD),
-          docValuePaymentUSD: validFloat(line.docValuePaymentUSD)
-        }));
-        setDetail1(lines);
+          appliedValue: validFloat(line.appliedValue),
+          valueUsd: validFloat(line.valueUsd),
+          appliedValueUsd: validFloat(line.appliedValueUsd)
+        })));
         setDetail2([]);
         setOriginInvoice(null);
         setLoading(false);
-      }, () => { setLoading(false); });
-    }
+      }
+    }, () => { setLoading(false); });
   }
 
   const fnSaveCreditNote = () => {
     setSendForm(true);
     if (!isFormValid) return;
 
-    const { date, name, typeOther, docValueUSD, exchangeRate, accCode, currenId, isMixed: isMixedVal, valueLps } = formState;
-
-    if (validFloat(valueLps) <= 0) {
-      notification('warning', 'msg.error.invalidValue', 'alert.warning.title');
+    const headerProblem = findHeaderProblem(formState);
+    if (headerProblem) {
+      notification('warning', headerProblem.messageId, 'alert.warning.title');
       return;
     }
-    if (isReturn) {
-      if (detail2.filter((item) => validFloat(item.quantity) > 0).length === 0) {
-        notification('warning', 'msg.required.select.originInvoice', 'alert.warning.title');
-        return;
-      }
-    } else {
-      if (detail1.length === 0) {
-        notification('warning', 'msg.required.select.invoiceToApply', 'alert.warning.title');
-        return;
-      }
-      if (typeId === TYPE_OTHER && !accCode) {
-        notification('warning', 'msg.required.select.account', 'alert.warning.title');
-        return;
-      }
+    const detailProblem = findDetailProblem({ typeId, detail1, detail2, originInvoice });
+    if (detailProblem) {
+      notification('warning', detailProblem.messageId, 'alert.warning.title');
+      return;
     }
 
-    const newData = {
-      documentCode,
-      date,
-      clientId,
-      typeId,
-      typeOther,
-      name,
-      valueLps,
-      docValueUSD,
-      exchangeRate,
-      accCode: typeId === TYPE_OTHER ? accCode : '',
-      currenId,
-      isMixed: isMixedVal ? 1 : 0
-    }
-
+    // Un solo POST o PUT: el back guarda cabecera y detalle en una transacción y calcula valores, desglose, total y dólares. Se muestra lo que respondió.
+    const body = buildNotePayload(formState, { originInvoice, detail1, detail2 });
     setLoading(true);
-    const afterSaveHeader = (noteId) => {
-      // El DELETE previo (limpiar detalle viejo antes de reinsertar) devuelve 404
-      // "delete.not.found" cuando no había filas que borrar — el caso normal en el primer
-      // Guardar de una nota nueva. No es un error real: se continúa igual hacia el insert
-      // tanto si el DELETE tuvo éxito como si no encontró nada que borrar.
-      const insertDetail = () => {
-        if (isReturn) {
-          const rows = detail2.filter((item) => validFloat(item.quantity) > 0).map((item) => ({
-            fatherId: noteId,
-            invoiceId: item.invoiceId,
-            productCode: item.productCode,
-            quantity: item.quantity,
-            subtotal: item.subtotal,
-            discountValue: item.discountValue,
-            taxValue: item.taxValue,
-            valueTotal1: item.valueTotal1,
-            cost: item.cost
-          }));
-          request.POST('billing/process/creditNoteProducts/createMany', rows, () => {
-            notification('success', 'msg.success.save', 'alert.success.title');
-            setLoading(false);
-          }, () => { setLoading(false); });
-        } else {
-          const rows = detail1.map((item) => ({
-            fatherId: noteId,
-            date: item.dateDocument,
-            dateDocument: item.dateDocument,
-            customerId: clientId,
-            invoiceCode: item.invoiceCode,
-            invoiceVal: item.invoiceVal,
-            percent: item.percent,
-            valuePayment: item.valuePayment,
-            docValueUSD: item.docValueUSD,
-            docValuePaymentUSD: item.docValuePaymentUSD
-          }));
-          request.POST('billing/process/creditNoteInvoices/createMany', rows, () => {
-            notification('success', 'msg.success.save', 'alert.success.title');
-            setLoading(false);
-          }, () => { setLoading(false); });
-        }
+    const applyResult = (data) => {
+      setBulkForm({ id: data.id, valueLps: data.valueLps, valueUsd: data.valueUsd });
+      if (isReturn) {
+        const sent = detail2.filter((line) => validFloat(line.quantity) > 0);
+        setDetail2(sent.map((line, index) => {
+          const saved = data.products[index];
+          return saved ? { ...line, subtotal: saved.subtotal, taxValue: saved.taxValue, total: saved.total, discountValue: saved.discountValue } : line;
+        }));
+      } else {
+        setDetail1(data.invoices.map((line, index) => ({ ...detail1[index], ...line, id: detail1[index] ? detail1[index].id : index })));
       }
-      request.DELETE(buildUrl('billing/process/creditNoteInvoices', { fatherId: noteId }), () => {
-        request.DELETE(buildUrl('billing/process/creditNoteProducts', { fatherId: noteId }), insertDetail, insertDetail, false);
-      }, () => {
-        request.DELETE(buildUrl('billing/process/creditNoteProducts', { fatherId: noteId }), insertDetail, insertDetail, false);
-      }, false);
-    }
+      setLoading(false); // el toast de éxito ya lo muestra request.POST/PUT
+    };
 
     if (id > 0) {
-      request.PUT(`billing/process/creditNotes/${id}`, newData, () => {
-        afterSaveHeader(id);
-      }, () => { setLoading(false); });
+      request.PUT(`billing/process/creditNotes/${id}`, body, (resp) => applyResult(resp.data), () => { setLoading(false); });
     } else {
-      request.POST('billing/process/creditNotes', newData, (resp) => {
-        onInputChange({ target: { name: 'id', value: resp.data.id } });
-        afterSaveHeader(resp.data.id);
-      }, () => { setLoading(false); });
+      request.POST('billing/process/creditNotes', body, (resp) => applyResult(resp.data), () => { setLoading(false); });
     }
+  }
+
+  // Eliminar: solo una nota sin contabilizar (el back borra cabecera y detalle en una transacción); una contabilizada se anula.
+  const fnAskDelete = () => {
+    if (id === 0 || isLocked) return;
+    setOpenMsgDelete(true);
+  }
+
+  const fnDeleteCreditNote = () => {
+    setOpenMsgDelete(false);
+    setLoading(true);
+    request.DELETE(`billing/process/creditNotes/${id}`, () => {
+      fnNewCreditNote();
+      setLoading(false);
+    }, () => { setLoading(false); });
   }
 
   const fnAskProcess = () => {
@@ -547,9 +465,8 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
     }, false);
   }
 
-  // Equivalente a btnPrintDocument.Click: el backend elige internamente entre
-  // fac_credit_notes1 (tipos 1/2/4) y fac_credit_notes2 (tipo 3), según el tipo de la
-  // nota ya guardada — no requiere que esté Contabilizada (igual que el legacy).
+  // Equivalente a btnPrintDocument.Click: el backend elige internamente entre fac_credit_notes1 (tipos 1/2/4) y fac_credit_notes2 (tipo 3), según el tipo
+  // de la nota ya guardada — no requiere que esté Contabilizada (igual que el legacy). La SPEC v2-97 lo pasa a GET /:id/print.
   const fnPrintCreditNote = () => {
     if (id === 0) return;
     setLoading(true);
@@ -563,14 +480,16 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
   const propsToControlPanel = {
     fnNew: fnNewCreditNote,
     fnSearch: fnSearchCreditNotes,
-    fnSave: screenControl.fnCreate && !isProcessed ? fnSaveCreditNote : null,
+    fnSave: screenControl.fnCreate && !isLocked ? fnSaveCreditNote : null,
+    fnDelete: screenControl.fnDelete && isSaved && !isLocked ? fnAskDelete : null,
     fnPrint: isSaved ? fnPrintCreditNote : null,
     fnCancel: screenControl.fnDelete && isProcessed && !isVoided ? fnAskVoid : null,
     buttonsHome: [
       {
         title: "button.count",
         icon: "bi bi-journal-check",
-        onClick: screenControl.fnUpdate && isSaved && !isProcessed ? fnAskProcess : () => { }
+        onClick: screenControl.fnUpdate && isSaved && !isProcessed ? fnAskProcess : () => { },
+        disabled: !isSaved || isProcessed || isVoided // una nota sin guardar, ya contabilizada o anulada no se contabiliza
       }
     ],
     buttonsOptions: [],
@@ -581,15 +500,16 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
     formState, formValidation, onInputChange, setBulkForm, sendForm,
     listTypeDocuments, listCustomers, listAccounts,
     detail1, detail2, originInvoice,
-    onMixedChange, onCustomerChange, onTypeChange,
+    onCustomerChange, onTypeChange,
     fnAddInvoices, onChangeDetail1Row, fnApplyPercentToAll, fnDeleteDetail1Row,
     fnSeekOriginInvoice, onChangeDetail2Qty, fnDeleteDetail2Row,
-    isProcessed, isVoided, isSaved, isReturn,
+    isProcessed, isVoided, isSaved, isReturn, isLocked,
     openModalAddInvoices, setOpenModalAddInvoices, dataCreditNotes, fnConfirmAddInvoices,
     openModalSeekOrigin, setOpenModalSeekOrigin, fnSelectOriginInvoice,
     openModalSeekCreditNotes, setOpenModalSeekCreditNotes, fnViewCreditNote,
     openModalVoid, setOpenModalVoid, fnVoidCreditNote,
     openMsgProcess, setOpenMsgProcess, fnProcessCreditNote,
+    openMsgDelete, setOpenMsgDelete, fnDeleteCreditNote,
     openModalPrint, setOpenModalPrint, documentPathPrint,
     propsToControlPanel
   }
