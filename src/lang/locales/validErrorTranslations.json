@@ -189,6 +189,8 @@
     "debitNote.notProcessed",
     "debitNote.origin.invalid",
     "debitNote.product.invalid",
+    "debitNote.stock.insufficient",
+    "debitNote.total.mismatch",
     "debitNote.total.zero",
     "deposit.difference.account.invalid",
     "deposit.difference.account.required",
