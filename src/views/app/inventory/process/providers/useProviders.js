@@ -230,7 +230,7 @@ export const useProviders = ({ setLoading }) => {
   }
 
   useEffect(() => {
-    // getSL (no requiere el privilegio de administración 99.01.005 de Tipos de
+    // getSL (no requiere el privilegio de administración 20.01.004 de Tipos de
     // Proveedor) — Proveedores solo necesita LEER la lista para el select, igual que el
     // resto de los dropdowns de referencia en la app. Antes usaba el `find` principal,
     // que exige ese privilegio administrativo aparte: si el usuario no lo tenía asignado

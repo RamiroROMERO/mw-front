@@ -1,7 +1,7 @@
 // Reglas puras de la pantalla "Cuentas bloqueadas" (SPEC v2-30, front). El back decide siempre (cuenta de detalle, bloqueo
 // repetido, rango); esto arma el cuerpo y evita llamadas inútiles.
 
-export const PRIVILEGE_SCREEN = '03.01.045';
+export const PRIVILEGE_SCREEN = '03.01.016';
 export const NO_START = '1900-01-01';
 export const NO_END = '2999-12-31';
 export const MIN_REASON = 3;

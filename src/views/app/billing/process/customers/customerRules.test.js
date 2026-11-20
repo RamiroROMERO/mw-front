@@ -117,10 +117,10 @@ describe('cuentas por tipo y catálogo', () => {
 });
 
 describe('privilegio de Actualizar Cuentas', () => {
-  test('es 11.01.030 y solo cuenta si está activo', () => {
-    expect(ACCOUNTS_PRIVILEGE_CODE).toBe('11.01.030');
-    expect(hasAccountsPrivilege({ code: '11.01.030', active: true })).toBe(true);
-    expect(hasAccountsPrivilege({ code: '11.01.030', active: false })).toBe(false);
+  test('es 99.01.003 y solo cuenta si está activo', () => {
+    expect(ACCOUNTS_PRIVILEGE_CODE).toBe('99.01.003');
+    expect(hasAccountsPrivilege({ code: '99.01.003', active: true })).toBe(true);
+    expect(hasAccountsPrivilege({ code: '99.01.003', active: false })).toBe(false);
     expect(hasAccountsPrivilege({ fnCreate: false, id: 0 })).toBe(false);
     expect(hasAccountsPrivilege(undefined)).toBe(false);
   });

@@ -142,7 +142,7 @@ export const useOtherPurchases = ({ setLoading }) => {
     setOpenMsgCancelDocument(true);
   }
 
-  // SPEC v2-31-sr: DELETE del módulo (exige fn_delete y 11.01.007). Un rechazo (pagos, anticipos, período cerrado) muestra el mensaje
+  // SPEC v2-31-sr: DELETE del módulo (exige fn_delete y 99.20.004). Un rechazo (pagos, anticipos, período cerrado) muestra el mensaje
   // real del back y el documento se queda en pantalla.
   const fnOkCancelDocument = () => {
     setLoading(true);

@@ -85,7 +85,7 @@ export const useVariousDeposits = ({ setLoading, canEditPosted = false }) => {
   const isPosted = isPostedDeposit(formStateIndex);
 
   // Guarda en el back. Editar un depósito YA contabilizado regenera su asiento y el libro de bancos y exige el privilegio
-  // 11.01.015 (SPEC v2-24): sin él el back responde 403 y `request.PUT` muestra su mensaje traducido.
+  // 99.20.006 (SPEC v2-24): sin él el back responde 403 y `request.PUT` muestra su mensaje traducido.
   const fnPersistDeposit = () => {
     const payload = { header: formStateIndex };
     setLoading(true);
@@ -108,7 +108,7 @@ export const useVariousDeposits = ({ setLoading, canEditPosted = false }) => {
     setSendForm(true);
     if (!isFormValidIndex) return;
 
-    // Un depósito contabilizado regenera la partida al guardarse y exige el privilegio 11.01.015: con permiso se pide
+    // Un depósito contabilizado regenera la partida al guardarse y exige el privilegio 99.20.006: con permiso se pide
     // confirmación; sin él se avisa sin llamar al back (que respondería 403 `user.forbidden.editPosted`).
     const action = resolveSaveAction(formStateIndex, canEditPosted);
     if (action === 'forbidden') {

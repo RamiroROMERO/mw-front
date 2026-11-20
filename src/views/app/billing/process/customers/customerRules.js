@@ -209,6 +209,6 @@ export const dropUnknownAccounts = (form, accountOptions = []) => {
   return next;
 };
 
-// Privilegio "Actualizar Cuentas" de los clientes (11.01.030, usu_accniv): `active` en `mw_current_userModules`. El back vuelve a exigirlo.
-export const ACCOUNTS_PRIVILEGE_CODE = '11.01.030';
+// Privilegio "Actualizar Cuentas" de los clientes (99.01.003, usu_accniv): `active` en `mw_current_userModules`. El back vuelve a exigirlo.
+export const ACCOUNTS_PRIVILEGE_CODE = '99.01.003';
 export const hasAccountsPrivilege = (privilege) => Boolean(privilege && privilege.active);

@@ -110,13 +110,13 @@ describe('costsAfterSave', () => {
 });
 
 describe('hasCostsPrivilege', () => {
-  it('el código es 11.01.003 (Editar Costos Promedio)', () => {
-    expect(COSTS_PRIVILEGE_CODE).toBe('11.01.003');
+  it('el código es 99.02.005 (Editar Costos Promedio)', () => {
+    expect(COSTS_PRIVILEGE_CODE).toBe('99.02.005');
   });
 
   it('solo un privilegio activo habilita el botón', () => {
-    expect(hasCostsPrivilege({ code: '11.01.003', active: 1 })).toBe(true);
-    expect(hasCostsPrivilege({ code: '11.01.003', active: true })).toBe(true);
+    expect(hasCostsPrivilege({ code: '99.02.005', active: 1 })).toBe(true);
+    expect(hasCostsPrivilege({ code: '99.02.005', active: true })).toBe(true);
   });
 
   it.each([[{ active: 0 }], [{ active: false }], [{ id: 0, name: '', status: false }], [null], [undefined]])('%j no lo habilita', (privilege) => {

@@ -9,10 +9,10 @@ const Content = React.lazy(() =>
   import('./Content')
 );
 
-// Un solo privilegio (01.03.036 "Proceso -> Notas de Crédito") gatea Guardar,
+// Un solo privilegio (01.02.007 "Proceso -> Notas de Crédito") gatea Guardar,
 // Contabilizar y Eliminar/Anular — el legacy no distingue permisos por botón dentro de
 // esta pantalla (confirmado en el análisis, ver memoria del proyecto).
-const PRIVILEGE_CODE = "01.03.036";
+const PRIVILEGE_CODE = "01.02.007";
 
 const CustCreditNotes = (props) => {
   const dispatch = useDispatch();

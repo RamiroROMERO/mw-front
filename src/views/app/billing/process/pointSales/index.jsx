@@ -9,7 +9,7 @@ const Content = React.lazy(() =>
   import('./Content')
 );
 
-const PRIVILEGE_CODE = "01.03.041";
+const PRIVILEGE_CODE = "01.02.010";
 
 const PointSales = (props) => {
   const dispatch = useDispatch();

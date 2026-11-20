@@ -13,7 +13,7 @@ const isBlank = (v) => v === undefined || v === null || (typeof v === 'string' &
 const toNumber = (v) => (isBlank(v) || typeof v === 'boolean' ? NaN : Number(v));
 
 // Privilegio "Editar Costos Promedio" (usu_accniv): `active` en `mw_current_userModules`. El back vuelve a exigirlo.
-export const COSTS_PRIVILEGE_CODE = '11.01.003';
+export const COSTS_PRIVILEGE_CODE = '99.02.005';
 export const hasCostsPrivilege = (privilege) => Boolean(privilege && privilege.active);
 
 export const isService = (type) => Number(type) === TYPE_SERVICE;

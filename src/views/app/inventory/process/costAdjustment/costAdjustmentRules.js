@@ -8,7 +8,7 @@ export const MAX_ROWS = 500;
 export const MAX_REASON = 250;
 export const MAX_DECIMALS = 5;
 export const MAX_VALUE = Number('999999999999.99999'); // DECIMAL(17,5); como texto: el literal numérico pierde precisión
-export const ADJUST_PRIVILEGE_CODE = '11.01.033';
+export const ADJUST_PRIVILEGE_CODE = '99.02.014';
 export const MOVEMENTS_PATH = 'inventory/process/costAdjustment/movements';
 export const ADJUST_PATH = 'inventory/process/costAdjustment';
 

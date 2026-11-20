@@ -1,9 +1,9 @@
 // Reglas puras de editar y eliminar un movimiento del Libro de Bancos (SPEC v2-29, front). El back decide siempre (período,
 // privilegios y qué filas se pueden tocar); esto evita llamadas inútiles y arma lo que el back espera.
 
-export const PRIVILEGE_SCREEN = '04.01.022'; // Libro de Bancos (fn_update para editar, fn_delete para eliminar)
-export const PRIVILEGE_EDIT_POSTED = '11.01.015'; // tocar un movimiento de un documento con partida
-export const PRIVILEGE_DELETE = '11.01.022'; // Anular Documentos Bancarios (eliminar un movimiento)
+export const PRIVILEGE_SCREEN = '05.03.002'; // Libro de Bancos (fn_update para editar, fn_delete para eliminar)
+export const PRIVILEGE_EDIT_POSTED = '99.20.006'; // tocar un movimiento de un documento con partida
+export const PRIVILEGE_DELETE = '99.05.002'; // Anular Documentos Bancarios (eliminar un movimiento)
 export const NO_DATE = '1900-01-01';
 
 const day = (value) => (value ? String(value).slice(0, 10) : '');
@@ -19,7 +19,7 @@ export const canEditAmounts = (row) => !hasEntry(row) && !isReconciled(row);
 // Fecha de anulación para el formulario: el centinela 1900-01-01 se muestra vacío.
 export const formDateNull = (row = {}) => (day(row.dateNull) === NO_DATE ? '' : day(row.dateNull));
 
-// privileges: { update, delete } (fnUpdate/fnDelete de 04.01.022), { editPosted } (11.01.015), { deleteDocument } (11.01.022)
+// privileges: { update, delete } (fnUpdate/fnDelete de 05.03.002), { editPosted } (99.20.006), { deleteDocument } (99.05.002)
 export const getEditStatus = (row, privileges = {}) => {
   if (!privileges.update) return 'noPermission';
   if (hasEntry(row) && !privileges.editPosted) return 'noPostedPermission';

@@ -11,7 +11,7 @@ const listTaxPercent = [{ id: "0.00", name: "0.00" }, { id: "15.00", name: "15.0
 // Costos y Precios (inv_prod_edit.sc2) — grilla masiva sobre los productos habilitados, una fila por cada combinación
 // producto/distribución. Edita los FK normalizados del Catálogo de Productos (typeId/tradeId/packId/undinId); la unidad de salida
 // se muestra pero no se edita (es inmutable, SPEC v2-09-sr). Las mismas reglas del back se validan aquí (costsAndPricesRules.js)
-// para no llamar al back con un guardado que ya se sabe rechazado; el costo solo se edita con el privilegio 11.01.003.
+// para no llamar al back con un guardado que ya se sabe rechazado; el costo solo se edita con el privilegio 99.02.005.
 const useCostsAndPrices = ({ setLoading, canEditCosts = false }) => {
 
   const intl = useIntl();

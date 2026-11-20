@@ -9,7 +9,7 @@ import Confirmation from '@Containers/ui/confirmationMsg';
 import { useCostAdjustment } from './useCostAdjustment';
 import { MAX_REASON, rowNotice } from './costAdjustmentRules';
 
-// Ajuste de costos y cantidades del kardex (SPEC v2-56-sr). Guardar solo se ofrece con 11.01.033 (`canAdjust`); el back vuelve a exigirlo.
+// Ajuste de costos y cantidades del kardex (SPEC v2-56-sr). Guardar solo se ofrece con 99.02.014 (`canAdjust`); el back vuelve a exigirlo.
 // Los textos se piden con un solo useIntl arriba: nunca dentro de condiciones ni de map.
 const CostAdjustment = ({ setLoading, canAdjust }) => {
   const intl = useIntl();

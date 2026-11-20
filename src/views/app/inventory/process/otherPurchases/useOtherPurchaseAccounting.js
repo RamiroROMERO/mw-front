@@ -5,7 +5,7 @@ import { accountingAction } from './otherPurchaseRules';
 
 // Legacy Controlpanel21.OptPages.Page1.btnContabDocument.Click (inv_compras_others.sc2). SPEC v2-31-sr: ruta propia del módulo
 // (POST inventory/process/otherPurchases/:id/accountDocument). Sin partida la genera; con partida la regenera con el mismo número
-// ("Re-contabilizar", que pide 11.01.015 además de 11.01.026). Un rechazo del back (período cerrado, cuenta bloqueada, partida que no
+// ("Re-contabilizar", que pide 99.20.006 además de 99.02.010). Un rechazo del back (período cerrado, cuenta bloqueada, partida que no
 // cuadra, privilegio) muestra su mensaje real.
 export const useOtherPurchaseAccounting = ({ setLoading, id, pdaNumber, setBulkForm }) => {
   const [openMsgAccountDocument, setOpenMsgAccountDocument] = useState(false);

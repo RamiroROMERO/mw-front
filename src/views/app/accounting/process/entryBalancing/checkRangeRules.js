@@ -45,5 +45,5 @@ export const countRepairResults = (results = []) => results.reduce((acc, r) => {
   return acc;
 }, { repaired: 0, skipped: 0, error: 0 });
 
-// Regenerar exige 11.01.015; el período cerrado lo resuelve el back con 11.01.019 (la vista previa ya lo refleja).
+// Regenerar exige 99.20.006; el período cerrado lo resuelve el back con 99.20.008 (la vista previa ya lo refleja).
 export const canRegenerate = (privileges = {}, selectedCount = 0) => Boolean(privileges.repair) && selectedCount > 0;

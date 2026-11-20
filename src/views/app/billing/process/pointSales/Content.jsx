@@ -754,9 +754,9 @@ const PointSales = (props) => {
   }
 
   // Edición posterior de una factura emitida (SPEC v2-83-sr): las pantallas de Facturación con la ruta del POS y la sesión de caja. Los privilegios puntuales ya los entrega
-  // el login (11.01.032 información, costo y distribución; 11.01.034 cambio de producto); el back decide (alcance de la sesión, período y cierre aplicado).
-  const editInfoControl = getPrivilegeData('11.01.032');
-  const changeProductControl = getPrivilegeData('11.01.034');
+  // el login (99.01.004 información, costo y distribución; 99.01.005 cambio de producto); el back decide (alcance de la sesión, período y cierre aplicado).
+  const editInfoControl = getPrivilegeData('99.01.004');
+  const changeProductControl = getPrivilegeData('99.01.005');
   const isVoidedInvoice = validInt(recordSelected?.isDeleted) === 1;
   const canEditPosted = isInvoiceSaved && validInt(documentId) > 0 && !isVoidedInvoice;
 

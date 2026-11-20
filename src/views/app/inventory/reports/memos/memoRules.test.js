@@ -93,8 +93,8 @@ describe('peticiones', () => {
     expect(memoFileName('purchase', { number: 3 }, 'otro')).toBe('Memorandum de Compras 3.pdf');
   });
   test('los dos tipos tienen ruta, privilegio y columnas', () => {
-    expect(MEMO_KINDS.purchase.privilege).toBe('01.05.028');
-    expect(MEMO_KINDS.inventory.privilege).toBe('01.05.029');
+    expect(MEMO_KINDS.purchase.privilege).toBe('02.03.003');
+    expect(MEMO_KINDS.inventory.privilege).toBe('02.03.004');
     Object.values(MEMO_KINDS).forEach((k) => { expect(k.basePath).toMatch(/^inventory\/reports\//); k.columns.forEach((c) => expect(c.field && c.label).toBeTruthy()); });
   });
 });

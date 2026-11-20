@@ -17,7 +17,7 @@ describe('buildAccountOption', () => {
     expect(option.label).toBe(`${LOCK_MARK} 6010123002 - Honorarios`);
   });
 
-  it('con el privilegio 11.01.023 la bloqueada se puede elegir, pero sigue marcada', () => {
+  it('con el privilegio 99.20.009 la bloqueada se puede elegir, pero sigue marcada', () => {
     const option = buildAccountOption(blocked, { allowed: true });
     expect(option.isDisabled).toBe(false);
     expect(option.blocked).toBe(true);

@@ -14,7 +14,7 @@ const money = (field, label) => ({ field, label, isNumber: true });
 export const MEMO_KINDS = {
   purchase: {
     basePath: 'inventory/reports/purchaseMemos',
-    privilege: '01.05.028',
+    privilege: '02.03.003',
     titleKey: 'page.purchaseMemo.table.title',
     columns: [
       { field: 'date', label: 'table.column.date', isDate: true },
@@ -26,7 +26,7 @@ export const MEMO_KINDS = {
   },
   inventory: {
     basePath: 'inventory/reports/inventoryMemos',
-    privilege: '01.05.029',
+    privilege: '02.03.004',
     titleKey: 'page.inventoryMemo.table.title',
     columns: [
       { field: 'date', label: 'table.column.date', isDate: true },

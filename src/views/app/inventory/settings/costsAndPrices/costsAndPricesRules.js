@@ -20,7 +20,7 @@ export const LIMITS = {
 };
 
 // Privilegio "Editar Costos Promedio" (usu_accniv): `active` en `mw_current_userModules`. El back vuelve a exigirlo.
-export const COSTS_PRIVILEGE_CODE = '11.01.003';
+export const COSTS_PRIVILEGE_CODE = '99.02.005';
 export const hasCostsPrivilege = (privilege) => Boolean(privilege && privilege.active);
 
 // Campos del producto (se repiten en cada fila de sus distribuciones: al editar uno se copia a las demás filas del mismo producto).
@@ -78,7 +78,7 @@ export const hasCostChanged = (row, originalCost) => {
 };
 
 // Devuelve { campo: idDeTraducción } con el primer error de cada campo; vacío si la fila es válida.
-// `context.originalCost`: el costo con que se cargó la fila. `context.canEditCosts`: tiene el privilegio 11.01.003.
+// `context.originalCost`: el costo con que se cargó la fila. `context.canEditCosts`: tiene el privilegio 99.02.005.
 export const validateRow = (row, { originalCost, canEditCosts = false } = {}) => {
   const errors = {};
   const set = (field, id) => { if (!errors[field]) errors[field] = id; };

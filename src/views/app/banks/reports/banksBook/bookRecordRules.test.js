@@ -33,7 +33,7 @@ describe('estado de la fila', () => {
 });
 
 describe('getEditStatus', () => {
-  it('sin fn_update: noPermission; fila con partida sin 11.01.015: noPostedPermission; si no, ok', () => {
+  it('sin fn_update: noPermission; fila con partida sin 99.20.006: noPostedPermission; si no, ok', () => {
     expect(getEditStatus(POSTED, { update: false, editPosted: true })).toBe('noPermission');
     expect(getEditStatus(POSTED, { update: true, editPosted: false })).toBe('noPostedPermission');
     expect(getEditStatus(POSTED, { update: true, editPosted: true })).toBe('ok');
@@ -44,7 +44,7 @@ describe('getEditStatus', () => {
 
 describe('getDeleteStatus', () => {
   const all = { delete: true, deleteDocument: true };
-  it('exige fn_delete y 11.01.022', () => {
+  it('exige fn_delete y 99.05.002', () => {
     expect(getDeleteStatus(LOOSE, { delete: true, deleteDocument: false })).toBe('noPermission');
     expect(getDeleteStatus(LOOSE, { delete: false, deleteDocument: true })).toBe('noPermission');
     expect(getDeleteStatus(LOOSE, all)).toBe('ok');

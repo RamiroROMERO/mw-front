@@ -15,7 +15,7 @@ const ProductsCatalog = (props) => {
   // Editar Costos Promedio (SPEC v2-10-sr): sin este privilegio no se muestra el botón "Costos" (el back también lo exige).
   const canEditCosts = hasCostsPrivilege(getPrivilegeData(COSTS_PRIVILEGE_CODE));
 
-  // Actualizar existencias llama a productsStore/refreshStock (01.05.006): sin ese privilegio el botón no se muestra.
+  // Actualizar existencias llama a productsStore/refreshStock (02.01.005): sin ese privilegio el botón no se muestra.
   const canRefreshStock = hasRefreshStockPrivilege(getPrivilegeData(STORE_PRIVILEGE_CODE));
 
   useEffect(() => {

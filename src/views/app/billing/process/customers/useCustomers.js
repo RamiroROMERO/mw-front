@@ -214,7 +214,7 @@ export const useCustomers = ({ setLoading }) => {
     }, 'GET', stop);
   }
 
-  // "Actualizar Cuentas" del legacy (privilegio 11.01.030, solo con Contabilidad activa): copia las cuentas del tipo elegido a TODOS sus clientes. Primero se consulta cuántos cambiarían
+  // "Actualizar Cuentas" del legacy (privilegio 99.01.003, solo con Contabilidad activa): copia las cuentas del tipo elegido a TODOS sus clientes. Primero se consulta cuántos cambiarían
   // y se pide confirmación; el back vuelve a exigir el privilegio y valida el tipo y sus cuentas.
   const fnUpdateAccounts = () => {
     const typeId = validInt(formState.customerTypeId);

@@ -307,7 +307,7 @@ export const useQuotes = ({ setLoading, setActiveTab, screenControl = {}, canDel
     fnSearch: fnSearchDocument,
     fnSave: screenControl.fnCreate || screenControl.fnUpdate ? fnSaveDocument : null,
     fnPrint: fnPrintDocument,
-    // Eliminar exige fn_delete de la pantalla (01.03.042) y 11.01.007 (anular documentos): el back lo vuelve a validar.
+    // Eliminar exige fn_delete de la pantalla (01.02.011) y 99.20.004 (anular documentos): el back lo vuelve a validar.
     fnDelete: canDelete ? fnDeleteDocument : null,
     buttonsHome: [{
       title: "button.newCustomer",

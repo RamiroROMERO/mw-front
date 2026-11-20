@@ -11,7 +11,7 @@ const Content = React.lazy(() =>
 );
 const CostsAndPrices = (props) => {
   const dispatch = useDispatch();
-  // Editar Costos Promedio (11.01.003): sin este privilegio la columna de costo es de solo lectura (el back también lo exige).
+  // Editar Costos Promedio (99.02.005): sin este privilegio la columna de costo es de solo lectura (el back también lo exige).
   const canEditCosts = hasCostsPrivilege(getPrivilegeData(COSTS_PRIVILEGE_CODE));
 
   useEffect(() => {

@@ -44,7 +44,7 @@ export const useScheduling = ({ setLoading }) => {
     setBulkForm(item);
   };
 
-  // Cerrar un período abierto, o reabrir uno cerrado (el back exige el privilegio 11.01.019 para reabrir).
+  // Cerrar un período abierto, o reabrir uno cerrado (el back exige el privilegio 99.20.008 para reabrir).
   const fnToggleClosed = (item) => {
     setLoading(true);
     request.PUT(`banks/settings/banksCalendar/${item.id}`, { status: nextStatus(item) }, () => {

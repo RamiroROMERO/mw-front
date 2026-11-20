@@ -6,7 +6,7 @@
 // (llevan activos y montos): la pantalla muestra la `description` del back.
 
 export const PRIVILEGE_SCREEN = '06.02.004'; // Proceso -> Aplicar Depreciación
-export const PRIVILEGE_UNAPPLY = '11.01.015'; // desaplicar (editar un documento contabilizado)
+export const PRIVILEGE_UNAPPLY = '99.20.006'; // desaplicar (editar un documento contabilizado)
 
 const MONTH_REGEX = /^(\d{4})-(0[1-9]|1[0-2])$/;
 export const MONTHS_BACK = 36; // meses que ofrece el selector hacia atrás (el mes en curso incluido)
@@ -87,7 +87,7 @@ export const groupByAsset = (lines = []) => {
 // Avisos del back (asset.noAssignment) como textos, sin repetir.
 export const warningTexts = (warnings) => [...new Set((warnings || []).map((w) => w && w.message).filter(Boolean))];
 
-// Qué hace "Desaplicar" según el privilegio 11.01.015 del usuario (`active` en `mw_current_userModules`):
+// Qué hace "Desaplicar" según el privilegio 99.20.006 del usuario (`active` en `mw_current_userModules`):
 //   'confirm'   -> con permiso: confirmar que se borrará la partida y las líneas volverán a Pendiente
 //   'forbidden' -> sin permiso: avisar sin llamar al back (que respondería 403 user.forbidden.editPosted)
 //   'none'      -> no hay lote seleccionado

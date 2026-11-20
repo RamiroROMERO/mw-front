@@ -4,7 +4,7 @@ import { useForm } from "@Hooks/useForms";
 import { buildCostsPayload, costsAfterSave, mapCostsToForm, validateCosts } from "./costRules";
 
 // Costos (inv_prodcc.sc2, SPEC v2-10-sr): tres montos independientes (costo promedio, último costo de compra y costo máximo),
-// precargados con los costos actuales del producto. Guarda por PUT products/:id/costs, que exige 11.01.003; un 400 o un 403 del
+// precargados con los costos actuales del producto. Guarda por PUT products/:id/costs, que exige 99.02.005; un 400 o un 403 del
 // back lo muestra `request.PUT` con su mensaje real. Mismas reglas que el back (costRules.js): sin llamar al back si alguna falla.
 export const useModalCosts = ({ setLoading, productId, productType, costs, setBulkForm, setOpen }) => {
 

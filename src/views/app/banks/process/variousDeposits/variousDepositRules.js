@@ -1,6 +1,6 @@
 // Reglas de Depósitos Varios que comparten el hook y la pantalla (SPEC v2-24).
 //
-// El back (DepositService.saveDocument) exige el privilegio 11.01.015 para editar un depósito YA contabilizado y,
+// El back (DepositService.saveDocument) exige el privilegio 99.20.006 para editar un depósito YA contabilizado y,
 // con él, regenera el asiento y el libro de bancos reutilizando el número de partida. La pantalla no conoce los
 // privilegios del usuario: avisa y pide confirmación antes de guardar, y es el back quien decide (403
 // `user.forbidden.editPosted`, que `request.PUT` ya muestra traducido).
@@ -14,7 +14,7 @@ export const isPostedDeposit = (header) => {
 // Guardar un depósito ya guardado (id > 0) y contabilizado regenera la partida: hay que confirmarlo.
 export const needsEditPostedConfirmation = (header) => Number(header && header.id) > 0 && isPostedDeposit(header);
 
-// Qué hace "Guardar" según el documento y el privilegio 11.01.015 del usuario (`active` en `mw_current_userModules`):
+// Qué hace "Guardar" según el documento y el privilegio 99.20.006 del usuario (`active` en `mw_current_userModules`):
 //   'save'      -> guardar directo (depósito nuevo o sin contabilizar)
 //   'confirm'   -> contabilizado y con permiso: confirmar que se regenerará la partida
 //   'forbidden' -> contabilizado y sin permiso: avisar sin llamar al back (que respondería 403)

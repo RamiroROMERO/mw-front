@@ -8,7 +8,7 @@ test('límites iguales a los del back', () => {
   expect([MAX_ROWS, MAX_REASON, MAX_RANGE_DAYS]).toEqual([500, 250, 366]);
 });
 
-test('privilegio 11.01.033: solo con `active`', () => {
+test('privilegio 99.02.014: solo con `active`', () => {
   expect(hasAdjustPrivilege({ active: true })).toBe(true);
   expect(hasAdjustPrivilege({ active: false })).toBe(false);
   expect(hasAdjustPrivilege(undefined)).toBe(false);

@@ -5,9 +5,9 @@
 export const MAX_KEYS_PER_CALL = 200;
 export const MIN_IGNORE_REASON = 3;
 
-export const PRIVILEGE_SCREEN = '03.01.044';
-export const PRIVILEGE_REPAIR = '11.01.015';
-export const PRIVILEGE_CLOSED_PERIOD = '11.01.019';
+export const PRIVILEGE_SCREEN = '03.02.008';
+export const PRIVILEGE_REPAIR = '99.20.006';
+export const PRIVILEGE_CLOSED_PERIOD = '99.20.008';
 
 export const CATEGORY_META = {
   HEADER_ZERO: { labelKey: 'page.entryBalancing.category.HEADER_ZERO', color: 'info' },
@@ -118,7 +118,7 @@ export const countByResult = (results = []) => results.reduce((acc, r) => {
 // Llaves que la vista previa dejó listas (las únicas que tiene sentido confirmar).
 export const readyKeys = (results = []) => results.filter((r) => r.status === 'ready').map((r) => r.key);
 
-// Sin 11.01.015 no repara ni ignora; confirmar un período cerrado exige además 11.01.019.
+// Sin 99.20.006 no repara ni ignora; confirmar un período cerrado exige además 99.20.008.
 export const canRepair = (privileges = {}) => Boolean(privileges.repair);
 export const canConfirmClosed = (privileges = {}) => Boolean(privileges.repair && privileges.closedPeriod);
 

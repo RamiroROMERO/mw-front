@@ -50,7 +50,7 @@ export const buildPayload = (form, { isNew = true } = {}) => {
   return isNew ? { ...payload, movementType: Number(form.movementType), documentCode: text(form.documentCode) } : payload;
 };
 
-// Un movimiento anulado, de un cierre o histórico sin tipo no se edita; uno con partida lo edita quien tiene 11.01.015 (el back decide).
+// Un movimiento anulado, de un cierre o histórico sin tipo no se edita; uno con partida lo edita quien tiene 99.20.006 (el back decide).
 export const canEdit = (item) => Boolean(item) && !item.isVoided && !item.isClosed && !item.isLegacyType;
 export const canVoid = (item, canVoidPrivilege) => Boolean(item) && Boolean(canVoidPrivilege) && !item.isVoided && !item.isClosed;
 

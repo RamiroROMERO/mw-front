@@ -95,7 +95,7 @@ describe('lotes y período cerrado', () => {
 });
 
 describe('privilegios, resumen, filtros y motivo', () => {
-  it('reparar exige 11.01.015 y confirmar cerrado además 11.01.019', () => {
+  it('reparar exige 99.20.006 y confirmar cerrado además 99.20.008', () => {
     expect(canRepair({ repair: false, closedPeriod: true })).toBe(false);
     expect(canConfirmClosed({ repair: true, closedPeriod: false })).toBe(false);
     expect(canConfirmClosed({ repair: true, closedPeriod: true })).toBe(true);

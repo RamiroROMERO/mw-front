@@ -50,7 +50,7 @@ describe('formatQty', () => {
 
 describe('privilegio de "Actualizar existencias" (SPEC v2-15-sr)', () => {
   it('usa el privilegio de Almacenes y Productos', () => {
-    expect(STORE_PRIVILEGE_CODE).toBe('01.05.006');
+    expect(STORE_PRIVILEGE_CODE).toBe('02.01.005');
   });
 
   it.each([[undefined, false], [null, false], [{ active: false }, false], [{ active: true }, true]])('%j -> %s', (privilege, expected) => {

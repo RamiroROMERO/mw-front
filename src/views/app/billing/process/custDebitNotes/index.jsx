@@ -9,9 +9,9 @@ const Content = React.lazy(() =>
   import('./Content')
 );
 
-// Un solo privilegio (01.03.035 "Proceso -> Notas de Débito") gatea Guardar,
-// Contabilizar y Eliminar/Anular — mismo criterio que Notas de Crédito (01.03.036).
-const PRIVILEGE_CODE = "01.03.035";
+// Un solo privilegio (01.02.006 "Proceso -> Notas de Débito") gatea Guardar,
+// Contabilizar y Eliminar/Anular — mismo criterio que Notas de Crédito (01.02.007).
+const PRIVILEGE_CODE = "01.02.006";
 
 const CustDebitNotes = (props) => {
   const dispatch = useDispatch();

@@ -6,7 +6,7 @@ import Breadcrumb from '@Containers/navs/Breadcrumb';
 import { getPrivilegeData } from '@Helpers/Utils';
 
 // Editar un depósito ya contabilizado (el back lo exige y regenera su partida; SPEC v2-24).
-const EDIT_POSTED_PRIVILEGE_CODE = '11.01.015';
+const EDIT_POSTED_PRIVILEGE_CODE = '99.20.006';
 
 const Content = React.lazy(() =>
   import('./Content')

@@ -110,7 +110,7 @@ export const useDepreciationApply = ({ setLoading }) => {
     }, false);
   };
 
-  // Desaplicar: sin 11.01.015 se avisa sin llamar al back (que respondería 403 user.forbidden.editPosted).
+  // Desaplicar: sin 99.20.006 se avisa sin llamar al back (que respondería 403 user.forbidden.editPosted).
   const fnAskUnapply = (batch) => {
     const action = resolveUnapplyAction(batch, canEditPosted);
     if (action === 'none') return;

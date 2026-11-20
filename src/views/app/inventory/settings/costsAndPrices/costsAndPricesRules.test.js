@@ -76,7 +76,7 @@ describe('validateRow: costo', () => {
   it('sin cambio de costo no pide el privilegio (se edita un precio sin tocar el costo)', () => {
     expect(fieldsOf({ costValue: '10.00' }, { originalCost: '10.00000', canEditCosts: false })).toEqual([]);
   });
-  it('cambiar el costo sin 11.01.003 se marca (el back rechazaría todo el lote con 403)', () => {
+  it('cambiar el costo sin 99.02.005 se marca (el back rechazaría todo el lote con 403)', () => {
     expect(validateRow({ ...ROW, costValue: 11 }, { originalCost: 10, canEditCosts: false })).toEqual({ costValue: 'page.costsAndPrices.error.costForbidden' });
     expect(fieldsOf({ costValue: 11 }, { originalCost: 10, canEditCosts: true })).toEqual([]);
   });
@@ -163,8 +163,8 @@ describe('buildSavePayload', () => {
 });
 
 describe('privilegio y costos de partida', () => {
-  it('11.01.003 activo', () => {
-    expect(COSTS_PRIVILEGE_CODE).toBe('11.01.003');
+  it('99.02.005 activo', () => {
+    expect(COSTS_PRIVILEGE_CODE).toBe('99.02.005');
     expect(hasCostsPrivilege({ active: 1 })).toBe(true);
     expect(hasCostsPrivilege({ active: 0 })).toBe(false);
     expect(hasCostsPrivilege(undefined)).toBe(false);

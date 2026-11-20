@@ -96,8 +96,8 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
   }
 
   // "Actualizar existencias" (SPEC v2-14-sr): recalcula inv_bodprod.existe de toda la empresa (productsStore/refreshStock,
-  // privilegio 01.05.006 de Almacenes y Productos). Con un producto cargado vuelve a pedir su grid. Un rechazo (por ejemplo el 403
-  // sin 01.05.006) muestra el mensaje real del back y el grid no cambia.
+  // privilegio 02.01.005 de Almacenes y Productos). Con un producto cargado vuelve a pedir su grid. Un rechazo (por ejemplo el 403
+  // sin 02.01.005) muestra el mensaje real del back y el grid no cambia.
   const fnRefreshStock = () => {
     setLoading(true);
     request.POST('inventory/settings/productsStore/refreshStock', {}, () => {

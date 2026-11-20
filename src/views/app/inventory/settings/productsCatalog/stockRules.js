@@ -28,5 +28,5 @@ export const formatQty = (value) => {
 
 // "Actualizar existencias" reutiliza POST productsStore/refreshStock, que exige el privilegio de Almacenes y Productos
 // (SPEC v2-14-sr / v2-15-sr): sin él no se muestra el botón.
-export const STORE_PRIVILEGE_CODE = '01.05.006';
+export const STORE_PRIVILEGE_CODE = '02.01.005';
 export const hasRefreshStockPrivilege = (privilege) => Boolean(privilege && privilege.active);

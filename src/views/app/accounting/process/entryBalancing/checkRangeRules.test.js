@@ -59,7 +59,7 @@ describe('resultados', () => {
 });
 
 describe('canRegenerate y etiquetas', () => {
-  it('exige 11.01.015 y algo seleccionado', () => {
+  it('exige 99.20.006 y algo seleccionado', () => {
     expect(canRegenerate({ repair: true }, 2)).toBe(true);
     expect(canRegenerate({ repair: true }, 0)).toBe(false);
     expect(canRegenerate({ repair: false }, 2)).toBe(false);

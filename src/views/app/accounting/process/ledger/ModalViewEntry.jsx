@@ -5,7 +5,7 @@ import ReactTable from '@Components/reactTable';
 
 // Drill-down de solo lectura ("Ver Partida" — doble-click en el legacy). Reutiliza el mismo
 // endpoint de solo lectura que Libro Diario (accounting/process/diaryBook/entry/:id), ya que
-// ambos muestran la misma Partida subyacente y comparten el privilegio 11.01.012.
+// ambos muestran la misma Partida subyacente y comparten el privilegio 99.03.003.
 const ModalViewEntry = ({ data, setOpen }) => {
   const { entry, formatNumber, formatDate } = data;
 

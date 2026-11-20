@@ -264,7 +264,7 @@ const ProductsCatalog = (props) => {
                       </Row>
                       <Row>
                         <Colxx xxs="12">
-                          {/* SPEC v2-10-sr: en edición los costos son de solo lectura; se cambian con el botón "Costos" (11.01.003). */}
+                          {/* SPEC v2-10-sr: en edición los costos son de solo lectura; se cambian con el botón "Costos" (99.02.005). */}
                           <ContainerWithLabel label="page.productsCatalog.modal.newProduct.title.costs">
                             <Row>
                               <Colxx xxs="12" sm="6" md="12" lg="6">

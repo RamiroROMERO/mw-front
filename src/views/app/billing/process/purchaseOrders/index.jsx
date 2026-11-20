@@ -9,10 +9,10 @@ const Content = React.lazy(() =>
   import('./Content')
 );
 
-// Privilegio de la pantalla (menu.prg: validUser('01.03.031')). Eliminar exige además 11.01.007 (anular documentos, el mismo que verificaba fnVerificarV2("11.01.007") en
+// Privilegio de la pantalla (menu.prg: validUser('01.02.004')). Eliminar exige además 99.20.004 (anular documentos, el mismo que verificaba fnVerificarV2("99.20.004") en
 // fac_purchase_orders.sc2): el back valida los dos.
-const PRIVILEGE_CODE = "01.03.031";
-const PRIVILEGE_DELETE = "11.01.007";
+const PRIVILEGE_CODE = "01.02.004";
+const PRIVILEGE_DELETE = "99.20.004";
 
 const Format = (props) => {
   const dispatch = useDispatch();

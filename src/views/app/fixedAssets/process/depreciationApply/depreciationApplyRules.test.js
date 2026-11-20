@@ -138,7 +138,7 @@ describe('warningTexts', () => {
   });
 });
 
-describe('resolveUnapplyAction (privilegio 11.01.015)', () => {
+describe('resolveUnapplyAction (privilegio 99.20.006)', () => {
   it('con permiso pide confirmación', () => expect(resolveUnapplyAction({ id: 5 }, true)).toBe('confirm'));
   it('sin permiso avisa sin llamar al back', () => expect(resolveUnapplyAction({ id: 5 }, false)).toBe('forbidden'));
   it('sin lote no hay nada que desaplicar', () => {

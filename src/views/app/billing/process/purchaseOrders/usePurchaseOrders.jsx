@@ -355,7 +355,7 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
     fnSearch: fnSearchDocument,
     fnSave: screenControl.fnCreate || screenControl.fnUpdate ? fnSaveDocument : null,
     fnPrint: fnPrintDocument,
-    // Eliminar exige fn_delete de la pantalla (01.03.031) y 11.01.007 (anular documentos): el back lo vuelve a validar.
+    // Eliminar exige fn_delete de la pantalla (01.02.004) y 99.20.004 (anular documentos): el back lo vuelve a validar.
     fnDelete: canDelete ? fnDeleteDocument : null,
     buttonsHome: [{
       title: "button.newCustomer",

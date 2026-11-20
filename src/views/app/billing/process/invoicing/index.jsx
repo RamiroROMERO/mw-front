@@ -11,15 +11,15 @@ const Content = React.lazy(() =>
 
 // Facturación general usa tres privilegios distintos, cada uno gateando una acción
 // puntual (no todo el screenControl.fnDelete genérico como Cotizaciones/POS):
-// - Anular: el genérico "Eliminar/Anular de Documentos" (11.01.007, el del legacy; SPEC v2-70-sr). Antes usaba 11.01.008 ("Anular Facturas"); el back
-//   lo valida con 11.01.007 y falla cerrado, así que el botón se muestra con el mismo privilegio.
+// - Anular: el genérico "Eliminar/Anular de Documentos" (99.20.004, el del legacy; SPEC v2-70-sr). Antes usaba 11.01.008 ("Anular Facturas"); el back
+//   lo valida con 99.20.004 y falla cerrado, así que el botón se muestra con el mismo privilegio.
 // - Editar Información de Factura: mismo código para "Editar Costo/Distribución" y
 //   "Editar Información" — son dos botones distintos en el legacy pero comparten
 //   privilegio.
-// - Cambio de Productos: 11.01.034 (SPEC v2-72-sr). El legacy citaba 11.01.033, pero ese código ya es "Ajustar Costos y Cantidades del Kardex" (SPEC v2-56-sr).
-const VOID_PRIVILEGE_CODE = "11.01.007";
-const EDIT_INFO_PRIVILEGE_CODE = "11.01.032";
-const CHANGE_PRODUCT_PRIVILEGE_CODE = "11.01.034";
+// - Cambio de Productos: 99.01.005 (SPEC v2-72-sr). El legacy citaba 99.02.014, pero ese código ya es "Ajustar Costos y Cantidades del Kardex" (SPEC v2-56-sr).
+const VOID_PRIVILEGE_CODE = "99.20.004";
+const EDIT_INFO_PRIVILEGE_CODE = "99.01.004";
+const CHANGE_PRODUCT_PRIVILEGE_CODE = "99.01.005";
 
 const Invoicing = (props) => {
   const dispatch = useDispatch();
