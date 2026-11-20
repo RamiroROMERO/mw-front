@@ -8,6 +8,7 @@ import Modal from '@Components/modal';
 import { InputField } from '@Components/inputFields';
 import { formatNumber } from '@Helpers/Utils';
 import ModalSummary from './ModalSummary';
+import { hasCosts, toUsd } from './salesReportRules';
 
 const SalesReport = ({ setLoading }) => {
 
@@ -55,29 +56,33 @@ const SalesReport = ({ setLoading }) => {
                   <InputField
                     name="totalUSD"
                     label='input.totalUSD'
-                    value={formatNumber((totals['total'] / valChangeUsd), '', 2)}
+                    value={formatNumber(toUsd(totals['total'], valChangeUsd), '', 2)}
                     type="text"
                     disabled
                   />
                 </Colxx>
-                <Colxx xxs={12} sm={4} md={3} lg={2}>
-                  <InputField
-                    name="totalCostUSD"
-                    label='input.totalCostUSD'
-                    value={formatNumber((totals['costValue'] / valChangeUsd), '', 2)}
-                    type="text"
-                    disabled
-                  />
-                </Colxx>
-                <Colxx xxs={12} sm={4} md={3} lg={2}>
-                  <InputField
-                    name="saleDiffUSD"
-                    label='input.saleDiffUSD'
-                    value={formatNumber(((totals['total'] - totals['costValue']) / valChangeUsd), '', 2)}
-                    type="text"
-                    disabled
-                  />
-                </Colxx>
+                {hasCosts(totals) && (
+                  <>
+                    <Colxx xxs={12} sm={4} md={3} lg={2}>
+                      <InputField
+                        name="totalCostUSD"
+                        label='input.totalCostUSD'
+                        value={formatNumber(toUsd(totals['costValue'], valChangeUsd), '', 2)}
+                        type="text"
+                        disabled
+                      />
+                    </Colxx>
+                    <Colxx xxs={12} sm={4} md={3} lg={2}>
+                      <InputField
+                        name="saleDiffUSD"
+                        label='input.saleDiffUSD'
+                        value={formatNumber(toUsd(totals['profit'], valChangeUsd), '', 2)}
+                        type="text"
+                        disabled
+                      />
+                    </Colxx>
+                  </>
+                )}
                 <Colxx xxs={12} sm={4} md={3} lg={2}>
                   <InputField
                     name="changeValueUsd"
