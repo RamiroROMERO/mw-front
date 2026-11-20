@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, Row, Button } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
-import { IntlMessages, validInt } from "@Helpers/Utils";
+import { IntlMessages } from "@Helpers/Utils";
 import { request } from '@Helpers/core';
 import { SimpleSelect } from '@Components/simpleSelect';
 import { InputField } from '@Components/inputFields';
@@ -16,7 +16,6 @@ import Confirmation from '@Containers/ui/confirmationMsg';
 
 const ItemsCodes = (props) => {
   const { setLoading } = props;
-  const [listComp, setListComp] = useState([]);
   const [listTaxDoc, setListTaxDoc] = useState([]);
   const [currentItem, setCurrentItem] = useState({});
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -25,8 +24,7 @@ const ItemsCodes = (props) => {
   const itemsCodesValid = {
     code: [(val) => val !== "", "msg.required.input.code"],
     name: [(val) => val !== "", "msg.required.input.name"],
-    title: [(val) => val !== "", "msg.required.input.title"],
-    companyId: [(val) => validInt(val) > 0, "msg.required.input.company"]
+    title: [(val) => val !== "", "msg.required.input.title"]
   }
 
   const { formState, formValidation, isFormValid, setBulkForm, onResetForm, onInputChange } = useForm({
@@ -37,7 +35,6 @@ const ItemsCodes = (props) => {
     title: '',
     codeInt: '',
     useTaxDocument: false,
-    companyId: 0,
     taxDocumentId: 0,
     isReportBank: false,
     useBill: 0,
@@ -54,10 +51,10 @@ const ItemsCodes = (props) => {
     status: true
   }, itemsCodesValid);
 
-  const { id, code, name, type, title, codeInt, useTaxDocument, companyId, taxDocumentId, isReportBank, useBill, useAcc,
+  const { id, code, name, type, title, codeInt, useTaxDocument, taxDocumentId, isReportBank, useBill, useAcc,
     useFixass, useInv, useTax, useBank, bankCheck, bankTransfer, bankDepo, bankNcd, bankExpense, status } = formState;
 
-  const { codeValid, nameValid, titleValid, companyIdValid } = formValidation;
+  const { codeValid, nameValid, titleValid } = formValidation;
 
   const fnEditItem = (item) => {
     setBulkForm(item);
@@ -150,7 +147,6 @@ const ItemsCodes = (props) => {
       name,
       title,
       codeInt,
-      companyId,
       isReportBank,
       type,
       useTaxDocument,
@@ -192,16 +188,6 @@ const ItemsCodes = (props) => {
   }
 
   useEffect(() => {
-    setLoading(true);
-    request.GET('admin/companies', (resp) => {
-      const companies = resp.data;
-      setListComp(companies)
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-
     setLoading(true);
     request.GET('admin/taxDocuments', (resp) => {
       const setTaxDoc = resp.data;
@@ -264,17 +250,6 @@ const ItemsCodes = (props) => {
                     onChange={onInputChange}
                     type="text"
                     label="page.itemsCodes.input.correlative"
-                  />
-                </Colxx>
-                <Colxx xxs="12" sm="6" lg="12">
-                  <SimpleSelect
-                    value={companyId}
-                    name="companyId"
-                    onChange={onInputChange}
-                    label="page.itemsCodes.select.companyId"
-                    options={listComp}
-                    invalid={sendForm && !!companyIdValid}
-                    feedbackText={sendForm && companyIdValid || null}
                   />
                 </Colxx>
                 <Colxx xxs="12" sm="6" lg="12">

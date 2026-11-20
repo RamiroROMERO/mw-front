@@ -1,12 +1,10 @@
 import { request } from '@Helpers/core';
-import { validInt } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import { useForm } from '@Hooks/useForms';
 import { useEffect, useState } from 'react'
 
 export const useTaxDocuments = ({ setLoading }) => {
 
-  const [listCompany, setlistCompany] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
@@ -14,7 +12,6 @@ export const useTaxDocuments = ({ setLoading }) => {
   const taxDocumentsValid = {
     name: [(val) => val.length > 5, "msg.required.input.name"],
     description: [(val) => val.length > 5, "msg.required.input.description"],
-    companyId: [(val) => validInt(val) > 0, "msg.required.input.company"],
     cai1: [(val) => val.length === 6, "msg.required.input.cai"],
     cai2: [(val) => val.length === 6, "msg.required.input.cai"],
     cai3: [(val) => val.length === 6, "msg.required.input.cai"],
@@ -33,7 +30,6 @@ export const useTaxDocuments = ({ setLoading }) => {
     id: 0,
     name: '',
     description: '',
-    companyId: 0,
     cai1: '',
     cai2: '',
     cai3: '',
@@ -118,19 +114,6 @@ export const useTaxDocuments = ({ setLoading }) => {
   }
 
   useEffect(() => {
-    setLoading(true);
-    request.GET('admin/companies/', (resp) => {
-      const company = resp.data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id
-        }
-      });
-      setlistCompany(company);
-      setLoading(false);
-    }, (err) => {
-      setLoading(false);
-    });
     fnGetData();
 
 
@@ -149,7 +132,6 @@ export const useTaxDocuments = ({ setLoading }) => {
     formValidation,
     isFormValid,
     sendForm,
-    listCompany,
     onInputChange,
     fnSave,
     fnClearInputs

@@ -5,7 +5,6 @@ import { useForm } from '@Hooks/useForms';
 import notification from '@Containers/ui/Notifications';
 
 export const useInternalDocuments = ({ setLoading }) => {
-  const [listComp, setListComp] = useState([]);
   const [listTaxDoc, setListTaxDoc] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
@@ -14,8 +13,7 @@ export const useInternalDocuments = ({ setLoading }) => {
   const itemsCodesValid = {
     code: [(val) => val !== "", "msg.required.input.code"],
     name: [(val) => val !== "", "msg.required.input.name"],
-    title: [(val) => val !== "", "msg.required.input.title"],
-    companyId: [(val) => validInt(val) > 0, "msg.required.input.company"]
+    title: [(val) => val !== "", "msg.required.input.title"]
   }
 
   const { formState, formValidation, isFormValid, onBulkForm, onResetForm, onInputChange } = useForm({
@@ -26,7 +24,6 @@ export const useInternalDocuments = ({ setLoading }) => {
     title: '',
     codeInt: '',
     useTaxDocument: false,
-    companyId: 0,
     taxDocumentId: 0,
     isReportBank: false,
     useBill: 0,
@@ -153,15 +150,6 @@ export const useInternalDocuments = ({ setLoading }) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('admin/companies', (resp) => {
-      const companies = resp.data;
-      setListComp(companies)
-      setLoading(false);
-    }, (err) => {
-      setLoading(false);
-    });
-
-    setLoading(true);
     request.GET('admin/taxDocuments', (resp) => {
       const setTaxDoc = resp.data;
       setListTaxDoc(setTaxDoc)
@@ -192,7 +180,6 @@ export const useInternalDocuments = ({ setLoading }) => {
     formValidation,
     isFormValid,
     sendForm,
-    listComp,
     listTaxDoc,
     onInputChange,
     onColorChange,

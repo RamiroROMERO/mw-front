@@ -3,17 +3,16 @@ import { Colxx } from '@Components/common/CustomBootstrap'
 import { ContainerWithLabel } from '@Components/containerWithLabel'
 import DateCalendar from '@Components/dateCalendar'
 import { InputField } from '@Components/inputFields'
-import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { IntlMessages } from '@Helpers/Utils'
 // import ReactInputMask from 'react-input-mask'
 import { Button, Card, CardBody, Row } from 'reactstrap'
 
-const Detail = ({ formState, listCompany, onInputChange, formValidation, fnSave, fnClearInputs, sendForm }) => {
+const Detail = ({ formState, onInputChange, formValidation, fnSave, fnClearInputs, sendForm }) => {
 
-  const { name, description, companyId, cai1, cai2, cai3, cai4, cai5, cai6, ndoc1, ndoc2, ndoc3, ndoc4, limitDate, noRange, minDoctos, status,
+  const { name, description, cai1, cai2, cai3, cai4, cai5, cai6, ndoc1, ndoc2, ndoc3, ndoc4, limitDate, noRange, minDoctos, status,
     codeDepto, codeMunic, autoCorrelative, modifyInventory, internalCorrelative } = formState;
 
-  const { nameValid, descriptionValid, companyIdValid, cai1Valid, cai2Valid, cai3Valid, cai4Valid, cai5Valid, cai6Valid,
+  const { nameValid, descriptionValid, cai1Valid, cai2Valid, cai3Valid, cai4Valid, cai5Valid, cai6Valid,
     ndoc1Valid, ndoc2Valid, ndoc3Valid, ndoc4Valid, limitDateValid, noRangeValid } = formValidation;
 
   return (
@@ -42,17 +41,6 @@ const Detail = ({ formState, listCompany, onInputChange, formValidation, fnSave,
               label="page.taxDocument.input.description"
               invalid={sendForm && !!descriptionValid}
               feedbackText={sendForm && (descriptionValid || null)}
-            />
-          </Colxx>
-          <Colxx xss="12">
-            <SearchSelect
-              label="page.taxDocument.select.companyId"
-              name="companyId"
-              inputValue={companyId}
-              onChange={onInputChange}
-              options={listCompany}
-              invalid={sendForm && !!companyIdValid}
-              feedbackText={sendForm && (companyIdValid || null)}
             />
           </Colxx>
         </Row>

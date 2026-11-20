@@ -7,11 +7,11 @@ import { SimpleSelect } from '@Components/simpleSelect'
 import { IntlMessages } from '@Helpers/Utils'
 import { Button, Card, CardBody, Row } from 'reactstrap'
 
-const Detail = ({formState, listComp, listTaxDoc, onInputChange, onColorChange, colorHex, formValidation, fnSave, fnClearInputs, sendForm}) => {
+const Detail = ({formState, listTaxDoc, onInputChange, onColorChange, colorHex, formValidation, fnSave, fnClearInputs, sendForm}) => {
 
-  const { code, name, type, title, codeInt, useTaxDocument, companyId, taxDocumentId, isReportBank, useBill, useAcc, useFixass, useInv, useTax, useBank, bankCheck, bankTransfer, bankDepo, bankNcd, bankExpense, status, notes1, notes2 } = formState;
+  const { code, name, type, title, codeInt, useTaxDocument, taxDocumentId, isReportBank, useBill, useAcc, useFixass, useInv, useTax, useBank, bankCheck, bankTransfer, bankDepo, bankNcd, bankExpense, status, notes1, notes2 } = formState;
 
-  const { codeValid, nameValid, titleValid, companyIdValid } = formValidation;
+  const { codeValid, nameValid, titleValid } = formValidation;
 
   return (
     <Card className='mb-3'>
@@ -57,17 +57,6 @@ const Detail = ({formState, listComp, listTaxDoc, onInputChange, onColorChange, 
               onChange={onInputChange}
               type="text"
               label="page.itemsCodes.input.correlative"
-            />
-          </Colxx>
-          <Colxx xxs="12" sm="6" lg="5">
-            <SimpleSelect
-              value={companyId}
-              name="companyId"
-              onChange={onInputChange}
-              label="page.itemsCodes.select.companyId"
-              options={listComp}
-              invalid={sendForm && !!companyIdValid}
-              feedbackText={sendForm && (companyIdValid || null)}
             />
           </Colxx>
           <Colxx xxs="12" sm="6" lg="4">
