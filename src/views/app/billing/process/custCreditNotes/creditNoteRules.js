@@ -91,3 +91,7 @@ export const calculateReturnLine = (line, quantity) => {
 
 // Una nota con número fiscal o partida ya no se edita ni se elimina (se anula): el back responde creditNote.locked.fiscal.
 export const isNoteLocked = ({ pdaNumber, numberCAI }) => num(pdaNumber) > 0 || !blank(numberCAI);
+
+// Impresión (SPEC v2-97-sr): GET billing/process/creditNotes/:id/print descarga el PDF de lo guardado.
+export const PRINT_PATH = 'billing/process/creditNotes';
+export const PRINT_FILE_NAME = 'Nota de Credito.pdf';

@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { findHeaderProblem, findDetailProblem, buildNotePayload, isNoteLocked, returnedLines, calculateReturnLine, localToday, TYPE } from './creditNoteRules';
+import { buildPrintRequest } from '@Helpers/printDocument';
+import { PRINT_PATH, PRINT_FILE_NAME, findHeaderProblem, findDetailProblem, buildNotePayload, isNoteLocked, returnedLines, calculateReturnLine, localToday, TYPE } from './creditNoteRules';
 
 const header = (over = {}) => ({
   date: '2026-11-10', documentCode: 'NCC', customerId: 5, typeId: TYPE.DISCOUNT, typeOther: '', description: 'x', incomeCtaCode: '4201', currencyId: 1, exchangeRate: 1, ...over
@@ -117,5 +118,12 @@ describe('isNoteLocked', () => {
     expect(isNoteLocked({ pdaNumber: 9, numberCAI: '' })).toBe(true);
     expect(isNoteLocked({ pdaNumber: 0, numberCAI: '000-001-06-00000001' })).toBe(true);
     expect(isNoteLocked({ pdaNumber: '0', numberCAI: '  ' })).toBe(false);
+  });
+});
+
+describe('impresión', () => {
+  test('GET /:id/print de lo guardado y archivo Nota de Credito.pdf', () => {
+    expect(buildPrintRequest({ path: PRINT_PATH, id: 7 })).toEqual({ url: 'billing/process/creditNotes/7/print', params: undefined });
+    expect(PRINT_FILE_NAME).toBe('Nota de Credito.pdf');
   });
 });

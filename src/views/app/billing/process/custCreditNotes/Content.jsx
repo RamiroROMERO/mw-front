@@ -10,7 +10,6 @@ import CreditNoteProductsTable from './CreditNoteProductsTable';
 import ModalAddInvoices from './ModalAddInvoices';
 import ModalSeekOriginInvoice from './ModalSeekOriginInvoice';
 import ModalSeekCreditNotes from './ModalSeekCreditNotes';
-import ViewPdf from '@Components/ViewPDF/ViewPdf';
 import { useCreditNotes } from './useCreditNotes';
 
 const CustCreditNotes = ({ setLoading, screenControl }) => {
@@ -28,7 +27,6 @@ const CustCreditNotes = ({ setLoading, screenControl }) => {
     openModalVoid, setOpenModalVoid, fnVoidCreditNote,
     openMsgProcess, setOpenMsgProcess, fnProcessCreditNote,
     openMsgDelete, setOpenMsgDelete, fnDeleteCreditNote,
-    openModalPrint, setOpenModalPrint, documentPathPrint,
     propsToControlPanel
   } = useCreditNotes({ setLoading, screenControl });
 
@@ -117,17 +115,6 @@ const CustCreditNotes = ({ setLoading, screenControl }) => {
     }
   }
 
-  const propsToModalPrint = {
-    ModalContent: ViewPdf,
-    title: "page.custCreditNotes.modal.print.title",
-    open: openModalPrint,
-    setOpen: setOpenModalPrint,
-    maxWidth: 'xl',
-    data: {
-      documentPath: documentPathPrint
-    }
-  }
-
   const propsToMsgProcess = {
     open: openMsgProcess,
     setOpen: setOpenMsgProcess,
@@ -163,7 +150,6 @@ const CustCreditNotes = ({ setLoading, screenControl }) => {
       <Modal {...propsToModalSeekOrigin} />
       <Modal {...propsToModalSeekCreditNotes} />
       <Modal {...propsToModalVoid} />
-      <Modal {...propsToModalPrint} />
       <Confirmation {...propsToMsgProcess} />
       <Confirmation {...propsToMsgDelete} />
     </>

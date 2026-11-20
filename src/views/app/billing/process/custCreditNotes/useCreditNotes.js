@@ -4,7 +4,8 @@ import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
 import { validFloat, validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
-import { findHeaderProblem, findDetailProblem, buildNotePayload, isNoteLocked, calculateReturnLine } from './creditNoteRules';
+import { printDocument } from '@Helpers/printDocument';
+import { findHeaderProblem, findDetailProblem, buildNotePayload, isNoteLocked, calculateReturnLine, PRINT_PATH, PRINT_FILE_NAME } from './creditNoteRules';
 
 export const TYPE_DISCOUNT = 1;
 export const TYPE_CANCEL = 2;
@@ -18,11 +19,8 @@ const creditNoteValid = {
 
 // SPEC v2-95-sr: las notas mixtas (con documento sin CAI) tienen su propio formulario y no se manejan aquí: toda nota de esta pantalla requiere documento fiscal.
 export const useCreditNotes = ({ setLoading, screenControl }) => {
-  const userData = JSON.parse(localStorage.getItem('mw_current_user'));
   const [listTypeDocuments, setListTypeDocuments] = useState([]);
   const [listCustomers, setListCustomers] = useState([]);
-  const [openModalPrint, setOpenModalPrint] = useState(false);
-  const [documentPathPrint, setDocumentPathPrint] = useState('');
   const [listAccounts, setListAccounts] = useState([]);
   const [detail1, setDetail1] = useState([]); // facturas aplicadas (tipos 1/2/4)
   const [detail2, setDetail2] = useState([]); // productos devueltos (tipo 3)
@@ -461,16 +459,9 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
     }, false);
   }
 
-  // Equivalente a btnPrintDocument.Click: el backend elige internamente entre fac_credit_notes1 (tipos 1/2/4) y fac_credit_notes2 (tipo 3), según el tipo
-  // de la nota ya guardada — no requiere que esté Contabilizada (igual que el legacy). La SPEC v2-97 lo pasa a GET /:id/print.
+  // SPEC v2-97-sr: el PDF sale de lo GUARDADO (GET /:id/print); una nota sin guardar avisa que hay que guardar primero.
   const fnPrintCreditNote = () => {
-    if (id === 0) return;
-    setLoading(true);
-    request.GETPdfUrl('billing/process/creditNotes/exportPDF', { id, userName: userData.name }, (resp) => {
-      setDocumentPathPrint(resp);
-      setOpenModalPrint(true);
-      setLoading(false);
-    }, () => { setLoading(false); });
+    printDocument({ path: PRINT_PATH, id, fileName: PRINT_FILE_NAME, setLoading });
   }
 
   const propsToControlPanel = {
@@ -506,7 +497,6 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
     openModalVoid, setOpenModalVoid, fnVoidCreditNote,
     openMsgProcess, setOpenMsgProcess, fnProcessCreditNote,
     openMsgDelete, setOpenMsgDelete, fnDeleteCreditNote,
-    openModalPrint, setOpenModalPrint, documentPathPrint,
     propsToControlPanel
   }
 }
