@@ -21,18 +21,19 @@ const CustDebitNotes = ({ setLoading, screenControl }) => {
     onCustomerChange, onTypeChange,
     fnAddInvoices, onChangeDetail1Row, fnApplyPercentToAll, fnDeleteDetail1Row,
     fnSeekOriginInvoice, onChangeDetail2Qty, onChangeDetail2Price, fnDeleteDetail2Row,
-    isProcessed, isVoided, isAdjustment,
+    isVoided, isAdjustment, isLocked,
     openModalAddInvoices, setOpenModalAddInvoices, dataDebitNotes, fnConfirmAddInvoices,
     openModalSeekOrigin, setOpenModalSeekOrigin, fnSelectOriginInvoice,
     openModalSeekDebitNotes, setOpenModalSeekDebitNotes, fnViewDebitNote,
     openModalVoid, setOpenModalVoid, fnVoidDebitNote,
     openMsgProcess, setOpenMsgProcess, fnProcessDebitNote,
+    openMsgDelete, setOpenMsgDelete, fnDeleteDebitNote,
     openModalPrint, setOpenModalPrint, documentPathPrint,
     propsToControlPanel
   } = useDebitNotes({ setLoading, screenControl });
 
   const { documentCode, documentId, numberCAI } = formState;
-  const disabled = isProcessed || isVoided;
+  const disabled = isLocked || isVoided;
 
   const propsToDebitNoteForm = {
     ...formState,
@@ -100,7 +101,6 @@ const CustDebitNotes = ({ setLoading, screenControl }) => {
     setOpen: setOpenModalSeekDebitNotes,
     maxWidth: 'xl',
     data: {
-      dataDebitNotes,
       fnView: fnViewDebitNote
     }
   }
@@ -136,6 +136,13 @@ const CustDebitNotes = ({ setLoading, screenControl }) => {
     title: "msg.question.processDebitNote.title"
   }
 
+  const propsToMsgDelete = {
+    open: openMsgDelete,
+    setOpen: setOpenMsgDelete,
+    fnOnOk: fnDeleteDebitNote,
+    title: 'alert.question.title'
+  }
+
   return (
     <>
       <Row>
@@ -159,6 +166,7 @@ const CustDebitNotes = ({ setLoading, screenControl }) => {
       <Modal {...propsToModalVoid} />
       <Modal {...propsToModalPrint} />
       <Confirmation {...propsToMsgProcess} />
+      <Confirmation {...propsToMsgDelete} />
     </>
   );
 }

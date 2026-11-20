@@ -11,14 +11,14 @@ import { TYPE_ADJUSTMENT } from './useDebitNotes';
 
 const DebitNoteForm = (props) => {
   const {
-    documentCode, documentId, numberCAI, date, clientId, clientRtn, clientName, typeId, typeOther, name,
-    valueLps, docValueUSD, exchangeRate, accCode, currenId, pdaNumber,
+    documentCode, documentId, numberCAI, date, customerId, clientRtn, clientName, typeId, typeOther, description,
+    valueLps, valueUsd, exchangeRate, incomeCtaCode, currencyId, pdaNumber,
     listTypeDocuments, listCustomers, listAccounts,
     onInputChange, onCustomerChange, onTypeChange,
     formValidation, sendForm, disabled, isVoided
   } = props;
 
-  const { documentCodeValid, clientIdValid } = formValidation;
+  const { documentCodeValid, customerIdValid } = formValidation;
   const isAdjustment = typeId === TYPE_ADJUSTMENT;
 
   return (
@@ -64,13 +64,13 @@ const DebitNoteForm = (props) => {
               <ContainerWithLabel label="page.custDebitNotes.title.customer">
                 <SearchSelect
                   label="page.custDebitNotes.select.clientId"
-                  name="clientId"
-                  inputValue={clientId}
+                  name="customerId"
+                  inputValue={customerId}
                   onChange={onCustomerChange}
                   options={listCustomers}
                   isDisabled={disabled}
-                  invalid={sendForm && !!clientIdValid}
-                  feedbackText={sendForm && (clientIdValid || null)}
+                  invalid={sendForm && !!customerIdValid}
+                  feedbackText={sendForm && (customerIdValid || null)}
                 />
                 <Row>
                   <Colxx xxs="5">
@@ -86,8 +86,8 @@ const DebitNoteForm = (props) => {
           <Row>
             <Colxx xxs="12">
               <InputField
-                value={name}
-                name="name"
+                value={description}
+                name="description"
                 onChange={onInputChange}
                 type="textarea"
                 label="page.custDebitNotes.input.concept"
@@ -127,9 +127,9 @@ const DebitNoteForm = (props) => {
             {!isAdjustment && (
               <Colxx xxs="12">
                 <SimpleSelect
-                  name="accCode"
+                  name="incomeCtaCode"
                   label="page.custDebitNotes.select.account"
-                  value={accCode}
+                  value={incomeCtaCode}
                   onChange={onInputChange}
                   options={listAccounts}
                   disabled={disabled}
@@ -139,8 +139,8 @@ const DebitNoteForm = (props) => {
             <Colxx xxs="12">
               <RadioGroup
                 label="page.custDebitNotes.title.currency"
-                name="currenId"
-                value={currenId}
+                name="currencyId"
+                value={currencyId}
                 onChange={onInputChange}
                 options={[
                   { id: 1, label: "page.invoicing.radio.lempira" },
@@ -172,8 +172,8 @@ const DebitNoteForm = (props) => {
             </Colxx>
             <Colxx xxs="12" sm="6" md="6" lg="6">
               <InputField
-                value={docValueUSD}
-                name="docValueUSD"
+                value={valueUsd}
+                name="valueUsd"
                 onChange={onInputChange}
                 type="text"
                 disabled={disabled}

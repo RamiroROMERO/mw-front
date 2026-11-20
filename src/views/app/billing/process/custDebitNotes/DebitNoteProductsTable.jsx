@@ -6,7 +6,10 @@ import { ContainerWithLabel } from '@Components/containerWithLabel';
 const DebitNoteProductsTable = (props) => {
   const { detail2, originInvoice, fnSeekOriginInvoice, onChangeDetail2Qty, onChangeDetail2Price, fnDeleteDetail2Row, disabled } = props;
 
-  const total = detail2.reduce((sum, item) => sum + Number(item.valueTotal1 || 0), 0);
+  const textSelectInvoice = IntlMessages('button.selectInvoice');
+  const textOriginInvoice = IntlMessages('page.custDebitNotes.input.originInvoice');
+  const textOptions = IntlMessages('page.invoicing.options');
+  const total = detail2.reduce((sum, item) => sum + Number(item.total || 0), 0);
 
   return (
     <Form>
@@ -14,14 +17,14 @@ const DebitNoteProductsTable = (props) => {
         <Colxx xxs="12" sm="6" lg="4">
           {!disabled && (
             <Button color="primary" onClick={fnSeekOriginInvoice}>
-              <i className="bi bi-file-earmark-post" /> {IntlMessages("button.selectInvoice")}
+              <i className="bi bi-file-earmark-post" /> {textSelectInvoice}
             </Button>
           )}
         </Colxx>
         <Colxx xxs="12" sm="6" lg="8">
           {originInvoice && (
             <span>
-              <strong>{IntlMessages("page.custDebitNotes.input.originInvoice")}:</strong> {originInvoice.invoiceNumber}
+              <strong>{textOriginInvoice}:</strong> {originInvoice.invoiceNumber}
               {originInvoice.numcai ? ` (CAI: ${originInvoice.numcai})` : ''}
             </span>
           )}
@@ -41,7 +44,7 @@ const DebitNoteProductsTable = (props) => {
                   <th>{IntlMessages("page.custDebitNotes.table.priceNew")}</th>
                   <th>{IntlMessages("page.invoicing.input.taxValue")}</th>
                   <th>{IntlMessages("page.invoicing.input.totalProd")}</th>
-                  {!disabled && <th>{IntlMessages("page.invoicing.options")}</th>}
+                  {!disabled && <th>{textOptions}</th>}
                 </tr>
               </thead>
               <tbody>
@@ -62,7 +65,7 @@ const DebitNoteProductsTable = (props) => {
                       )}
                     </td>
                     <td align="right">{formatNumber(item.taxValue)}</td>
-                    <td align="right">{formatNumber(item.valueTotal1)}</td>
+                    <td align="right">{formatNumber(item.total)}</td>
                     {!disabled && (
                       <td align="right">
                         <Button type="button" className="btn-circle-table" color="outline-danger" title="Eliminar" onClick={() => fnDeleteDetail2Row(item.id)}>

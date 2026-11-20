@@ -7,7 +7,8 @@ import { InputField } from '@Components/inputFields';
 const DebitNoteInvoicesTable = (props) => {
   const { detail1, discountPercent, onInputChange, fnAddInvoices, onChangeDetail1Row, fnApplyPercentToAll, fnDeleteDetail1Row, disabled } = props;
 
-  const total = detail1.reduce((sum, item) => sum + Number(item.valuePayment || 0), 0);
+  const textOptions = IntlMessages('page.invoicing.options');
+  const total = detail1.reduce((sum, item) => sum + Number(item.appliedValue || 0), 0);
 
   return (
     <Form>
@@ -49,23 +50,23 @@ const DebitNoteInvoicesTable = (props) => {
                   <th>{IntlMessages("page.custDebitNotes.table.balance")}</th>
                   <th>{IntlMessages("page.custDebitNotes.table.percent")}</th>
                   <th>{IntlMessages("page.custDebitNotes.table.valueToApply")}</th>
-                  {!disabled && <th>{IntlMessages("page.invoicing.options")}</th>}
+                  {!disabled && <th>{textOptions}</th>}
                 </tr>
               </thead>
               <tbody>
                 {detail1.map((item, idx) => (
                   <tr key={idx}>
-                    <td>{item.dateDocument}</td>
-                    <td>{item.invoiceCode}</td>
-                    <td align="right">{formatNumber(item.invoiceVal)}</td>
+                    <td>{item.invoiceDate}</td>
+                    <td>{item.invoiceNumber}</td>
+                    <td align="right">{formatNumber(item.invoiceBalance)}</td>
                     <td align="right">
                       {disabled ? formatNumber(item.percent) : (
                         <Input bsSize="sm" type="text" value={item.percent} onChange={(e) => onChangeDetail1Row(item.id, 'percent', e.target.value)} />
                       )}
                     </td>
                     <td align="right">
-                      {disabled ? formatNumber(item.valuePayment) : (
-                        <Input bsSize="sm" type="text" value={item.valuePayment} onChange={(e) => onChangeDetail1Row(item.id, 'valuePayment', e.target.value)} />
+                      {disabled ? formatNumber(item.appliedValue) : (
+                        <Input bsSize="sm" type="text" value={item.appliedValue} onChange={(e) => onChangeDetail1Row(item.id, 'appliedValue', e.target.value)} />
                       )}
                     </td>
                     {!disabled && (

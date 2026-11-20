@@ -5,6 +5,7 @@ import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
 import { validFloat, validInt } from '@Helpers/Utils';
 import notification from '@Containers/ui/Notifications';
+import { findHeaderProblem, findDetailProblem, buildNotePayload, isNoteLocked } from './debitNoteRules';
 
 export const TYPE_LATE_FEE = 1;
 export const TYPE_OTHER_CHARGE = 2;
@@ -13,7 +14,7 @@ export const TYPE_OTHER = 4;
 
 const debitNoteValid = {
   documentCode: [(val) => val !== '', 'msg.required.select.typeDocument'],
-  clientId: [(val) => validInt(val) > 0, 'msg.required.select.customer']
+  customerId: [(val) => validInt(val) > 0, 'msg.required.select.customer']
 }
 
 // Toda nota de débito requiere CAI fiscal — a diferencia de Notas de Crédito,
@@ -34,6 +35,7 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
   const [openModalSeekDebitNotes, setOpenModalSeekDebitNotes] = useState(false);
   const [openModalVoid, setOpenModalVoid] = useState(false);
   const [openMsgProcess, setOpenMsgProcess] = useState(false);
+  const [openMsgDelete, setOpenMsgDelete] = useState(false);
   const [dataDebitNotes, setDataDebitNotes] = useState([]);
 
   const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
@@ -42,25 +44,27 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
     documentId: 0,
     numberCAI: '',
     date: DateHelper.format(new Date()),
-    clientId: 0,
+    customerId: 0,
     clientRtn: '',
     clientName: '',
     typeId: TYPE_LATE_FEE,
     typeOther: '',
-    name: '',
+    description: '',
     valueLps: 0,
-    docValueUSD: 0,
+    valueUsd: 0,
     exchangeRate: 1,
     discountPercent: 0,
-    accCode: '',
-    currenId: 1,
+    incomeCtaCode: '',
+    currencyId: 1,
     pdaNumber: 0,
     status: 1
   }, debitNoteValid);
 
-  const { id, documentCode, clientId, typeId, pdaNumber, status } = formState;
+  const { id, customerId, typeId, pdaNumber, status, numberCAI } = formState;
 
   const isProcessed = validInt(pdaNumber) > 0;
+  // Con número fiscal o partida la nota no se edita ni se elimina (se anula): el back responde debitNote.locked.fiscal.
+  const isLocked = isNoteLocked({ pdaNumber, numberCAI });
   const isVoided = validInt(status) === 0;
   const isSaved = validInt(id) > 0;
   const isAdjustment = validInt(typeId) === TYPE_ADJUSTMENT;
@@ -101,7 +105,7 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
   const onCustomerChange = (e) => {
     const idCust = e.target.value;
     const found = listCustomers.find((item) => item.id === idCust);
-    setBulkForm({ clientId: idCust, clientRtn: found ? found.rtn : '', clientName: found ? found.name : '' });
+    setBulkForm({ customerId: idCust, clientRtn: found ? found.rtn : '', clientName: found ? found.name : '' });
   }
 
   // Igual que el legacy (Optiongroup_hw1.InteractiveChange): cambiar el tipo alterna la
@@ -118,22 +122,22 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
   }
 
   const recalcTotalFromDetail1 = (rows) => {
-    const sum = rows.reduce((acc, item) => acc + validFloat(item.valuePayment), 0);
+    const sum = rows.reduce((acc, item) => acc + validFloat(item.appliedValue), 0);
     setBulkForm({ valueLps: sum });
   }
   const recalcTotalFromDetail2 = (rows) => {
-    const sum = rows.reduce((acc, item) => acc + validFloat(item.valueTotal1), 0);
+    const sum = rows.reduce((acc, item) => acc + validFloat(item.total), 0);
     setBulkForm({ valueLps: sum });
   }
 
   const fnAddInvoices = () => {
-    if (validInt(clientId) === 0) {
+    if (validInt(customerId) === 0) {
       notification('warning', 'msg.required.select.customer', 'alert.warning.title');
       return;
     }
     setLoading(true);
-    request.GET(buildUrl('accounting/process/cxc/pendingByCustomer', { customerId: clientId }), (resp) => {
-      const existingCodes = detail1.map((item) => item.invoiceCode);
+    request.GET(buildUrl('accounting/process/cxc/pendingByCustomer', { customerId }), (resp) => {
+      const existingCodes = detail1.map((item) => item.invoiceNumber);
       const pending = resp.data
         .filter((item) => !existingCodes.includes(item.documentCode))
         .map((item) => ({
@@ -152,14 +156,14 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
     const newRows = selectedRows.map((item) => ({
       id: new Date().getTime() + Math.random(),
       cxcId: item.cxcId,
-      dateDocument: item.date,
-      customerId: clientId,
-      invoiceCode: item.documentCode,
-      invoiceVal: item.balance,
+      invoiceDate: item.date,
+      customerId,
+      invoiceNumber: item.documentCode,
+      invoiceBalance: item.balance,
       percent: 100,
-      valuePayment: item.balance,
-      docValueUSD: 0,
-      docValuePaymentUSD: 0
+      appliedValue: item.balance,
+      valueUsd: 0,
+      appliedValueUsd: 0
     }));
     const merged = [...detail1, ...newRows];
     setDetail1(merged);
@@ -172,12 +176,12 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
       if (item.id !== rowId) return item;
       if (field === 'percent') {
         const percent = validFloat(value);
-        return { ...item, percent, valuePayment: validFloat((percent * item.invoiceVal) / 100) };
+        return { ...item, percent, appliedValue: validFloat((percent * item.invoiceBalance) / 100) };
       }
-      if (field === 'valuePayment') {
-        const valuePayment = validFloat(value);
-        const percent = item.invoiceVal > 0 ? validFloat((valuePayment * 100) / item.invoiceVal) : 0;
-        return { ...item, valuePayment, percent };
+      if (field === 'appliedValue') {
+        const appliedValue = validFloat(value);
+        const percent = item.invoiceBalance > 0 ? validFloat((appliedValue * 100) / item.invoiceBalance) : 0;
+        return { ...item, appliedValue, percent };
       }
       return item;
     });
@@ -190,7 +194,7 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
     const updated = detail1.map((item) => ({
       ...item,
       percent,
-      valuePayment: validFloat((percent * item.invoiceVal) / 100)
+      appliedValue: validFloat((percent * item.invoiceBalance) / 100)
     }));
     setDetail1(updated);
     recalcTotalFromDetail1(updated);
@@ -203,12 +207,12 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
   }
 
   const fnSeekOriginInvoice = () => {
-    if (validInt(clientId) === 0) {
+    if (validInt(customerId) === 0) {
       notification('warning', 'msg.required.select.customer', 'alert.warning.title');
       return;
     }
     setLoading(true);
-    request.GET(buildUrl('billing/process/invoices', { customerId: clientId, isPos: 0 }), (resp) => {
+    request.GET(buildUrl('billing/process/invoices', { customerId, isPos: 0 }), (resp) => {
       const invoices = resp.data.filter((item) => validInt(item.documentId) > 0);
       setDataDebitNotes(invoices);
       setOpenModalSeekOrigin(true);
@@ -235,7 +239,7 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
         subtotal: 0,
         discountValue: 0,
         taxValue: 0,
-        valueTotal1: 0
+        total: 0
       }));
       setDetail2(lines);
       recalcTotalFromDetail2(lines);
@@ -260,8 +264,8 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
       ? validFloat(qty * price)
       : validFloat(item.quantityInvoiced * (price - item.priceInvoiced));
     const taxValue = validFloat((item.taxPercent * subtotal) / 100);
-    const valueTotal1 = validFloat(subtotal + taxValue);
-    return { ...item, quantity: qty, price: validFloat(price), subtotal, discountValue: 0, taxValue, valueTotal1 };
+    const total = validFloat(subtotal + taxValue);
+    return { ...item, quantity: qty, price: validFloat(price), subtotal, discountValue: 0, taxValue, total };
   }
 
   const onChangeDetail2Qty = (rowId, value) => {
@@ -291,43 +295,39 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
     setSendForm(false);
   }
 
-  const fnSearchDebitNotes = () => {
-    setLoading(true);
-    request.GET('billing/process/debitNotes', (resp) => {
-      setDataDebitNotes(resp.data);
-      setOpenModalSeekDebitNotes(true);
-      setLoading(false);
-    }, () => { setLoading(false); });
-  }
+  // Buscar: el modal pide páginas de 50 con búsqueda en el servidor (SPEC v2-92-sr).
+  const fnSearchDebitNotes = () => setOpenModalSeekDebitNotes(true);
 
-  const fnViewDebitNote = (item) => {
+  // La fila del buscador trae solo la cabecera: el detalle (facturas aplicadas o productos del ajuste) llega con GET /:id.
+  const fnViewDebitNote = (row) => {
     setOpenModalSeekDebitNotes(false);
     setLoading(true);
-    setBulkForm({
-      id: item.id,
-      documentCode: item.documentCode,
-      documentId: item.documentId,
-      numberCAI: item.numberCAI,
-      date: item.date,
-      clientId: item.clientId,
-      clientRtn: item.clientData ? item.clientData.rtn : '',
-      clientName: item.clientData ? item.clientData.nomcli : '',
-      typeId: item.typeId,
-      typeOther: item.typeOther,
-      name: item.name,
-      valueLps: item.valueLps,
-      docValueUSD: item.docValueUSD,
-      exchangeRate: item.exchangeRate,
-      discountPercent: 0,
-      accCode: item.accCode,
-      currenId: item.currenId,
-      pdaNumber: item.pdaNumber,
-      status: item.status
-    });
+    request.GET(`billing/process/debitNotes/${row.id}`, (resp) => {
+      const item = resp.data;
+      setBulkForm({
+        id: item.id,
+        documentCode: item.documentCode,
+        documentId: item.documentId,
+        numberCAI: item.numberCAI,
+        date: item.date,
+        customerId: item.customerId,
+        clientRtn: item.clientData ? item.clientData.rtn : '',
+        clientName: item.clientData ? item.clientData.nomcli : '',
+        typeId: item.typeId,
+        typeOther: item.typeOther,
+        description: item.description,
+        valueLps: item.valueLps,
+        valueUsd: item.valueUsd,
+        exchangeRate: item.exchangeRate,
+        discountPercent: 0,
+        incomeCtaCode: item.incomeCtaCode,
+        currencyId: item.currencyId,
+        pdaNumber: item.pdaNumber,
+        status: item.status
+      });
 
-    if (validInt(item.typeId) === TYPE_ADJUSTMENT) {
-      request.GET(buildUrl('billing/process/debitNoteProducts', { fatherId: item.id }), (resp) => {
-        const lines = resp.data.map((line) => ({
+      if (validInt(item.typeId) === TYPE_ADJUSTMENT) {
+        const lines = item.products.map((line) => ({
           id: line.id,
           invoiceId: line.invoiceId,
           productCode: line.productCode,
@@ -340,147 +340,101 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
           subtotal: validFloat(line.subtotal),
           discountValue: validFloat(line.discountValue),
           taxValue: validFloat(line.taxValue),
-          valueTotal1: validFloat(line.valueTotal1)
+          total: validFloat(line.total)
         }));
         setDetail2(lines);
         setDetail1([]);
-        if (lines.length > 0) {
-          request.GET(`billing/process/invoices/${lines[0].invoiceId}`, (respInv) => {
-            const invoiceId = lines[0].invoiceId;
-            request.GET(buildUrl('billing/process/invoiceDetail', { idFather: invoiceId }), (respDet) => {
-              const byProduct = new Map(respDet.data.map((d) => [d.productCode, d]));
-              setDetail2((current) => current.map((line) => {
-                const origin = byProduct.get(line.productCode);
-                return origin ? { ...line, quantityInvoiced: validFloat(origin.qty), priceInvoiced: validFloat(origin.price), taxPercent: validFloat(origin.taxPercent) } : line;
-              }));
-              setOriginInvoice({
-                id: respInv.data.id,
-                invoiceNumber: `${respInv.data.documentCode}-${respInv.data.documentId}`,
-                numcai: respInv.data.numcai,
-                date: respInv.data.date
-              });
-              setLoading(false);
-            }, () => { setLoading(false); });
-          }, () => { setLoading(false); });
-        } else {
+        if (lines.length === 0) {
           setLoading(false);
+          return;
         }
-      }, () => { setLoading(false); });
-    } else {
-      request.GET(buildUrl('billing/process/debitNoteInvoices', { fatherId: item.id }), (resp) => {
-        const lines = resp.data.map((line) => ({
+        const invoiceId = lines[0].invoiceId;
+        request.GET(`billing/process/invoices/${invoiceId}`, (respInv) => {
+          request.GET(buildUrl('billing/process/invoiceDetail', { idFather: invoiceId }), (respDet) => {
+            const byProduct = new Map(respDet.data.map((d) => [d.productCode, d]));
+            setDetail2((current) => current.map((line) => {
+              const origin = byProduct.get(line.productCode);
+              return origin ? { ...line, quantityInvoiced: validFloat(origin.qty), priceInvoiced: validFloat(origin.price), taxPercent: validFloat(origin.taxPercent) } : line;
+            }));
+            setOriginInvoice({
+              id: respInv.data.id,
+              invoiceNumber: `${respInv.data.documentCode}-${respInv.data.documentId}`,
+              numcai: respInv.data.numcai,
+              date: respInv.data.date
+            });
+            setLoading(false);
+          }, () => { setLoading(false); });
+        }, () => { setLoading(false); });
+      } else {
+        setDetail1(item.invoices.map((line) => ({
           id: line.id,
-          cxcId: line.cxcId,
-          dateDocument: line.dateDocument,
+          invoiceDate: line.invoiceDate,
           customerId: line.customerId,
-          invoiceCode: line.invoiceCode,
-          invoiceVal: validFloat(line.invoiceVal),
+          invoiceNumber: line.invoiceNumber,
+          invoiceBalance: validFloat(line.invoiceBalance),
           percent: validFloat(line.percent),
-          valuePayment: validFloat(line.valuePayment),
-          docValueUSD: validFloat(line.docValueUSD),
-          docValuePaymentUSD: validFloat(line.docValuePaymentUSD)
-        }));
-        setDetail1(lines);
+          appliedValue: validFloat(line.appliedValue),
+          valueUsd: validFloat(line.valueUsd),
+          appliedValueUsd: validFloat(line.appliedValueUsd)
+        })));
         setDetail2([]);
         setOriginInvoice(null);
         setLoading(false);
-      }, () => { setLoading(false); });
-    }
+      }
+    }, () => { setLoading(false); });
   }
 
   const fnSaveDebitNote = () => {
     setSendForm(true);
     if (!isFormValid) return;
 
-    const { date, name, typeOther, docValueUSD, exchangeRate, accCode, currenId, valueLps } = formState;
-
-    if (validFloat(valueLps) <= 0) {
-      notification('warning', 'msg.error.invalidValue', 'alert.warning.title');
+    const headerProblem = findHeaderProblem(formState);
+    if (headerProblem) {
+      notification('warning', headerProblem.messageId, 'alert.warning.title');
       return;
     }
-    if (isAdjustment) {
-      if (!originInvoice) {
-        notification('warning', 'msg.required.select.originInvoice', 'alert.warning.title');
-        return;
-      }
-    } else {
-      if (detail1.length === 0) {
-        notification('warning', 'msg.required.select.invoiceToApply', 'alert.warning.title');
-        return;
-      }
-      if (!accCode) {
-        notification('warning', 'msg.required.select.account', 'alert.warning.title');
-        return;
-      }
+    const detailProblem = findDetailProblem({ typeId, detail1, detail2, originInvoice });
+    if (detailProblem) {
+      notification('warning', detailProblem.messageId, 'alert.warning.title');
+      return;
     }
 
-    const newData = {
-      documentCode,
-      date,
-      clientId,
-      typeId,
-      typeOther,
-      name,
-      valueLps,
-      docValueUSD,
-      exchangeRate,
-      accCode: !isAdjustment ? accCode : '',
-      currenId,
-      invoCode: isAdjustment && originInvoice ? originInvoice.numcai : ''
-    }
-
+    // Un solo POST o PUT: el back guarda cabecera y detalle en una transacción y calcula valores, desglose, total y dólares. Se muestra lo que respondió.
+    const body = buildNotePayload(formState, { originInvoice, detail1, detail2 });
     setLoading(true);
-    const afterSaveHeader = (noteId) => {
-      request.DELETE(buildUrl('billing/process/debitNoteInvoices', { fatherId: noteId }), () => {
-        request.DELETE(buildUrl('billing/process/debitNoteProducts', { fatherId: noteId }), () => {
-          if (isAdjustment) {
-            const rows = detail2.map((item) => ({
-              fatherId: noteId,
-              invoiceId: item.invoiceId,
-              productCode: item.productCode,
-              quantity: item.quantity,
-              price: item.price,
-              subtotal: item.subtotal,
-              discountValue: item.discountValue,
-              taxValue: item.taxValue,
-              valueTotal1: item.valueTotal1
-            }));
-            request.POST('billing/process/debitNoteProducts/createMany', rows, () => {
-              notification('success', 'msg.success.save', 'alert.success.title');
-              setLoading(false);
-            }, () => { setLoading(false); });
-          } else {
-            const rows = detail1.map((item) => ({
-              fatherId: noteId,
-              date: item.dateDocument,
-              dateDocument: item.dateDocument,
-              customerId: clientId,
-              invoiceCode: item.invoiceCode,
-              invoiceVal: item.invoiceVal,
-              percent: item.percent,
-              valuePayment: item.valuePayment,
-              docValueUSD: item.docValueUSD,
-              docValuePaymentUSD: item.docValuePaymentUSD
-            }));
-            request.POST('billing/process/debitNoteInvoices/createMany', rows, () => {
-              notification('success', 'msg.success.save', 'alert.success.title');
-              setLoading(false);
-            }, () => { setLoading(false); });
-          }
-        }, () => { setLoading(false); });
-      }, () => { setLoading(false); });
-    }
+    const applyResult = (data) => {
+      setBulkForm({ id: data.id, valueLps: data.valueLps, valueUsd: data.valueUsd });
+      if (isAdjustment) {
+        setDetail2((current) => current.map((line, index) => {
+          const saved = data.products[index];
+          return saved ? { ...line, subtotal: saved.subtotal, taxValue: saved.taxValue, total: saved.total, discountValue: saved.discountValue } : line;
+        }));
+      } else {
+        setDetail1(data.invoices.map((line, index) => ({ ...detail1[index], ...line, id: detail1[index] ? detail1[index].id : index })));
+      }
+      setLoading(false); // el toast de éxito ya lo muestra request.POST/PUT
+    };
 
     if (id > 0) {
-      request.PUT(`billing/process/debitNotes/${id}`, newData, () => {
-        afterSaveHeader(id);
-      }, () => { setLoading(false); });
+      request.PUT(`billing/process/debitNotes/${id}`, body, (resp) => applyResult(resp.data), () => { setLoading(false); });
     } else {
-      request.POST('billing/process/debitNotes', newData, (resp) => {
-        onInputChange({ target: { name: 'id', value: resp.data.id } });
-        afterSaveHeader(resp.data.id);
-      }, () => { setLoading(false); });
+      request.POST('billing/process/debitNotes', body, (resp) => applyResult(resp.data), () => { setLoading(false); });
     }
+  }
+
+  // Eliminar: solo una nota sin contabilizar (el back borra cabecera y detalle en una transacción); una contabilizada se anula.
+  const fnAskDelete = () => {
+    if (id === 0 || isLocked) return;
+    setOpenMsgDelete(true);
+  }
+
+  const fnDeleteDebitNote = () => {
+    setOpenMsgDelete(false);
+    setLoading(true);
+    request.DELETE(`billing/process/debitNotes/${id}`, () => {
+      fnNewDebitNote();
+      setLoading(false);
+    }, () => { setLoading(false); });
   }
 
   const fnAskProcess = () => {
@@ -541,7 +495,8 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
   const propsToControlPanel = {
     fnNew: fnNewDebitNote,
     fnSearch: fnSearchDebitNotes,
-    fnSave: screenControl.fnCreate && !isProcessed ? fnSaveDebitNote : null,
+    fnSave: screenControl.fnCreate && !isLocked ? fnSaveDebitNote : null,
+    fnDelete: screenControl.fnDelete && isSaved && !isLocked ? fnAskDelete : null,
     fnPrint: isSaved ? fnPrintDebitNote : null,
     fnCancel: screenControl.fnDelete && isProcessed && !isVoided ? fnAskVoid : null,
     buttonsHome: [
@@ -562,12 +517,13 @@ export const useDebitNotes = ({ setLoading, screenControl }) => {
     onCustomerChange, onTypeChange,
     fnAddInvoices, onChangeDetail1Row, fnApplyPercentToAll, fnDeleteDetail1Row,
     fnSeekOriginInvoice, onChangeDetail2Qty, onChangeDetail2Price, fnDeleteDetail2Row,
-    isProcessed, isVoided, isAdjustment,
+    isProcessed, isVoided, isAdjustment, isLocked,
     openModalAddInvoices, setOpenModalAddInvoices, dataDebitNotes, fnConfirmAddInvoices,
     openModalSeekOrigin, setOpenModalSeekOrigin, fnSelectOriginInvoice,
     openModalSeekDebitNotes, setOpenModalSeekDebitNotes, fnViewDebitNote,
     openModalVoid, setOpenModalVoid, fnVoidDebitNote,
     openMsgProcess, setOpenMsgProcess, fnProcessDebitNote,
+    openMsgDelete, setOpenMsgDelete, fnDeleteDebitNote,
     openModalPrint, setOpenModalPrint, documentPathPrint,
     propsToControlPanel
   }
