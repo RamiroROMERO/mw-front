@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { request, buildUrl } from '@Helpers/core';
-import { getErrorCode } from '@Helpers/errorMessage';
+import { request, buildUrl, notifyError } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
 import { validFloat, validInt } from '@Helpers/Utils';
@@ -437,14 +436,10 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
       notification('success', 'msg.success.processDocument', 'alert.success.title');
       setLoading(false);
     }, (err) => {
-      const errorCode = getErrorCode(err);
-      if (errorCode) {
-        notification('error', `msg.error.creditNote.${errorCode}`, 'alert.error.title');
-      } else {
-        notification('error', 'msg.error.processDocument', 'alert.error.title');
-      }
+      // SPEC v2-96-sr: el rechazo del back (período, cuenta bloqueada, total, partida) se muestra con su mensaje real.
+      notifyError(err, 'msg.error.processDocument');
       setLoading(false);
-    });
+    }, false);
   }
 
   const fnAskVoid = () => {
@@ -459,8 +454,9 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
       fnNewCreditNote();
       notification('success', 'msg.success.voidCreditNote', 'alert.success.title');
       setLoading(false);
-    }, () => {
-      notification('error', 'msg.delete.record.error', 'alert.error.title');
+    }, (err) => {
+      // El 403 del privilegio de anular, el período cerrado, la existencia insuficiente y el motivo vacío llegan con su mensaje real.
+      notifyError(err, 'msg.delete.record.error');
       setLoading(false);
     }, false);
   }

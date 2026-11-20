@@ -157,6 +157,7 @@
     "creditNote.provider.invalid",
     "creditNote.quantity.exceeded",
     "creditNote.stock.insufficient",
+    "creditNote.total.mismatch",
     "creditNote.total.zero",
     "creditNote.type.invalid",
     "creditNote.value.exceeded",
