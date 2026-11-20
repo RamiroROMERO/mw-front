@@ -1,34 +1,22 @@
-import { Button, Card, CardBody, Col, Row } from 'reactstrap'
+import { Button, Card, CardBody, Row } from 'reactstrap'
 import SearchSelect from '@Components/SearchSelect/SearchSelect'
 import { Checkbox } from '@Components/checkbox'
 import { Colxx } from '@Components/common/CustomBootstrap'
 import { InputField } from '@Components/inputFields'
 import { IntlMessages } from '@Helpers/Utils'
-import { SimpleSelect } from '@Components/simpleSelect'
 
-export const Detail = ({formState, lists, onInputChange, fnChangeCompanyId, formValidation, fnSave, fnClear, sendForm}) => {
+export const Detail = ({formState, lists, onInputChange, formValidation, fnSave, fnClear, sendForm}) => {
 
-  const {companyId, name, accDepreciation, accCost, status} = formState;
-  const {accountList, companyList} = lists;
-  const {companyIdValid, nameValid, accDepreciationValid, accCostValid} = formValidation;
+  const {name, accDepreciation, accCost, status} = formState;
+  const {accountList} = lists;
+  const {nameValid, accDepreciationValid, accCostValid} = formValidation;
 
   return (
     <>
     <Card>
       <CardBody>
     <Row>
-      <Colxx xxs={9} md={8}>
-        <SimpleSelect 
-          name="companyId"
-          label="pages.select.companyId"
-          value={companyId}
-          onChange = {fnChangeCompanyId}
-          options={companyList}
-          invalid={sendForm && !!companyIdValid}
-          feedbackText={sendForm && (companyIdValid || null)}
-        />
-      </Colxx>
-      <Colxx xxs={3} md={4} align="right">
+      <Colxx xxs={12} align="right">
         <Checkbox 
           name="status"
           label="check.status"

@@ -6,20 +6,17 @@ import { request } from '@Helpers/core';
 export const useResponsibles = ({ setLoading }) => {
 
   const [tableData, setTableData] = useState([]);
-  const [companyList, setCompanyList] = useState([]);
   const [areaList, setAreaList] = useState([]);
   const [sendForm, setSendForm] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
 
   const validation = {
-    companyId: [(val) => validInt(val) !== 0, IntlMessagesFn("page.validation.companyId")],
     areaId: [(val) => validInt(val) !== 0, IntlMessagesFn("page.validation.areaId")],
     name: [(val) => val.length > 8, IntlMessagesFn("page.validation.name")]
   };
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
     id: 0,
-    companyId: 0,
     areaId: 0,
     name: '',
     status: 1
@@ -75,15 +72,6 @@ export const useResponsibles = ({ setLoading }) => {
   }
 
   const fnGetData = () => {
-    request.getJSON("admin/companies/getSL", {}, (resp) => {
-      const { data } = resp;
-      const list = data.map(item => {
-        item.value = item.id;
-        item.label = item.name;
-        return item;
-      });
-      setCompanyList(list);
-    });
     request.getJSON("admin/areas", {}, (resp) => {
       const { data } = resp;
       const list = data.map(item => {
@@ -132,7 +120,7 @@ export const useResponsibles = ({ setLoading }) => {
     fnClear,
     fnSave: fnSaveDocument,
     isFormValid,
-    lists: { companyList, areaList },
+    lists: { areaList },
     sendForm
   };
 

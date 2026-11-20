@@ -8,12 +8,10 @@ export const useAreas = ({ setLoading }) => {
 
   const [tableData, setTableData] = useState([]);
   const [accountList, setAccountList] = useState([]);
-  const [companyList, setCompanyList] = useState([]);
   const [sendForm, setSendForm] = useState(false);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
 
   const validation = {
-    companyId: [(val) => validInt(val) !== 0, IntlMessagesFn("page.validation.companyId")],
     name: [(val) => val.length > 5, IntlMessagesFn("page.validation.name")],
     accDepreciation: [(val) => val.length > 8, IntlMessagesFn("page.validation.accountant")],
     accCost: [(val) => val.length > 8, IntlMessagesFn("page.validation.accountant")],
@@ -21,7 +19,6 @@ export const useAreas = ({ setLoading }) => {
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
     id: 0,
-    companyId: 0,
     name: '',
     accDepreciation: '',
     accCost: '',
@@ -30,25 +27,8 @@ export const useAreas = ({ setLoading }) => {
 
   const { id } = formState;
 
-  const fnChangeCompanyId = ({ target }) => {
-    const { value } = target;
-    if (validInt(value) === 0) {
-      setAccountList([]);
-    }
-    request.getJSON("accounting/settings/accountants/getSL", { companyId: value }, (resp) => {
-      const { data } = resp;
-      const list = data.map(item => {
-        item.value = item.cta;
-        item.label = `${item.cta}-${item.nombre}`;
-        return item;
-      });
-      setAccountList(list);
-    });
-    onInputChange({ target });
-  }
-
   const fnEditDocument = (row) => {
-    request.getJSON("accounting/settings/accountants/getSL", { companyId: row.companyId }, (resp) => {
+    request.getJSON("accounting/settings/accountants/getSL", {}, (resp) => {
       const { data } = resp;
       const list = data.map(item => {
         item.value = item.cta;
@@ -105,14 +85,14 @@ export const useAreas = ({ setLoading }) => {
   }
 
   const fnGetData = () => {
-    request.getJSON("admin/companies/getSL", {}, (resp) => {
+    request.getJSON("accounting/settings/accountants/getSL", {}, (resp) => {
       const { data } = resp;
       const list = data.map(item => {
-        item.value = item.id;
-        item.label = item.name;
+        item.value = item.cta;
+        item.label = `${item.cta}-${item.nombre}`;
         return item;
       });
-      setCompanyList(list);
+      setAccountList(list);
     });
   }
 
@@ -177,10 +157,9 @@ export const useAreas = ({ setLoading }) => {
     formValidation,
     isFormValid,
     fnSaveDocument,
-    fnChangeCompanyId,
     table,
     sendForm,
     propsToMsgDelete,
-    lists: { accountList, companyList }
+    lists: { accountList }
   }
 }

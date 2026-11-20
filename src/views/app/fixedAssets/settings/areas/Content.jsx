@@ -8,14 +8,13 @@ import { Detail } from './Detail';
 const Content = (props) => {
   const {setLoading} = props;
 
-  const {formState, lists, formValidation, fnChangeCompanyId, onInputChange, onResetForm, fnSaveDocument, isFormValid, table, propsToMsgDelete, sendForm} = useAreas({setLoading});
+  const {formState, lists, formValidation, onInputChange, onResetForm, fnSaveDocument, isFormValid, table, propsToMsgDelete, sendForm} = useAreas({setLoading});
 
   const propsToDetail = {
     formState,
     lists,
     formValidation,
     onInputChange,
-    fnChangeCompanyId,
     fnClear: onResetForm,
     fnSave: fnSaveDocument,
     isFormValid,

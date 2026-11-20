@@ -7,27 +7,16 @@ import { SimpleSelect } from '@Components/simpleSelect'
 
 export const Detail = ({formState, lists, onInputChange, formValidation, fnSave, fnClear, sendForm}) => {
 
-  const {companyList, areaList} = lists;
-  const {companyId, areaId, name, status} = formState;
+  const {areaList} = lists;
+  const {areaId, name, status} = formState;
 
-  const {companyIdValid, areaIdValid, nameValid} = formValidation;
+  const {areaIdValid, nameValid} = formValidation;
 
   return (
     <>
     <Card>
       <CardBody>
     <Row>
-      <Colxx xxs={12}>
-        <SimpleSelect 
-          name="companyId"
-          value={companyId}
-          label= "pages.select.companyId"
-          onChange={onInputChange}
-          options={companyList}
-          invalid={sendForm && !!companyIdValid}
-          feedbackText={sendForm && (companyIdValid || null)}
-        />
-      </Colxx>
       <Colxx xxs={12}>
         <SimpleSelect 
           name="areaId"
