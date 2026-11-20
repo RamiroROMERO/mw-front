@@ -5088,7 +5088,6 @@ const enLang = {
   "page.custCreditNotes.table.qtyReturn": "Qty. to Return",
   "page.custCreditNotes.modal.search.title": "Search Credit Notes",
   "page.custCreditNotes.modal.originInvoice.table.title": "Select the Origin Invoice",
-  "page.custCreditNotes.modal.print.title": "Credit Note",
 
   "msg.success.save": "Document Saved Successfully!",
   "msg.error.invalidValue": "The Document value must be greater than Zero!",
@@ -5163,7 +5162,6 @@ const enLang = {
   "page.custDebitNotes.table.priceInvoiced": "Invoiced Price",
   "page.custDebitNotes.table.priceNew": "New Price",
   "page.custDebitNotes.modal.search.title": "Search Debit Notes",
-  "page.custDebitNotes.modal.print.title": "Debit Note",
 
   "msg.success.voidDebitNote": "Document Deleted Successfully!",
   "msg.question.processDebitNote.title": "Are you sure you want to process this Document?",

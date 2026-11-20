@@ -5085,7 +5085,6 @@ const esLang = {
   "page.custCreditNotes.table.qtyReturn": "Cant. a Devolver",
   "page.custCreditNotes.modal.search.title": "Buscar Notas de Crédito",
   "page.custCreditNotes.modal.originInvoice.table.title": "Seleccione la Factura Origen",
-  "page.custCreditNotes.modal.print.title": "Nota de Crédito",
 
   "msg.success.save": "Documento Almacenado Correctamente!",
   "msg.error.invalidValue": "El valor del Documento debe ser mayor a Cero!",
@@ -5160,7 +5159,6 @@ const esLang = {
   "page.custDebitNotes.table.priceInvoiced": "Precio Facturado",
   "page.custDebitNotes.table.priceNew": "Precio Nuevo",
   "page.custDebitNotes.modal.search.title": "Buscar Notas de Débito",
-  "page.custDebitNotes.modal.print.title": "Nota de Débito",
 
   "msg.success.voidDebitNote": "Documento Eliminado Correctamente!",
   "msg.question.processDebitNote.title": "¿Seguro que desea Contabilizar este Documento?",
