@@ -71,8 +71,9 @@ export const useBoxesReport = ({ setLoading }) => {
     if (!check(route)) return;
     const { url, params } = buildCashRequest(route, formState, format);
     setDownloading(true);
-    request.GETPdf(url, params, reportFileName(route, formState, format), () => {
+    request.GETPdf(url, params, reportFileName(route, formState, format), (err) => {
       setDownloading(false);
+      notifyError(err, 'page.boxesReport.msg.reportError');
     }, 'GET', () => setDownloading(false));
   };
 

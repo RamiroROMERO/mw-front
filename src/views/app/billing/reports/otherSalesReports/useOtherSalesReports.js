@@ -6,7 +6,7 @@ import { formatNumber } from '@Helpers/Utils';
 import { buildSalesColumns } from '@Views/app/billing/reports/salesReport/reportTable';
 import { useCustomerOptions } from '@Views/app/billing/reports/salesReport/useCustomerOptions';
 import {
-  FILTERS_URL, REPORT_TYPES, SETTINGS_URL, buildOtherRequest, defaultRange, effectiveForm, findType, normalizeFilters, normalizeReport, normalizeSettings, pivotTableColumns,
+  CUSTOMERS_URL, FILTERS_URL, REPORT_TYPES, SETTINGS_URL, buildOtherRequest, defaultRange, effectiveForm, findType, normalizeFilters, normalizeReport, normalizeSettings, pivotTableColumns,
   reportFileName, selectedTypeIds, validateOtherForm
 } from './otherSalesRules';
 
@@ -16,7 +16,7 @@ import {
 // cajeros son los reales y las clasificaciones salen de `GET .../filters`; el cliente se busca en el servidor.
 export const useOtherSalesReports = ({ setLoading }) => {
   const intl = useIntl();
-  const customers = useCustomerOptions();
+  const customers = useCustomerOptions({ url: CUSTOMERS_URL, removedLabel: intl.formatMessage({ id: 'page.otherSalesReports.customerRemoved' }) });
   const [settings, setSettings] = useState(() => normalizeSettings());
   const [filters, setFilters] = useState(() => normalizeFilters());
   const [report, setReport] = useState(() => normalizeReport());
@@ -66,13 +66,16 @@ export const useOtherSalesReports = ({ setLoading }) => {
     if (!check()) return;
     const { url, params } = buildOtherRequest(currentConfig.key, form, format, typeIds);
     setDownloading(true);
-    request.GETPdf(url, params, reportFileName(currentConfig.key, format), () => {
+    request.GETPdf(url, params, reportFileName(currentConfig.key, format), (err) => {
       setDownloading(false);
+      notifyError(err, 'page.otherSalesReports.msg.reportError');
     }, 'GET', () => setDownloading(false));
   };
 
   // Cambiar de reporte limpia los filtros propios del anterior, los errores y el resultado.
   const onReportTypeChange = (e) => {
+    // La opción vacía del selector no es un reporte: se ignora y queda el actual.
+    if (!REPORT_TYPES.some((item) => item.key === e.target.value)) return;
     const cleared = { reportType: e.target.value, customerId: 0, cashierId: 0, isPartner: 0, minDays: '', avgOp: '', avgValue: '', avgValue2: '' };
     filters.productTypes.forEach((item) => { cleared[`type_${item.id}`] = 0; });
     setBulkForm({ ...formState, ...cleared });

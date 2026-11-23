@@ -60,8 +60,9 @@ export const useSalesReport = ({ setLoading }) => {
     if (!check()) return;
     const { url, params } = buildSalesRequest(type, formState, 'xlsx');
     setDownloading(true);
-    request.GETPdf(url, params, reportFileName(type), () => {
+    request.GETPdf(url, params, reportFileName(type), (err) => {
       setDownloading(false);
+      notifyError(err, 'page.salesReport.msg.reportError');
     }, 'GET', () => setDownloading(false));
   };
 

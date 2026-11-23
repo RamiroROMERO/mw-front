@@ -62,8 +62,9 @@ export const useSalesBySalesperson = ({ setLoading }) => {
     if (!check()) return;
     const { url, params } = buildSellerRequest(type, effectiveForm(formState, settings), format);
     setDownloading(true);
-    request.GETPdf(url, params, reportFileName(type, format), () => {
+    request.GETPdf(url, params, reportFileName(type, format), (err) => {
       setDownloading(false);
+      notifyError(err, 'page.salesBySeller.msg.reportError');
     }, 'GET', () => setDownloading(false));
   };
 

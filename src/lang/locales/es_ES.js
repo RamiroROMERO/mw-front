@@ -5230,6 +5230,7 @@ const esLang = {
   "page.otherSalesReports.avg.between": "Entre",
   "page.otherSalesReports.msg.minDays": "Digite los días mínimos (un entero mayor o igual a 0)!",
   "page.otherSalesReports.msg.average": "Digite un valor válido para el promedio (mayor a 0, y en Entre el primero no puede pasar del segundo)!",
+  "page.otherSalesReports.customerRemoved": "Eliminado",
   "page.otherSalesReports.msg.reportError": "No se pudo generar el reporte de ventas.",
   "page.otherSalesReports.check.isPartner": "Solo Afiliados",
   "menu.entryBalancing": "Cuadre de Asientos",

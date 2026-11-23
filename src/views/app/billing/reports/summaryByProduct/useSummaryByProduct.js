@@ -50,8 +50,9 @@ export const useSummaryByProduct = ({ setLoading }) => {
     if (!check()) return;
     const { url, params } = buildSummaryRequest(effectiveForm(formState, settings), format);
     setDownloading(true);
-    request.GETPdf(url, params, reportFileName(format), () => {
+    request.GETPdf(url, params, reportFileName(format), (err) => {
       setDownloading(false);
+      notifyError(err, 'page.summaryByProduct.msg.reportError');
     }, 'GET', () => setDownloading(false));
   };
 

@@ -5233,6 +5233,7 @@ const enLang = {
   "page.otherSalesReports.avg.between": "Between",
   "page.otherSalesReports.msg.minDays": "Enter the minimum days (an integer greater than or equal to 0)!",
   "page.otherSalesReports.msg.average": "Enter a valid average value (greater than 0, and in Between the first cannot exceed the second)!",
+  "page.otherSalesReports.customerRemoved": "Removed",
   "page.otherSalesReports.msg.reportError": "The sales report could not be generated.",
   "page.otherSalesReports.check.isPartner": "Partners Only",
   "menu.entryBalancing": "Entry Balancing",

@@ -53,8 +53,9 @@ export const useMonthlySalesCustomer = ({ setLoading }) => {
     if (!check()) return;
     const { url, params } = buildMonthlyRequest(effectiveForm(formState, settings), format);
     setDownloading(true);
-    request.GETPdf(url, params, reportFileName(format), () => {
+    request.GETPdf(url, params, reportFileName(format), (err) => {
       setDownloading(false);
+      notifyError(err, 'page.monthlySalesCustomer.msg.reportError');
     }, 'GET', () => setDownloading(false));
   };
 

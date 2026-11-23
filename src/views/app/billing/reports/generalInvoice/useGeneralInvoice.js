@@ -53,8 +53,9 @@ export const useGeneralInvoice = ({ setLoading }) => {
     if (!check()) return;
     const { url, params } = buildGeneralInvoiceRequest(effectiveForm(formState, settings), format);
     setDownloading(true);
-    request.GETPdf(url, params, reportFileName(format), () => {
+    request.GETPdf(url, params, reportFileName(format), (err) => {
       setDownloading(false);
+      notifyError(err, 'page.generalInvoice.msg.reportError');
     }, 'GET', () => setDownloading(false));
   };
 

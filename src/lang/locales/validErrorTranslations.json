@@ -345,6 +345,7 @@
     "otherPurchase.workOrder.invalid",
     "otherSales.average.invalid",
     "otherSales.currency.unavailable",
+    "otherSales.pdf.tooWide",
     "otherSales.range.tooLarge",
     "otherSales.rows.tooLarge",
     "otherSales.type.invalid",

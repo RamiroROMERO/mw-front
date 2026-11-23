@@ -10,6 +10,8 @@ export { validateReportRange, isValidCalendarDate, defaultRange, normalizeSettin
 export const REPORT_URL = 'billing/reports/otherSales';
 export const SETTINGS_URL = `${REPORT_URL}/settings`;
 export const FILTERS_URL = `${REPORT_URL}/filters`;
+// Buscador de clientes del filtro: histórico de ventas, así que incluye inactivos y eliminados.
+export const CUSTOMERS_URL = `${REPORT_URL}/customers`;
 
 const text = (value) => String(value ?? '').trim();
 const num = (field, label) => ({ field, label, isNumber: true });
