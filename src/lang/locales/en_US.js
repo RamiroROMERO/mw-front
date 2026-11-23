@@ -4338,6 +4338,7 @@ const enLang = {
   "page.purchaseReport.report.error.tooLarge": "The range cannot exceed 366 days!",
   "page.purchaseReport.msg.reportError": "The purchases report could not be generated.",
   "page.salesReport.msg.reportError": "The sales report could not be generated.",
+  "page.generalInvoice.msg.reportError": "The general invoice report could not be generated.",
   "page.purchaseReport.button.pdf": "PDF",
   "page.purchaseReport.button.excel": "Excel",
   "page.purchaseReport.table.column.order": "Order",

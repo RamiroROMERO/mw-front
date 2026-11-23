@@ -4370,6 +4370,7 @@ const esLang = {
   "page.purchaseReport.report.error.tooLarge": "El rango no puede pasar de 366 días!",
   "page.purchaseReport.msg.reportError": "No se pudo generar el reporte de compras.",
   "page.salesReport.msg.reportError": "No se pudo generar el reporte de ventas.",
+  "page.generalInvoice.msg.reportError": "No se pudo generar el reporte general de facturas.",
   "page.purchaseReport.button.pdf": "PDF",
   "page.purchaseReport.button.excel": "Excel",
   "page.purchaseReport.table.column.order": "Orden",
