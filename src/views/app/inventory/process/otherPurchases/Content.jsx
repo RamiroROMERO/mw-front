@@ -264,7 +264,7 @@ const OtherPurchases = (props) => {
                       />
                     </Colxx>
                     {amountField('discount', 'input.discount', discount)}
-                    {amountField('valueExonerated', 'input.valueExoneratedted', valueExonerated)}
+                    {amountField('valueExonerated', 'input.valueExonerated', valueExonerated)}
                     {amountField('valueExempt', 'input.valueExempt', valueExempt)}
                     {amountField('valueTaxable', 'input.taxed', valueTaxable)}
                     {amountField('tax', 'input.tax', tax)}

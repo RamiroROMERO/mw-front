@@ -28,8 +28,8 @@ export const useFilteredReport = ({ setLoading, type, filterKey, listUrl }) => {
     columns: buildColumns(type, intl.formatMessage),
     data: report.rows,
     actions: [
-      { color: 'secondary', icon: 'file-earmark-excel', onClick: () => fnDownload(type, formState, 'xlsx', title), title: 'Exportar', isFreeAction: true },
-      { color: 'info', icon: 'printer', onClick: () => fnDownload(type, formState, 'pdf', title), title: 'Imprimir', isFreeAction: true }
+      { color: 'secondary', icon: 'file-earmark-excel', onClick: () => fnDownload(type, formState, 'xlsx', title), title: intl.formatMessage({ id: 'button.export' }), isFreeAction: true },
+      { color: 'info', icon: 'printer', onClick: () => fnDownload(type, formState, 'pdf', title), title: intl.formatMessage({ id: 'button.print' }), isFreeAction: true }
     ]
   }), [report.rows, formState, downloading, intl.locale]);
 

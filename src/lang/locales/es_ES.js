@@ -2674,6 +2674,8 @@ const esLang = {
   "page.purchaseOrders.input.applicantName": "Solicitante",
   "page.purchaseOrders.select.workOrder": "Orden de Trabajo",
   "page.purchaseOrders.input.notes": "Observaciones",
+  "input.valueExonerated": "Exonerado",
+  "input.valueExempt": "Exento",
   "page.purchaseOrders.input.valueExonerated": "Exonerado",
   "page.purchaseOrders.input.valueExempt": "Exento",
   "page.purchaseOrders.input.valueTaxed": "Gravado",

@@ -24,8 +24,8 @@ export const useInventoryReport = ({ setLoading }) => {
     columns: buildColumns(DETAIL, intl.formatMessage),
     data: report.rows,
     actions: [
-      { color: 'secondary', icon: 'file-earmark-excel', onClick: () => fnDownload(DETAIL, formState, 'xlsx'), title: 'Exportar', isFreeAction: true },
-      { color: 'info', icon: 'printer', onClick: () => fnDownload(DETAIL, formState, 'pdf'), title: 'Imprimir', isFreeAction: true }
+      { color: 'secondary', icon: 'file-earmark-excel', onClick: () => fnDownload(DETAIL, formState, 'xlsx'), title: intl.formatMessage({ id: 'button.export' }), isFreeAction: true },
+      { color: 'info', icon: 'printer', onClick: () => fnDownload(DETAIL, formState, 'pdf'), title: intl.formatMessage({ id: 'button.print' }), isFreeAction: true }
     ]
   }), [report.rows, formState, downloading, intl.locale]);
 

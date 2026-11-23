@@ -2642,6 +2642,8 @@ const enLang = {
   "page.purchaseOrders.input.applicantName": "Applicant",
   "page.purchaseOrders.select.workOrder": "Work Order",
   "page.purchaseOrders.input.notes": "Observations",
+  "input.valueExonerated": "Exonerated",
+  "input.valueExempt": "Exempt",
   "page.purchaseOrders.input.valueExonerated": "Exonerated",
   "page.purchaseOrders.input.valueExempt": "Except",
   "page.purchaseOrders.input.valueTaxed": "Taxed",

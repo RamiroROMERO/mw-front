@@ -29,8 +29,8 @@ export const usePurchaseReport = ({ setLoading }) => {
     columns: buildColumns(type, intl.formatMessage),
     data: report.rows,
     actions: [
-      { color: 'secondary', icon: 'file-earmark-excel', onClick: () => fnDownload(type, filter, 'xlsx', title), title: 'Exportar', isFreeAction: true },
-      { color: 'info', icon: 'printer', onClick: () => fnDownload(type, filter, 'pdf', title), title: 'Imprimir', isFreeAction: true }
+      { color: 'secondary', icon: 'file-earmark-excel', onClick: () => fnDownload(type, filter, 'xlsx', title), title: intl.formatMessage({ id: 'button.export' }), isFreeAction: true },
+      { color: 'info', icon: 'printer', onClick: () => fnDownload(type, filter, 'pdf', title), title: intl.formatMessage({ id: 'button.print' }), isFreeAction: true }
     ]
   }), [report.rows, type, providerId, storeId, productId, dateStart, dateEnd, downloading, intl.locale]);
 

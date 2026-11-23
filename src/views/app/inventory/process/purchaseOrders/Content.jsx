@@ -315,12 +315,12 @@ const PurchaseOrders = (props) => {
 
   // Las boletas no traen totales en su lista: se suman de su detalle (una consulta por boleta, normalmente 0 o 1).
   const fnGetTickets = (orderId, purchases) => {
-    request.GET(buildUrl('inventory/process/ticketPurchase', { idOc: orderId }), (resp) => {
+    request.GET(buildUrl('inventory/process/ticketPurchase', { purchaseOrderId: orderId }), (resp) => {
       const tickets = resp.data || [];
       if (tickets.length === 0) return;
       Promise.all(tickets.map((ticket) => new Promise((resolve) => {
         request.GET(`inventory/process/ticketPurchase/${ticket.id}/detail`, (respDeta) => {
-          const total = (respDeta.data || []).reduce((sum, line) => sum + validFloat(line.valueTotal1), 0);
+          const total = (respDeta.data || []).reduce((sum, line) => sum + validFloat(line.total), 0);
           resolve({
             id: `ticket-${ticket.id}`,
             kind: 'ticket',

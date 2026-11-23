@@ -22,6 +22,7 @@ const DropdownSelect = ({ tableInstance }) => {
         {tableInstance.getAllLeafColumns().filter(column => column.columnDef.id !== 'btnActions').map(column => {
           return (
             <ItemCheck
+              key={column.id}
               label={column.columnDef.text}
               checked={column.getIsVisible()}
               onChange={column.getToggleVisibilityHandler()}

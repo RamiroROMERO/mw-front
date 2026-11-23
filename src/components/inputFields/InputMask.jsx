@@ -2,7 +2,7 @@ import { FormFeedback, Input } from 'reactstrap';
 import { useMask } from '@react-input/mask';
 import { InputLabel } from '@Components/inputLabel';
 
-export const InputMask = ({ name, label = "", value, onChange, type = "text", feedbackText = undefined, bold = false, mask = "", replacement = null, ...rest }) => {
+export const InputMask = ({ name, label = "", value, onChange, type = "text", feedbackText = undefined, bold = false, mask = "", replacement = null, maskChar: _ignoredMaskChar, ...rest }) => { // `maskChar` era de react-input-mask: ya no existe y llegaba al DOM
 
     const inputMaskRef = useMask({
         mask,
