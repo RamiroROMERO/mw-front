@@ -493,11 +493,6 @@ const data = [
           },
           {
             icon: 'simple-icon-docs',
-            label: 'menu.debitNotesProv',
-            to: `${adminRoot}/inventory/process/debitNotesProv`,
-          },
-          {
-            icon: 'simple-icon-docs',
             label: 'menu.creditNotesProv',
             to: `${adminRoot}/inventory/process/creditNotesProv`,
           },

@@ -1184,7 +1184,6 @@ const esLang = {
   'menu.ticketPurchase': 'Boleta de Compra',
   'menu.stock': 'Existencias',
   'menu.creditNotesProv': 'Notas de Crédito',
-  'menu.debitNotesProv': 'Notas de Débito',
   'menu.transferToStores': 'Traslado entre Almacenes',
   'menu.requisitions': 'Requisiciones',
   'menu.refunds': 'Ingreso y Reintegros',

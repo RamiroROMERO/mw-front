@@ -86,17 +86,6 @@ const Process = (props) => {
     }
   },
   {
-    id: 8,
-    icon: "large-icon simple-icon-docs",
-    title: "menu.debitNotesProv",
-    fnOnclick: () => {
-      history(
-        `${adminRoot}/inventory/process/debitNotesProv`,
-        { replace: true }
-      );
-    }
-  },
-  {
     id: 9,
     icon: "large-icon simple-icon-docs",
     title: "menu.creditNotesProv",

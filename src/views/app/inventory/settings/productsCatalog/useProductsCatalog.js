@@ -346,8 +346,6 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
     });
   }
 
-  const fnCodes = () => { }
-
   const fnCosts = () => {
     if (!canEditCosts || validInt(id) === 0) return;
     setOpenModalCosts(true);
@@ -441,11 +439,6 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
       }
     ],
     buttonsOptions: [
-      {
-        title: "button.codes",
-        icon: "bi bi-upc",
-        onClick: fnCodes
-      },
       ...(canEditCosts ? [{
         title: "button.costs",
         icon: "bi bi-coin",

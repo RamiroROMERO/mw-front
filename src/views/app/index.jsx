@@ -188,9 +188,6 @@ const CreditNotesProv = React.lazy(() =>
   import('./inventory/process/creditNotesProv')
 );
 
-const DebitNotesProv = React.lazy(() =>
-  import('./inventory/process/debitNotesProv')
-);
 
 const TransferToStores = React.lazy(() =>
   import('./inventory/process/transferToStores')
@@ -866,11 +863,6 @@ const App = ({ match }) => {
               path={`${match.url}/inventory/process/creditNotesProv`}
               exact
               render={(props) => <CreditNotesProv setLoading={setLoading} {...props} />}
-            />
-            <Route
-              path={`${match.url}/inventory/process/debitNotesProv`}
-              exact
-              render={(props) => <DebitNotesProv setLoading={setLoading} {...props} />}
             />
             <Route
               path={`${match.url}/inventory/process/transferToStores`}

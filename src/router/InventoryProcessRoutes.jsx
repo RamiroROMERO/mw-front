@@ -12,7 +12,6 @@ const FuelPurchases = React.lazy(() => import('@Views/app/inventory/process/fuel
 const TicketPurchase = React.lazy(() => import('@Views/app/inventory/process/ticketPurchase'));
 const Stock = React.lazy(() => import('@Views/app/inventory/process/stock'));
 const CreditNotesProv = React.lazy(() => import('@Views/app/inventory/process/creditNotesProv'));
-const DebitNotesProv = React.lazy(() => import('@Views/app/inventory/process/debitNotesProv'));
 const TransferToStores = React.lazy(() => import('@Views/app/inventory/process/transferToStores'));
 const Requisitions = React.lazy(() => import('@Views/app/inventory/process/requisitions'));
 const Refunds = React.lazy(() => import('@Views/app/inventory/process/refunds'));
@@ -59,10 +58,6 @@ const InventoryProcessRoutes = (props) => {
       index
       path="/stock"
       element={<Stock setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
-    <Route
-      index
-      path="/debitNotesProv"
-      element={<DebitNotesProv setLoading={setLoading} {...props} match={{ isExact: true, params: {} }} />} />
     <Route
       index
       path="/creditNotesProv"

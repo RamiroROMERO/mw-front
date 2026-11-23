@@ -1175,7 +1175,6 @@ const enLang = {
   'menu.ticketPurchase': 'Ticket Purchase',
   'menu.stock': 'Stock',
   'menu.creditNotesProv': 'Credit Notes',
-  'menu.debitNotesProv': 'Debit Notes',
   'menu.transferToStores': 'Transfer between Stores',
   'menu.requisitions': 'Requisitions',
   'menu.refunds': 'Income and Refunds',
