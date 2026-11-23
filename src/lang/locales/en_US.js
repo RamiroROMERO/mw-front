@@ -4345,6 +4345,8 @@ const enLang = {
   "page.summaryByProduct.radio.services": "Services",
   "page.salesBySeller.msg.reportError": "The sales by salesperson report could not be generated.",
   "page.salesBySeller.check.partnersOnly": "Wholesale Customers Only (New Customers)",
+  "page.monthlySalesCustomer.msg.reportError": "The monthly sales by customer report could not be generated.",
+  "page.monthlySalesCustomer.check.withoutTax": "Without Tax",
   "page.purchaseReport.button.pdf": "PDF",
   "page.purchaseReport.button.excel": "Excel",
   "page.purchaseReport.table.column.order": "Order",

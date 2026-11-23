@@ -1,227 +1,79 @@
-import { useEffect, useState } from 'react'
-import { request } from '@Helpers/core';
-import { formatNumber, IntlMessages } from '@Helpers/Utils';
+import { useEffect, useMemo, useState } from 'react';
+import { useIntl } from 'react-intl';
+import { request, notifyError } from '@Helpers/core';
 import { useForm } from '@Hooks';
+import useCustomerOptions from '@Views/app/billing/reports/salesReport/useCustomerOptions';
+import { buildSalesColumns } from '@Views/app/billing/reports/salesReport/reportTable';
+import {
+  COLUMNS, SETTINGS_URL, buildMonthlyRequest, defaultYear, effectiveForm, normalizeMonthly, normalizeSettings, reportFileName, validateYear, yearOptions
+} from './monthlySalesCustomerRules';
 
+// Ventas mensuales por cliente (SPEC v2-106-sr): una sola lectura `GET billing/reports/monthlySalesCustomer` (el back valida, aplica las reglas del legacy, convierte la moneda, suma
+// en centavos y calcula el porcentaje) y la descarga del mismo reporte en PDF (Imprimir) o Excel (Exportar). Un año inválido se marca en pantalla y NO llama al back. `GET` y `GETPdf`
+// no notifican por sí mismos: el error se avisa aquí con `notifyError`. La moneda solo se ofrece si la empresa factura en Lempiras y Dólares (`dual_curr`).
 export const useMonthlySalesCustomer = ({ setLoading }) => {
-  const [listCustomers, setListCustomers] = useState([]);
-  const [totals, setTotals] = useState({ total: 0 });
+  const intl = useIntl();
+  const [report, setReport] = useState(() => normalizeMonthly());
+  const [settings, setSettings] = useState(() => normalizeSettings());
+  const [errors, setErrors] = useState({});
+  const [sendForm, setSendForm] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const { options: listCustomers, onInputChange: onCustomerSearch } = useCustomerOptions();
+  const listYears = useMemo(() => yearOptions(), []);
 
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, onBulkForm } = useForm({
+  const { formState, onInputChange } = useForm({
+    year: defaultYear(),
     customerId: 0,
-    noYear: 0
+    withoutTax: 0,
+    currency: 1
   });
 
-  const [table, setTable] = useState({
-    title: '',
-    columns: [
-      {
-        text: IntlMessages("table.column.customer"),
-        dataField: "customerName",
-        headerStyle: { width: "9%" }
-      },
-      {
-        text: IntlMessages("table.column.month1"),
-        dataField: "month_1",
-        headerStyle: { 'width': '7%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.month_1, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.month2"),
-        dataField: "month_2",
-        headerStyle: { 'width': '7%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.month_2, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.month3"),
-        dataField: "month_3",
-        headerStyle: { 'width': '7%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.month_3, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.month4"),
-        dataField: "month_4",
-        headerStyle: { 'width': '7%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.month_4, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.month5"),
-        dataField: "month_5",
-        headerStyle: { 'width': '7%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.month_5, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.month6"),
-        dataField: "month_6",
-        headerStyle: { 'width': '7%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.month_6, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.month7"),
-        dataField: "month_7",
-        headerStyle: { 'width': '7%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.month_7, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.month8"),
-        dataField: "month_8",
-        headerStyle: { 'width': '7%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.month_8, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.month9"),
-        dataField: "month_9",
-        headerStyle: { 'width': '7%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.month_9, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.month10"),
-        dataField: "month_10",
-        headerStyle: { 'width': '7%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.month_10, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.month11"),
-        dataField: "month_11",
-        headerStyle: { 'width': '7%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.month_11, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.month12"),
-        dataField: "month_12",
-        headerStyle: { 'width': '7%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.month_12, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.total"),
-        dataField: "total",
-        headerStyle: { 'width': '7%' },
-        style: { textAlign: 'right' },
-        cell: ({ row }) => {
-          return (formatNumber(row.original.total, '', 2));
-        }
-      }
-    ],
-    data: [],
-    actions: []
-  });
-
-  const fnExportToExcel = () => { };
-
-  const fnPrintReport = () => { };
+  const check = () => {
+    setSendForm(true);
+    const found = validateYear(formState.year);
+    setErrors(found);
+    return Object.keys(found).length === 0;
+  };
 
   const fnSearchReport = () => {
-    const newActions = [
-      {
-        color: "secondary",
-        icon: "file-earmark-excel",
-        onClick: fnExportToExcel,
-        title: "Exportar",
-        isFreeAction: true
-      }
-    ]
-
+    if (!check()) return;
+    const { url, params } = buildMonthlyRequest(effectiveForm(formState, settings));
     setLoading(true);
-    request.POST('billing/reports/customersMonthly', { ...formState }, resp => {
-      let { detail, totals } = resp;
-      setTable({ ...table, data: detail, actions: newActions });
-      setTotals(totals);
+    request.GET(`${url}?${new URLSearchParams(params).toString()}`, (resp) => {
+      setReport(normalizeMonthly(resp.data));
       setLoading(false);
-    }, err => {
+    }, (err) => {
       setLoading(false);
-    }, false);
+      notifyError(err, 'page.monthlySalesCustomer.msg.reportError');
+    });
+  };
+
+  // PDF o Excel del reporte con los filtros de pantalla: el back lo arma (no se manda ninguna columna ni dato desde aquí).
+  const fnDownload = (format) => {
+    if (!check()) return;
+    const { url, params } = buildMonthlyRequest(effectiveForm(formState, settings), format);
+    setDownloading(true);
+    request.GETPdf(url, params, reportFileName(format), () => {
+      setDownloading(false);
+    }, 'GET', () => setDownloading(false));
   };
 
   useEffect(() => {
-    setLoading(true);
-    request.GET('billing/settings/customers/?status=1', (resp) => {
-      const customers = resp.data.map((item) => {
-        return {
-          id: item.id,
-          label: `${item.id} | ${item.rtn} | ${item.nomcli}`,
-          value: item.id
-        }
-      });
-      setListCustomers(customers);
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
+    request.GET(SETTINGS_URL, (resp) => setSettings(normalizeSettings(resp.data)), () => setSettings(normalizeSettings()));
   }, []);
 
-  const propsToHeaderReport = {
-    formState,
-    onInputChange,
-    listCustomers,
-    fnSearchReport
-  }
+  const table = useMemo(() => ({
+    title: '',
+    columns: buildSalesColumns(COLUMNS, intl.formatMessage),
+    data: report.rows,
+    actions: []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [report.rows, intl.locale]);
 
-  return (
-    {
-      totals,
-      table,
-      propsToHeaderReport
-    }
-  )
-}
+  const propsToHeaderReport = {
+    formState, errors, sendForm, onInputChange, listCustomers, onCustomerSearch, listYears, downloading, hasDualCurrency: settings.hasDualCurrency,
+    fnSearchReport, fnPrint: () => fnDownload('pdf'), fnExport: () => fnDownload('xlsx')
+  };
+
+  return { totals: report.totals, table, propsToHeaderReport };
+};
