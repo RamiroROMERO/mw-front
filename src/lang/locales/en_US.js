@@ -4465,6 +4465,13 @@ const enLang = {
   "page.boxesReport.table.totalInvoiced": "Total Invoiced",
   "page.boxesReport.table.tipName": "Received By",
   "page.boxesReport.table.tipValue": "Tip Value",
+  "page.boxesReport.table.cashValue": "Cash Value",
+  "page.boxesReport.radio.groupBy": "Group Payments By",
+  "page.boxesReport.radio.groupNone": "None",
+  "page.boxesReport.radio.groupCashier": "Cashier",
+  "page.boxesReport.radio.groupPaymentType": "Payment Method",
+  "page.boxesReport.msg.summaryDimension": "Choose at least one grouping: cash register, cashier or payment method!",
+  "page.boxesReport.msg.reportError": "The cash report could not be generated.",
   // 86. checkRequest page
   "page.checkRequest.input.valueCurrency": "Value in Lps / USD",
   "page.checkRequest.title.typeRequest": "Tipe of Request",

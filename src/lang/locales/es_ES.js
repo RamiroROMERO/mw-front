@@ -4497,6 +4497,13 @@ const esLang = {
   "page.boxesReport.table.totalInvoiced": "Total Facturado",
   "page.boxesReport.table.tipName": "Recibido Por",
   "page.boxesReport.table.tipValue": "Valor Propina",
+  "page.boxesReport.table.cashValue": "Valor en Caja",
+  "page.boxesReport.radio.groupBy": "Agrupar Cobros Por",
+  "page.boxesReport.radio.groupNone": "Nada",
+  "page.boxesReport.radio.groupCashier": "Cajero",
+  "page.boxesReport.radio.groupPaymentType": "Forma de Pago",
+  "page.boxesReport.msg.summaryDimension": "Elija al menos una agrupación: caja, cajero o forma de pago!",
+  "page.boxesReport.msg.reportError": "No se pudo generar el reporte de cajas.",
   // 86. checkRequest page
   "page.checkRequest.input.valueCurrency": "Valor en Lps / USD",
   "page.checkRequest.title.typeRequest": "Tipo de Solicitud",
