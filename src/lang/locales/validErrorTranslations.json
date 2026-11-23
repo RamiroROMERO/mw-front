@@ -636,6 +636,8 @@
     "value.required",
     "void.cannotEdit",
     "void.cannotPrint",
+    "withholdingType.account.invalid",
+    "withholdingType.reportType.invalid",
     "year.invalid"
   ]
 }

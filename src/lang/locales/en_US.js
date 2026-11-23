@@ -2745,6 +2745,13 @@ const enLang = {
   "page.typesRetention.table.title": "Types Retention Table",
   "page.typesRetention.table.name": "Description",
   "page.typesRetention.table.idCtaAccount": "Ledger Account",
+  "page.typesRetention.error.nameMax": "The description cannot exceed 80 characters",
+  "page.typesRetention.error.percent": "The percentage must be greater than 0 and not greater than 100, with at most 2 decimals",
+  "page.typesRetention.error.sarCode": "The SAR code must be an integer greater than 0",
+  "page.typesRetention.error.accountMax": "The ledger account cannot exceed 20 characters",
+  "page.typesRetention.select.reportType": "Report Type",
+  "page.typesRetention.select.reportTypeNone": "No report",
+  "page.typesRetention.alert.deactivate": "Are you sure you want to deactivate this retention type?",
   /* typesTaxes page in taxes settings */
   "page.typesTaxes.input.name": "Name",
   "page.typesTaxes.radio.type": "Type",

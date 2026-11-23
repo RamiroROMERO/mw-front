@@ -10,11 +10,9 @@ import { useTypeRetentions } from './useTypeRetentions';
 
 const TypesRetention = (props) => {
   const { setLoading } = props;
-  const { formState, formValidation, onInputChange, fnSave, fnClearInputs, table, propsToMsgDelete, sendForm, listAccount } = useTypeRetentions({ setLoading });
+  const { formState, errors, onInputChange, fnSave, fnClearInputs, table, propsToMsgDelete, sendForm, listAccount, listReportTypes } = useTypeRetentions({ setLoading });
 
-  const { id, name, status, value, taxCode, idCtaAccount } = formState;
-
-  const { nameValid, valueValid, taxCodeValid, idCtaAccountValid } = formValidation;
+  const { name, status, percentValue, sarCode, withholdingCtaCode, reportTypeId } = formState;
 
   return (
     <>
@@ -30,41 +28,52 @@ const TypesRetention = (props) => {
                     value={name}
                     label="page.typesRetention.input.name"
                     type="text"
-                    invalid={sendForm && !!nameValid}
-                    feedbackText={sendForm && (nameValid || null)}
+                    maxLength={80}
+                    invalid={sendForm && !!errors.name}
+                    feedbackText={sendForm && (errors.name || null)}
                   />
                 </Colxx>
                 <Colxx xxs="12" xs="4">
                   <InputField
-                    name="value"
+                    name="percentValue"
                     onChange={onInputChange}
-                    value={value}
+                    value={percentValue}
                     label="page.typesRetention.input.value"
                     type="text"
-                    invalid={sendForm && !!valueValid}
-                    feedbackText={sendForm && (valueValid || null)}
+                    invalid={sendForm && !!errors.percentValue}
+                    feedbackText={sendForm && (errors.percentValue || null)}
                   />
                 </Colxx>
                 <Colxx xxs="12" xs="8">
                   <SearchSelect
                     label="page.typesRetention.select.idCtaAccount"
-                    name="idCtaAccount"
+                    name="withholdingCtaCode"
                     onChange={onInputChange}
-                    inputValue={idCtaAccount}
+                    inputValue={withholdingCtaCode}
                     options={listAccount}
-                    invalid={sendForm && !!idCtaAccountValid}
-                    feedbackText={sendForm && (idCtaAccountValid || null)}
+                    invalid={sendForm && !!errors.withholdingCtaCode}
+                    feedbackText={sendForm && (errors.withholdingCtaCode || null)}
                   />
                 </Colxx>
                 <Colxx xxs="12" xs="4">
                   <InputField
-                    name="taxCode"
+                    name="sarCode"
                     onChange={onInputChange}
-                    value={taxCode}
+                    value={sarCode}
                     label="page.typesRetention.input.taxCode"
                     type="text"
-                    invalid={sendForm && !!taxCodeValid}
-                    feedbackText={sendForm && (taxCodeValid || null)}
+                    invalid={sendForm && !!errors.sarCode}
+                    feedbackText={sendForm && (errors.sarCode || null)}
+                  />
+                </Colxx>
+                <Colxx xxs="12" xs="8">
+                  <SearchSelect
+                    label="page.typesRetention.select.reportType"
+                    name="reportTypeId"
+                    onChange={onInputChange}
+                    inputValue={reportTypeId}
+                    options={listReportTypes}
+                    isClearable
                   />
                 </Colxx>
                 <Colxx xxs="12" xs="6">

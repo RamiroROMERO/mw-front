@@ -2777,6 +2777,13 @@ const esLang = {
   "page.typesRetention.table.title": "Tabla de Tipos de Retencion",
   "page.typesRetention.table.name": "Descripcion",
   "page.typesRetention.table.idCtaAccount": "Cuenta Contable",
+  "page.typesRetention.error.nameMax": "La descripción no puede pasar de 80 caracteres",
+  "page.typesRetention.error.percent": "El porcentaje debe ser mayor que 0 y no mayor que 100, con máximo 2 decimales",
+  "page.typesRetention.error.sarCode": "El código SAR debe ser un número entero mayor que 0",
+  "page.typesRetention.error.accountMax": "La cuenta contable no puede pasar de 20 caracteres",
+  "page.typesRetention.select.reportType": "Tipo de Reporte",
+  "page.typesRetention.select.reportTypeNone": "Sin reporte",
+  "page.typesRetention.alert.deactivate": "¿Está seguro que desea desactivar este tipo de retención?",
   /* typesTaxes page in taxes settings */
   "page.typesTaxes.input.name": "Nombre",
   "page.typesTaxes.radio.type": "Tipo",

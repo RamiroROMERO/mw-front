@@ -263,12 +263,12 @@ export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDe
       setLoading(false);
     });
     setLoading(true);
-    request.GET(buildUrl('tax/settings/withholdingTypes', { status: 1 }), (resp) => {
+    request.GET('tax/settings/withholdingTypes/getSL', (resp) => {
       const retention = resp.data.map((item) => {
         return {
           value: item.name,
           label: item.name,
-          percentValue: item.value
+          percentValue: item.percentValue
         }
       });
       setListTypesRetention(retention);
