@@ -1,59 +1,46 @@
-import { useState } from 'react'
-import { IntlMessages, formatDate, formatNumber } from '@Helpers/Utils'
+import { useMemo } from 'react';
+import { useIntl } from 'react-intl';
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { Colxx } from '@Components/common/CustomBootstrap';
 import ReactTable from '@Components/reactTable';
+import { buildSalesColumns } from '@Views/app/billing/reports/salesReport/reportTable';
+import { COLUMNS, TYPE_NEW_CUSTOMERS } from './salesBySellerRules';
 
-const ModalNewCustomers = ({data,setOpen}) => {
-  const {dataNewCustomers} = data;
+// Clientes registrados por vendedor (SPEC v2-104-sr): lo que devuelve el back, con Exportar (Excel) e Imprimir (PDF) del mismo reporte.
+const ModalNewCustomers = ({ data, setOpen }) => {
+  const { dataNewCustomers, downloading, onExport, onPrint } = data;
+  const intl = useIntl();
 
-  const [table, setTable] = useState({
+  const table = useMemo(() => ({
     title: '',
-    columns: [
-      {
-        text: IntlMessages("table.column.seller"),
-        dataField: "seller",
-        headerStyle: { width: "35%" },
-        cell: ({row}) => {
-          return `${row.original.sellerCode} | ${row.original.sellerName}`;
-        }
-      },
-      {
-        text: IntlMessages("table.column.dateIn"),
-        dataField: "dateIn",
-        headerStyle: { width: "15%" },
-        cell: ({row}) => {
-          return (formatDate(row.original.dateIn));
-        }
-      },
-      {
-        text: IntlMessages("table.column.customer"),
-        dataField: "customer",
-        headerStyle: { 'width': '50%' },
-        cell: ({row}) => {
-          return `${row.original.customerCode} | ${row.original.customerName}`;
-        }
-      }
-    ],
+    columns: buildSalesColumns(COLUMNS[TYPE_NEW_CUSTOMERS], intl.formatMessage),
     data: dataNewCustomers,
     actions: []
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [dataNewCustomers, intl.locale]);
 
   return (
     <>
-    <ModalBody>
-      <Row>
-        <Colxx xxs="12">
-          <ReactTable {...table}/>
-        </Colxx>
-      </Row>
-    </ModalBody>
-    <ModalFooter>
-      <Button color="danger" onClick={()=>{setOpen(false)}} >
-        <i className="bi bi-box-arrow-right"/>
-        {` ${IntlMessages('button.exit')}`}
-      </Button>
-    </ModalFooter>
+      <ModalBody>
+        <Row>
+          <Colxx xxs="12">
+            <ReactTable {...table} />
+          </Colxx>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="secondary" disabled={downloading} onClick={() => { onExport() }}>
+          <i className='bi bi-file-earmark-excel' /> {IntlMessages("button.export")}
+        </Button>
+        <Button color="dark" disabled={downloading} onClick={() => { onPrint() }}>
+          <i className='bi bi-printer' /> {IntlMessages("button.print")}
+        </Button>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />
+          {` ${IntlMessages('button.exit')}`}
+        </Button>
+      </ModalFooter>
     </>
   )
 }

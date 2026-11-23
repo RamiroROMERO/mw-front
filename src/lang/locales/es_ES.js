@@ -4375,6 +4375,8 @@ const esLang = {
   "page.summaryByProduct.title.itemType": "Tipo de Producto",
   "page.summaryByProduct.radio.products": "Productos",
   "page.summaryByProduct.radio.services": "Servicios",
+  "page.salesBySeller.msg.reportError": "No se pudo generar el reporte de ventas por vendedor.",
+  "page.salesBySeller.check.partnersOnly": "Solo Clientes Mayoristas (Clientes Nuevos)",
   "page.purchaseReport.button.pdf": "PDF",
   "page.purchaseReport.button.excel": "Excel",
   "page.purchaseReport.table.column.order": "Orden",

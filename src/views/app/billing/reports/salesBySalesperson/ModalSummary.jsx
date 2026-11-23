@@ -1,78 +1,46 @@
-import { useState } from 'react'
-import { IntlMessages, formatNumber } from '@Helpers/Utils'
+import { useMemo } from 'react';
+import { useIntl } from 'react-intl';
+import { IntlMessages } from '@Helpers/Utils'
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
 import { Colxx } from '@Components/common/CustomBootstrap';
 import ReactTable from '@Components/reactTable';
+import { buildSalesColumns } from '@Views/app/billing/reports/salesReport/reportTable';
+import { COLUMNS, TYPE_SUMMARY } from './salesBySellerRules';
 
-const ModalSummary = ({data,setOpen}) => {
-  const {dataSummary} = data;
+// Resumen de ventas por vendedor y producto (SPEC v2-104-sr): lo que devuelve el back, con Exportar (Excel) e Imprimir (PDF) del mismo reporte.
+const ModalSummary = ({ data, setOpen }) => {
+  const { dataSummary, downloading, onExport, onPrint } = data;
+  const intl = useIntl();
 
-  const [table, setTable] = useState({
+  const table = useMemo(() => ({
     title: '',
-    columns: [
-      {
-        text: IntlMessages("table.column.productCode"),
-        dataField: "productCode",
-        headerStyle: { width: "30%" }
-      },
-      {
-        text: IntlMessages("table.column.productName"),
-        dataField: "productName",
-        headerStyle: { width: "40%" },
-        classes: 'd-md-none-table-cell',
-        headerClasses: 'd-md-none-table-cell'
-      },
-      {
-        text: IntlMessages("table.column.qty"),
-        dataField: "qty",
-        headerStyle: { 'width': '10%' },
-        style: { textAlign: 'right' },
-        cell: ({row}) => {
-          return (formatNumber(row.original.qty, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.subtotal"),
-        dataField: "subtotal",
-        headerStyle: { 'width': '10%' },
-        classes: 'd-xs-none-table-cell',
-        headerClasses: 'd-xs-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({row}) => {
-          return (formatNumber(row.original.subtotal, '', 2));
-        }
-      },
-      {
-        text: IntlMessages("table.column.commissionValue"),
-        dataField: "sellerValue",
-        headerStyle: { 'width': '10%' },
-        classes: 'd-sm-none-table-cell',
-        headerClasses: 'd-sm-none-table-cell',
-        style: { textAlign: 'right' },
-        cell: ({row}) => {
-          return (formatNumber(row.original.sellerValue, '', 2));
-        }
-      }
-    ],
+    columns: buildSalesColumns(COLUMNS[TYPE_SUMMARY], intl.formatMessage),
     data: dataSummary,
     actions: []
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [dataSummary, intl.locale]);
 
   return (
     <>
-    <ModalBody>
-      <Row>
-        <Colxx xxs="12">
-          <ReactTable {...table}/>
-        </Colxx>
-      </Row>
-    </ModalBody>
-    <ModalFooter>
-      <Button color="danger" onClick={()=>{setOpen(false)}} >
-        <i className="bi bi-box-arrow-right"/>
-        {` ${IntlMessages('button.exit')}`}
-      </Button>
-    </ModalFooter>
+      <ModalBody>
+        <Row>
+          <Colxx xxs="12">
+            <ReactTable {...table} />
+          </Colxx>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="secondary" disabled={downloading} onClick={() => { onExport() }}>
+          <i className='bi bi-file-earmark-excel' /> {IntlMessages("button.export")}
+        </Button>
+        <Button color="dark" disabled={downloading} onClick={() => { onPrint() }}>
+          <i className='bi bi-printer' /> {IntlMessages("button.print")}
+        </Button>
+        <Button color="danger" onClick={() => { setOpen(false) }} >
+          <i className="bi bi-box-arrow-right" />
+          {` ${IntlMessages('button.exit')}`}
+        </Button>
+      </ModalFooter>
     </>
   )
 }
