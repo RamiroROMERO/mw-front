@@ -26,12 +26,12 @@ export const buildInitialForm = () => ({
   id: 0,
   customerTypeId: 0,
   locationType: 1,
-  rtn: '',
-  nomcli: '',
+  dni: '',
+  name: '',
   entryDate: localToday(),
-  tel: '',
+  phone: '',
   phone2: '',
-  direcc: '',
+  address: '',
   deptoCode: '',
   municCode: '',
   sellerId: 0,
@@ -78,15 +78,15 @@ const num = (value) => Number(text(value) === '' ? 0 : value);
 const truthy = (value) => value === true || value === 1 || value === '1';
 
 /** El RTN cumple el formato (sin caracteres especiales y, salvo internacional, de 13 o más caracteres); vacío no cuenta como válido. */
-export const isRtnValid = (rtn, isInternational = false) => {
-  const value = text(rtn);
+export const isRtnValid = (dni, isInternational = false) => {
+  const value = text(dni);
   if (value === '' || value.length > MAX_RTN) return false;
   if (FORBIDDEN_RTN_CHARS.test(value)) return false;
   return truthy(isInternational) || value.length >= MIN_RTN;
 };
 
 /** Solo un cliente nuevo con un RTN bien formado busca si ya existe (el legacy carga el existente al salir del campo). */
-export const shouldLookupRtn = (form = {}) => Number(form.id) === 0 && isRtnValid(form.rtn, form.isInternational);
+export const shouldLookupRtn = (form = {}) => Number(form.id) === 0 && isRtnValid(form.dni, form.isInternational);
 
 const isCalendarDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value) && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
 
@@ -98,18 +98,18 @@ export const validateCustomer = (form = {}, { accountingActive = true, originalT
   const errors = {};
   if (!(num(form.customerTypeId) > 0)) errors.customerTypeId = 'msg.required.input.typeCustomer';
 
-  if (text(form.rtn) === '') errors.rtn = 'msg.required.input.dni';
-  else if (!isRtnValid(form.rtn, form.isInternational)) errors.rtn = 'page.customers.error.rtn';
+  if (text(form.dni) === '') errors.dni = 'msg.required.input.dni';
+  else if (!isRtnValid(form.dni, form.isInternational)) errors.dni = 'page.customers.error.rtn';
 
-  if (text(form.nomcli) === '') errors.nomcli = 'msg.required.input.name';
-  else if (text(form.nomcli).length > MAX_NAME) errors.nomcli = 'page.customers.error.nameMax';
+  if (text(form.name) === '') errors.name = 'msg.required.input.name';
+  else if (text(form.name).length > MAX_NAME) errors.name = 'page.customers.error.nameMax';
 
   const date = text(form.entryDate);
   if (date === '') errors.entryDate = 'msg.required.input.date';
   else if (!isCalendarDate(date) || date > localToday()) errors.entryDate = 'page.customers.error.entryDate';
 
   // Como el back: el teléfono solo se valida si cambió respecto del cliente cargado (un cliente histórico con varios números sigue editándose).
-  if (text(form.tel) !== text(originalTel) && !isPhoneValid(form.tel, form.isInternational)) errors.tel = 'page.customers.error.phone';
+  if (text(form.phone) !== text(originalTel) && !isPhoneValid(form.phone, form.isInternational)) errors.phone = 'page.customers.error.phone';
 
   if (num(form.creditRequest) === CREDIT_YES) {
     if (!(num(form.creditDays) > 0)) errors.creditDays = 'msg.required.input.creditDays';
@@ -133,7 +133,7 @@ export const validateCustomer = (form = {}, { accountingActive = true, originalT
 
 const BOOLEANS = ['weeklyPeriod', 'biweeklyPeriod', 'monthlyPeriod', 'quarterlyPeriod', 'isInternational', 'isPartner', 'paysTax', 'isDefaultPos', 'isProducer', 'isCertifiedProducer',
   'isOutsourcingBill', 'status', 'isDefaultInsurer'];
-const STRINGS = ['rtn', 'nomcli', 'tel', 'phone2', 'direcc', 'deptoCode', 'municCode', 'paymentTerms', 'exonerationNumber', 'purchaseContactName', 'purchaseContactPosition',
+const STRINGS = ['dni', 'name', 'phone', 'phone2', 'address', 'deptoCode', 'municCode', 'paymentTerms', 'exonerationNumber', 'purchaseContactName', 'purchaseContactPosition',
   'purchaseContactPhone', 'purchaseContactMobile', 'purchaseContactEmail', 'paymentContactName', 'paymentContactPosition', 'paymentContactPhone', 'paymentContactMobile',
   'paymentContactEmail', 'receivableCtaCode', 'discountCtaCode', 'taxCtaCode', 'freightCtaCode', 'bonusCtaCode'];
 

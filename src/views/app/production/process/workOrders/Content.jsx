@@ -116,7 +116,7 @@ const WorkOrders = (props) => {
           colorStatus = "";
         }
         item.project = item.name
-        item.customer = item.facCliente ? item.facCliente.nomcli : ""
+        item.customer = item.facCliente ? item.facCliente.name : ""
         item.time = `${timeLeft} Dias`
         item.statusIcon = <Badge title="Cambiar Estado" style={{ cursor: "pointer" }} onClick={() => fnChangeSatatus(item)} color={colorStatus} pill className="mb-1">{item.prodStep.name} </Badge>
         item.colorStatus = colorStatus
@@ -134,10 +134,10 @@ const WorkOrders = (props) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('billing/settings/customers/findSL?status=1', (resp) => {
+    request.GET('billing/settings/customers/getSL?status=1', (resp) => {
       const listCustomer = resp.data.map((item) => {
         return {
-          label: item.nomcli,
+          label: item.name,
           value: item.codigo
         }
       });

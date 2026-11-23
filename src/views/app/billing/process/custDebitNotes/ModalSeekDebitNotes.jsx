@@ -25,7 +25,7 @@ const ModalSeekDebitNotes = ({ data, setOpen }) => {
     { text: textDate, dataField: 'date', headerStyle: { width: '12%' }, cell: ({ row }) => formatDate(row.original.date) },
     { text: textNumber, dataField: 'documentId', headerStyle: { width: '10%' } },
     { text: textInvoice, dataField: 'numberCAI', headerStyle: { width: '20%' } },
-    { text: textCustomer, dataField: 'clientName', headerStyle: { width: '28%' }, cell: ({ row }) => (row.original.clientData ? row.original.clientData.nomcli : '') },
+    { text: textCustomer, dataField: 'clientName', headerStyle: { width: '28%' }, cell: ({ row }) => (row.original.clientData ? row.original.clientData.name : '') },
     { text: textType, dataField: 'typeId', headerStyle: { width: '12%' }, cell: ({ row }) => typeTexts[row.original.typeId] || '' },
     { text: textValue, dataField: 'valueLps', headerStyle: { width: '12%' }, style: { textAlign: 'right' }, cell: ({ row }) => formatNumber(row.original.valueLps) }
     // eslint-disable-next-line react-hooks/exhaustive-deps

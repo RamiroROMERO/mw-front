@@ -136,10 +136,10 @@ export const useEmployeeReferenceData = ({ setLoading }) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,
-          label: `${item.id} | ${item.rtn} | ${item.nomcli}`,
+          label: `${item.id} | ${item.dni} | ${item.name}`,
           value: item.id,
-          rtn: item.rtn,
-          name: item.nomcli
+          rtn: item.dni,
+          name: item.name
         }
       });
       setListCustomers(customers);

@@ -254,6 +254,8 @@
     "invoice.cashClosed",
     "invoice.customer.invalid",
     "invoice.customer.nameRequired",
+    "invoice.discount.invalid",
+    "invoice.discount.mismatch",
     "invoice.document.invalid",
     "invoice.exchangeRate.invalid",
     "invoice.exoneration.required",

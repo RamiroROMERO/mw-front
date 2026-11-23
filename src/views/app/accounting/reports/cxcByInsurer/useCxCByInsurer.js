@@ -110,7 +110,7 @@ export const useCxCByInsurer = ({ setLoading }) => {
 
   useEffect(() => {
     request.GET('billing/settings/customers/?status=1', (resp) => {
-      setListCustomers(resp.data.map((item) => ({ label: `${item.id} | ${item.nomcli}`, value: item.id })));
+      setListCustomers(resp.data.map((item) => ({ label: `${item.id} | ${item.name}`, value: item.id })));
     }, () => { });
   }, []);
 

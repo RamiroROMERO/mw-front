@@ -9,7 +9,7 @@ describe('posCheckoutRules', () => {
     const payload = buildCheckoutPayload({ sessionId: '12', header, details, payments: [{ id: 1, value: 230 }, { id: 2, value: 0 }], receivedValue: 300 });
     expect(payload).toEqual({
       sessionId: 12, customerId: 7, customerName: 'Ana', customerDNI: '08', saleType: 1, sellerId: 3, notes: 'n', receivedValue: '300',
-      details: [{ productCode: 'P1', unitName: 'UND', qty: 2, price: 100, discountPercent: 0, isBonus: false, lotCode: '', expirationDate: null }],
+      details: [{ productCode: 'P1', unitName: 'UND', qty: 2, price: 100, discountPercent: 0, discountId: 0, isBonus: false, lotCode: '', expirationDate: null }],
       payments: [{ paymentTypeDetailId: 1, amount: 230, reference: '' }]
     });
     ['total', 'cashId', 'cashierId', 'date', 'taxValue', 'areaId', 'storeId', 'unitedCoste'].forEach((key) => {

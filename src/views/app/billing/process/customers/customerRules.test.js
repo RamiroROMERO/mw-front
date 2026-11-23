@@ -4,16 +4,16 @@ import {
 } from './customerRules';
 
 // Mismos casos que dtos/__tests__/FacProcessCustomerDTO.test.js y services/__tests__/FacProcessCustomerService.test.js del back.
-const valid = () => ({ ...buildInitialForm(), customerTypeId: 1, rtn: '05011990123456', nomcli: 'Cliente Prueba', receivableCtaCode: '1', discountCtaCode: '2', taxCtaCode: '3' });
+const valid = () => ({ ...buildInitialForm(), customerTypeId: 1, dni: '05011990123456', name: 'Cliente Prueba', receivableCtaCode: '1', discountCtaCode: '2', taxCtaCode: '3' });
 
 describe('obligatorios (mínimo)', () => {
   test('un cliente mínimo es válido', () => { expect(validateCustomer(valid())).toEqual({}); });
   test('falta tipo, RTN o nombre', () => {
-    const errors = validateCustomer({ ...valid(), customerTypeId: 0, rtn: '', nomcli: '  ' });
-    expect(Object.keys(errors).sort()).toEqual(['customerTypeId', 'nomcli', 'rtn']);
+    const errors = validateCustomer({ ...valid(), customerTypeId: 0, dni: '', name: '  ' });
+    expect(Object.keys(errors).sort()).toEqual(['customerTypeId', 'dni', 'name']);
   });
   test('teléfono y correo son opcionales', () => {
-    expect(validateCustomer({ ...valid(), tel: '', purchaseContactEmail: '' })).toEqual({});
+    expect(validateCustomer({ ...valid(), phone: '', purchaseContactEmail: '' })).toEqual({});
   });
   test('la fecha de ingreso es obligatoria, válida y no futura', () => {
     expect(validateCustomer({ ...valid(), entryDate: '' }).entryDate).toBeDefined();
@@ -24,21 +24,21 @@ describe('obligatorios (mínimo)', () => {
 });
 
 describe('RTN', () => {
-  test.each(['0501-1990123456', '05011990.123456', '05011990:123456', '05011990,123456'])('carácter especial %s', (rtn) => {
-    expect(validateCustomer({ ...valid(), rtn }).rtn).toBe('page.customers.error.rtn');
+  test.each(['0501-1990123456', '05011990.123456', '05011990:123456', '05011990,123456'])('carácter especial %s', (dni) => {
+    expect(validateCustomer({ ...valid(), dni }).dni).toBe('page.customers.error.rtn');
   });
   test('menos de 13 se rechaza salvo internacional; más de 20 siempre', () => {
-    expect(validateCustomer({ ...valid(), rtn: '123456789012' }).rtn).toBeDefined();
-    expect(validateCustomer({ ...valid(), rtn: '12345', isInternational: true })).toEqual({});
-    expect(validateCustomer({ ...valid(), rtn: '1'.repeat(21), isInternational: true }).rtn).toBeDefined();
+    expect(validateCustomer({ ...valid(), dni: '123456789012' }).dni).toBeDefined();
+    expect(validateCustomer({ ...valid(), dni: '12345', isInternational: true })).toEqual({});
+    expect(validateCustomer({ ...valid(), dni: '1'.repeat(21), isInternational: true }).dni).toBeDefined();
     expect(isRtnValid('1'.repeat(20))).toBe(true);
   });
   test('solo un cliente nuevo con RTN bien formado busca al existente', () => {
-    expect(shouldLookupRtn({ id: 0, rtn: '05011990123456' })).toBe(true);
-    expect(shouldLookupRtn({ id: 5, rtn: '05011990123456' })).toBe(false);
-    expect(shouldLookupRtn({ id: 0, rtn: '123' })).toBe(false);
-    expect(shouldLookupRtn({ id: 0, rtn: '', isInternational: true })).toBe(false);
-    expect(shouldLookupRtn({ id: 0, rtn: 'AB12', isInternational: true })).toBe(true);
+    expect(shouldLookupRtn({ id: 0, dni: '05011990123456' })).toBe(true);
+    expect(shouldLookupRtn({ id: 5, dni: '05011990123456' })).toBe(false);
+    expect(shouldLookupRtn({ id: 0, dni: '123' })).toBe(false);
+    expect(shouldLookupRtn({ id: 0, dni: '', isInternational: true })).toBe(false);
+    expect(shouldLookupRtn({ id: 0, dni: 'AB12', isInternational: true })).toBe(true);
   });
 });
 
@@ -76,8 +76,8 @@ describe('correos y descuento global', () => {
 
 describe('payload', () => {
   test('envía solo los campos del cliente con los tipos del back y recorta textos', () => {
-    const payload = buildCustomerPayload({ ...valid(), id: 9, rtn: ' 05011990123456 ', creditDays: '30', creditLimit: '1500.5', isDefaultPos: 1, sellerId: '7' });
-    expect(payload).toMatchObject({ rtn: '05011990123456', creditDays: 30, creditLimit: 1500.5, isDefaultPos: true, sellerId: 7, customerTypeId: 1 });
+    const payload = buildCustomerPayload({ ...valid(), id: 9, dni: ' 05011990123456 ', creditDays: '30', creditLimit: '1500.5', isDefaultPos: 1, sellerId: '7' });
+    expect(payload).toMatchObject({ dni: '05011990123456', creditDays: 30, creditLimit: 1500.5, isDefaultPos: true, sellerId: 7, customerTypeId: 1 });
     for (const key of ['id', 'isRemoved', 'companyId', 'idTypeCont', 'numccxc', 'defaPos']) expect(payload).not.toHaveProperty(key);
   });
   test('los campos de hospital y de productor solo viajan si la empresa los usa', () => {
@@ -93,8 +93,8 @@ describe('payload', () => {
 
 describe('mapCustomerToForm', () => {
   test('los nulos y ausentes toman el valor inicial y los enteros pasan a booleano', () => {
-    const form = mapCustomerToForm({ id: 4, rtn: '05011990123456', nomcli: 'X', tel: null, isDefaultPos: 1, paysTax: 0, creditLimit: '1500.50', creditRequest: 1, creditDays: 30, entryDate: '2025-03-04T00:00:00.000Z' });
-    expect(form).toMatchObject({ id: 4, tel: '', phone2: '', isDefaultPos: true, paysTax: false, creditLimit: 1500.5, creditDays: 30, entryDate: '2025-03-04' });
+    const form = mapCustomerToForm({ id: 4, dni: '05011990123456', name: 'X', phone: null, isDefaultPos: 1, paysTax: 0, creditLimit: '1500.50', creditRequest: 1, creditDays: 30, entryDate: '2025-03-04T00:00:00.000Z' });
+    expect(form).toMatchObject({ id: 4, phone: '', phone2: '', isDefaultPos: true, paysTax: false, creditLimit: 1500.5, creditDays: 30, entryDate: '2025-03-04' });
     expect(Object.values(form).some((v) => v === null || v === undefined)).toBe(false);
   });
   test('la fecha 1900-01-01 de los clientes antiguos queda vacía para que se elija una', () => {
@@ -127,22 +127,22 @@ describe('privilegio de Actualizar Cuentas', () => {
 });
 
 describe('teléfono (fnValidatePhone del legacy)', () => {
-  test.each(['9999-8888', '99998888', '2220 1234', '(9999)8888', '+504 9999-8888', '504 9999-8888', '38887777'])('válido %s', (tel) => {
-    expect(isPhoneValid(tel)).toBe(true);
-    expect(validateCustomer({ ...valid(), tel })).toEqual({});
+  test.each(['9999-8888', '99998888', '2220 1234', '(9999)8888', '+504 9999-8888', '504 9999-8888', '38887777'])('válido %s', (phone) => {
+    expect(isPhoneValid(phone)).toBe(true);
+    expect(validateCustomer({ ...valid(), phone })).toEqual({});
   });
-  test.each(['1999-8888', '9999-888', '9999-88888', '9971-9045 / 3180-7699', 'abc', '504 9999'])('inválido %s', (tel) => {
-    expect(isPhoneValid(tel)).toBe(false);
-    expect(validateCustomer({ ...valid(), tel }).tel).toBe('page.customers.error.phone');
+  test.each(['1999-8888', '9999-888', '9999-88888', '9971-9045 / 3180-7699', 'abc', '504 9999'])('inválido %s', (phone) => {
+    expect(isPhoneValid(phone)).toBe(false);
+    expect(validateCustomer({ ...valid(), phone }).phone).toBe('page.customers.error.phone');
   });
   test('vacío y cliente internacional no se validan', () => {
-    expect(validateCustomer({ ...valid(), tel: '' })).toEqual({});
-    expect(validateCustomer({ ...valid(), tel: '+1 305 555 0100', isInternational: true })).toEqual({});
+    expect(validateCustomer({ ...valid(), phone: '' })).toEqual({});
+    expect(validateCustomer({ ...valid(), phone: '+1 305 555 0100', isInternational: true })).toEqual({});
   });
   test('solo se valida si cambió respecto del cliente cargado', () => {
     const historic = '9971-9045 / 3180-7699';
-    expect(validateCustomer({ ...valid(), tel: historic }, { originalTel: historic })).toEqual({});
-    expect(validateCustomer({ ...valid(), tel: historic }, { originalTel: '' }).tel).toBeDefined();
+    expect(validateCustomer({ ...valid(), phone: historic }, { originalTel: historic })).toEqual({});
+    expect(validateCustomer({ ...valid(), phone: historic }, { originalTel: '' }).phone).toBeDefined();
   });
   test('cleanPhone quita espacios, guiones, paréntesis y el prefijo del país', () => {
     expect(cleanPhone(' +504 (9999)-8888 ')).toBe('99998888');

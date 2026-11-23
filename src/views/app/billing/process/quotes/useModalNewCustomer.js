@@ -48,10 +48,10 @@ export const useModalNewCustomer = ({ setLoading, setOpen, setCustomer }) => {
 
     const data = {
       entryDate: currentDate,
-      rtn: customerCode,
-      nomcli: customerName,
-      tel: phone,
-      direcc: address,
+      dni: customerCode,
+      name: customerName,
+      phone,
+      address,
       purchaseContactEmail: email,
       customerTypeId
     };

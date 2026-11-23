@@ -20,6 +20,7 @@ export const buildCheckoutPayload = ({ sessionId, header, details, payments, rec
     qty: toNumber(line.qty),
     price: toNumber(line.price),
     discountPercent: toNumber(line.discountPercent),
+    discountId: toNumber(line.discountId),
     isBonus: Boolean(line.isBonus),
     lotCode: line.lotCode || '',
     expirationDate: line.expirationDate || null

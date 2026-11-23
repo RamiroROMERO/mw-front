@@ -32,7 +32,7 @@ const Customers = (props) => {
     isFarmControl,
     isHospital, fnViewCustomer, fnLookupRtn, onInputChange, listDepartments, listMunicipalities, onDeptoChange, onTypeChange, errors, propsToMsgDelete, propsToMsgAccounts, propsToMsgDisable, listSellers } = useCustomers({ setLoading });
 
-  const { rtn, nomcli, entryDate, tel, phone2, direcc, customerTypeId, locationType, sellerId, creditRequest, creditDays, creditLimit, paymentTerms, globalDiscount, memberLimit, isInternational,
+  const { dni, name, entryDate, phone, phone2, address, customerTypeId, locationType, sellerId, creditRequest, creditDays, creditLimit, paymentTerms, globalDiscount, memberLimit, isInternational,
     isPartner, paysTax, isDefaultPos, purchaseContactName, purchaseContactPosition, purchaseContactPhone, purchaseContactMobile, purchaseContactEmail, paymentContactName,
     paymentContactPosition, paymentContactPhone, paymentContactMobile, paymentContactEmail, receivableCtaCode, discountCtaCode, taxCtaCode, freightCtaCode, bonusCtaCode, weeklyPeriod,
     monthlyPeriod, biweeklyPeriod, quarterlyPeriod, status, isProducer, isCertifiedProducer, exonerationNumber, isDefaultInsurer, kind, isOutsourcingBill, deptoCode, municCode } = formState;
@@ -109,29 +109,29 @@ const Customers = (props) => {
                         </Colxx>
                         <Colxx xxs="12" sm="6" lg="12">
                           <InputField
-                            value={rtn}
-                            name="rtn"
+                            value={dni}
+                            name="dni"
                             onChange={onInputChange}
                             onBlur={fnLookupRtn}
                             maxLength={20}
                             type="text"
                             label="page.customers.modal.modalNew.input.dni"
-                            invalid={sendForm && !!errors.rtn}
-                            feedbackText={sendForm && (errors.rtn || null)}
+                            invalid={sendForm && !!errors.dni}
+                            feedbackText={sendForm && (errors.dni || null)}
                           />
                         </Colxx>
                       </Row>
                       <Row>
                         <Colxx xxs="12" sm="6" lg="12">
                           <InputField
-                            value={nomcli}
-                            name="nomcli"
+                            value={name}
+                            name="name"
                             onChange={onInputChange}
                             type="text"
                             maxLength={120}
                             label="page.customers.modal.modalNew.input.name"
-                            invalid={sendForm && !!errors.nomcli}
-                            feedbackText={sendForm && (errors.nomcli || null)}
+                            invalid={sendForm && !!errors.name}
+                            feedbackText={sendForm && (errors.name || null)}
                           />
                         </Colxx>
                         <Colxx xxs="12" sm="6" lg="12">
@@ -149,13 +149,13 @@ const Customers = (props) => {
                       <Row>
                         <Colxx xxs="12" sm="6" lg="12">
                           <InputField
-                            value={tel}
-                            name="tel"
+                            value={phone}
+                            name="phone"
                             onChange={onInputChange}
                             type="text"
                             maxLength={60}
-                            invalid={sendForm && !!errors.tel}
-                            feedbackText={sendForm && (errors.tel || null)}
+                            invalid={sendForm && !!errors.phone}
+                            feedbackText={sendForm && (errors.phone || null)}
                             label="page.customers.modal.modalNew.input.phone"
                           />
                         </Colxx>
@@ -200,8 +200,8 @@ const Customers = (props) => {
                             <Row>
                               <Colxx xxs={12}>
                                 <InputField
-                                  value={direcc}
-                                  name="direcc"
+                                  value={address}
+                                  name="address"
                                   onChange={onInputChange}
                                   type="textarea"
                                   label="label.title.exactAddress"

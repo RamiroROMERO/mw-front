@@ -9,7 +9,7 @@ const CUSTOMERS_SL_URL = 'billing/settings/customers/getSL';
 // `removedLabel`: texto de la marca de un cliente eliminado (solo el buscador del histórico de ventas los incluye, con `isRemoved`).
 export const toCustomerOptions = (rows, removedLabel = '') => (rows || []).map((item) => ({
   value: item.id,
-  label: `${item.rtn || ''} | ${item.nomcli || item.name || ''}${item.isRemoved && removedLabel ? ` (${removedLabel})` : ''}`
+  label: `${item.dni || item.rtn || ''} | ${item.name || item.nomcli || ''}${item.isRemoved && removedLabel ? ` (${removedLabel})` : ''}`
 }));
 
 // `url`: otro buscador de clientes con la misma forma (los reportes de ventas usan uno que incluye eliminados e inactivos, `GET .../otherSales/customers`).

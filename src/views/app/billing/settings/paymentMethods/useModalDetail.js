@@ -85,7 +85,7 @@ export const useModalDetail = ({ setLoading, selectedItem }) => {
     });
 
     request.GET('billing/settings/customers/getSL', res => {
-      setCustomerList(res.data.map(item => ({ label: `${item.nomcli}`, value: item.id })));
+      setCustomerList(res.data.map(item => ({ label: `${item.name}`, value: item.id })));
     }, () => { });
   }
 

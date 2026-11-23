@@ -52,7 +52,7 @@ export const useCustomers = ({ setLoading }) => {
     let form = mapCustomerToForm(item);
     if (listLedgerAccounts.length > 0) form = dropUnknownAccounts(form, listLedgerAccounts);
     onMunicRefresh(form.deptoCode);
-    setOriginalTel(form.tel);
+    setOriginalTel(form.phone);
     setBulkForm(form);
     setOpenModalViewCust(false);
   }
@@ -113,7 +113,7 @@ export const useCustomers = ({ setLoading }) => {
     setLoading(true);
     if (id > 0) {
       request.PUT(`billing/settings/customers/${id}`, data, () => {
-        setOriginalTel(data.tel);
+        setOriginalTel(data.phone);
         setSendForm(false);
         setLoading(false);
       }, () => {
@@ -122,7 +122,7 @@ export const useCustomers = ({ setLoading }) => {
     } else {
       request.POST('billing/settings/customers/', data, (resp) => {
         setSendForm(false);
-        setOriginalTel(data.tel);
+        setOriginalTel(data.phone);
         setBulkForm({ ...formState, id: resp.data.id });
         setLoading(false);
       }, () => {
@@ -170,8 +170,8 @@ export const useCustomers = ({ setLoading }) => {
   // Al salir del campo RTN de un cliente nuevo: si ya existe uno con ese RTN se carga (el back además rechaza el duplicado).
   const fnLookupRtn = () => {
     if (!shouldLookupRtn(formState)) return;
-    const rtn = String(formState.rtn).trim();
-    request.GET(buildUrl('billing/settings/customers', { rtn }), (resp) => {
+    const rtn = String(formState.dni).trim();
+    request.GET(buildUrl('billing/settings/customers', { dni: rtn }), (resp) => {
       const [existing] = resp.data || [];
       if (existing) {
         notification('warning', 'page.customers.msg.rtnExists', 'alert.warning.title');

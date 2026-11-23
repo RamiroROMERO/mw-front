@@ -45,6 +45,7 @@ const PointSales = (props) => {
   const [listAreas, setListAreas] = useState([]);
   const [listWarehouse, setListWarehouse] = useState([]);
   const [listSellers, setListSellers] = useState([]);
+  const [discountOptions, setDiscountOptions] = useState([]);
   const [listCashiers, setListCashiers] = useState([]);
   const [listCashBoxes, setListCashBoxes] = useState([]);
   const [listTypePayments, setListTypePayments] = useState([]);
@@ -133,6 +134,7 @@ const PointSales = (props) => {
     price: 0,
     subtotal: 0,
     discountPercent: 0,
+    discountId: 0,
     discountValue: 0,
     taxPercent: 0,
     taxValue: 0,
@@ -156,7 +158,7 @@ const PointSales = (props) => {
   // modificar la cabecera de la venta ni el detalle, solo consultarla/imprimirla.
   const isInvoiceSaved = validInt(id) > 0;
 
-  const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue, total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, qtyDist, haveComiss, areaId, storeId, productType } = formDetail;
+  const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountId, discountValue, taxPercent, taxValue, total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, qtyDist, haveComiss, areaId, storeId, productType } = formDetail;
 
   const handleAreaChange = e => {
     let valueStore = "0";
@@ -248,9 +250,25 @@ const PointSales = (props) => {
       total: total3,
       discountValue: discount1,
       taxValue: tax3,
-      discountPercent: e.target.value
+      discountPercent: e.target.value,
+      discountId: 0 // un porcentaje digitado a mano ya no es el de un descuento del catálogo
     }
     setBulkFormDetail(newDiscount);
+  }
+
+  // Descuento del catálogo (fac_desc): carga su porcentaje y guarda su id en la línea (como F1 en el legacy).
+  const handleDiscountSelect = e => {
+    const chosen = discountOptions.find((item) => String(item.id) === String(e.target.value));
+    const percent = chosen ? Number(chosen.percentValue) : 0;
+    const discount1 = validFloat((percent * subtotal) / 100);
+    const tax3 = validFloat((taxPercent * (subtotal - discount1)) / 100);
+    setBulkFormDetail({
+      discountId: chosen ? chosen.id : 0,
+      discountPercent: percent,
+      discountValue: discount1,
+      taxValue: tax3,
+      total: validFloat((subtotal - discount1) + tax3)
+    });
   }
 
   const handleTaxPercentChange = e => {
@@ -299,6 +317,7 @@ const PointSales = (props) => {
           price: item2.price,
           subtotal: item2.subtotal,
           discountPercent: item2.discountPercent,
+          discountId: Number(item2.discountId) || 0,
           taxPercent: item2.taxPercent,
           discountValue: item2.discountValue,
           subtotTaxValue: item2.taxValue > 0 ? item2.subtotal : 0,
@@ -522,6 +541,7 @@ const PointSales = (props) => {
       taxPercent: validFloat(item.taxPercent),
       qty: 1,
       discountPercent: 0,
+      discountId: 0,
       discountValue: 0,
       priceLocalMin: item.min,
       priceLocalMid: item.med,
@@ -599,6 +619,7 @@ const PointSales = (props) => {
       price: validFloat(price),
       subtotal: validFloat(subtotal),
       discountPercent: validFloat(discountPercent),
+      discountId: validInt(discountId),
       discountValue: validFloat(discountValue),
       subtotTaxValue: validFloat(taxedValue),
       subTotExeValue: validFloat(exemptValue),
@@ -660,6 +681,7 @@ const PointSales = (props) => {
       price: 0,
       subtotal: 0,
       discountPercent: 0,
+      discountId: 0,
       discountValue: 0,
       taxPercent: 0,
       taxValue: 0,
@@ -804,6 +826,7 @@ const PointSales = (props) => {
       return {
         ...item,
         discountPercent: percent,
+        discountId: 0,
         discountValue,
         taxValue,
         total: total2,
@@ -838,10 +861,10 @@ const PointSales = (props) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,
-          label: `${item.id} | ${item.rtn} | ${item.nomcli}`,
+          label: `${item.id} | ${item.dni} | ${item.name}`,
           value: item.id,
-          rtn: item.rtn,
-          name: item.nomcli
+          rtn: item.dni,
+          name: item.name
         }
       });
       setListCustomers(customers);
@@ -885,6 +908,7 @@ const PointSales = (props) => {
 
       setLoading(false);
     });
+    request.GET('admin/discounts/getSL', (resp) => setDiscountOptions(resp.data.map((item) => ({ ...item, name: `${item.name} (${Number(item.percentValue)}%)` }))), () => { });
     setLoading(true);
     request.GET('admin/users/getCashiers', (resp) => {
       const cashiers = resp.data.map((item) => {
@@ -1280,7 +1304,7 @@ const PointSales = (props) => {
 
   const propsToInvoicingDetail = {
     productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
-    totalProd, onInputDetaChange, handleQtyChange, handlePriceChange, handleDiscPercentChange, handleTaxPercentChange,
+    totalProd, onInputDetaChange, handleQtyChange, handlePriceChange, handleDiscPercentChange, handleTaxPercentChange, discountId, discountOptions, handleDiscountSelect,
     fnViewProducts, fnChangePrice, fnAddProduct, formValidationDetail, sendFormDetail, isInvoiceSaved
   }
 

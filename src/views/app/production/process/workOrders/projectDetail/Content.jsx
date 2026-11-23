@@ -272,10 +272,10 @@ const ProjectDetail = (props) => {
 
   useEffect(() => {
     setLoading(true);
-    request.GET('billing/settings/customers/findSL', (resp) => {
+    request.GET('billing/settings/customers/getSL', (resp) => {
       const listCustomer = resp.data.map((item) => {
         return {
-          label: item.nomcli,
+          label: item.name,
           value: item.codigo
         }
       });
@@ -760,8 +760,8 @@ const ProjectDetail = (props) => {
                               <tr>
                                 <td>{dataInvoice.setDocument ? dataInvoice.setDocument.name : ""}</td>
                                 <td>{dataInvoice.date}</td>
-                                <td className="text-end">{dataInvoice.facCliente ? dataInvoice.facCliente.nomcli : ""}</td>
-                                <td className="text-end">{dataInvoice.facCliente ? dataInvoice.facCliente.rtn : ""}</td>
+                                <td className="text-end">{dataInvoice.facCliente ? dataInvoice.facCliente.name : ""}</td>
+                                <td className="text-end">{dataInvoice.facCliente ? dataInvoice.facCliente.dni : ""}</td>
                                 <td className="text-end">{formatNumber(dataInvoice.total, 'L.', 2)}</td>
                               </tr>
                             </tbody>

@@ -6,14 +6,13 @@ import { request } from '@Helpers/core';
 import { RandomCodeGenerator } from '@Helpers/UuIdGenerator';
 import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
-import TableButtons from '@Components/tableButtons';
 import ModalViewCust from '../customers/ModalViewCust';
 import ModalProducts from '../invoicing/ModalProducts';
 import { ModalEditCurrentProduct } from './ModalEditCurrentProduct';
 import { ModalNewCustomer } from './ModalNewCustomer';
 import ModalSeekQuotes from './ModalSeekQuotes';
 import ModalSendEmail from './ModalSendEmail';
-import { buildInitialForm, buildQuotePayload, calculateTotals, formFromQuote, isQuoteLocked, lineFromApi, lineFromProduct, validateQuote } from './quoteRules';
+import { buildInitialForm, buildQuotePayload, calculateTotals, formFromQuote, isQuoteLocked, lineFromApi, lineFromProduct, productFromSearchRow, validateQuote } from './quoteRules';
 
 const QUOTES_URL = 'billing/process/quotes';
 const NO_SETTINGS = { canEditPrice: false, timeQuote: 0, limitDate: null, hasDateOutControl: false };
@@ -39,7 +38,6 @@ export const useQuotes = ({ setLoading, setActiveTab, screenControl = {}, canDel
   // Formato de fecha configurado por el Administrador (mw_setting.form_date) — DMY es el default del legacy cuando el ajuste viene vacío.
   const [dateFormat, setDateFormat] = useState('DMY');
   const [dataDetails, setDataDetails] = useState([]);
-  const [listProducts, setListProducts] = useState([]);
   const [currentProduct, setCurrentProduct] = useState({});
   const [isEditItem, setIsEditItem] = useState(false);
 
@@ -217,12 +215,13 @@ export const useQuotes = ({ setLoading, setActiveTab, screenControl = {}, canDel
 
   // Los datos del cliente se copian a la cotización: se pueden digitar a mano (una cotización puede ser para cualquier persona).
   const setSelectedCustomer = (customer) => {
-    const { id: customerId, nomcli, rtn, tel, purchaseContactEmail, direcc } = customer;
-    onBulkForm({ ...formState, customerId, customerCode: rtn, customerName: nomcli, customerPhone: tel, customerAddress: direcc, customerEmail: purchaseContactEmail || '' })
+    const { id: customerId, name, dni, phone, purchaseContactEmail, address } = customer;
+    onBulkForm({ ...formState, customerId, customerCode: dni, customerName: name, customerPhone: phone, customerAddress: address, customerEmail: purchaseContactEmail || '' })
     setOpenSeekCustomer(false);
   }
 
-  const fnSelectProduct = (product) => {
+  const fnSelectProduct = (row) => {
+    const product = productFromSearchRow(row);
     setOpenSeekProducts(false);
     setIsEditItem(false);
     const line = lineFromProduct(product, RandomCodeGenerator());
@@ -246,60 +245,7 @@ export const useQuotes = ({ setLoading, setActiveTab, screenControl = {}, canDel
       return;
     }
     setIsEditItem(false);
-
-    if (validInt(formState.storeId) === 0) {
-      request.GET(`inventory/process/stocks/getStockForQuotes`, (resp) => {
-        const products = resp.data.map((item) => {
-          item.name = item.productName;
-          item.unitProd = item.undoutName;
-          item.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
-          return item;
-        });
-        setListProducts(products);
-        setOpenSeekProducts(true);
-        setLoading(false);
-      }, () => {
-        setLoading(false);
-      });
-      return;
-    }
-
-    const mapProduct = (item) => {
-      const currProduct = {
-        productCode: item.productCode,
-        productName: item.productName,
-        undoutId: item.undoutId,
-        undoutName: item.undoutName,
-        valChange: item.valChange,
-        min: item.localMinPrice,
-        med: item.localMedPrice,
-        max: item.localMaxPrice,
-        percentTax: item.percentTax,
-        includeTaxPrice: !!item.priceIncludeTax,
-        stock: item.qtyStock
-      };
-      currProduct.name = currProduct.productName;
-      currProduct.unitProd = currProduct.undoutName;
-      currProduct.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectProduct(currProduct)} />
-      return currProduct;
-    }
-
-    request.GET(`inventory/process/stocks/getStocks?storeId=${formState.storeId}&inStock=true`, (resp) => {
-      const products = resp.data.map(mapProduct);
-      request.GET('inventory/process/stocks/getServices', (resp2) => {
-        const services = resp2.data.map(mapProduct);
-        setListProducts([...products, ...services]);
-        setOpenSeekProducts(true);
-        setLoading(false);
-      }, () => {
-        setListProducts(products);
-        setOpenSeekProducts(true);
-        setLoading(false);
-      });
-    }, () => {
-      setLoading(false);
-    });
-
+    setOpenSeekProducts(true);
   }
 
   const propsToControlPanel = {
@@ -379,7 +325,9 @@ export const useQuotes = ({ setLoading, setActiveTab, screenControl = {}, canDel
     setLoading,
     data: {
       setLoading,
-      listProducts
+      storeId: validInt(formState.storeId),
+      url: `${QUOTES_URL}/products`,
+      fnSelect: fnSelectProduct
     }
   }
 
@@ -393,7 +341,8 @@ export const useQuotes = ({ setLoading, setActiveTab, screenControl = {}, canDel
       setLoading,
       currentItem: currentProduct,
       fnSave: fnSaveCurrentItem,
-      canEditPrice: settings.canEditPrice
+      canEditPrice: settings.canEditPrice,
+      hasDateOutControl: settings.hasDateOutControl
     }
   }
 
@@ -424,7 +373,8 @@ export const useQuotes = ({ setLoading, setActiveTab, screenControl = {}, canDel
   }
 
   useEffect(() => {
-    fnGetData();
+    fnGetData();
+
   }, [])
 
   return {

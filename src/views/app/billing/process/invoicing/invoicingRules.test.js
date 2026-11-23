@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import {
-  buildInvoicePayload, buildLinePayload, headerFromApi, lineFromApi, listParams, localToday, validateInvoice, validateLine
+  applyGlobalDiscount, buildInvoicePayload, buildLinePayload, headerFromApi, lineFromApi, listParams, localToday, validateInvoice, validateLine
 } from './invoicingRules';
 
 // Mismos casos que modules/billing/invoicing/__tests__ del back (InvoicingDTO).
@@ -60,7 +60,7 @@ describe('buildInvoicePayload', () => {
   });
   test('la línea solo manda lo que decide el usuario', () => {
     const line = buildLinePayload({ ...LINE, total: 1, unitedCoste: 5, qtyDist: 3, unitedOut: 'X', dateOut: '2026-11-20T00:00:00', taxPercent: '' });
-    expect(Object.keys(line).sort()).toEqual(['areaId', 'discountPercent', 'expirationDate', 'lotCode', 'price', 'priceType', 'productCode', 'qty', 'storeId', 'taxPercent', 'unitId'].sort());
+    expect(Object.keys(line).sort()).toEqual(['areaId', 'discountId', 'discountPercent', 'expirationDate', 'lotCode', 'price', 'priceType', 'productCode', 'qty', 'storeId', 'taxPercent', 'unitId'].sort());
     expect(line).toMatchObject({ expirationDate: '2026-11-20', priceType: 2, taxPercent: undefined });
   });
 });
@@ -84,5 +84,18 @@ describe('listParams', () => {
   test('paginación y búsqueda', () => {
     expect(listParams()).toEqual({ limit: 100, offset: 0 });
     expect(listParams({ search: ' ana ', offset: 100 })).toEqual({ limit: 100, offset: 100, search: 'ana' });
+  });
+});
+
+describe('descuento del catálogo en la línea (pendiente #16)', () => {
+  test('la línea que viaja al back lleva el id del descuento (0 si es digitado a mano)', () => {
+    expect(buildLinePayload({ productCode: 'P1', unitId: 1, qty: 1, price: 10, discountPercent: 15, discountId: 2 }).discountId).toBe(2);
+    expect(buildLinePayload({ productCode: 'P1', unitId: 1, qty: 1, price: 10, discountPercent: 15 }).discountId).toBe(0);
+  });
+
+  test('el descuento global reemplaza el porcentaje de la línea y la deja sin descuento del catálogo', () => {
+    const [line] = applyGlobalDiscount([{ subtotal: 100, taxPercent: 15, discountPercent: 15, discountId: 2 }], 10);
+    expect(line.discountPercent).toBe(10);
+    expect(line.discountId).toBe(0);
   });
 });

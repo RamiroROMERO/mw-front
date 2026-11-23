@@ -78,10 +78,10 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
     request.GET('billing/settings/customers/?status=1', (resp) => {
       const customers = resp.data.map((item) => ({
         id: item.id,
-        label: `${item.id} | ${item.rtn} | ${item.nomcli}`,
+        label: `${item.id} | ${item.dni} | ${item.name}`,
         value: item.id,
-        rtn: item.rtn,
-        name: item.nomcli
+        rtn: item.dni,
+        name: item.name
       }));
       setListCustomers(customers);
       setLoading(false);
@@ -289,8 +289,8 @@ export const useCreditNotes = ({ setLoading, screenControl }) => {
         numberCAI: item.numberCAI,
         date: item.date,
         customerId: item.customerId,
-        clientRtn: item.clientData ? item.clientData.rtn : '',
-        clientName: item.clientData ? item.clientData.nomcli : '',
+        clientRtn: item.clientData ? item.clientData.dni : '',
+        clientName: item.clientData ? item.clientData.name : '',
         typeId: item.typeId,
         typeOther: item.typeOther,
         description: item.description,

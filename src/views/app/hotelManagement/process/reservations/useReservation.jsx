@@ -143,11 +143,11 @@ export const useReservation = ({ setLoading, screenControl }) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,
-          label: `${item.id} | ${item.rtn} | ${item.nomcli}`,
+          label: `${item.id} | ${item.dni} | ${item.name}`,
           value: item.id,
-          rtn: item.rtn,
-          name: item.nomcli,
-          phone: item.tel,
+          rtn: item.dni,
+          name: item.name,
+          phone: item.phone,
           email: item.email
         }
       });

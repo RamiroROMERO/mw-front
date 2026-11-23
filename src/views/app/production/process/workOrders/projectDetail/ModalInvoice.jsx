@@ -55,7 +55,7 @@ const ModalInvoice = (props) => {
         <Row>
           <Colxx xxs="12">
             <InputField
-              value={projectData.facCliente ? projectData.facCliente.nomcli : ""}
+              value={projectData.facCliente ? projectData.facCliente.name : ""}
               name="customerName"
               disabled
               type="text"

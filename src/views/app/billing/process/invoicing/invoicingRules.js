@@ -76,6 +76,7 @@ export const buildLinePayload = (line) => ({
   qty: num(line.qty),
   price: num(line.price),
   discountPercent: num(line.discountPercent),
+  discountId: num(line.discountId),
   taxPercent: isBlank(line.taxPercent) ? undefined : num(line.taxPercent),
   priceType: num(line.typePrice),
   areaId: num(line.areaId),
@@ -129,6 +130,7 @@ export const lineFromApi = (line = {}) => ({
   price: num(line.price),
   subtotal: num(line.subtotal),
   discountPercent: num(line.discountPercent),
+  discountId: num(line.discountId),
   discountValue: num(line.discountValue),
   taxPercent: num(line.taxPercent),
   taxValue: num(line.taxValue),
@@ -224,6 +226,7 @@ export const lineFromDocument = (line = {}, { areaId = 0, storeId = 0, sellerCod
   price: num(line.price),
   subtotal: num(line.subtotal),
   discountPercent: num(line.discountPercent),
+  discountId: num(line.discountId),
   discountValue: num(line.discountValue),
   taxPercent: num(line.taxPercent),
   taxValue: num(line.taxValue),
@@ -312,6 +315,7 @@ export const applyGlobalDiscount = (lines = [], percent = 0) => lines.map((line)
   return {
     ...line,
     discountPercent: num(percent),
+    discountId: 0, // el global reemplaza el porcentaje de la línea: deja de ser el del catálogo
     discountValue,
     taxValue,
     subtotTaxValue: taxed ? base : 0,

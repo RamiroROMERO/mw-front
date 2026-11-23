@@ -185,3 +185,13 @@ describe('totales de una orden exonerada (SPEC v2-67-sr)', () => {
     expect(calculateTotals(lines)).toMatchObject({ exoneratedValue: 0, exemptValue: 200 });
   });
 });
+
+describe('lote de la línea (pendiente #25)', () => {
+  test('un lote de más de 50 caracteres se rechaza y uno de 50 pasa', () => {
+    expect(validateLine({ ...LINE, lotCode: 'L'.repeat(51) })).toBe('page.quotes.error.line.lot');
+    expect(validateLine({ ...LINE, lotCode: 'L'.repeat(50) })).toBeNull();
+  });
+  test('el lote y la fecha de salida viajan en la línea', () => {
+    expect(buildLinePayload({ ...LINE, lotCode: 'L1', expirationDate: '2027-01-31' })).toMatchObject({ lotCode: 'L1', expirationDate: '2027-01-31' });
+  });
+});

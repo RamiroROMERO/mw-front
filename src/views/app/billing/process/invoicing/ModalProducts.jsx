@@ -8,7 +8,7 @@ import { PRODUCTS_PATH } from "./invoicingRules";
 // `@Components/modalSearch`; aquí solo se configura. Una fila por unidad de venta (distribución activa); los precios ya vienen sin el ISV incluido.
 const ModalProducts = (props) => {
   const { data, setOpen } = props;
-  const { storeId, fnSelect } = data;
+  const { storeId, fnSelect, url = PRODUCTS_PATH } = data;
 
   // IntlMessages es un hook: se llama aquí arriba, no dentro de useMemo.
   const textCode = IntlMessages("page.invoicing.modal.products.table.code");
@@ -36,8 +36,8 @@ const ModalProducts = (props) => {
   ], [textCode, textName, textUnit, textMin, textMed, textMax, textStock]);
 
   const config = useMemo(() => ({
-    url: PRODUCTS_PATH, columns, onSelect: fnSelect, extraParams: { storeId }, pageSize: 50
-  }), [columns, fnSelect, storeId]);
+    url, columns, onSelect: fnSelect, extraParams: { storeId }, pageSize: 50
+  }), [columns, fnSelect, storeId, url]);
 
   return <ModalSearchContent data={config} setOpen={setOpen} />;
 };

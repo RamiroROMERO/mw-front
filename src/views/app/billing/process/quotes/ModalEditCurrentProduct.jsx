@@ -4,9 +4,10 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { InputField } from '@Components/inputFields';
 import { Checkbox } from '@Components/checkbox';
+import DateCalendar from '@Components/dateCalendar';
 import { formatNumber, IntlMessages } from '@Helpers/Utils';
 import { useForm } from '@Hooks';
-import { calculateLine, discountPercentFromValue, priceChoices, validateLine } from './quoteRules';
+import { calculateLine, discountPercentFromValue, MAX, priceChoices, validateLine } from './quoteRules';
 
 // Línea de la cotización (SPEC v2-66-sr). Sin el permiso de editar precio del perfil del usuario el precio solo se elige entre los tres del producto (el
 // back lo vuelve a exigir). El impuesto es el del producto o 0 (línea exenta). El descuento se digita en porcentaje o por valor (F2 del legacy), que se
@@ -14,7 +15,7 @@ import { calculateLine, discountPercentFromValue, priceChoices, validateLine } f
 export const ModalEditCurrentProduct = (props) => {
 
   const { data } = props;
-  const { currentItem, fnSave, canEditPrice = false } = data;
+  const { currentItem, fnSave, canEditPrice = false, hasDateOutControl = false } = data;
 
   const [openAccord, setOpenAccord] = useState('1');
   const [sendForm, setSendForm] = useState(false);
@@ -27,7 +28,7 @@ export const ModalEditCurrentProduct = (props) => {
   };
 
   const { formState, onInputChange, onBulkForm } = useForm({ ...currentItem });
-  const { productCode, productName, unitProd, price, qty, subtotal, discountPercent, discountValue, taxPercent, taxValue, total, stock, productTax } = formState;
+  const { productCode, productName, unitProd, price, qty, subtotal, discountPercent, discountValue, taxPercent, taxValue, total, stock, productTax, lotCode, expirationDate } = formState;
 
   // IntlMessages es un hook: se pide una vez aquí arriba, nunca dentro de una condición.
   const priceLockedText = IntlMessages('page.quotes.priceLocked');
@@ -98,6 +99,29 @@ export const ModalEditCurrentProduct = (props) => {
           </Colxx>
         </Row>
         {!canEditPrice && <p className='text-muted small'>{priceLockedText}</p>}
+        {hasDateOutControl && (
+          <Row>
+            <Colxx xxs={12} md={6}>
+              <InputField
+                label='page.invoicing.input.lotCode'
+                name={"lotCode"}
+                value={lotCode || ''}
+                onChange={onInputChange}
+                maxLength={MAX.lotCode}
+                invalid={!!errorOf('page.quotes.error.line.lot')}
+                feedbackText={errorOf('page.quotes.error.line.lot')}
+              />
+            </Colxx>
+            <Colxx xxs={12} md={6}>
+              <DateCalendar
+                value={expirationDate || ''}
+                name="expirationDate"
+                label="page.invoicing.input.dateOut"
+                onChange={onInputChange}
+              />
+            </Colxx>
+          </Row>
+        )}
         <Row>
           <Colxx xxs={12}>
             <Accordion flush open={openAccord} toggle={toggleAccord} className='mb-4'>

@@ -6,7 +6,6 @@ import { request } from '@Helpers/core';
 import { RandomCodeGenerator } from '@Helpers/UuIdGenerator';
 import { printDocument } from '@Helpers/printDocument';
 import notification from '@Containers/ui/Notifications';
-import TableButtons from '@Components/tableButtons';
 import ModalViewCust from '../customers/ModalViewCust';
 import ModalProducts from '../invoicing/ModalProducts';
 import ModalSeekQuotes from '../quotes/ModalSeekQuotes';
@@ -15,7 +14,7 @@ import { ModalNewCustomer } from '../quotes/ModalNewCustomer';
 import ModalSendEmail from '../quotes/ModalSendEmail';
 import ModalSeekPurchaseOrders from './ModalSeekPurchaseOrders';
 import {
-  buildInitialForm, buildOrderPayload, formFromOrder, isQuoteLocked, lineFromApi, lineFromProduct, orderTotals, validateOrder
+  buildInitialForm, buildOrderPayload, formFromOrder, isQuoteLocked, lineFromApi, lineFromProduct, productFromSearchRow, orderTotals, validateOrder
 } from './purchaseOrderRules';
 
 const ORDERS_URL = 'billing/process/purchaseOrders';
@@ -45,7 +44,6 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
   // Formato de fecha configurado por el Administrador (mw_setting.form_date) — DMY es el default del legacy cuando el ajuste viene vacío.
   const [dateFormat, setDateFormat] = useState('DMY');
   const [dataDetails, setDataDetails] = useState([]);
-  const [listProducts, setListProducts] = useState([]);
   const [currentProduct, setCurrentProduct] = useState({});
   const [isEditItem, setIsEditItem] = useState(false);
 
@@ -217,12 +215,13 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
 
   // La orden exige un cliente CREADO: sus datos se copian a la orden (se pueden corregir a mano, pero `customerId` solo cambia eligiendo otro).
   const setSelectedCustomer = (customer) => {
-    const { id: customerId, nomcli, rtn, tel, purchaseContactEmail, direcc } = customer;
-    onBulkForm({ ...formState, customerId, customerCode: rtn, customerName: nomcli, customerPhone: tel || '', customerAddress: direcc || '', customerEmail: purchaseContactEmail || '' })
+    const { id: customerId, name, dni, phone, purchaseContactEmail, address } = customer;
+    onBulkForm({ ...formState, customerId, customerCode: dni, customerName: name, customerPhone: phone || '', customerAddress: address || '', customerEmail: purchaseContactEmail || '' })
     setOpenSeekCustomer(false);
   }
 
-  const fnSelectProduct = (product) => {
+  const fnSelectProduct = (row) => {
+    const product = productFromSearchRow(row);
     setOpenSeekProducts(false);
     setIsEditItem(false);
     setCurrentProduct(lineFromProduct(product, RandomCodeGenerator()));
@@ -243,59 +242,7 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
       return;
     }
     setIsEditItem(false);
-
-    if (validInt(formState.storeId) === 0) {
-      request.GET(`inventory/process/stocks/getStockForQuotes`, (resp) => {
-        const products = resp.data.map((item) => {
-          item.name = item.productName;
-          item.unitProd = item.undoutName;
-          item.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectProduct(item)} />
-          return item;
-        });
-        setListProducts(products);
-        setOpenSeekProducts(true);
-        setLoading(false);
-      }, () => {
-        setLoading(false);
-      });
-      return;
-    }
-
-    const mapProduct = (item) => {
-      const currProduct = {
-        productCode: item.productCode,
-        productName: item.productName,
-        undoutId: item.undoutId,
-        undoutName: item.undoutName,
-        valChange: item.valChange,
-        min: item.localMinPrice,
-        med: item.localMedPrice,
-        max: item.localMaxPrice,
-        percentTax: item.percentTax,
-        includeTaxPrice: !!item.priceIncludeTax,
-        stock: item.qtyStock
-      };
-      currProduct.name = currProduct.productName;
-      currProduct.unitProd = currProduct.undoutName;
-      currProduct.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectProduct(currProduct)} />
-      return currProduct;
-    }
-
-    request.GET(`inventory/process/stocks/getStocks?storeId=${formState.storeId}&inStock=true`, (resp) => {
-      const products = resp.data.map(mapProduct);
-      request.GET('inventory/process/stocks/getServices', (resp2) => {
-        const services = resp2.data.map(mapProduct);
-        setListProducts([...products, ...services]);
-        setOpenSeekProducts(true);
-        setLoading(false);
-      }, () => {
-        setListProducts(products);
-        setOpenSeekProducts(true);
-        setLoading(false);
-      });
-    }, () => {
-      setLoading(false);
-    });
+    setOpenSeekProducts(true);
   }
 
   // "Cotización" del ControlPanel (Controlpanelbtn2 del legacy): solo en una orden nueva; con datos pide confirmación. A diferencia del legacy (quote_id siempre en 0)
@@ -452,7 +399,9 @@ export const usePurchaseOrders = ({ setLoading, setActiveTab, screenControl = {}
     setLoading,
     data: {
       setLoading,
-      listProducts
+      storeId: validInt(formState.storeId),
+      url: `${ORDERS_URL}/products`,
+      fnSelect: fnSelectProduct
     }
   }
 

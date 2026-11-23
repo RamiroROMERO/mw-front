@@ -103,6 +103,7 @@ export const validateLine = (line) => {
   if (!(num(line?.price) > 0)) return 'page.quotes.error.line.price';
   if (!isBlank(line?.discountPercent) && !(num(line.discountPercent) >= 0 && num(line.discountPercent) <= 100)) return 'page.quotes.error.line.discount';
   if (!isBlank(line?.taxPercent) && !(num(line.taxPercent) >= 0 && num(line.taxPercent) <= 100)) return 'page.quotes.error.line.tax';
+  if (String(line?.lotCode ?? '').length > MAX.lotCode) return 'page.quotes.error.line.lot';
   return null;
 };
 
@@ -206,6 +207,24 @@ export const lineFromApi = (line, index = 0) => ({
  * si el producto lo incluye; el impuesto es el del producto. Los precios del producto viajan en la línea solo para mostrarlos (el back los
  * vuelve a leer de la distribución).
  */
+/**
+ * Fila del buscador de productos de Facturación (`GET .../products`, paginado: precios YA sin ISV y el impuesto del producto) al producto que usa la línea
+ * de la cotización y de la orden de compra de clientes.
+ */
+export const productFromSearchRow = (row = {}) => ({
+  productCode: row.code,
+  productName: row.name,
+  undoutId: row.unitId,
+  undoutName: row.unitName,
+  valChange: row.unitFactor,
+  min: row.minPrice,
+  med: row.midPrice,
+  max: row.maxPrice,
+  percentTax: row.taxPercent,
+  includeTaxPrice: false,
+  stock: row.kind === 2 ? undefined : row.stock
+});
+
 export const lineFromProduct = (product, tempCode) => {
   const taxPercent = num(product.percentTax);
   const price = priceWithoutTax(product.med, { includesTax: Boolean(product.includeTaxPrice), taxPercent });

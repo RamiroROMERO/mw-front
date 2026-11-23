@@ -42,6 +42,7 @@ const Invoicing = (props) => {
   const [listAreas, setListAreas] = useState([]);
   const [listWarehouse, setListWarehouse] = useState([]);
   const [listSellers, setListSellers] = useState([]);
+  const [discountOptions, setDiscountOptions] = useState([]);
   const [pendingLoad, setPendingLoad] = useState(null);
   const [openMsgLoadDocument, setOpenMsgLoadDocument] = useState(false);
   const [openModalSeekQuotes, setOpenModalSeekQuotes] = useState(false);
@@ -128,6 +129,7 @@ const Invoicing = (props) => {
     price: 0,
     subtotal: 0,
     discountPercent: 0,
+    discountId: 0,
     discountValue: 0,
     taxPercent: 0,
     taxValue: 0,
@@ -149,7 +151,7 @@ const Invoicing = (props) => {
     requireExpLot: 0
   }, invoiceDetailValid);
 
-  const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
+  const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountId, discountValue, taxPercent, taxValue,
     total: totalProd, typePrice, priceLocalMin, priceLocalMid, priceLocalMax, otherPriceProd, unitedCoste, unitedOut, unitId, qtyDist,
     haveComiss, areaId, storeId, lotCode, dateOut, productType, existQty, requireExpLot } = formDetail;
 
@@ -234,9 +236,25 @@ const Invoicing = (props) => {
       taxValue: tax3,
       total: total3,
       discountValue: discount1,
-      discountPercent: e.target.value
+      discountPercent: e.target.value,
+      discountId: 0 // un porcentaje digitado a mano ya no es el de un descuento del catálogo
     }
     setBulkFormDetail(newDiscount);
+  }
+
+  // Descuento del catálogo (fac_desc): carga su porcentaje y guarda su id en la línea (como F1 en el legacy).
+  const handleDiscountSelect = e => {
+    const chosen = discountOptions.find((item) => String(item.id) === String(e.target.value));
+    const percent = chosen ? Number(chosen.percentValue) : 0;
+    const discount1 = validFloat((percent * subtotal) / 100);
+    const tax3 = validFloat((taxPercent * (subtotal - discount1)) / 100);
+    setBulkFormDetail({
+      discountId: chosen ? chosen.id : 0,
+      discountPercent: percent,
+      discountValue: discount1,
+      taxValue: tax3,
+      total: validFloat((subtotal - discount1) + tax3)
+    });
   }
 
   const handleTaxPercentChange = e => {
@@ -609,6 +627,7 @@ const Invoicing = (props) => {
       price: validFloat(price),
       subtotal: validFloat(subtotal),
       discountPercent: validFloat(discountPercent),
+      discountId: validInt(discountId),
       discountValue: validFloat(discountValue),
       subtotTaxValue: validFloat(taxedValue),
       subTotExeValue: validFloat(exemptValue),
@@ -672,6 +691,7 @@ const Invoicing = (props) => {
       price: 0,
       subtotal: 0,
       discountPercent: 0,
+      discountId: 0,
       discountValue: 0,
       taxPercent: 0,
       taxValue: 0,
@@ -762,10 +782,10 @@ const Invoicing = (props) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,
-          label: `${item.id} | ${item.rtn} | ${item.nomcli}`,
+          label: `${item.id} | ${item.dni} | ${item.name}`,
           value: item.id,
-          rtn: item.rtn,
-          name: item.nomcli,
+          rtn: item.dni,
+          name: item.name,
           email: item.email
         }
       });
@@ -808,6 +828,7 @@ const Invoicing = (props) => {
 
       setLoading(false);
     });
+    request.GET('admin/discounts/getSL', (resp) => setDiscountOptions(resp.data.map((item) => ({ ...item, name: `${item.name} (${Number(item.percentValue)}%)` }))), () => { });
     request.GET('admin/companies/getOperationalSettings', (resp) => {
       setHasSellerControl(!!resp.data.hasSellerControl);
       setHasDateOutControl(!!resp.data.hasDateOutControl);
@@ -1129,7 +1150,7 @@ const Invoicing = (props) => {
 
   const propsToInvoicingDetail = {
     productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
-    totalProd, onInputDetaChange, handleQtyChange, handlePriceChange, handleDiscPercentChange, handleTaxPercentChange,
+    totalProd, onInputDetaChange, handleQtyChange, handlePriceChange, handleDiscPercentChange, handleTaxPercentChange, discountId, discountOptions, handleDiscountSelect,
     fnViewProducts, fnChangePrice, fnAddProduct, formValidationDetail, sendFormDetail, isInvoiceSaved,
     lotCode, dateOut, hasDateOutControl
   }

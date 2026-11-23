@@ -24,10 +24,10 @@ const ModalViewCust = (props) => {
       text: textType, dataField: "typeCustomer", headerStyle: { 'width': '15%' },
       classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell'
     },
-    { text: textDni, dataField: "rtn", headerStyle: { 'width': '20%' } },
-    { text: textName, dataField: "nomcli", headerStyle: { 'width': '25%' } },
+    { text: textDni, dataField: "dni", headerStyle: { 'width': '20%' } },
+    { text: textName, dataField: "name", headerStyle: { 'width': '25%' } },
     {
-      text: textPhone, dataField: "tel", headerStyle: { 'width': '15%' },
+      text: textPhone, dataField: "phone", headerStyle: { 'width': '15%' },
       classes: 'd-md-none-table-cell', headerClasses: 'd-md-none-table-cell'
     },
     {

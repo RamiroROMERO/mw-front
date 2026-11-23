@@ -42,7 +42,7 @@ export const useProjects = ({ setLoading, screenControl, adminControl }) => {
     setLoading(true);
     request.GET('rrhh/process/projects', (resp) => {
       const projects = resp.data.map((item) => {
-        item.customer = item.facCliente ? item.facCliente.nomcli : ''
+        item.customer = item.facCliente ? item.facCliente.name : ''
         item.statusIcon = item.status === 1 ? <i className="medium-icon bi bi-check2-square" /> :
           <i className="medium-icon bi bi-square" />
         return item;
@@ -134,10 +134,10 @@ export const useProjects = ({ setLoading, screenControl, adminControl }) => {
       const customers = resp.data.map((item) => {
         return {
           id: item.id,
-          label: `${item.id} | ${item.rtn} | ${item.nomcli}`,
+          label: `${item.id} | ${item.dni} | ${item.name}`,
           value: item.id,
-          rtn: item.rtn,
-          name: item.nomcli
+          rtn: item.dni,
+          name: item.name
         }
       });
       setListCustomers(customers);

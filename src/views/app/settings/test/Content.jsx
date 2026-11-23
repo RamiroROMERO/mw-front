@@ -64,10 +64,10 @@ const Content = (props) => {
         const elem = {};
         elem.id = item.id
         elem.typeCustomer = item.customerTypeData ? item.customerTypeData.name : ""
-        elem.dni = item.rtn
-        elem.name = item.nomcli
+        elem.dni = item.dni
+        elem.name = item.name
         elem.dateAdmission = item.entryDate
-        elem.phone = item.tel
+        elem.phone = item.phone
         return elem;
       });
       setDataCustomers(data);

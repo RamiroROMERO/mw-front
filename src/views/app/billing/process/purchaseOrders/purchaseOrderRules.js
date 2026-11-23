@@ -5,7 +5,7 @@ import {
   MAX, MAX_LINES, calculateTotals, formFromQuote, isQuoteLocked, isWithinLimit, localToday, validateLine, buildLinePayload
 } from '../quotes/quoteRules';
 
-export { MAX, calculateTotals, isQuoteLocked, lineFromApi, lineFromProduct, calculateLine, priceChoices, discountPercentFromValue } from '../quotes/quoteRules';
+export { MAX, calculateTotals, isQuoteLocked, lineFromApi, lineFromProduct, productFromSearchRow, calculateLine, priceChoices, discountPercentFromValue } from '../quotes/quoteRules';
 
 export const MAX_EXONERATION = 50;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

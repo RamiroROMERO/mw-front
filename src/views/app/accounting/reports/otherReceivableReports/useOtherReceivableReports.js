@@ -124,7 +124,7 @@ export const useOtherReceivableReports = ({ setLoading }) => {
       setListCustomerTypes(resp.data.map((item) => ({ label: item.name, value: item.id })));
     }, () => { });
     request.GET('billing/settings/customers/?status=1', (resp) => {
-      setListCustomers(resp.data.map((item) => ({ label: `${item.id} | ${item.nomcli}`, value: item.id })));
+      setListCustomers(resp.data.map((item) => ({ label: `${item.id} | ${item.name}`, value: item.id })));
     }, () => { });
     fnSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps

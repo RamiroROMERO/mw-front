@@ -3,12 +3,13 @@ import { IntlMessages } from "@Helpers/Utils";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { InputField } from '@Components/inputFields';
+import { SimpleSelect } from '@Components/simpleSelect';
 import { InputLabel } from '@Components/inputLabel';
 import DateCalendar from '@Components/dateCalendar';
 
 const InvoicingDetail = (props) => {
   const { productCode, description, unitProd, qty, price, subtotal, discountPercent, discountValue, taxPercent, taxValue,
-    totalProd, onInputDetaChange, handleQtyChange, handlePriceChange, handleDiscPercentChange, handleTaxPercentChange,
+    totalProd, onInputDetaChange, handleQtyChange, handlePriceChange, handleDiscPercentChange, handleTaxPercentChange, discountId, discountOptions = [], handleDiscountSelect,
     fnViewProducts, fnChangePrice, fnAddProduct, formValidationDetail, sendFormDetail, isInvoiceSaved,
     lotCode, dateOut, hasDateOutControl } = props;
 
@@ -101,6 +102,17 @@ const InvoicingDetail = (props) => {
                     label="page.invoicing.input.subtotal"
                   />
                 </Colxx>
+                {discountOptions.length > 0 && (
+                  <Colxx xxs="6" xs="4" sm="3" md="3" lg="2">
+                    <SimpleSelect
+                      name="discountId"
+                      label="page.invoicing.input.discountCatalog"
+                      value={discountId || 0}
+                      onChange={handleDiscountSelect}
+                      options={discountOptions}
+                    />
+                  </Colxx>
+                )}
                 <Colxx xxs="6" xs="4" sm="3" md="3" lg="2">
                   <InputField
                     value={discountPercent}

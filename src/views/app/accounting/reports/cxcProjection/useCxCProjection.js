@@ -89,7 +89,7 @@ export const useCxCProjection = ({ setLoading }) => {
 
   useEffect(() => {
     request.GET('billing/settings/customers/?status=1', (resp) => {
-      setListCustomers(resp.data.map((item) => ({ label: `${item.id} | ${item.nomcli}`, value: item.id })));
+      setListCustomers(resp.data.map((item) => ({ label: `${item.id} | ${item.name}`, value: item.id })));
     }, () => { });
     request.GET('admin/customerTypes/getForCustomers', (resp) => {
       setListCustomerTypes(resp.data.map((item) => ({ label: item.name, value: item.id })));

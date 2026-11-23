@@ -22,7 +22,7 @@ export const useCxCInvoiceTrace = ({ setLoading }) => {
   const fnLoadCustomers = () => {
     if (listCustomers.length > 0) return;
     request.GET('billing/settings/customers/?status=1', (resp) => {
-      setListCustomers(resp.data.map((item) => ({ label: `${item.id} | ${item.nomcli}`, value: item.id })));
+      setListCustomers(resp.data.map((item) => ({ label: `${item.id} | ${item.name}`, value: item.id })));
     }, () => { });
   }
 
