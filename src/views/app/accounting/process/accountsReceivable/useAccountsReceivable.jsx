@@ -104,7 +104,7 @@ export const useAccountsReceivable = ({ setLoading }) => {
   }
 
   useEffect(() => {
-    request.GET('admin/customerTypes', (resp) => {
+    request.GET('admin/customerTypes/getForCustomers', (resp) => {
       setListCustomerTypes(resp.data.map((item) => ({ label: item.name, value: item.id })));
     }, () => { });
     fnSearch();

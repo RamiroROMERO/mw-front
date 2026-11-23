@@ -70,7 +70,7 @@ export const useCustomers = ({ setLoading }) => {
       setListDepartments(resp.data.map(item => ({ name: item.name, id: item.code })));
     }, () => { });
 
-    request.GET('admin/customerTypes', (resp) => {
+    request.GET('admin/customerTypes/getForCustomers', (resp) => {
       setListTypeCustomers(resp.data);
     }, () => { });
 

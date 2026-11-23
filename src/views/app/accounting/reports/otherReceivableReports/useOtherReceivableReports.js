@@ -120,7 +120,7 @@ export const useOtherReceivableReports = ({ setLoading }) => {
     };
 
   useEffect(() => {
-    request.GET('admin/customerTypes', (resp) => {
+    request.GET('admin/customerTypes/getForCustomers', (resp) => {
       setListCustomerTypes(resp.data.map((item) => ({ label: item.name, value: item.id })));
     }, () => { });
     request.GET('billing/settings/customers/?status=1', (resp) => {

@@ -902,7 +902,7 @@ const PointSales = (props) => {
       setLoading(false);
     });
     setLoading(true);
-    request.GET('billing/settings/cashRegisters?status=1', (resp) => {
+    request.GET('billing/settings/cashRegisters/getSL', (resp) => {
       const cashRegisters = resp.data;
       setListCashBoxes(cashRegisters);
       setLoading(false);

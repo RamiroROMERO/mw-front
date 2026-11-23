@@ -91,7 +91,7 @@ export const useCxCProjection = ({ setLoading }) => {
     request.GET('billing/settings/customers/?status=1', (resp) => {
       setListCustomers(resp.data.map((item) => ({ label: `${item.id} | ${item.nomcli}`, value: item.id })));
     }, () => { });
-    request.GET('admin/customerTypes', (resp) => {
+    request.GET('admin/customerTypes/getForCustomers', (resp) => {
       setListCustomerTypes(resp.data.map((item) => ({ label: item.name, value: item.id })));
     }, () => { });
     fnSearch();

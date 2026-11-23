@@ -286,7 +286,7 @@ export const useModalInvoice = ({ bookingId, baseRate, creditDays, roomId, check
     });
 
     setLoading(true);
-    request.GET('billing/settings/cashRegisters?status=1', (resp) => {
+    request.GET('billing/settings/cashRegisters/getSL', (resp) => {
       const cashRegisters = resp.data.map((item) => {
         item.label = item.name
         item.value = item.id

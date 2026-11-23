@@ -300,7 +300,7 @@ export const useTicketPurchase = ({ setLoading, setTicketDetail, ticketDetail, o
     });
 
     setLoading(true);
-    request.GET(`admin/paymentTypes`, (resp) => {
+    request.GET(`admin/paymentTypes/getForDocuments`, (resp) => {
       const paymentMethods = resp.data.map((item) => {
         return {
           label: item.name,

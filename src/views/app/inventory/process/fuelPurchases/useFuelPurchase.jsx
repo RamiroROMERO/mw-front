@@ -302,7 +302,7 @@ export const useFuelPurchase = ({ setLoading }) => {
     });
 
     setLoading(true);
-    request.GET('admin/paymentTypes', (resp) => {
+    request.GET('admin/paymentTypes/getForDocuments', (resp) => {
       const paymentMethod = resp.data.map((item) => {
         return {
           label: item.name,
