@@ -4,7 +4,7 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import IconCard from '@Components/cards/IconCard';
 import { adminRoot } from '@Constants/defaultValues';
 
-const Settings = (props) => {
+const Settings = () => {
   const history = useNavigate();
   const propsToCard = [{
     id: 1,
@@ -34,7 +34,7 @@ const Settings = (props) => {
     title: "menu.typesRetention",
     fnOnclick: () => {
       history(
-        `${adminRoot}/taxes/settings/typesRetention`,
+        `${adminRoot}/taxes/settings/typeRetentions`,
         { replace: true }
       );
     }

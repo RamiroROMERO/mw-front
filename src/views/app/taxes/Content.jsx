@@ -4,7 +4,7 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import IconCard from '@Components/cards/IconCard';
 import { adminRoot } from '@Constants/defaultValues';
 
-const Taxes = (props) => {
+const Taxes = () => {
   const history = useNavigate();
   const propsToCard = [{
     id: 1,
