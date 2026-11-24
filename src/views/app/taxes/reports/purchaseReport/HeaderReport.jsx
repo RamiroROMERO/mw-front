@@ -4,7 +4,7 @@ import DateCalendar from '@Components/dateCalendar';
 import { InputField } from '@Components/inputFields';
 import { IntlMessages } from '@Helpers/Utils';
 
-const HeaderReport = ({ dateStart, dateEnd, search, onInputChange, onSearchChange, fnSearchReport, fnPrint, fnExportDeclaration, fnExportPurchaseBook, fnExportImportBook }) => {
+const HeaderReport = ({ dateStart, dateEnd, search, errors = {}, sendForm = false, onInputChange, onSearchChange, fnSearchReport, fnPrint, fnExportDeclaration, fnExportPurchaseBook, fnExportImportBook }) => {
   return (
     <>
       <Row>
@@ -14,6 +14,8 @@ const HeaderReport = ({ dateStart, dateEnd, search, onInputChange, onSearchChang
             label="select.dateStart"
             value={dateStart}
             onChange={onInputChange}
+            invalid={sendForm && !!errors.dateStart}
+            feedbackText={sendForm && errors.dateStart ? errors.dateStart : null}
           />
         </Colxx>
         <Colxx xxs="12" md="6" lg="3">
@@ -22,6 +24,8 @@ const HeaderReport = ({ dateStart, dateEnd, search, onInputChange, onSearchChang
             label="select.dateEnd"
             value={dateEnd}
             onChange={onInputChange}
+            invalid={sendForm && !!errors.dateEnd}
+            feedbackText={sendForm && errors.dateEnd ? errors.dateEnd : null}
           />
         </Colxx>
         <Colxx xxs="12" md="6" lg="3">

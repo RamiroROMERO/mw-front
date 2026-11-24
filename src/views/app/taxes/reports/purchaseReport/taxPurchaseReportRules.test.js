@@ -1,0 +1,42 @@
+import { describe, expect, test } from 'vitest';
+import { buildReportRequest, matchesSearch, normalizeReport, reportFileName, validateReportRange } from './taxPurchaseReportRules';
+
+describe('petición', () => {
+  test('json solo lleva las fechas y pdf o xlsx suman el formato (en params, no en la URL)', () => {
+    expect(buildReportRequest('purchases', { dateStart: '2026-01-01', dateEnd: '2026-01-31' })).toEqual({
+      url: 'tax/reports/purchaseReport/purchases', params: { dateStart: '2026-01-01', dateEnd: '2026-01-31' }
+    });
+    const r = buildReportRequest('importBook', { dateStart: '2026-01-01', dateEnd: '2026-01-31' }, 'xlsx');
+    expect(r.params.format).toBe('xlsx');
+    expect(r.url).not.toContain('?');
+  });
+  test('nombres de archivo por tipo y formato', () => {
+    expect(reportFileName('purchaseBook', 'xlsx')).toBe('Libro de Compras.xlsx');
+    expect(reportFileName('creditNotes', 'pdf')).toBe('Reporte de NC Proveedores para Declaración Fiscal.pdf');
+  });
+});
+
+describe('validación (mismos casos del back)', () => {
+  test('fechas obligatorias, válidas, en orden y máximo 366 días', () => {
+    expect(validateReportRange({ dateStart: '', dateEnd: '2026-01-01' }).dateStart).toBeTruthy();
+    expect(validateReportRange({ dateStart: '2026-02-30', dateEnd: '2026-03-01' }).dateStart).toBeTruthy();
+    expect(validateReportRange({ dateStart: '2026-02-01', dateEnd: '2026-01-01' }).dateEnd).toBeTruthy();
+    expect(validateReportRange({ dateStart: '2026-01-01', dateEnd: '2027-01-03' }).dateEnd).toBeTruthy();
+    expect(validateReportRange({ dateStart: '2026-01-01', dateEnd: '2026-12-31' })).toEqual({});
+  });
+});
+
+describe('respuesta y búsqueda', () => {
+  test('normalizeReport devuelve listas y totales en cero sin datos', () => {
+    expect(normalizeReport()).toEqual({ rows: [], totals: { total: 0, exempt: 0, exonerated: 0, taxed: 0, tax: 0 } });
+    expect(normalizeReport({ rows: [{ a: 1 }], totals: { total: 5 } }).totals.total).toBe(5);
+  });
+  test('el filtro busca en fecha, proveedor, RTN y número (compras o nota de crédito)', () => {
+    const row = { date: '2026-01-05', providerName: 'Acme', providerRtn: '0801', number: 'F-1' };
+    expect(matchesSearch(row, 'acme')).toBe(true);
+    expect(matchesSearch(row, '0801')).toBe(true);
+    expect(matchesSearch({ creditNoteNumber: 'NC-9' }, 'nc-9')).toBe(true);
+    expect(matchesSearch(row, 'zzz')).toBe(false);
+    expect(matchesSearch(row, '')).toBe(true);
+  });
+});

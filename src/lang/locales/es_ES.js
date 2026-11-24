@@ -2809,6 +2809,7 @@ const esLang = {
   "page.fiscalPeriods.table.active": "Período Actual",
   "page.fiscalPeriods.table.status": "Activo",
   /* taxPurchaseReport page in taxes reports */
+  "page.taxPurchaseReport.msg.reportError": "No se pudo generar el Reporte de Compras.",
   "page.taxPurchaseReport.table.title": "Reporte de Compras para Declaración Fiscal",
   "page.taxPurchaseReport.table.rtnProvider": "RTN Proveedor",
   "page.taxPurchaseReport.table.documentNumber": "Número",

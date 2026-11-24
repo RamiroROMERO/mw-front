@@ -2777,6 +2777,7 @@ const enLang = {
   "page.fiscalPeriods.table.active": "Current Period",
   "page.fiscalPeriods.table.status": "Active",
   /* taxPurchaseReport page in taxes reports */
+  "page.taxPurchaseReport.msg.reportError": "The Purchases Report could not be generated.",
   "page.taxPurchaseReport.table.title": "Purchase Report for Fiscal Declaration",
   "page.taxPurchaseReport.table.rtnProvider": "Provider RTN",
   "page.taxPurchaseReport.table.documentNumber": "Number",
