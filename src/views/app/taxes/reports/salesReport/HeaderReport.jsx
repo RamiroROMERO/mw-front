@@ -5,7 +5,7 @@ import { InputField } from '@Components/inputFields';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { IntlMessages } from '@Helpers/Utils';
 
-const HeaderReport = ({ dateStart, dateEnd, cai, search, listDocuments, onInputChange, onSearchChange, fnSearchReport, fnPrint, fnExportDeclaration, fnExportSalesBook }) => {
+const HeaderReport = ({ dateStart, dateEnd, cai, search, errors = {}, sendForm = false, listDocuments, onInputChange, onSearchChange, fnSearchReport, fnPrint, fnExportDeclaration, fnExportSalesBook }) => {
   return (
     <>
       <Row>
@@ -24,6 +24,8 @@ const HeaderReport = ({ dateStart, dateEnd, cai, search, listDocuments, onInputC
             label="select.dateStart"
             value={dateStart}
             onChange={onInputChange}
+            invalid={sendForm && !!errors.dateStart}
+            feedbackText={sendForm && errors.dateStart ? errors.dateStart : null}
           />
         </Colxx>
         <Colxx xxs="12" md="6" lg="2">
@@ -32,6 +34,8 @@ const HeaderReport = ({ dateStart, dateEnd, cai, search, listDocuments, onInputC
             label="select.dateEnd"
             value={dateEnd}
             onChange={onInputChange}
+            invalid={sendForm && !!errors.dateEnd}
+            feedbackText={sendForm && errors.dateEnd ? errors.dateEnd : null}
           />
         </Colxx>
         <Colxx xxs="12" md="6" lg="4">

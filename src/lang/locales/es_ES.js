@@ -2883,6 +2883,7 @@ const esLang = {
   "page.littleCashSettlement.msg.closeConfirm": "¿Seguro que desea cerrar esta liquidación? Se generará el reembolso contable.",
   "page.littleCashSettlement.msg.deleteConfirm": "¿Seguro que desea eliminar esta liquidación? Los recibos regresarán a estar pendientes de liquidar.",
   /* taxSalesReport page in taxes reports */
+  "page.taxSalesReport.msg.reportError": "No se pudo generar el Reporte de Ventas.",
   "page.taxSalesReport.table.title": "Reporte de Ventas para Declaración Fiscal",
   "page.taxSalesReport.table.rtnClient": "RTN Cliente",
   "page.taxSalesReport.table.clientName": "Nombre del Cliente",

@@ -2851,6 +2851,7 @@ const enLang = {
   "page.littleCashSettlement.msg.closeConfirm": "Are you sure you want to close this settlement? The accounting reimbursement entry will be generated.",
   "page.littleCashSettlement.msg.deleteConfirm": "Are you sure you want to delete this settlement? The vouchers will go back to being pending.",
   /* taxSalesReport page in taxes reports */
+  "page.taxSalesReport.msg.reportError": "The Sales Report could not be generated.",
   "page.taxSalesReport.table.title": "Sales Report for Fiscal Declaration",
   "page.taxSalesReport.table.rtnClient": "Client RTN",
   "page.taxSalesReport.table.clientName": "Client Name",

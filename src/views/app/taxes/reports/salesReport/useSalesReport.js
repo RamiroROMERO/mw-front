@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
-import { useForm, useExportExcel } from '@Hooks';
-import { request } from '@Helpers/core';
+import { useForm } from '@Hooks';
+import { request, notifyError } from '@Helpers/core';
+import { buildReportRequest, matchesSearch, normalizeReport, reportFileName, validateReportRange } from './taxSalesReportRules';
 
+// Reporte de Ventas de Impuestos (SPEC v2-115-sr): todo sale de `GET tax/reports/salesReport/:type` (el back deriva lo fiscal, suma en centavos y arma
+// el PDF y el Excel). Un rango inválido se marca y NO llama al back; `GET` y `GETPdf` no notifican por sí mismos: se avisa aquí con `notifyError`.
 export const useSalesReport = ({ setLoading }) => {
-  const { fnExport } = useExportExcel(setLoading);
   const [allData, setAllData] = useState([]);
   const [listDocuments, setListDocuments] = useState([]);
-  const [dataTotals, setDataTotals] = useState({ total: 0, exemptValue: 0, exoneratedValue: 0, taxedValue: 0, tax: 0 });
+  const [dataTotals, setDataTotals] = useState(normalizeReport().totals);
+  const [errors, setErrors] = useState({});
+  const [sendForm, setSendForm] = useState(false);
 
   const { formState, onInputChange } = useForm({
     dateStart: DateHelper.format(DateHelper.startOf(DateHelper.now(), 'month')),
@@ -16,95 +20,73 @@ export const useSalesReport = ({ setLoading }) => {
     cai: '',
     search: ''
   });
-
   const { dateStart, dateEnd, cai, search } = formState;
 
   const [table, setTable] = useState({
-    title: IntlMessages("page.taxSalesReport.table.title"),
+    title: IntlMessages('page.taxSalesReport.table.title'),
     columns: [
-      { text: IntlMessages("table.column.date"), dataField: "date", type: 'date', headerStyle: { width: '8%' } },
-      { text: IntlMessages("page.taxSalesReport.table.rtnClient"), dataField: "rtnClient", headerStyle: { width: '10%' } },
-      { text: IntlMessages("page.taxSalesReport.table.clientName"), dataField: "clientName", headerStyle: { width: '17%' } },
-      { text: "CAI", dataField: "cai", headerStyle: { width: '15%' } },
-      { text: IntlMessages("page.taxSalesReport.table.documentNumber"), dataField: "documentNumber", headerStyle: { width: '10%' } },
-      { text: IntlMessages("table.column.subtotal"), dataField: "subtotal", type: 'number', headerStyle: { width: '6%' } },
-      { text: IntlMessages("table.column.discount"), dataField: "discount", type: 'number', headerStyle: { width: '6%' } },
-      { text: IntlMessages("page.taxSalesReport.table.exoneratedValue"), dataField: "exoneratedValue", type: 'number', headerStyle: { width: '7%' } },
-      { text: IntlMessages("page.taxPurchaseReport.table.exemptValue"), dataField: "exemptValue", type: 'number', headerStyle: { width: '7%' } },
-      { text: IntlMessages("page.taxPurchaseReport.table.taxedValue"), dataField: "taxedValue", type: 'number', headerStyle: { width: '7%' } },
-      { text: IntlMessages("table.column.tax"), dataField: "tax", type: 'number', headerStyle: { width: '7%' } },
-      { text: IntlMessages("table.column.total"), dataField: "total", type: 'number', headerStyle: { width: '7%' } }
+      { text: IntlMessages('table.column.date'), dataField: 'date', type: 'date', headerStyle: { width: '8%' } },
+      { text: IntlMessages('page.taxSalesReport.table.rtnClient'), dataField: 'clientRtn', headerStyle: { width: '10%' } },
+      { text: IntlMessages('page.taxSalesReport.table.clientName'), dataField: 'clientName', headerStyle: { width: '17%' } },
+      { text: 'CAI', dataField: 'cai', headerStyle: { width: '15%' } },
+      { text: IntlMessages('page.taxSalesReport.table.documentNumber'), dataField: 'number', headerStyle: { width: '10%' } },
+      { text: IntlMessages('table.column.subtotal'), dataField: 'subtotal', type: 'number', headerStyle: { width: '6%' } },
+      { text: IntlMessages('table.column.discount'), dataField: 'discount', type: 'number', headerStyle: { width: '6%' } },
+      { text: IntlMessages('page.taxSalesReport.table.exoneratedValue'), dataField: 'exonerated', type: 'number', headerStyle: { width: '7%' } },
+      { text: IntlMessages('page.taxPurchaseReport.table.exemptValue'), dataField: 'exempt', type: 'number', headerStyle: { width: '7%' } },
+      { text: IntlMessages('page.taxPurchaseReport.table.taxedValue'), dataField: 'taxed', type: 'number', headerStyle: { width: '7%' } },
+      { text: IntlMessages('table.column.tax'), dataField: 'tax', type: 'number', headerStyle: { width: '7%' } },
+      { text: IntlMessages('table.column.total'), dataField: 'total', type: 'number', headerStyle: { width: '7%' } }
     ],
     data: []
   });
 
-  const fnCalcTotals = (data) => {
-    const totals = data.reduce((acc, item) => {
-      acc.total += Number(item.total || 0);
-      acc.exemptValue += Number(item.exemptValue || 0);
-      acc.exoneratedValue += Number(item.exoneratedValue || 0);
-      acc.taxedValue += Number(item.taxedValue || 0);
-      acc.tax += Number(item.tax || 0);
-      return acc;
-    }, { total: 0, exemptValue: 0, exoneratedValue: 0, taxedValue: 0, tax: 0 });
-    setDataTotals(totals);
-  }
+  const check = () => {
+    setSendForm(true);
+    const found = validateReportRange({ dateStart, dateEnd });
+    setErrors(found);
+    return Object.keys(found).length === 0;
+  };
 
   const fnSearchReport = () => {
+    if (!check()) return;
+    const { url, params } = buildReportRequest('sales', { dateStart, dateEnd, cai });
     setLoading(true);
-    request.POST('tax/reports/salesReport', { startDate: dateStart, endDate: dateEnd, cai }, (resp) => {
-      const data = resp.data;
-      setAllData(data);
-      setTable((prev) => ({ ...prev, data }));
-      fnCalcTotals(data);
+    request.GET(`${url}?${new URLSearchParams(params).toString()}`, (resp) => {
+      const report = normalizeReport(resp.data);
+      setAllData(report.rows);
+      setTable((prev) => ({ ...prev, data: report.rows.filter((row) => matchesSearch(row, search)) }));
+      setDataTotals(report.totals);
       setLoading(false);
-    }, () => {
+    }, (err) => {
       setLoading(false);
+      notifyError(err, 'page.taxSalesReport.msg.reportError');
     });
-  }
-
-  const fnFilterData = (value) => {
-    if (!value) {
-      setTable((prev) => ({ ...prev, data: allData }));
-      return;
-    }
-    const upperValue = value.toUpperCase();
-    const filtered = allData.filter((item) => {
-      return `${item.date || ''}${item.clientName || ''}${item.rtnClient || ''}${item.documentNumber || ''}`
-        .toUpperCase()
-        .includes(upperValue);
-    });
-    setTable((prev) => ({ ...prev, data: filtered }));
-  }
+  };
 
   const onSearchChange = (e) => {
     onInputChange(e);
-    fnFilterData(e.target.value);
-  }
+    const value = e.target.value;
+    setTable((prev) => ({ ...prev, data: allData.filter((row) => matchesSearch(row, value)) }));
+  };
 
-  const fnPrint = () => {
+  const fnDownload = (type, format) => {
+    if (!check()) return;
+    const { url, params } = buildReportRequest(type, { dateStart, dateEnd, cai }, format);
     setLoading(true);
-    request.GETPdf('tax/reports/salesReport/exportPDF', { startDate: dateStart, endDate: dateEnd, cai }, 'ReporteVentasDeclaracion.pdf', () => {
+    request.GETPdf(url, params, reportFileName(type, format), (err) => {
       setLoading(false);
-    });
-    setLoading(false);
-  }
-
-  const fnExportDeclaration = () => {
-    fnExport('tax/reports/salesReport/exportDeclarationXLSX', { startDate: dateStart, endDate: dateEnd, cai }, 'ReporteVentasDeclaracion.xlsx');
-  }
-
-  const fnExportSalesBook = () => {
-    fnExport('tax/reports/salesReport/exportSalesBookXLSX', { startDate: dateStart, endDate: dateEnd, cai }, 'LibroDeVentas.xlsx');
-  }
+      notifyError(err, 'page.taxSalesReport.msg.reportError');
+    }, 'GET', () => setLoading(false));
+  };
 
   useEffect(() => {
     request.GET('admin/taxDocuments', (resp) => {
       const documents = resp.data
         .filter((item) => item.status)
         .map((item) => {
-          const cai = [item.cai1, item.cai2, item.cai3, item.cai4, item.cai5, item.cai6].join('-');
-          return { label: `${item.name} -> ${cai}`, value: cai };
+          const documentCai = [item.cai1, item.cai2, item.cai3, item.cai4, item.cai5, item.cai6].join('-');
+          return { label: `${item.name} -> ${documentCai}`, value: documentCai };
         });
       setListDocuments(documents);
     });
@@ -117,26 +99,24 @@ export const useSalesReport = ({ setLoading }) => {
     dateEnd,
     cai,
     search,
+    errors,
+    sendForm,
     listDocuments,
     onInputChange,
     onSearchChange,
     fnSearchReport,
-    fnPrint,
-    fnExportDeclaration,
-    fnExportSalesBook
-  }
+    fnPrint: () => fnDownload('sales', 'pdf'),
+    fnExportDeclaration: () => fnDownload('declarationBook', 'xlsx'),
+    fnExportSalesBook: () => fnDownload('salesBook', 'xlsx')
+  };
 
   const propsToTotals = {
     total: formatNumber(dataTotals.total),
-    exemptValue: formatNumber(dataTotals.exemptValue),
-    exoneratedValue: formatNumber(dataTotals.exoneratedValue),
-    taxedValue: formatNumber(dataTotals.taxedValue),
+    exemptValue: formatNumber(dataTotals.exempt),
+    exoneratedValue: formatNumber(dataTotals.exonerated),
+    taxedValue: formatNumber(dataTotals.taxed),
     tax: formatNumber(dataTotals.tax)
-  }
+  };
 
-  return {
-    table,
-    propsToHeaderReport,
-    propsToTotals
-  }
-}
+  return { table, propsToHeaderReport, propsToTotals };
+};
