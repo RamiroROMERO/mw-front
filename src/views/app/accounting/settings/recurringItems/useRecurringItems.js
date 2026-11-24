@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms';
-import { validFloat, IntlMessagesFn } from '@Helpers/Utils';
+import { validFloat, IntlMessagesFn, getPrivilegeData } from '@Helpers/Utils';
 import createNotification from '@Containers/ui/Notifications';
 import { NotificationManager } from '@Components/common/react-notifications';
+import { PRIVILEGE_SCREEN, validateLine, validateDocument } from './recurringRules';
 
 // "Partidas Recurrentes" (cont_pdas_pre.sc2): plantillas de asientos que el usuario carga
 // manualmente en una Partida de Diario NUEVA desde el botón "Asientos Pre." (ver
@@ -19,6 +20,17 @@ export const useRecurringItems = ({ setLoading }) => {
   const [openMsgDeleteLine, setOpenMsgDeleteLine] = useState(false);
   const [openMsgDeleteDoc, setOpenMsgDeleteDoc] = useState(false);
   const [lineToDelete, setLineToDelete] = useState(null);
+  const [errors, setErrors] = useState({});
+
+  // Privilegio de la pantalla (03.01.014): el back decide en cada método; aquí solo se ocultan los botones que no aplican.
+  const screen = useMemo(() => {
+    try {
+      return getPrivilegeData(PRIVILEGE_SCREEN);
+    } catch {
+      return {};
+    }
+  }, []);
+  const privileges = { create: Boolean(screen.fnCreate), update: Boolean(screen.fnUpdate), delete: Boolean(screen.fnDelete) };
 
   const savedMessage = IntlMessagesFn('page.recurringItems.msg.saved');
   const updatedMessage = IntlMessagesFn('page.recurringItems.msg.updated');
@@ -54,6 +66,7 @@ export const useRecurringItems = ({ setLoading }) => {
   const fnNew = () => {
     onResetForm();
     setLines([]);
+    setErrors({});
   }
 
   const fnOpenSearch = () => {
@@ -78,16 +91,9 @@ export const useRecurringItems = ({ setLoading }) => {
   // Descripción/Sinopsis del encabezado en el momento de agregar la línea — no se escribe
   // por línea, se replica en bloque después con "Actualizar Items".
   const fnAddLine = (line) => {
-    if (!descrip) {
-      createNotification('warning', 'page.recurringItems.msg.missingSynopsis', 'alert.warning.title');
-      return false;
-    }
-    if (!line.idCtaAccount) {
-      createNotification('warning', 'page.recurringItems.msg.missingAccount', 'alert.warning.title');
-      return false;
-    }
-    if (validFloat(line.valDebe) === 0 && validFloat(line.valHaber) === 0) {
-      createNotification('warning', 'page.recurringItems.msg.zeroItem', 'alert.warning.title');
+    const problem = validateLine({ ...line, name: descrip });
+    if (problem) {
+      createNotification('warning', problem, 'alert.warning.title');
       return false;
     }
 
@@ -109,12 +115,9 @@ export const useRecurringItems = ({ setLoading }) => {
   }
 
   const fnUpdateLine = (updatedLine) => {
-    if (!updatedLine.idCtaAccount) {
-      createNotification('warning', 'page.recurringItems.msg.missingAccount', 'alert.warning.title');
-      return false;
-    }
-    if (validFloat(updatedLine.valDebe) === 0 && validFloat(updatedLine.valHaber) === 0) {
-      createNotification('warning', 'page.recurringItems.msg.zeroItem', 'alert.warning.title');
+    const problem = validateLine({ ...updatedLine, name: updatedLine.name || descrip });
+    if (problem) {
+      createNotification('warning', problem, 'alert.warning.title');
       return false;
     }
     const account = listAccounts.find((a) => a.value === updatedLine.idCtaAccount);
@@ -151,16 +154,15 @@ export const useRecurringItems = ({ setLoading }) => {
   }
 
   const fnSave = () => {
-    if (!name || !descrip || !validFloat(dayRun)) {
+    // Mismas reglas del back (RecurringItemDTO): el encabezado marca cada campo y el detalle avisa; no se llama al back si algo falla.
+    const { headerErrors, documentError } = validateDocument({ header: { name, descrip, dayRun }, lines });
+    setErrors(headerErrors);
+    if (Object.keys(headerErrors).length > 0) {
       createNotification('warning', 'page.recurringItems.msg.missingData', 'alert.warning.title');
       return;
     }
-    if (lines.length === 0) {
-      createNotification('warning', 'page.recurringItems.msg.noDetail', 'alert.warning.title');
-      return;
-    }
-    if (totals.diff !== 0) {
-      createNotification('warning', 'page.recurringItems.msg.unbalanced', 'alert.warning.title');
+    if (documentError) {
+      createNotification('warning', documentError, 'alert.warning.title');
       return;
     }
 
@@ -213,7 +215,7 @@ export const useRecurringItems = ({ setLoading }) => {
   const propsToMsgDeleteDoc = { open: openMsgDeleteDoc, setOpen: setOpenMsgDeleteDoc, fnOnOk: fnDeleteDocOk, title: 'page.recurringItems.msg.deleteDocConfirm' };
 
   return {
-    formState, onInputChange,
+    formState, onInputChange, errors, privileges,
     lines, totals, listAccounts,
     fnNew, fnSave, fnOpenSearch, fnSelectEntry,
     fnAddLine, fnEditLine, fnUpdateLine, fnAskDeleteLine, fnUpdateAllLinesDescription,

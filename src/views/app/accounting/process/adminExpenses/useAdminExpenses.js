@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks/useForms';
-import { validFloat, IntlMessagesFn } from '@Helpers/Utils';
+import { validFloat, IntlMessagesFn, getPrivilegeData } from '@Helpers/Utils';
 import createNotification from '@Containers/ui/Notifications';
 import { NotificationManager } from '@Components/common/react-notifications';
+import { PRIVILEGE_SCREEN, validateLine, validateDocument } from './expenseRules';
 
 const today = () => new Date().toISOString().substring(0, 10);
 
@@ -21,6 +22,17 @@ export const useAdminExpenses = ({ setLoading }) => {
   const [openMsgDeleteLine, setOpenMsgDeleteLine] = useState(false);
   const [openMsgDeleteDoc, setOpenMsgDeleteDoc] = useState(false);
   const [lineToDelete, setLineToDelete] = useState(null);
+  const [errors, setErrors] = useState({});
+
+  // Privilegio de la pantalla (03.02.006): el back decide en cada método; aquí solo se ocultan los botones que no aplican.
+  const screen = useMemo(() => {
+    try {
+      return getPrivilegeData(PRIVILEGE_SCREEN);
+    } catch {
+      return {};
+    }
+  }, []);
+  const privileges = { create: Boolean(screen.fnCreate), update: Boolean(screen.fnUpdate), delete: Boolean(screen.fnDelete) };
 
   const savedMessage = IntlMessagesFn('page.adminExpenses.msg.saved');
   const updatedMessage = IntlMessagesFn('page.adminExpenses.msg.updated');
@@ -51,6 +63,7 @@ export const useAdminExpenses = ({ setLoading }) => {
   const fnNew = () => {
     onResetForm();
     setLines([]);
+    setErrors({});
   }
 
   const fnOpenSearch = () => {
@@ -74,31 +87,12 @@ export const useAdminExpenses = ({ setLoading }) => {
   // "Agregar" (Commandbutton_hw1.Click): value(Total) siempre se recalcula
   // Exento+Gravado+Impuesto, igual que Textbox_hw12/16/19.LostFocus del legacy.
   const fnAddLine = (line) => {
-    if (!line.documentCode) {
-      createNotification('warning', 'page.adminExpenses.msg.missingDocumentCode', 'alert.warning.title');
-      return false;
-    }
-    if (!line.date) {
-      createNotification('warning', 'page.adminExpenses.msg.missingDate', 'alert.warning.title');
-      return false;
-    }
-    if (!line.name) {
-      createNotification('warning', 'page.adminExpenses.msg.missingDescription', 'alert.warning.title');
-      return false;
-    }
-    if (!line.provider) {
-      createNotification('warning', 'page.adminExpenses.msg.missingProvider', 'alert.warning.title');
-      return false;
-    }
-    if (!line.idCtaCont) {
-      createNotification('warning', 'page.adminExpenses.msg.missingAccount', 'alert.warning.title');
+    const problem = validateLine(line);
+    if (problem) {
+      createNotification('warning', problem, 'alert.warning.title');
       return false;
     }
     const value = validFloat(line.valExent) + validFloat(line.valGrav) + validFloat(line.valTax);
-    if (value === 0) {
-      createNotification('warning', 'page.adminExpenses.msg.zeroItem', 'alert.warning.title');
-      return false;
-    }
 
     const account = listAccounts.find((a) => a.value === line.idCtaCont);
     setLines((prev) => [...prev, {
@@ -119,15 +113,12 @@ export const useAdminExpenses = ({ setLoading }) => {
   }
 
   const fnUpdateLine = (updatedLine) => {
-    if (!updatedLine.idCtaCont) {
-      createNotification('warning', 'page.adminExpenses.msg.missingAccount', 'alert.warning.title');
+    const problem = validateLine(updatedLine);
+    if (problem) {
+      createNotification('warning', problem, 'alert.warning.title');
       return false;
     }
     const value = validFloat(updatedLine.valExent) + validFloat(updatedLine.valGrav) + validFloat(updatedLine.valTax);
-    if (value === 0) {
-      createNotification('warning', 'page.adminExpenses.msg.zeroItem', 'alert.warning.title');
-      return false;
-    }
     const account = listAccounts.find((a) => a.value === updatedLine.idCtaCont);
     const key = updatedLine.id || updatedLine.tempId;
     setLines((prev) => prev.map((l) => ((l.id || l.tempId) === key
@@ -160,12 +151,15 @@ export const useAdminExpenses = ({ setLoading }) => {
       createNotification('warning', 'page.adminExpenses.msg.liquidated', 'alert.warning.title');
       return;
     }
-    if (!date || !description) {
+    // Mismas reglas del back (AdminExpenseDTO): el encabezado marca cada campo y el detalle avisa; no se llama al back si algo falla.
+    const { headerErrors, documentError } = validateDocument({ header: { date, description, responsible: formState.responsible }, lines });
+    setErrors(headerErrors);
+    if (Object.keys(headerErrors).length > 0) {
       createNotification('warning', 'page.adminExpenses.msg.missingData', 'alert.warning.title');
       return;
     }
-    if (lines.length === 0) {
-      createNotification('warning', 'page.adminExpenses.msg.noDetail', 'alert.warning.title');
+    if (documentError) {
+      createNotification('warning', documentError, 'alert.warning.title');
       return;
     }
 
@@ -227,7 +221,7 @@ export const useAdminExpenses = ({ setLoading }) => {
   const propsToMsgDeleteDoc = { open: openMsgDeleteDoc, setOpen: setOpenMsgDeleteDoc, fnOnOk: fnDeleteDocOk, title: 'page.adminExpenses.msg.deleteDocConfirm' };
 
   return {
-    formState, onInputChange,
+    formState, onInputChange, errors, privileges,
     lines, totals, listAccounts,
     fnNew, fnSave, fnOpenSearch, fnSelectEntry,
     fnAddLine, fnEditLine, fnUpdateLine, fnAskDeleteLine,

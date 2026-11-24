@@ -9,6 +9,7 @@ import ControlPanel from '@Components/controlPanel';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import { useRecurringItems } from './useRecurringItems';
+import { MAX_NAME, MAX_REFERENCE } from './recurringRules';
 import ModalEditLine from './ModalEditLine';
 import ModalSearchEntry from './ModalSearchEntry';
 
@@ -19,7 +20,7 @@ const emptyLine = { idCtaAccount: '', referenceCode: '', valDebe: 0, valHaber: 0
 // accounting/process/dailyItems). No es un job automático.
 const RecurringItems = ({ setLoading }) => {
   const {
-    formState, onInputChange,
+    formState, onInputChange, errors, privileges,
     lines, totals, listAccounts,
     fnNew, fnSave, fnOpenSearch, fnSelectEntry,
     fnAddLine, fnEditLine, fnUpdateLine, fnAskDeleteLine, fnUpdateAllLinesDescription,
@@ -43,8 +44,8 @@ const RecurringItems = ({ setLoading }) => {
   const propsToControlPanel = {
     fnNew,
     fnSearch: fnOpenSearch,
-    fnSave,
-    fnDelete: fnAskDeleteDoc,
+    fnSave: (privileges.create || privileges.update) ? fnSave : null,
+    fnDelete: privileges.delete ? fnAskDeleteDoc : null,
     buttonsHome: [],
     buttonsOptions: [],
     buttonsAdmin: []
@@ -75,10 +76,10 @@ const RecurringItems = ({ setLoading }) => {
         <Separator className="mt-2 mb-3" />
         <Row>
           <Colxx xxs="12" sm="6">
-            <InputField name="name" label="page.recurringItems.input.name" value={name} onChange={onInputChange} type="text" />
+            <InputField name="name" label="page.recurringItems.input.name" value={name} onChange={onInputChange} type="text" maxLength={MAX_NAME} invalid={!!errors.name} feedbackText={errors.name} />
           </Colxx>
           <Colxx xxs="6" sm="3">
-            <InputField name="dayRun" label="page.recurringItems.input.dayRun" value={dayRun} onChange={onInputChange} type="text" />
+            <InputField name="dayRun" label="page.recurringItems.input.dayRun" value={dayRun} onChange={onInputChange} type="text" maxLength={2} invalid={!!errors.dayRun} feedbackText={errors.dayRun} />
           </Colxx>
           <Colxx xxs="6" sm="3">
             <Checkbox name="status" value={status} onChange={onInputChange} label="page.recurringItems.check.active" />
@@ -86,7 +87,7 @@ const RecurringItems = ({ setLoading }) => {
         </Row>
         <Row className="align-items-end">
           <Colxx xxs="12" sm="10">
-            <InputField name="descrip" label="page.recurringItems.input.description" value={descrip} onChange={onInputChange} type="textarea" rows={2} />
+            <InputField name="descrip" label="page.recurringItems.input.description" value={descrip} onChange={onInputChange} type="textarea" rows={2} invalid={!!errors.descrip} feedbackText={errors.descrip} />
           </Colxx>
           <Colxx xxs="12" sm="2" className="div-action-button-container align-items-end">
             <Button color="secondary" onClick={fnUpdateAllLinesDescription}>
@@ -108,7 +109,7 @@ const RecurringItems = ({ setLoading }) => {
             />
           </Colxx>
           <Colxx xxs="12" sm="2">
-            <InputField name="referenceCode" label="page.recurringItems.input.reference" value={newLine.referenceCode} onChange={onNewLineChange} type="text" />
+            <InputField name="referenceCode" label="page.recurringItems.input.reference" value={newLine.referenceCode} onChange={onNewLineChange} type="text" maxLength={MAX_REFERENCE} />
           </Colxx>
           <Colxx xxs="6" sm="2">
             <InputField name="valDebe" label="page.recurringItems.input.debit" value={newLine.valDebe} onChange={onNewLineChange} type="text" />

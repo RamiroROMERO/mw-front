@@ -9,6 +9,7 @@ import ControlPanel from '@Components/controlPanel';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import { useAdminExpenses } from './useAdminExpenses';
+import { MAX_DESCRIPTION, MAX_RESPONSIBLE, MAX_DOCUMENT, MAX_LINE_TEXT } from './expenseRules';
 import ModalEditLine from './ModalEditLine';
 import ModalSearchEntry from './ModalSearchEntry';
 
@@ -19,7 +20,7 @@ const emptyLine = { documentCode: '', date: new Date().toISOString().substring(0
 // "Gastos Admin." button) como líneas de Débito.
 const AdminExpenses = ({ setLoading }) => {
   const {
-    formState, onInputChange,
+    formState, onInputChange, errors, privileges,
     lines, totals, listAccounts,
     fnNew, fnSave, fnOpenSearch, fnSelectEntry,
     fnAddLine, fnEditLine, fnUpdateLine, fnAskDeleteLine,
@@ -43,8 +44,8 @@ const AdminExpenses = ({ setLoading }) => {
   const propsToControlPanel = {
     fnNew,
     fnSearch: fnOpenSearch,
-    fnSave,
-    fnDelete: fnAskDeleteDoc,
+    fnSave: (privileges.create || privileges.update) ? fnSave : null,
+    fnDelete: privileges.delete ? fnAskDeleteDoc : null,
     buttonsHome: [],
     buttonsOptions: [],
     buttonsAdmin: []
@@ -84,13 +85,13 @@ const AdminExpenses = ({ setLoading }) => {
 
         <Row>
           <Colxx xxs="12" sm="4">
-            <DateCalendar name="date" label="page.adminExpenses.input.date" value={date} onChange={onInputChange} />
+            <DateCalendar name="date" label="page.adminExpenses.input.date" value={date} onChange={onInputChange} maxDate={new Date()} feedbackText={errors.date} />
           </Colxx>
           <Colxx xxs="12" sm="4">
-            <InputField name="description" label="page.adminExpenses.input.description" value={description} onChange={onInputChange} type="text" />
+            <InputField name="description" label="page.adminExpenses.input.description" value={description} onChange={onInputChange} type="text" maxLength={MAX_DESCRIPTION} invalid={!!errors.description} feedbackText={errors.description} />
           </Colxx>
           <Colxx xxs="12" sm="4">
-            <InputField name="responsible" label="page.adminExpenses.input.responsible" value={responsible} onChange={onInputChange} type="text" />
+            <InputField name="responsible" label="page.adminExpenses.input.responsible" value={responsible} onChange={onInputChange} type="text" maxLength={MAX_RESPONSIBLE} invalid={!!errors.responsible} feedbackText={errors.responsible} />
           </Colxx>
         </Row>
 
@@ -98,16 +99,16 @@ const AdminExpenses = ({ setLoading }) => {
 
         <Row className="align-items-end">
           <Colxx xxs="6" sm="2">
-            <InputField name="documentCode" label="page.adminExpenses.input.documentCode" value={newLine.documentCode} onChange={onNewLineChange} type="text" />
+            <InputField name="documentCode" label="page.adminExpenses.input.documentCode" value={newLine.documentCode} onChange={onNewLineChange} type="text" maxLength={MAX_DOCUMENT} />
           </Colxx>
           <Colxx xxs="6" sm="2">
             <DateCalendar name="date" label="page.adminExpenses.input.lineDate" value={newLine.date} onChange={onNewLineChange} />
           </Colxx>
           <Colxx xxs="12" sm="3">
-            <InputField name="name" label="page.adminExpenses.input.description" value={newLine.name} onChange={onNewLineChange} type="text" />
+            <InputField name="name" label="page.adminExpenses.input.description" value={newLine.name} onChange={onNewLineChange} type="text" maxLength={MAX_LINE_TEXT} />
           </Colxx>
           <Colxx xxs="12" sm="2">
-            <InputField name="provider" label="page.adminExpenses.input.provider" value={newLine.provider} onChange={onNewLineChange} type="text" />
+            <InputField name="provider" label="page.adminExpenses.input.provider" value={newLine.provider} onChange={onNewLineChange} type="text" maxLength={MAX_LINE_TEXT} />
           </Colxx>
           <Colxx xxs="12" sm="3">
             <SearchSelect
