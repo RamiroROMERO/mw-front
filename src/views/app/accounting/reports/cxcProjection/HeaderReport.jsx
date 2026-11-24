@@ -2,9 +2,10 @@ import { Button, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import DateCalendar from '@Components/dateCalendar';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { RadioGroup } from '@Components/radioGroup';
 import { IntlMessages } from '@Helpers/Utils';
 
-const HeaderReport = ({ date, customerId, customerTypeId, listCustomers, listCustomerTypes, onInputChange, fnSearch, fnExportXlsx }) => {
+const HeaderReport = ({ date, currency, hasDualCurrency, customerId, customerTypeId, listCustomers, listCustomerTypes, onInputChange, fnSearch, fnExportXlsx }) => {
   return (
     <>
       <Row>
@@ -16,6 +17,17 @@ const HeaderReport = ({ date, customerId, customerTypeId, listCustomers, listCus
             onChange={onInputChange}
           />
         </Colxx>
+        {hasDualCurrency && (
+        <Colxx xxs="12" md="4" lg="2">
+          <RadioGroup
+            label="page.invoicing.title.currency"
+            name="currency"
+            value={currency}
+            onChange={onInputChange}
+            options={[{ id: 1, label: 'page.invoicing.radio.lempira' }, { id: 2, label: 'page.invoicing.radio.dollar' }]}
+          />
+        </Colxx>
+      )}
         <Colxx xxs="12" md="4" lg="4">
           <SearchSelect
             label="page.cxcProjection.input.customer"

@@ -7,7 +7,7 @@ const ModalTrace = ({ data, setOpen }) => {
   const { trace, formatNumber, formatDate } = data;
 
   if (!trace) return null;
-  const { customerName, documentCode, typeDescription, invoiceDate, dueDate, originalValue, composition, payments, totalPaid, balance } = trace;
+  const { customerName, documentCode, typeDescription, invoiceDate, dueDate, originalValue, composition, payments, totalPaid, balance, debitNotes = [], totalDebitNotes = 0 } = trace;
 
   const table = {
     columns: [
@@ -78,10 +78,25 @@ const ModalTrace = ({ data, setOpen }) => {
             <ReactTable {...table} />
           </Colxx>
         </Row>
+        {debitNotes.length > 0 && (
+          <Row className="mt-3">
+            <Colxx xxs="12">
+              <h6>{IntlMessages('page.cxcInvoiceTrace.table.debitNotesTitle')}</h6>
+              {debitNotes.map((n, i) => (
+                <div key={i}>{n.date ? formatDate(n.date) : ''} {n.reference}: {formatNumber(n.value)}</div>
+              ))}
+            </Colxx>
+          </Row>
+        )}
         <Row className="mt-3">
           <Colxx xxs="6" sm="3" className="text-end">
             <strong>{IntlMessages('page.cxcInvoiceTrace.table.totalPaid')}:</strong> {formatNumber(totalPaid)}
           </Colxx>
+          {Number(totalDebitNotes) !== 0 && (
+            <Colxx xxs="6" sm="3" className="text-end">
+              <strong>{IntlMessages('page.cxcInvoiceTrace.table.totalDebitNotes')}:</strong> {formatNumber(totalDebitNotes)}
+            </Colxx>
+          )}
           <Colxx xxs="6" sm="3" className="text-end">
             <strong>{IntlMessages('page.cxcInvoiceTrace.table.balance')}:</strong> {formatNumber(balance)}
           </Colxx>

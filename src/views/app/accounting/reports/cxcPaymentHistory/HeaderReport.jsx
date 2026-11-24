@@ -20,7 +20,7 @@ const HeaderReport = ({ customerId, dateStart, dateEnd, listCustomers, onInputCh
         <Colxx xxs="12" md="3" lg="2">
           <DateCalendar
             name="dateStart"
-            label="select.dateStart"
+            label="page.cxcPaymentHistory.input.dateStart"
             value={dateStart}
             onChange={onInputChange}
           />
@@ -28,7 +28,7 @@ const HeaderReport = ({ customerId, dateStart, dateEnd, listCustomers, onInputCh
         <Colxx xxs="12" md="3" lg="2">
           <DateCalendar
             name="dateEnd"
-            label="select.dateEnd"
+            label="page.cxcPaymentHistory.input.dateEnd"
             value={dateEnd}
             onChange={onInputChange}
           />

@@ -1,8 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useIntl } from 'react-intl';
 import { IntlMessages } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import { useForm, useExportExcel } from '@Hooks';
-import { request, buildUrl } from '@Helpers/core';
+import { request, buildUrl, notifyError } from '@Helpers/core';
+import { NotificationManager } from '@Components/common/react-notifications';
+import { BASE_PATH, normalizeInsurer, validateInsurer } from '../cxcShared/cxcReportsRules';
+import { useCxcCustomers } from '../cxcShared/useCxcCustomers';
 
 // Equivalente a cont_cxcdeta_aseg.sc2 ("Detalle de Cuentas por Cobrar por Aseguradora"),
 // exclusiva del módulo Hospital. Ver comentario en
@@ -21,12 +25,19 @@ const AGING_BUCKETS = [
 ];
 
 export const useCxCByInsurer = ({ setLoading }) => {
+  const intl = useIntl();
   const { fnExport } = useExportExcel(setLoading);
   const { formState, onInputChange } = useForm({ insurerId: 0, customerId: 0 });
   const { insurerId, customerId } = formState;
 
   const [allRows, setAllRows] = useState([]);
-  const [listCustomers, setListCustomers] = useState([]);
+  const [grandTotal, setGrandTotal] = useState(0);
+  const listCustomers = useCxcCustomers();
+  const checkInsurer = () => {
+    const error = validateInsurer({ insurerId });
+    if (error) NotificationManager.warning(intl.formatMessage({ id: error }), '', 4000, null, null, '');
+    return !error;
+  };
 
   // Precalculados fuera del callback de fnSearch — IntlMessages() llama useIntl()
   // internamente y no puede invocarse dentro de un callback async (ver
@@ -36,13 +47,15 @@ export const useCxCByInsurer = ({ setLoading }) => {
   const daysUntilDueLabel = IntlMessages('page.cxcByInsurer.table.daysUntilDue');
 
   const fnSearch = () => {
-    if (Number(insurerId) === 0) return;
+    if (!checkInsurer()) return;
     setLoading(true);
     const customerFilter = Number(customerId) === 0 ? undefined : customerId;
-    request.GET(buildUrl('accounting/process/cxc/byInsurer', { insurerId, customerId: customerFilter }), (resp) => {
+    request.GET(buildUrl(`${BASE_PATH}/byInsurer`, { insurerId, customerId: customerFilter }), (resp) => {
+      const result = normalizeInsurer(resp.data);
+      setGrandTotal(result.totals.balance);
       const today = DateHelper.now();
       let accumulated = 0;
-      const rows = resp.data.map((row) => {
+      const rows = result.rows.map((row) => {
         const numDays = row.dueDate ? DateHelper.diff(today, row.dueDate, 'day') : null;
         const estado = numDays === null
           ? noDueDateLabel
@@ -89,30 +102,23 @@ export const useCxCByInsurer = ({ setLoading }) => {
         label: IntlMessages(b.label),
         total: allRows.reduce((sum, r) => sum + (b.test(r.numDays) ? Number(r.balance || 0) : 0), 0)
       })),
-      { label: IntlMessages('page.cxcByInsurer.table.total'), total: allRows.reduce((sum, r) => sum + Number(r.balance || 0), 0) }
+      { label: IntlMessages('page.cxcByInsurer.table.total'), total: grandTotal }
     ],
     options: { pageSize: 10 }
   };
 
   const fnExportXlsx = () => {
-    if (Number(insurerId) === 0) return;
+    if (!checkInsurer()) return;
     const insurer = listCustomers.find((c) => c.value === Number(insurerId));
-    fnExport('accounting/process/cxc/byInsurer/exportXLSX', { insurerId, customerId: Number(customerId) === 0 ? undefined : customerId, insurerName: insurer?.label }, 'CuentasPorCobrarAseguradora.xlsx');
+    fnExport(`${BASE_PATH}/byInsurer/exportXLSX`, { insurerId, customerId: Number(customerId) === 0 ? undefined : customerId, insurerName: insurer?.label }, 'CuentasPorCobrarAseguradora.xlsx');
   }
 
   const fnPrint = () => {
-    if (Number(insurerId) === 0) return;
+    if (!checkInsurer()) return;
     setLoading(true);
     const insurer = listCustomers.find((c) => c.value === Number(insurerId));
-    request.GETPdf('accounting/process/cxc/byInsurer/exportPDF', { insurerId, customerId: Number(customerId) === 0 ? undefined : customerId, insurerName: insurer?.label }, 'CuentasPorCobrarAseguradora.pdf', () => setLoading(false));
-    setLoading(false);
+    request.GETPdf(`${BASE_PATH}/byInsurer/exportPDF`, { insurerId, customerId: Number(customerId) === 0 ? undefined : customerId, insurerName: insurer?.label }, 'CuentasPorCobrarAseguradora.pdf', (err) => { setLoading(false); notifyError(err, 'msg.export.record.error'); }, 'POST', () => setLoading(false));
   }
-
-  useEffect(() => {
-    request.GET('billing/settings/customers/?status=1', (resp) => {
-      setListCustomers(resp.data.map((item) => ({ label: `${item.id} | ${item.name}`, value: item.id })));
-    }, () => { });
-  }, []);
 
   const propsToHeader = { insurerId, customerId, listCustomers, onInputChange, fnSearch, fnExportXlsx, fnPrint };
 
