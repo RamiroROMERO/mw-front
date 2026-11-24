@@ -1,4 +1,5 @@
-import { IntlMessages } from "@Helpers/Utils";
+import { useIntl } from 'react-intl';
+import { IntlMessages } from '@Helpers/Utils';
 import { Card, CardBody, Button, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { InputField } from '@Components/inputFields';
@@ -10,11 +11,12 @@ import { useFiscalPeriods } from './useFiscalPeriods';
 
 const FiscalPeriods = (props) => {
   const { setLoading } = props;
+  const intl = useIntl();
   const { formState, formValidation, onInputChange, fnSave, fnClearInputs, table, propsToMsgDelete, sendForm } = useFiscalPeriods({ setLoading });
 
   const { period, dateIn, dateOut, active, status } = formState;
 
-  const { periodValid, dateInValid, dateOutValid } = formValidation;
+  const { periodValid, dateInValid, dateOutValid, activeValid } = formValidation;
 
   return (
     <>
@@ -41,6 +43,7 @@ const FiscalPeriods = (props) => {
                     value={active}
                     label="page.fiscalPeriods.checkbox.active"
                   />
+                  {sendForm && activeValid && <div className="text-danger small">{intl.formatMessage({ id: activeValid })}</div>}
                 </Colxx>
                 <Colxx xxs="12" xs="6">
                   <DateCalendar
