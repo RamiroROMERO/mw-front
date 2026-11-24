@@ -10,7 +10,7 @@ import { IntlMessages } from '@Helpers/Utils';
 // opciones 2/3). Quien corre la consulta real es useAccountsToPay (findDetailReport en el
 // backend), igual que el legacy delega en Thisform.verReporte de cont_cxp.sc2.
 const ModalReports = ({ data, setOpen }) => {
-  const { mode, date, onInputChange, fnPrint, fnExportXlsx } = data;
+  const { mode, date, errors = {}, onInputChange, fnPrint, fnExportXlsx } = data;
 
   const modeOptions = [
     { id: '1', name: IntlMessages('page.accountsToPay.modal.reports.mode.detailed') },
@@ -43,6 +43,7 @@ const ModalReports = ({ data, setOpen }) => {
                 label="page.accountsToPay.modal.reports.date"
                 value={date}
                 onChange={onInputChange}
+                feedbackText={errors.date}
               />
             </Colxx>
           </Row>

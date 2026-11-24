@@ -4,7 +4,7 @@ import DateCalendar from '@Components/dateCalendar';
 import { InputField } from '@Components/inputFields';
 import { IntlMessages } from '@Helpers/Utils';
 
-const HeaderReport = ({ date, search, onInputChange, onSearchChange, fnSearch, fnPrint, fnExportXlsx, fnOpenReports }) => {
+const HeaderReport = ({ date, search, errors = {}, sendForm = false, onInputChange, onSearchChange, fnSearch, fnPrint, fnExportXlsx, fnOpenReports }) => {
   return (
     <>
       <Row>
@@ -14,6 +14,7 @@ const HeaderReport = ({ date, search, onInputChange, onSearchChange, fnSearch, f
             label="page.accountsToPay.input.date"
             value={date}
             onChange={onInputChange}
+            feedbackText={sendForm ? errors.date : ''}
           />
         </Colxx>
         <Colxx xxs="12" md="6" lg="3">
