@@ -3,9 +3,12 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { InputField } from '@Components/inputFields';
 import DateCalendar from '@Components/dateCalendar';
-import { IntlMessages } from '@Helpers/Utils';
+import { useIntl } from 'react-intl';
 
 export const UseVariousDepositsForm = (props) => {
+  // Un solo useIntl arriba: las etiquetas de abajo salen dentro de condiciones y un hook no puede llamarse así.
+  const intl = useIntl();
+  const t = (id) => intl.formatMessage({ id });
   const {
     formStateIndex, onInputChangeIndex, listDocto, listBanks, listAccount, listCustomer,
     formValidationIndex, sendForm, fnSelectAdvance, fnRemoveAdvance, isPosted, canEditPosted
@@ -26,7 +29,7 @@ export const UseVariousDepositsForm = (props) => {
         <Row className='mb-3'>
           <Colxx xxs="12">
             <Alert color={canEditPosted ? 'info' : 'warning'} className="mb-0">
-              <i className="bi bi-journal-check" /> {IntlMessages("page.variousDeposits.notice.posted")} <strong>{pdaNumber}</strong>. {IntlMessages(canEditPosted ? "page.variousDeposits.notice.postedEdit" : "page.variousDeposits.notice.postedNoPermission")}
+              <i className="bi bi-journal-check" /> {t('page.variousDeposits.notice.posted')} <strong>{pdaNumber}</strong>. {t(canEditPosted ? 'page.variousDeposits.notice.postedEdit' : 'page.variousDeposits.notice.postedNoPermission')}
             </Alert>
           </Colxx>
         </Row>
@@ -171,14 +174,14 @@ export const UseVariousDepositsForm = (props) => {
                     type="text"
                   />
                   <Button color="danger" outline size="sm" className="mt-1" onClick={fnRemoveAdvance}>
-                    <i className="bi bi-x-circle" /> {IntlMessages('page.variousDeposits.button.removeAdvance')}
+                    <i className="bi bi-x-circle" /> {t('page.variousDeposits.button.removeAdvance')}
                   </Button>
                 </div>
               </Colxx>
             ) : (
               <Colxx xxs="12">
                 <Button color="primary" outline size="sm" className="mt-2" onClick={fnSelectAdvance}>
-                  <i className="bi bi-clock-history" /> {IntlMessages('page.variousDeposits.button.selectAdvance')}
+                  <i className="bi bi-clock-history" /> {t('page.variousDeposits.button.selectAdvance')}
                 </Button>
               </Colxx>
             )}

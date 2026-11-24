@@ -2,11 +2,15 @@ import { Row, Table, Button } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { InputField } from '@Components/inputFields';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
-import { IntlMessages, validFloat } from '@Helpers/Utils';
+import { useIntl } from 'react-intl';
+import { validFloat } from '@Helpers/Utils';
 
 // Tabla con inputs editables por fila (no ReactTableEdit — ese componente no soporta
 // acciones/celdas formateadas y silencia valores objeto, ver feedback_reacttableedit_no_actions_no_cell).
 export const DepositLinesTable = ({ lines, listAccount, fnUpdateLine, fnRemoveLine, fnOpenInvoicesPicker, isApplied, totals, problem }) => {
+  // Un solo useIntl arriba: la columna de opciones sale dentro de una condición (isApplied cambia al contabilizar) y un hook no puede llamarse así.
+  const intl = useIntl();
+  const t = (id) => intl.formatMessage({ id });
   const { applied: totalApplied, deduction: totalDeduction, difference } = totals;
   // Diferencia en rojo cuando la regla del tope la rechazaría (SPEC v2-22).
   const differenceFailed = problem && (problem.code === 'deposit.shortage.exceeded');
@@ -17,7 +21,7 @@ export const DepositLinesTable = ({ lines, listAccount, fnUpdateLine, fnRemoveLi
         <Colxx xxs="12" align="right">
           {!isApplied && (
             <Button color="primary" size="sm" onClick={fnOpenInvoicesPicker}>
-              <i className="bi bi-plus" /> {IntlMessages('page.customerDeposits.button.addInvoices')}
+              <i className="bi bi-plus" /> {t('page.customerDeposits.button.addInvoices')}
             </Button>
           )}
         </Colxx>
@@ -27,14 +31,14 @@ export const DepositLinesTable = ({ lines, listAccount, fnUpdateLine, fnRemoveLi
           <Table bordered hover responsive size="sm">
             <thead>
               <tr>
-                <th>{IntlMessages('table.column.nInvoice')}</th>
-                <th>{IntlMessages('table.column.date')}</th>
-                <th>{IntlMessages('page.customerDeposits.table.originalValue')}</th>
-                <th>{IntlMessages('page.customerDeposits.table.appliedValue')}</th>
-                <th>{IntlMessages('page.customerDeposits.table.deductionValue')}</th>
-                <th>{IntlMessages('page.customerDeposits.table.deductionReason')}</th>
-                <th>{IntlMessages('page.customerDeposits.select.deductionAccount')}</th>
-                {!isApplied && <th>{IntlMessages('table.column.options')}</th>}
+                <th>{t('table.column.nInvoice')}</th>
+                <th>{t('table.column.date')}</th>
+                <th>{t('page.customerDeposits.table.originalValue')}</th>
+                <th>{t('page.customerDeposits.table.appliedValue')}</th>
+                <th>{t('page.customerDeposits.table.deductionValue')}</th>
+                <th>{t('page.customerDeposits.table.deductionReason')}</th>
+                <th>{t('page.customerDeposits.select.deductionAccount')}</th>
+                {!isApplied && <th>{t('table.column.options')}</th>}
               </tr>
             </thead>
             <tbody>
