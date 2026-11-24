@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { IntlMessages, formatNumber, formatDate } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import { useForm } from '@Hooks';
-import { request } from '@Helpers/core';
+import { request, notifyError } from '@Helpers/core';
+import { validateCloseDate, canDeleteRow } from './accountingClosureRules';
 import { NotificationManager } from '@Components/common/react-notifications';
 import ModalSettings from './ModalSettings';
 import ModalIncomeStatement from './ModalIncomeStatement';
@@ -20,11 +21,6 @@ import ModalViewEntry from './ModalViewEntry';
 // descarta). Acá se expone como "Vista Previa" ANTES de poder ejecutar un cierre real —
 // dado el riesgo (partidas contables reales, irreversible), se prioriza que el usuario
 // pueda revisar los números antes de comprometerse.
-const unwrapError = (err, fallback) => {
-  const backendDescription = err?.messages?.[0]?.description;
-  return (typeof backendDescription === 'object' ? backendDescription?.description : backendDescription) || fallback;
-}
-
 export const useAccountingClosures = ({ setLoading }) => {
   const { formState, onInputChange } = useForm({ date: DateHelper.format(DateHelper.now()) });
   const { date } = formState;
@@ -71,12 +67,18 @@ export const useAccountingClosures = ({ setLoading }) => {
       setLoading(false);
     }, (err) => {
       setLoading(false);
-      NotificationManager.error(unwrapError(err, IntlMessages('page.accountingClosures.msg.saveSettingsError')), '', 5000, null, null, '');
+      notifyError(err, 'page.accountingClosures.msg.saveSettingsError');
     }, false);
   }
 
+  const checkDate = () => {
+    const error = validateCloseDate(date);
+    if (error) { NotificationManager.warning(IntlMessages(error), '', 4000, null, null, ''); return false; }
+    return true;
+  }
+
   const fnPreviewIncomeStatement = () => {
-    if (!date) return;
+    if (!checkDate()) return;
     setLoading(true);
     request.POST('accounting/reports/accountingClosures/incomeStatement', { date }, (resp) => {
       setIncomeStatement(resp.data);
@@ -84,12 +86,12 @@ export const useAccountingClosures = ({ setLoading }) => {
       setLoading(false);
     }, (err) => {
       setLoading(false);
-      NotificationManager.error(unwrapError(err, IntlMessages('page.accountingClosures.msg.previewError')), '', 5000, null, null, '');
+      notifyError(err, 'page.accountingClosures.msg.previewError');
     }, false);
   }
 
   const fnAskExecute = () => {
-    if (!date) return;
+    if (!checkDate()) return;
     setOpenConfirmExecute(true);
   }
 
@@ -102,7 +104,7 @@ export const useAccountingClosures = ({ setLoading }) => {
       setLoading(false);
     }, (err) => {
       setLoading(false);
-      NotificationManager.error(unwrapError(err, IntlMessages('page.accountingClosures.msg.executeError')), '', 5000, null, null, '');
+      notifyError(err, 'page.accountingClosures.msg.executeError');
     }, false);
   }
 
@@ -121,7 +123,7 @@ export const useAccountingClosures = ({ setLoading }) => {
       setLoading(false);
     }, (err) => {
       setLoading(false);
-      NotificationManager.error(unwrapError(err, IntlMessages('page.accountingClosures.msg.deleteError')), '', 5000, null, null, '');
+      notifyError(err, 'page.accountingClosures.msg.deleteError');
     }, false);
   }
 
@@ -167,13 +169,13 @@ export const useAccountingClosures = ({ setLoading }) => {
         text: '',
         dataField: 'actions',
         headerStyle: { width: '20%' },
-        cell: ({ row }) => (
+        cell: ({ row }) => (canDeleteRow(row.original, rows) ? (
           <i
             className="bi bi-trash-fill cursor-pointer"
             title={IntlMessages('button.delete')}
             onClick={() => fnAskDelete(row.original)}
           />
-        )
+        ) : null)
       }
     ],
     data: rows,

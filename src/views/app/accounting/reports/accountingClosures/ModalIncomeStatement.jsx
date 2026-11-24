@@ -2,6 +2,7 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from '@Helpers/Utils';
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
 import ReactTable from '@Components/reactTable';
+import { closingWarnings } from './accountingClosureRules';
 
 // Vista previa del Estado de Resultados (equivalente al cómputo interno de
 // btnSaldoER.Click, que en el legacy nunca se muestra en pantalla — ver hook).
@@ -25,7 +26,8 @@ const ModalIncomeStatement = ({ data, setOpen }) => {
   };
 
   if (!incomeStatement) return null;
-  const { rows, totals, dateStart, dateEnd } = incomeStatement;
+  const { rows, totals, dateStart, dateEnd, closing } = incomeStatement;
+  const warnings = closingWarnings(closing);
 
   const table = {
     columns: [
@@ -66,6 +68,25 @@ const ModalIncomeStatement = ({ data, setOpen }) => {
             <ReactTable {...table} />
           </Colxx>
         </Row>
+        {closing && (
+          <Row className="mt-3">
+            <Colxx xxs="12">
+              <div className="alert alert-info mb-2">
+                <strong>{IntlMessages('page.accountingClosures.modal.incomeStatement.closingNet')}:</strong> {formatNumber(closing.netIncome)}
+              </div>
+              {warnings.includes('difference') && (
+                <div className="alert alert-warning mb-2">
+                  {IntlMessages('page.accountingClosures.modal.incomeStatement.differenceWarning')} {formatNumber(closing.difference)}
+                </div>
+              )}
+              {warnings.includes('unknownTypes') && (
+                <div className="alert alert-danger mb-2">
+                  {IntlMessages('page.accountingClosures.modal.incomeStatement.unknownTypesWarning')} {closing.unknownTypeAccounts.map((a) => `${a.accountNumber} (${a.type})`).join(', ')}
+                </div>
+              )}
+            </Colxx>
+          </Row>
+        )}
         <Row className="mt-3">
           <Colxx xxs="6" sm="3" className="text-end mb-2">
             <strong>{IntlMessages('page.accountingClosures.modal.incomeStatement.grossProfit')}:</strong><br />{formatNumber(totals.grossProfit)}
