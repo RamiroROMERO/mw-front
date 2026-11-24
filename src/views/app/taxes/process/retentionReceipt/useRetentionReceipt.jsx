@@ -1,319 +1,218 @@
-import TableButtons from '@Components/tableButtons';
-import createNotification from '@Containers/ui/Notifications';
-import { formatNumber, validInt } from '@Helpers/Utils'
-import { request, buildUrl } from '@Helpers/core';
-import { useForm } from '@Hooks'
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useForm } from '@Hooks';
+import { request, notifyError, buildUrl } from '@Helpers/core';
+import notification from '@Containers/ui/Notifications';
+import { printDocument } from '@Helpers/printDocument';
+import {
+  INITIAL_LINE, INITIAL_RECEIPT, RECEIPT_URL, accountAction, buildPayload, caiAction, invoiceToLine, mapDetailToLines, mapReceiptToForm,
+  providerOptions, printOptions, receiptState, receiptTotal, typeOptions, validateLine, validateReceipt
+} from './retentionReceiptRules';
 
-export const useRetentionReceipt = ({ setLoading, onResetFormDetail, retentionDetail, setRetentionDetail, setSendFormDeta, setBulkFormDetail }) => {
+// Comprobante de retención (imp_retenciones.sc2, SPEC v2-113-sr). Un solo POST o PUT guarda cabecera y líneas en una transacción del back (que calcula las retenciones, el
+// total y todo lo fiscal). Número fiscal, Contabilizar y Anular son pasos propios con confirmación. Se edita hasta contabilizar; contabilizado o anulado queda de solo lectura.
+export const useRetentionReceipt = ({ setLoading }) => {
+  const [listDocuments, setListDocuments] = useState([]);
+  const [listProviders, setListProviders] = useState([]);
+  const [listTypes, setListTypes] = useState([]);
+  const [invoices, setInvoices] = useState([]);
+  const [details, setDetails] = useState([]);
+  const [line, setLine] = useState({ ...INITIAL_LINE });
   const [sendForm, setSendForm] = useState(false);
-  const [dataRetention, setDataRetention] = useState([]);
-  const [openModalRetention, setOpenModalRetention] = useState(false);
-  const [openMsgDelete, setOpenMsgDelete] = useState(false);
-  const [openModalBillToPay, setOpenModalBillToPay] = useState(false);
-  const [openModalPrint, setOpenModalPrint] = useState(false);
-  const [listDocto, setListDocto] = useState([]);
-  const [listProvider, setListProvider] = useState([]);
-  const [listTypesRetention, setListTypesRetention] = useState([]);
-  const [listCxp, setListCxp] = useState([]);
+  const [sendLine, setSendLine] = useState(false);
+  const [openSearch, setOpenSearch] = useState(false);
+  const [openInvoices, setOpenInvoices] = useState(false);
+  const [openMsgCai, setOpenMsgCai] = useState(false);
+  const [openMsgAccount, setOpenMsgAccount] = useState(false);
+  const [openMsgCancel, setOpenMsgCancel] = useState(false);
 
-  const validRetention = {
-    date: [(val) => val !== "", "msg.required.input.date"],
-    documentCode: [(val) => val !== "", "msg.required.input.codeDocument"],
-    providerId: [(val) => validInt(val) > 0, "msg.required.select.provider"],
-  }
+  const { formState, onInputChange, setBulkForm, onResetForm } = useForm({ ...INITIAL_RECEIPT }, {});
+  const state = receiptState(formState);
+  const errors = useMemo(() => validateReceipt(formState, details), [formState, details]);
+  const lineErrors = useMemo(() => validateLine(line, details), [line, details]);
+  const total = useMemo(() => receiptTotal(details), [details]);
+  const typeById = useMemo(() => Object.fromEntries(listTypes.map((type) => [type.value, type])), [listTypes]);
 
-  const { formState: formStateIndex, formValidation: formValidationIndex, isFormValid: isFormValidIndex, setBulkForm: setBulkFormIndex, onInputChange: onInputChangeIndex, onResetForm: onResetFormIndex } = useForm({
-    id: 0,
-    date: '',
-    documentCode: '',
-    documentId: '',
-    cai: '',
-    numberCAI: '',
-    limitDate: '',
-    providerId: '',
-    rangeCAI: '',
-    total: 0
-  }, validRetention)
-
-  const { id: code, date, documentCode: codeIndex, documentId, cai, numberCAI, limitDate,
-    providerId, rangeCAI, total } = formStateIndex;
-
-  const fnPrintRetention = () => {
-    if (code > 0) {
-      setOpenModalPrint(true);
-    }
-  }
-
-  const fnNewRetention = () => {
-    onResetFormDetail();
-    onResetFormIndex();
-    setRetentionDetail([]);
+  const fnNewDocument = () => {
+    onResetForm();
+    setDetails([]);
+    setLine({ ...INITIAL_LINE });
     setSendForm(false);
-    setSendFormDeta(false);
-  }
+    setSendLine(false);
+  };
 
-  const fnSearchRetention = () => {
+  // Carga el comprobante guardado (el listado solo trae un resumen).
+  const fnLoadDocument = (row) => {
     setLoading(true);
-    request.GET('tax/process/withholdingReceipts', (resp) => {
-      const receipts = resp.data.map((item) => {
-        item.document = item.setDocument ? item.setDocument.name : ""
-        item.provider = item.invProvider.name ? item.invProvider.name : ""
-        item.value = formatNumber(item.total, '', 2);
-        return item;
-      });
-      setDataRetention(receipts);
-      setOpenModalRetention(true);
+    request.GET(`${RECEIPT_URL}/${row.id}`, (resp) => {
+      setBulkForm(mapReceiptToForm(resp.data));
+      setDetails(mapDetailToLines(resp.data?.details));
+      setLine({ ...INITIAL_LINE });
+      setSendForm(false);
+      setSendLine(false);
+      setOpenSearch(false);
       setLoading(false);
-    }, (err) => {
+    }, () => {
       setLoading(false);
     });
-  }
+  };
 
-  const fnGetDocuments = () => {
+  const fnSearchDocument = () => setOpenSearch(true);
+
+  // Cambiar el proveedor invalida las líneas (sus facturas son de otro proveedor).
+  const onProviderChange = (event) => {
+    onInputChange(event);
+    if (details.length > 0) setDetails([]);
+    setLine({ ...INITIAL_LINE });
+  };
+
+  const onLineChange = ({ target }) => setLine((prev) => ({ ...prev, [target.name]: target.value }));
+
+  // El tipo trae su porcentaje y su nombre (el back vuelve a leerlos del catálogo).
+  const onTypeChange = ({ target }) => {
+    const type = typeById[target.value];
+    setLine((prev) => ({ ...prev, withholdingTypeId: target.value, description: type?.name ?? '', percentValue: type ? String(type.percentValue) : prev.percentValue }));
+  };
+
+  // Facturas que se pueden retener (el back excluye las ya retenidas y las sin saldo a crédito).
+  const fnViewInvoices = () => {
+    if (!(Number(formState.providerId) > 0)) {
+      notification('warning', 'msg.required.select.provider', 'alert.warning.title');
+      return;
+    }
     setLoading(true);
-    request.GET('admin/documents?status=1&useTax=1', (resp) => {
-      const docto = resp.data.map((item) => {
-        return {
-          label: ` ${item.code} | ${item.name} `,
-          value: item.code,
-          documentId: item.codeInt,
-          setTaxDocument: item.setTaxDocument
-        }
-      });
-      setListDocto(docto);
+    request.GET(buildUrl(`${RECEIPT_URL}/availableInvoices`, { providerId: formState.providerId, receiptId: formState.id > 0 ? formState.id : undefined, limit: 200 }), (resp) => {
+      setInvoices(resp.data || []);
+      setOpenInvoices(true);
       setLoading(false);
-    }, (err) => {
+    }, () => {
       setLoading(false);
     });
-  }
+  };
 
-  const fnSaveRetention = () => {
+  const fnSelectInvoice = (invoice) => {
+    setLine({ ...invoiceToLine(invoice) });
+    setSendLine(false);
+    setOpenInvoices(false);
+  };
+
+  const fnAddLine = () => {
+    setSendLine(true);
+    if (Object.keys(lineErrors).length > 0) return;
+    setDetails((prev) => [...prev, { ...line }]);
+    setLine({ ...INITIAL_LINE });
+    setSendLine(false);
+  };
+
+  const fnRemoveLine = (index) => setDetails((prev) => prev.filter((_, i) => i !== index));
+
+  const fnSaveDocument = () => {
+    if (state.locked) {
+      notification('warning', state.isVoided ? 'page.retentionReceipt.msg.voided' : 'page.retentionReceipt.msg.alreadyPosted', 'alert.warning.title');
+      return;
+    }
     setSendForm(true);
-    if (!isFormValidIndex) {
+    if (errors.details && !errors.date && !errors.documentCode && !errors.providerId) {
+      notification('warning', errors.details, 'alert.warning.title');
+    }
+    if (Object.keys(errors).length > 0) return;
+
+    const payload = buildPayload(formState, details);
+    const done = (resp) => {
+      notification('success', 'msg.success.save', 'alert.success.title');
+      fnLoadDocument({ id: resp?.data?.id || formState.id });
+    };
+    const fail = (resp) => {
+      notifyError(resp, 'msg.save.record.error');
+      setLoading(false);
+    };
+    setLoading(true);
+    if (Number(formState.id) > 0) request.PUT(`${RECEIPT_URL}/${formState.id}`, payload, done, fail, false);
+    else request.POST(RECEIPT_URL, payload, done, fail, false);
+  };
+
+  const askConfirm = (action, openFn) => {
+    const result = action(formState);
+    if (result !== 'ok') {
+      notification('warning', result, 'alert.warning.title');
       return;
     }
-    if (retentionDetail.length === 0) {
-      createNotification('warning', 'msg.required.select.retentionDocument', 'alert.warning.title');
+    openFn(true);
+  };
+  const fnGenerateCai = () => askConfirm(caiAction, setOpenMsgCai);
+  const fnAccountDocument = () => askConfirm(accountAction, setOpenMsgAccount);
+  const fnCancelDocument = () => {
+    if (!state.canCancel) {
+      notification('warning', state.saved ? 'page.retentionReceipt.msg.voided' : 'page.retentionReceipt.msg.saveFirst', 'alert.warning.title');
       return;
     }
-    const newData = {
-      date,
-      documentCode: codeIndex,
-      documentId,
-      cai,
-      numberCAI,
-      limitDate: limitDate === "" ? "1900-01-01" : limitDate,
-      providerId,
-      rangeCAI,
-      total
+    setOpenMsgCancel(true);
+  };
+
+  // Un paso del back: éxito -> aviso y se recarga lo guardado; rechazo -> mensaje real del back y el documento no cambia.
+  const stepHandlers = (successId, closeFn) => [
+    () => {
+      notification('success', successId, 'alert.success.title');
+      closeFn(false);
+      fnLoadDocument({ id: formState.id });
+    },
+    (resp) => {
+      notifyError(resp, 'msg.save.record.error');
+      closeFn(false);
+      setLoading(false);
     }
-    retentionDetail.map((item) => {
-      delete item.id;
-      return item;
-    });
-    if (code && code > 0) {
-      setLoading(true);
-      request.PUT(`tax/process/withholdingReceipts/${code}`, newData, () => {
-        setLoading(false);
-        // Eliminar recibo
-        request.DELETE(buildUrl('tax/process/withholdingReceiptDetail', { fatherId: code }), () => {
-          // guardar recibo
-          retentionDetail.forEach(item => {
-            const productDeta = {
-              fatherId: code,
-              ...item
-            }
-            setLoading(true);
-            request.POST('tax/process/withholdingReceiptDetail', productDeta, () => {
-              setLoading(false);
-            }, (err) => {
-              setLoading(false);
-            }, false);
-          });
-        }, (err) => {
-          setLoading(false);
-        }, false);
-      }, (err) => {
-        setLoading(false);
-      });
-    } else {
-      // Generar documento
-      setLoading(true);
-      request.POST('admin/documents/getCurrentNumber', { code: codeIndex }, (resp) => {
-        newData.documentId = resp.data.codeInt;
-        newData.cai = resp.data.cai;
-        newData.numberCAI = resp.data.numCai;
-        newData.limitDate = resp.data.limitDate;
-        newData.rangeCAI = resp.data.noRange;
-        setLoading(false);
-
-        setLoading(true);
-        request.POST('tax/process/withholdingReceipts', newData, (resp2) => {
-          setBulkFormIndex({
-            documentId: resp.data.codeInt,
-            cai: resp.data.cai,
-            numberCAI: resp.data.numCai,
-            limitDate: resp.data.limitDate,
-            rangeCAI: resp.data.noRange,
-            id: resp2.data.id
-          });
-
-          fnGetDocuments();
-
-          // guardar recibo
-          retentionDetail.forEach(item => {
-            const productDeta = {
-              fatherId: resp2.data.id,
-              ...item
-            }
-            setLoading(true);
-            request.POST('tax/process/withholdingReceiptDetail', productDeta, (resp2) => {
-              setLoading(false);
-            }, (err) => {
-              setLoading(false);
-            }, false);
-          });
-        }, (err) => {
-          setLoading(false);
-        });
-
-      }, (err) => {
-        setLoading(false);
-      }, false);
-    }
-  }
-
-  const fnDeleteRetention = () => {
-    if (code > 0) {
-      const filterPurchases = dataRetention.filter((item) => {
-        return item.receipId === code
-      });
-      if (filterPurchases.length === 0) {
-        setOpenMsgDelete(true);
-      } else {
-        createNotification('warning', 'msg.purchaseOrder.processed', 'alert.warning.title');
-      }
-    }
-  }
-
-  const fnOkDeleteRetention = () => {
+  ];
+  const fnOkGenerateCai = () => {
+    const [done, fail] = stepHandlers('page.retentionReceipt.msg.caiGenerated', setOpenMsgCai);
     setLoading(true);
-    request.DELETE(`tax/process/withholdingReceipts/${code}`, (resp) => {
-      // eliminar detalle de la orden de compra
-      setLoading(true);
-      request.DELETE(buildUrl('tax/process/withholdingReceiptDetail', { fatherId: code }), (resp2) => {
-        setOpenMsgDelete(false);
-        fnNewRetention();
-        setLoading(false);
-      }, (err) => {
-        setLoading(false);
-      });
-      setLoading(false);
-    }, (err) => {
-      setLoading(false);
-    });
-  }
-
-  const fnSelectCxp = (item) => {
-    onResetFormDetail();
-    const newCxp = {
-      documentCode: item.documentCode,
-      baseValue: item.value,
-      description: "",
-      percentValue: "",
-      totalValue: ""
-    }
-    setBulkFormDetail(newCxp);
-    setOpenModalBillToPay(false);
-  }
-
-  const fnViewCxp = () => {
+    request.POST(`${RECEIPT_URL}/${formState.id}/generateCai`, {}, done, fail, false);
+  };
+  const fnOkAccountDocument = () => {
+    const [done, fail] = stepHandlers('msg.success.accountDocument', setOpenMsgAccount);
     setLoading(true);
-    setListCxp([]);
-    request.GET(buildUrl('accounting/process/cxp', { providerId }), (resp) => {
-      const acounts = resp.data.map((item) => {
-        item.code = item.documentCode
-        item.descrip = item.description
-        item.provider = item.invProvider ? item.invProvider.name : ''
-        item.total = formatNumber(item.value, '', 2)
-        item.options = <TableButtons color='primary' icon='eye' fnOnClick={() => fnSelectCxp(item)} />
-        return item;
-      });
-      setListCxp(acounts);
-      setOpenModalBillToPay(true);
-      setLoading(false);
-    }, (err) => {
-      setLoading(false);
-    });
-  }
+    request.POST(`${RECEIPT_URL}/${formState.id}/accountDocument`, {}, done, fail, false);
+  };
+  const fnOkCancelDocument = () => {
+    const [done, fail] = stepHandlers('page.retentionReceipt.msg.cancelled', setOpenMsgCancel);
+    setLoading(true);
+    request.DELETE(`${RECEIPT_URL}/${formState.id}`, done, fail, false);
+  };
 
-  useEffect(() => {
-    setLoading(true);
-    request.GET(buildUrl('inventory/process/providers', { status: 1 }), (resp) => {
-      const providerValue = resp.data.map((item) => {
-        return {
-          value: item.id,
-          label: ` ${item.dni} | ${item.name}`,
-        }
-      });
-      setListProvider(providerValue);
-      setLoading(false);
-    }, (err) => {
-      setLoading(false);
-    });
-    setLoading(true);
-    request.GET('tax/settings/withholdingTypes/getSL', (resp) => {
-      const retention = resp.data.map((item) => {
-        return {
-          value: item.name,
-          label: item.name,
-          percentValue: item.percentValue
-        }
-      });
-      setListTypesRetention(retention);
-      setLoading(false);
-    }, (err) => {
-      setLoading(false);
-    });
-    fnGetDocuments();
-  }, []);
+  // Se imprime lo GUARDADO en DB (por GET); sin comprobante guardado avisa "guarde primero".
+  const fnPrintDocument = () => printDocument({ ...printOptions(formState.id), setLoading });
+  const fnPrintCopy = () => printDocument({ ...printOptions(formState.id, true), setLoading });
 
   const propsToControlPanel = {
-    fnNew: fnNewRetention,
-    fnSearch: fnSearchRetention,
-    fnSave: fnSaveRetention,
-    fnPrint: fnPrintRetention,
-    fnDelete: fnDeleteRetention,
+    fnNew: fnNewDocument,
+    fnSearch: fnSearchDocument,
+    fnSave: fnSaveDocument,
+    fnPrint: fnPrintDocument,
+    fnCancel: fnCancelDocument,
     buttonsHome: [
+      { title: 'page.retentionReceipt.button.generateCai', icon: 'bi bi-upc-scan', onClick: fnGenerateCai },
+      { title: 'page.retentionReceipt.button.account', icon: 'bi bi-journal-check', onClick: fnAccountDocument }
     ],
-    buttonsOptions: [],
+    buttonsOptions: [
+      { title: 'page.retentionReceipt.button.printCopy', icon: 'bi bi-files', onClick: fnPrintCopy }
+    ],
     buttonsAdmin: []
-  }
+  };
 
-  return (
-    {
-      propsToControlPanel,
-      formStateIndex,
-      formValidationIndex,
-      onInputChangeIndex,
-      setBulkFormIndex,
-      sendForm,
-      dataRetention,
-      openModalRetention,
-      setOpenModalRetention,
-      openMsgDelete,
-      setOpenMsgDelete,
-      openModalBillToPay,
-      setOpenModalBillToPay,
-      openModalPrint,
-      setOpenModalPrint,
-      fnOkDeleteRetention,
-      fnViewCxp,
-      listProvider,
-      listDocto,
-      listTypesRetention,
-      listCxp
-    }
-  )
-}
+  useEffect(() => {
+    request.GET('admin/documents?status=1&useTax=1', (resp) => {
+      setListDocuments(resp.data.map((item) => ({ value: item.code, label: `${item.code} | ${item.name}` })));
+    }, () => { });
+    request.GET('inventory/process/providers/getSL', (resp) => {
+      setListProviders(providerOptions(resp.data));
+    }, () => { });
+    request.GET('tax/settings/withholdingTypes/getSL', (resp) => {
+      setListTypes(typeOptions(resp.data));
+    }, () => { });
+  }, []);
+
+  return {
+    formState, onInputChange, onProviderChange, errors, sendForm, state, total, details, line, lineErrors, sendLine, onLineChange, onTypeChange,
+    listDocuments, listProviders, listTypes, invoices, fnViewInvoices, fnSelectInvoice, fnAddLine, fnRemoveLine,
+    propsToControlPanel, openSearch, setOpenSearch, fnLoadDocument, openInvoices, setOpenInvoices,
+    openMsgCai, setOpenMsgCai, fnOkGenerateCai, openMsgAccount, setOpenMsgAccount, fnOkAccountDocument, openMsgCancel, setOpenMsgCancel, fnOkCancelDocument
+  };
+};
