@@ -4,7 +4,8 @@ import DateCalendar from '@Components/dateCalendar';
 import { SimpleSelect } from '@Components/simpleSelect';
 import { IntlMessages } from '@Helpers/Utils';
 
-const HeaderReport = ({ moduleId, dateStart, dateEnd, modules, onInputChange, fnSearch, fnExportXlsx }) => {
+// Solo Excel: este reporte no tiene PDF (el botón Imprimir del legacy no tiene código).
+const HeaderReport = ({ moduleId, dateStart, dateEnd, modules, errors = {}, sendForm = false, onInputChange, fnSearch, fnExportXlsx }) => {
   return (
     <>
       <Row>
@@ -17,6 +18,7 @@ const HeaderReport = ({ moduleId, dateStart, dateEnd, modules, onInputChange, fn
             options={modules}
             getOptionValue={(o) => o.id}
             getOptionLabel={(o) => o.name}
+            feedbackText={sendForm ? errors.moduleId : ''}
           />
         </Colxx>
         <Colxx xxs="12" xs="6" md="3" lg="4">
@@ -25,6 +27,7 @@ const HeaderReport = ({ moduleId, dateStart, dateEnd, modules, onInputChange, fn
             label="page.moduleAudit.input.dateStart"
             value={dateStart}
             onChange={onInputChange}
+            feedbackText={sendForm ? errors.dateStart : ''}
           />
         </Colxx>
         <Colxx xxs="12" xs="6" md="3" lg="4">
@@ -33,6 +36,7 @@ const HeaderReport = ({ moduleId, dateStart, dateEnd, modules, onInputChange, fn
             label="page.moduleAudit.input.dateEnd"
             value={dateEnd}
             onChange={onInputChange}
+            feedbackText={sendForm ? errors.dateEnd : ''}
           />
         </Colxx>
       </Row>
@@ -48,6 +52,6 @@ const HeaderReport = ({ moduleId, dateStart, dateEnd, modules, onInputChange, fn
       </Row>
     </>
   );
-}
+};
 
 export default HeaderReport;

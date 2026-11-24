@@ -383,6 +383,8 @@
     "memo.items.tooMany",
     "missing.fields",
     "mode.invalid",
+    "moduleAudit.filter.invalid",
+    "moduleAudit.rows.tooLarge",
     "month.range",
     "monthlySalesCustomer.currency.unavailable",
     "monthlySalesCustomer.rows.tooLarge",
