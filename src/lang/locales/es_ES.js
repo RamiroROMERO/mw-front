@@ -2026,6 +2026,11 @@ const esLang = {
   "page.ledgerAccount.input.dateClosing": "Fecha Cierre",
   "page.ledgerAccount.select.typeCurrency": "Moneda",
   "page.ledgerAccounts.check.active": "Activo",
+  "page.ledgerAccounts.error.code.digits": "El código solo puede tener dígitos (máximo 25)",
+  "page.ledgerAccounts.error.code.level": "El largo del código no coincide con ningún nivel del formato de cuentas",
+  "page.ledgerAccounts.error.name.max": "El nombre no puede exceder 120 caracteres",
+  "page.ledgerAccounts.error.currency.required": "Seleccione la moneda extranjera de la cuenta",
+  "page.ledgerAccounts.msg.exportError": "No se pudo exportar el listado de cuentas contables a Excel.",
   /* 22.Stores Products page in inventory module */
   "page.storesProducts.select.warehouse": "Almacén",
   "page.storesProducts.select.product": "Producto",

@@ -1994,6 +1994,11 @@ const enLang = {
   "page.ledgerAccount.input.dateClosing": "Date Closing",
   "page.ledgerAccount.select.typeCurrency": "Currency",
   "page.ledgerAccounts.check.active": "Active",
+  "page.ledgerAccounts.error.code.digits": "The code can only contain digits (maximum 25)",
+  "page.ledgerAccounts.error.code.level": "The code length does not match any level of the account format",
+  "page.ledgerAccounts.error.name.max": "The name cannot exceed 120 characters",
+  "page.ledgerAccounts.error.currency.required": "Select the account foreign currency",
+  "page.ledgerAccounts.msg.exportError": "The chart of accounts could not be exported to Excel.",
   /* 22.Stores Products page in inventory module */
   "page.storesProducts.select.warehouse": "Warehouse",
   "page.storesProducts.select.product": "Product",

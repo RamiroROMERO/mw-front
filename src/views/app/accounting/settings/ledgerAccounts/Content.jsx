@@ -13,11 +13,11 @@ import { useContent } from './useContent';
 const LedgerAccounts = (props) => {
   const { setLoading } = props;
 
-  const { listTypeAccount, listTypeSpent, listCurrency, formState, formValidation, onInputChange, sendForm, table, fnClearInputs, fnSave, propsToMsgDelete } = useContent({ setLoading });
+  const { listTypeAccount, listTypeSpent, listCurrency, formState, errors, codeFormat, isEdit, onInputChange, sendForm, table, fnClearInputs, fnSave, fnExport, propsToMsgDelete } = useContent({ setLoading });
 
-  const { code, name, accountTypeId, expenseTypeId, currencyId, opera, detailAux, postIn, lastDate, status } = formState;
+  const { code, name, accountTypeId, expenseTypeId, currencyId, opera, detailAux, postIn, useForeignCurrency, lastDate, status } = formState;
 
-  const { codeValid, nameValid, accountTypeValid, expenseTypeValid } = formValidation;
+  const show = (key) => (sendForm && errors[key]) || null;
 
   return (
     <>
@@ -30,13 +30,13 @@ const LedgerAccounts = (props) => {
                   <InputField
                     value={code}
                     name="code"
-                    mask="***.**.**.**"
-                    maskChar=" "
-                    // tag={InputMask}
+                    placeholder={codeFormat}
+                    maxLength={25}
+                    disabled={isEdit}
                     onChange={onInputChange}
                     label="page.ledgerAccounts.input.code"
-                    invalid={sendForm && !!codeValid}
-                    feedbackText={sendForm && (codeValid || null)}
+                    invalid={!!show('code')}
+                    feedbackText={show('code')}
                   />
                 </Colxx>
                 <Colxx xss="12" sm="6" lg="12">
@@ -46,8 +46,8 @@ const LedgerAccounts = (props) => {
                     onChange={onInputChange}
                     type="text"
                     label="page.ledgerAccounts.input.name"
-                    invalid={sendForm && !!nameValid}
-                    feedbackText={sendForm && (nameValid || null)}
+                    invalid={!!show('name')}
+                    feedbackText={show('name')}
                   />
                 </Colxx>
               </Row>
@@ -59,8 +59,8 @@ const LedgerAccounts = (props) => {
                     value={accountTypeId}
                     onChange={onInputChange}
                     options={listTypeAccount}
-                    invalid={sendForm && !!accountTypeValid}
-                    feedbackText={sendForm && (accountTypeValid || null)}
+                    invalid={!!show('accountTypeId')}
+                    feedbackText={show('accountTypeId')}
                   />
                 </Colxx>
                 <Colxx xss="12" sm="6" lg="12">
@@ -70,8 +70,8 @@ const LedgerAccounts = (props) => {
                     value={expenseTypeId}
                     onChange={onInputChange}
                     options={listTypeSpent}
-                    invalid={sendForm && !!expenseTypeValid}
-                    feedbackText={sendForm && (expenseTypeValid || null)}
+                    invalid={!!show('expenseTypeId')}
+                    feedbackText={show('expenseTypeId')}
                   />
                 </Colxx>
               </Row>
@@ -91,6 +91,8 @@ const LedgerAccounts = (props) => {
                     onChange={onInputChange}
                     value={currencyId}
                     options={listCurrency}
+                    invalid={!!show('currencyId')}
+                    feedbackText={show('currencyId')}
                   />
                 </Colxx>
               </Row>
@@ -101,6 +103,14 @@ const LedgerAccounts = (props) => {
                     name="opera"
                     value={opera}
                     label="page.ledgerAccounts.check.posteable"
+                  />
+                </Colxx>
+                <Colxx xss="12" xs="6" md="4" lg="12">
+                  <Checkbox
+                    onChange={onInputChange}
+                    name="useForeignCurrency"
+                    value={useForeignCurrency}
+                    label="page.ledgerAccounts.check.foreignCurrency"
                   />
                 </Colxx>
                 <Colxx xss="12" xs="6" md="4" lg="12">
@@ -131,6 +141,7 @@ const LedgerAccounts = (props) => {
               <Row>
                 <Colxx xxs="12" className="div-action-button-container">
                   <Button color="secondary" onClick={fnClearInputs}><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
+                  <Button color="info" onClick={fnExport}><i className="bi bi-file-earmark-excel" /> {IntlMessages("button.export")}</Button>
                   <Button color="primary" onClick={fnSave}><i className="iconsminds-save" /> {IntlMessages("button.save")}</Button>
                 </Colxx>
               </Row>

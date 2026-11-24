@@ -1,59 +1,39 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { IntlMessages } from "@Helpers/Utils";
-import { validInt } from '@Helpers/Utils';
-import { request } from '@Helpers/core';
+import { request, notifyError } from '@Helpers/core';
 import { useForm } from '@Hooks';
+import { INITIAL_ACCOUNT_FORM, buildAccountPayload, mapAccountToForm, validateAccount } from './ledgerAccountRules';
 
+// Cuentas Contables (cont_ccc*.sc2, SPEC v2-119-sr). Validación por campo con las mismas reglas del back (ledgerAccountRules.js): un formulario inválido se marca y NO llama al back.
+// El nivel lo calcula el back con el formato de cuentas (`GET .../accountants/format` da el largo de cada nivel y el formato). "Eliminar" es una baja lógica con bloqueo por uso
+// (DELETE accounting/settings/accountants/:id: el back rechaza con su mensaje real si la cuenta tiene hijas, partidas o está asignada); la casilla "Activa" es independiente.
 export const useContent = ({ setLoading }) => {
 
   const [listTypeAccount, setlistTypeAcount] = useState([]);
   const [listTypeSpent, setlistTypeSpent] = useState([]);
-  const [currentItem, setCurrentItem] = useState({});
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
+  const [levels, setLevels] = useState([]);
+  const [codeFormat, setCodeFormat] = useState('');
+  const [sendForm, setSendForm] = useState(false);
   const listCurrency = [{ id: "1", name: "Lempiras" },
   { id: "2", name: "Dolares" }];
-  const [sendForm, setSendForm] = useState(false);
 
-  const ledgerAccountsValid = {
-    code: [(val) => val !== "", "msg.required.input.code"],
-    name: [(val) => val !== "", "msg.required.input.name"],
-    accountTypeId: [(val) => validInt(val) !== 0, "msg.required.select.typeAccount"],
-    expenseTypeId: [(val) => validInt(val) !== 0, "msg.required.select.typeSpent"]
-  }
-
-  const { formState, formValidation, isFormValid, onInputChange, onResetForm, setBulkForm } = useForm({
-    id: 0,
-    code: '',
-    name: '',
-    accountType: 0,
-    expenseType: 0,
-    accountTypeId: 0,
-    expenseTypeId: 0,
-    currencyId: 0,
-    opera: false,
-    detailAux: false,
-    postIn: false,
-    lastDate: '',
-    cmonext: false,
-    status: true
-  }, ledgerAccountsValid);
-
-  const { code, name, accountTypeId, expenseTypeId, currencyId, opera, detailAux, postIn, lastDate, cmonext, status } = formState;
+  const { formState, onInputChange, onResetForm, setBulkForm } = useForm({ ...INITIAL_ACCOUNT_FORM });
+  const isEdit = formState.id > 0;
+  const errors = useMemo(() => validateAccount(formState, { levels, isEdit }), [formState, levels, isEdit]);
 
   const fnClearInputs = () => {
-    setCurrentItem({});
-    onResetForm();
     setSendForm(false);
+    onResetForm();
   }
 
   const fnEditItem = (item) => {
-    item.lastDate = item.lastDate === "1900-01-01" ? "" : item.lastDate
-    setCurrentItem(item);
-    setBulkForm(item);
+    setSendForm(false);
+    setBulkForm(mapAccountToForm(item));
   }
 
   const fnDeleteItem = (item) => {
-    setCurrentItem(item)
+    setBulkForm({ ...INITIAL_ACCOUNT_FORM, id: item.id });
     setOpenMsgQuestion(true);
   }
 
@@ -92,165 +72,88 @@ export const useContent = ({ setLoading }) => {
   const fnGetData = () => {
     setLoading(true);
     request.GET('accounting/settings/accountants', (resp) => {
-      const data
-        = resp.data.map((item) => {
-          item.level = item.nivel
-          return item;
-        });
-      const tableData = {
-        ...table, data
-      }
-      setTable(tableData);
+      setTable((prev) => ({ ...prev, data: resp.data }));
       setLoading(false);
-    }, (err) => {
-
+    }, () => {
       setLoading(false);
     });
   }
 
-  const fnDisableDocument = () => {
+  const fnRemove = () => {
     setOpenMsgQuestion(false);
-    const data = {
-      status: 0
-    }
-    if (currentItem.id && currentItem.id > 0) {
-      setLoading(true);
-      request.PUT(`accounting/settings/accountants/${currentItem.id}`, data, () => {
-        fnGetData();
-        fnClearInputs();
-        setCurrentItem({});
-        setLoading(false);
-      }, (err) => {
-
-        setLoading(false);
-      });
-    }
+    if (!(formState.id > 0)) return;
+    setLoading(true);
+    request.DELETE(`accounting/settings/accountants/${formState.id}`, () => {
+      fnClearInputs();
+      fnGetData();
+      setLoading(false);
+    }, () => {
+      // Rechazada (hijas, partidas o asignada): `request` ya mostró el mensaje real; se limpia para que un Guardar posterior no edite lo que se intentó eliminar.
+      fnClearInputs();
+      setLoading(false);
+    });
   }
 
   const fnSave = () => {
     setSendForm(true);
-    if (!isFormValid) {
-      return;
-    }
+    if (Object.keys(errors).length > 0) return;
 
-    const code1 = code.replace(/[.]/g, '');
-    const codeLenght = code1.trim().length;
-    let level = 0;
-    switch (codeLenght) {
-      case 1:
-        level = 1;
-        break;
-      case 2:
-        level = 2;
-        break;
-      case 3:
-        level = 3;
-        break;
-      case 4:
-        level = 4;
-        break;
-      case 5:
-        level = 4;
-        break;
-      case 6:
-        level = 5;
-        break;
-      case 7:
-        level = 5;
-        break;
-      case 8:
-        level = 6;
-        break;
-      case 9:
-        level = 6;
-        break;
-      default:
-        level = 0;
-    }
-
-    const data = {
-      code,
-      name,
-      accountTypeId,
-      expenseTypeId,
-      currencyId,
-      opera,
-      nivel: level,
-      detailAux,
-      postIn,
-      lastDate: lastDate === "" ? "1900-01-01" : lastDate,
-      cmonext,
-      status
-    }
-    if (currentItem && currentItem.id > 0) {
-      setLoading(true);
-      request.PUT(`accounting/settings/accountants/${currentItem.id}`, data, () => {
-        fnClearInputs();
-        fnGetData();
-        setLoading(false);
-      }, (err) => {
-
-        setLoading(false);
-      });
+    const data = buildAccountPayload(formState, { isEdit });
+    setLoading(true);
+    const done = () => {
+      fnClearInputs();
+      fnGetData();
+      setLoading(false);
+    };
+    if (isEdit) {
+      request.PUT(`accounting/settings/accountants/${formState.id}`, data, done, () => setLoading(false));
     } else {
-      setLoading(true);
-      request.POST('accounting/settings/accountants', data, () => {
-        fnClearInputs();
-        fnGetData();
-        setLoading(false);
-      }, (err) => {
-
-        setLoading(false);
-      });
+      request.POST('accounting/settings/accountants', data, done, () => setLoading(false));
     }
   }
 
+  // Excel "Listado de Cuentas Contables": el back exporta lo guardado en la DB (no eliminadas), no lo que está en el formulario. Es un GET (solo lectura). GETPdf no notifica por sí
+  // mismo: el error se avisa aquí.
+  const fnExport = () => {
+    setLoading(true);
+    const stop = () => setLoading(false);
+    request.GETPdf('accounting/settings/accountants/export', {}, 'Listado de Cuentas Contables.xlsx', (err) => {
+      stop();
+      notifyError(err, 'page.ledgerAccounts.msg.exportError');
+    }, 'GET', stop);
+  }
+
   useEffect(() => {
-    setLoading(true);
     request.GET('accounting/settings/accountTypes', (resp) => {
-      const accountTypes = resp.data.map((item) => {
-        return {
-          id: item.id,
-          name: item.name
-        }
-      });
-      setlistTypeAcount(accountTypes)
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
-    setLoading(true);
+      setlistTypeAcount(resp.data.map((item) => ({ id: item.id, name: item.name })));
+    }, () => { });
     request.GET('accounting/settings/accountExpenseTypes', (resp) => {
-      const spentTypes = resp.data.map((item) => {
-        return {
-          id: item.id,
-          name: item.name
-        }
-      });
-      setlistTypeSpent(spentTypes)
-      setLoading(false);
-    }, (err) => {
-
-      setLoading(false);
-    });
+      setlistTypeSpent(resp.data.map((item) => ({ id: item.id, name: item.name })));
+    }, () => { });
+    // Formato de cuentas (cont_ctas_set): formato del código (placeholder) y largo de cada nivel. Sin él no se valida el nivel en pantalla (lo decide el back).
+    request.GET('accounting/settings/accountants/format', (resp) => {
+      setLevels(resp.data?.levels || []);
+      setCodeFormat(resp.data?.format || '');
+    }, () => { });
 
     fnGetData();
-
   }, []);
 
-  const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnDisableDocument, title: "alert.question.title", setCurrentItem }
+  const propsToMsgDelete = { open: openMsgQuestion, setOpen: setOpenMsgQuestion, fnOnOk: fnRemove, title: "alert.question.title" }
 
   return {
     listTypeAccount,
     listTypeSpent,
     listCurrency,
     formState,
-    formValidation,
+    errors,
+    codeFormat,
+    isEdit,
     onInputChange,
     sendForm,
     fnClearInputs,
     fnSave,
+    fnExport,
     table,
     propsToMsgDelete
   }
