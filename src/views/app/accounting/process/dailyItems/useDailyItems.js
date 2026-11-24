@@ -1,18 +1,24 @@
 import { useEffect, useMemo, useState } from 'react';
-import { request, buildUrl } from '@Helpers/core';
+import { request, buildUrl, notifyError } from '@Helpers/core';
 import { buildAccountOption } from '@Helpers/accountOptions';
 import { useForm } from '@Hooks/useForms';
 import { useExportExcel } from '@Hooks';
 import { validFloat, IntlMessagesFn } from '@Helpers/Utils';
 import createNotification from '@Containers/ui/Notifications';
 import { NotificationManager } from '@Components/common/react-notifications';
+import { useIntl } from 'react-intl';
+import {
+  DEFAULT_CURRENCY, todayLocal, lineProblem, saveProblem, totalsOf, isReadOnly, canDeleteEntry
+} from './dailyItemRules';
 
-const today = () => new Date().toISOString().substring(0, 10);
-// Todo se contabiliza en Lempiras aunque algunos documentos se registren en dólares — el
-// selector de moneda queda oculto por ahora, pero el valor se sigue enviando al backend.
-const DEFAULT_CURRENCY_CODE = '01';
+const today = todayLocal;
+// Todo se contabiliza en Lempiras aunque algunos documentos se registren en dólares — el selector de moneda queda oculto por ahora, pero el valor se sigue enviando al back, que guarda el NOMBRE de la moneda.
+const DEFAULT_CURRENCY_CODE = DEFAULT_CURRENCY;
 
 export const useDailyItems = ({ setLoading }) => {
+  const intl = useIntl();
+  const t = (id) => intl.formatMessage({ id });
+  const [privileges, setPrivileges] = useState({ canEditOther: false, canDelete: false });
   const [lines, setLines] = useState([]);
   const [listAccounts, setListAccounts] = useState([]);
   const [listCurrencies, setListCurrencies] = useState([]);
@@ -59,13 +65,11 @@ export const useDailyItems = ({ setLoading }) => {
   const updatedMessage = IntlMessagesFn('page.dailyItems.msg.updated');
   const deletedMessage = IntlMessagesFn('page.dailyItems.msg.deleted');
   const auxAppliedMessage = IntlMessagesFn('page.dailyItems.msg.auxApplied');
-  const auxErrorMessage = IntlMessagesFn('page.dailyItems.msg.auxError');
   const paymentAppliedMessage = IntlMessagesFn('page.dailyItems.msg.paymentApplied');
   const paymentApplyErrorMessage = IntlMessagesFn('page.dailyItems.msg.paymentApplyError');
   const paymentRemovedMessage = IntlMessagesFn('page.dailyItems.msg.paymentRemoved');
   const advanceSavedMessage = IntlMessagesFn('page.dailyItems.msg.advanceSaved');
   const advanceRemovedMessage = IntlMessagesFn('page.dailyItems.msg.advanceRemoved');
-  const deleteErrorMessage = IntlMessagesFn('page.dailyItems.msg.deleteError');
 
   const { formState, onInputChange, onBulkForm, onResetForm } = useForm({
     id: 0,
@@ -91,8 +95,10 @@ export const useDailyItems = ({ setLoading }) => {
     }, () => { });
 
     request.GET('accounting/settings/currencies/getSL', (resp) => {
-      setListCurrencies(resp.data.map((item) => ({ label: `${item.code} - ${item.name}`, value: item.code })));
+      setListCurrencies(resp.data.map((item) => ({ label: `${item.code} - ${item.name}`, value: item.name })));
     }, () => { });
+
+    request.GET('accounting/process/dailyItems/settings', (resp) => setPrivileges({ canEditOther: resp.data?.canEditOther === true, canDelete: resp.data?.canDelete === true }), () => { });
 
     request.GET('accounting/process/dailyItems/documentTypes', (resp) => {
       setListDocuments(resp.data.map((item) => ({ label: `${item.code} - ${item.name}`, value: item.code })));
@@ -107,31 +113,15 @@ export const useDailyItems = ({ setLoading }) => {
     }, () => { });
   }, []);
 
-  const totals = useMemo(() => {
-    const totalDebit = lines.reduce((sum, l) => sum + (Number(l.valueDebit) || 0), 0);
-    const totalCredit = lines.reduce((sum, l) => sum + (Number(l.valueCredit) || 0), 0);
-    return {
-      totalDebit,
-      totalCredit,
-      diff: Number((totalDebit - totalCredit).toFixed(2))
-    };
-  }, [lines]);
+  const totals = useMemo(() => totalsOf(lines), [lines]);
 
   const fnNew = () => {
     onResetForm();
     setLines([]);
   }
 
-  const onDocumentCodeChange = (e) => {
-    onInputChange(e);
-    if (validFloat(id) > 0) return;
-    const code = e.target.value;
-    if (!code) return;
-
-    request.POST('admin/documents/getCurrentNumber', { code }, (resp) => {
-      onBulkForm({ documentId: resp.data?.codeInt || 0 });
-    }, () => { }, false);
-  }
+  // El número de documento lo asigna el back al guardar (ya no se consume un correlativo al elegir el tipo).
+  const onDocumentCodeChange = (e) => onInputChange(e);
 
   const fnOpenSearch = () => {
     setOpenSearchModal(true);
@@ -162,16 +152,9 @@ export const useDailyItems = ({ setLoading }) => {
   }
 
   const fnAddLine = (line) => {
-    if (!line.accountNumber) {
-      createNotification('warning', 'page.dailyItems.msg.missingData', 'alert.warning.title');
-      return false;
-    }
-    if (!line.description) {
-      createNotification('warning', 'page.dailyItems.msg.missingData', 'alert.warning.title');
-      return false;
-    }
-    if (validFloat(line.valueDebit) === 0 && validFloat(line.valueCredit) === 0) {
-      createNotification('warning', 'page.dailyItems.msg.zeroItem', 'alert.warning.title');
+    const problem = lineProblem(line);
+    if (problem) {
+      createNotification('warning', problem, 'alert.warning.title');
       return false;
     }
 
@@ -192,8 +175,9 @@ export const useDailyItems = ({ setLoading }) => {
   }
 
   const fnUpdateLine = (updatedLine) => {
-    if (validFloat(updatedLine.valueDebit) === 0 && validFloat(updatedLine.valueCredit) === 0) {
-      createNotification('warning', 'page.dailyItems.msg.zeroItem', 'alert.warning.title');
+    const problem = lineProblem(updatedLine);
+    if (problem) {
+      createNotification('warning', problem, 'alert.warning.title');
       return false;
     }
     const account = listAccounts.find((a) => a.value === updatedLine.accountNumber);
@@ -225,13 +209,17 @@ export const useDailyItems = ({ setLoading }) => {
     setOpenMsgDeleteLine(false);
   }
 
+  const readOnly = isReadOnly({ id, header: formState }, privileges);
+  const canDelete = canDeleteEntry({ id, header: formState }, privileges);
+
   const fnSave = () => {
-    if (lines.length === 0) {
-      createNotification('warning', 'page.dailyItems.msg.noDetail', 'alert.warning.title');
+    if (readOnly) {
+      createNotification('warning', 'page.dailyItems.msg.readOnly', 'alert.warning.title');
       return;
     }
-    if (totals.diff !== 0) {
-      createNotification('warning', 'page.dailyItems.msg.unbalanced', 'alert.warning.title');
+    const problem = saveProblem({ header: { documentCode, date }, lines });
+    if (problem) {
+      createNotification('warning', problem, 'alert.warning.title');
       return;
     }
 
@@ -255,18 +243,22 @@ export const useDailyItems = ({ setLoading }) => {
         setLoading(false);
         NotificationManager.success(`${savedMessage} ${resp.data?.numberPDA || ''}`, '', 4000, null, null, '');
         fnSelectEntry({ id: resp.data.header.id });
-      }, () => { setLoading(false); }, false);
+      }, (err) => { setLoading(false); notifyError(err, 'page.dailyItems.msg.saveError'); }, false);
     } else {
       request.PUT(`accounting/process/dailyItems/${id}`, { header, lines: payloadLines }, (resp) => {
         setLoading(false);
         NotificationManager.success(`${updatedMessage} ${resp.data?.numberPDA || ''}`, '', 4000, null, null, '');
         fnSelectEntry({ id });
-      }, () => { setLoading(false); }, false);
+      }, (err) => { setLoading(false); notifyError(err, 'page.dailyItems.msg.saveError'); }, false);
     }
   }
 
   const fnAskDeleteDoc = () => {
     if (validFloat(id) === 0) return;
+    if (!canDelete) {
+      createNotification('warning', isReadOnly({ id, header: formState }, { canEditOther: false }) ? 'page.dailyItems.msg.otherModuleDelete' : 'page.dailyItems.msg.noDeletePrivilege', 'alert.warning.title');
+      return;
+    }
     setOpenMsgDeleteDoc(true);
   }
 
@@ -279,9 +271,7 @@ export const useDailyItems = ({ setLoading }) => {
       fnNew();
     }, (err) => {
       setLoading(false);
-      const backendDescription = err?.messages?.[0]?.description;
-      const msg = (typeof backendDescription === 'object' ? backendDescription?.description : backendDescription) || deleteErrorMessage;
-      NotificationManager.error(msg, '', 5000, null, null, '');
+      notifyError(err, 'page.dailyItems.msg.deleteError');
     }, false);
   }
 
@@ -293,9 +283,7 @@ export const useDailyItems = ({ setLoading }) => {
       NotificationManager.success(auxAppliedMessage, '', 4000, null, null, '');
     }, (err) => {
       setLoading(false);
-      const backendDescription = err?.messages?.[0]?.description;
-      const msg = (typeof backendDescription === 'object' ? backendDescription?.description : backendDescription) || auxErrorMessage;
-      NotificationManager.error(msg, '', 5000, null, null, '');
+      notifyError(err, 'page.dailyItems.msg.auxError');
     }, false);
   }
 
@@ -346,7 +334,7 @@ export const useDailyItems = ({ setLoading }) => {
       setLoading(false);
       NotificationManager.success(paymentRemovedMessage, '', 4000, null, null, '');
       fnOpenCxc();
-    }, () => { setLoading(false); }, false);
+    }, (err) => { setLoading(false); notifyError(err, 'page.dailyItems.msg.paymentApplyError'); }, false);
   }
 
   const fnOpenCxp = () => {
@@ -393,7 +381,7 @@ export const useDailyItems = ({ setLoading }) => {
       setLoading(false);
       NotificationManager.success(paymentRemovedMessage, '', 4000, null, null, '');
       fnOpenCxp();
-    }, () => { setLoading(false); }, false);
+    }, (err) => { setLoading(false); notifyError(err, 'page.dailyItems.msg.paymentApplyError'); }, false);
   }
 
   // Botón "Anticipo" (Controlpanelbtn3 de cont_pdas.sc2, equivalente a cont_pda_advance.sc2):
@@ -433,7 +421,7 @@ export const useDailyItems = ({ setLoading }) => {
       setExistingAdvance(null);
       setOpenAdvanceModal(false);
       NotificationManager.success(advanceRemovedMessage, '', 4000, null, null, '');
-    }, () => { setLoading(false); }, false);
+    }, (err) => { setLoading(false); notifyError(err, 'page.dailyItems.msg.paymentApplyError'); }, false);
   }
 
   // "Seleccionar" (Commandbutton_hw4 de cont_pdas.sc2): aplica un Anticipo YA EXISTENTE
@@ -548,7 +536,7 @@ export const useDailyItems = ({ setLoading }) => {
   const propsToMsgDeleteDoc = { open: openMsgDeleteDoc, setOpen: setOpenMsgDeleteDoc, fnOnOk: fnDeleteDocOk, title: 'page.dailyItems.msg.deleteDocConfirm' };
 
   return {
-    formState, onInputChange, onDocumentCodeChange,
+    formState, onInputChange, onDocumentCodeChange, readOnly, canDelete, t,
     lines, totals,
     listAccounts, listCurrencies, listDocuments, listCustomers, listProviders,
     fnNew, fnSave, fnOpenSearch, fnSelectEntry,

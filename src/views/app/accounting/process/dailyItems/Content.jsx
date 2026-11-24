@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, CardBody, Row, Table } from 'reactstrap';
+import { Alert, Button, Card, CardBody, Row, Table } from 'reactstrap';
 import { Colxx, Separator } from '@Components/common/CustomBootstrap';
 import { InputField } from '@Components/inputFields';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
@@ -24,7 +24,7 @@ const emptyLine = { accountNumber: '', description: '', reference: '', valueDebi
 
 const DailyItems = ({ setLoading }) => {
   const {
-    formState, onInputChange, onDocumentCodeChange,
+    formState, onInputChange, onDocumentCodeChange, readOnly,
     lines, totals,
     listAccounts, listDocuments, listCustomers, listProviders,
     fnNew, fnSave, fnOpenSearch, fnSelectEntry,
@@ -55,6 +55,7 @@ const DailyItems = ({ setLoading }) => {
   // feedback_intlmessages_hook_order_gotcha in project memory).
   const currentAdvanceLabel = IntlMessages('page.dailyItems.input.currentAdvance');
   const clearAdvanceLabel = IntlMessages('page.dailyItems.button.clearAdvance');
+  const otherModuleLabel = IntlMessages('page.dailyItems.msg.otherModule');
 
   const onNewLineChange = ({ target }) => {
     if (target.name === 'accountNumber') {
@@ -268,6 +269,9 @@ const DailyItems = ({ setLoading }) => {
       <CardBody>
         <ControlPanel {...propsToControlPanel} />
         <Separator className="mt-2 mb-3" />
+        {readOnly && (
+          <Alert color="warning" data-testid="other-module-alert">{otherModuleLabel}</Alert>
+        )}
         <Row>
           <Colxx xxs="12" sm="8">
             <SearchSelect
@@ -281,7 +285,7 @@ const DailyItems = ({ setLoading }) => {
           </Colxx>
           <Colxx xxs="12" sm="4">
             <InputField name="numberPDA" label="page.dailyItems.input.numberPDA" value={numberPDA || ''} type="text" disabled />
-            <InputField name="documentId" label="page.dailyItems.input.documentId" value={documentId || ''} onChange={onInputChange} type="text" />
+            <InputField name="documentId" label="page.dailyItems.input.documentId" value={documentId || ''} type="text" disabled />
             <DateCalendar name="date" label="page.dailyItems.input.date" value={date} onChange={onInputChange} />
           </Colxx>
         </Row>
@@ -323,7 +327,7 @@ const DailyItems = ({ setLoading }) => {
             <InputField name="valueCredit" label="page.dailyItems.input.credit" value={newLine.valueCredit} onChange={onNewLineChange} type="text" />
           </Colxx>
           <Colxx xxs="12" sm="2" className="div-action-button-container align-items-end">
-            <Button color="secondary" onClick={fnAcceptAddLine}>
+            <Button color="secondary" onClick={fnAcceptAddLine} disabled={readOnly}>
               <i className="bi bi-plus-lg" /> {IntlMessages('page.dailyItems.button.addLine')}
             </Button>
           </Colxx>
@@ -347,11 +351,11 @@ const DailyItems = ({ setLoading }) => {
                 <td align="right">{formatNumber(line.valueDebit)}</td>
                 <td align="right">{formatNumber(line.valueCredit)}</td>
                 <td align="right">
-                  <Button type="button" className="btn-circle-table" color="primary" title="Editar" onClick={() => fnEditLine(line)}>
+                  <Button type="button" className="btn-circle-table" color="primary" title="Editar" disabled={readOnly} onClick={() => fnEditLine(line)}>
                     <i className="bi bi-pencil" />
                   </Button>
                   {' '}
-                  <Button type="button" className="btn-circle-table" color="danger" title="Eliminar" onClick={() => fnAskDeleteLine(line)}>
+                  <Button type="button" className="btn-circle-table" color="danger" title="Eliminar" disabled={readOnly} onClick={() => fnAskDeleteLine(line)}>
                     <i className="bi bi-trash" />
                   </Button>
                 </td>
