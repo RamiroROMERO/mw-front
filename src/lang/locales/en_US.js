@@ -3067,6 +3067,12 @@ const enLang = {
   "page.diaryBook.button.viewEntry": "View Entry",
   "page.diaryBook.modal.viewEntry.title": "Entry Detail",
   "page.diaryBook.msg.invalidDateRange": "Invalid Date Range",
+  "page.diaryBook.table.count": "Lines",
+  "page.diaryBook.table.diff": "Difference",
+  "page.diaryBook.msg.unbalanced": "Debit and Credit of the filter do not match (it may be because an account is filtered)",
+  "page.diaryBook.msg.searchError": "The Journal could not be queried",
+  "page.diaryBook.error.date.required": "Enter the date",
+  "page.diaryBook.error.date.invalid": "The date is not valid",
   /* 39.2 Ledger */
   "page.ledger.table.title": "Ledger",
   "page.ledger.table.balance": "Balance",

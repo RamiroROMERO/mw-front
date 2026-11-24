@@ -3099,6 +3099,12 @@ const esLang = {
   "page.diaryBook.button.viewEntry": "Ver Partida",
   "page.diaryBook.modal.viewEntry.title": "Detalle de la Partida",
   "page.diaryBook.msg.invalidDateRange": "Rango de Fechas Inválido",
+  "page.diaryBook.table.count": "Líneas",
+  "page.diaryBook.table.diff": "Diferencia",
+  "page.diaryBook.msg.unbalanced": "El Debe y el Haber del filtro no coinciden (puede ser por filtrar una cuenta)",
+  "page.diaryBook.msg.searchError": "No se pudo consultar el Libro Diario",
+  "page.diaryBook.error.date.required": "Indique la fecha",
+  "page.diaryBook.error.date.invalid": "La fecha no es válida",
   /* 39.2 Ledger (Libro Mayor) */
   "page.ledger.table.title": "Libro Mayor",
   "page.ledger.table.balance": "Saldo",

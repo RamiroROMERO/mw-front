@@ -263,6 +263,7 @@
     "depreciation.period.closed.global",
     "depreciation.period.closed.module",
     "detail.required",
+    "diaryBook.filter.invalid",
     "discount.account.invalid",
     "discount.account.required",
     "discount.inUse",
