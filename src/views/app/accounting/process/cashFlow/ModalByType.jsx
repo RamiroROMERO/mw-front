@@ -1,20 +1,19 @@
+import { useIntl } from 'react-intl';
 import { Colxx } from '@Components/common/CustomBootstrap';
-import { IntlMessages } from '@Helpers/Utils';
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
 import ReactTable from '@Components/reactTable';
-import { FIELD_LABELS } from './useCashFlow';
+import { FIELD_LABELS } from './cashFlowRules';
 
-// "Agrupado por Tipo" — legacy cont_flujoefect_type1.sc2/type2.sc2. En vez de las 2 formas
-// separadas del legacy, un solo modal reutilizable: recibe filas ya agrupadas por tipo desde
-// useCashFlow.fnOpenByType (agrupación hecha en el cliente sobre los datos ya cargados, sin
-// ida y vuelta al backend) y sus `fields` (semanal o antigüedad) determinan las columnas.
+// "Agrupado por Tipo" (cont_flujoefect_type1/type2.sc2): un solo modal para las dos formas del legacy. Las filas ya vienen agrupadas por tipo del back; `fields` (semanal o antigüedad) define las columnas.
 const ModalByType = ({ data, setOpen }) => {
+  const intl = useIntl();
+  const t = (id) => intl.formatMessage({ id });
   const { rows, fields } = data;
 
   const table = {
     columns: [
-      { text: IntlMessages("page.cashFlow.table.type"), dataField: "typeName", headerStyle: { width: "20%" } },
-      ...fields.map((f) => ({ text: IntlMessages(FIELD_LABELS[f]), dataField: f, type: 'number' }))
+      { text: t('page.cashFlow.table.type'), dataField: 'typeName', headerStyle: { width: '20%' } },
+      ...fields.map((f) => ({ text: t(FIELD_LABELS[f]), dataField: f, type: 'number' }))
     ],
     data: rows,
     options: { pageSize: 10 }
@@ -30,12 +29,12 @@ const ModalByType = ({ data, setOpen }) => {
         </Row>
       </ModalBody>
       <ModalFooter>
-        <Button color="danger" onClick={() => { setOpen(false) }}>
-          <i className="bi bi-box-arrow-right" /> {IntlMessages('button.exit')}
+        <Button color="danger" onClick={() => setOpen(false)}>
+          <i className="bi bi-box-arrow-right" /> {t('button.exit')}
         </Button>
       </ModalFooter>
     </>
-  )
-}
+  );
+};
 
-export default ModalByType
+export default ModalByType;

@@ -131,6 +131,7 @@
     "cashClose.print.type.invalid",
     "cashClose.reason.required",
     "cashClose.void.supervisor",
+    "cashFlow.filter.invalid",
     "cashMovement.account.invalid",
     "cashMovement.account.required",
     "cashMovement.alreadyVoided",

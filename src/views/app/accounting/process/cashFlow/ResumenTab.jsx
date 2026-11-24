@@ -1,59 +1,50 @@
+import { useIntl } from 'react-intl';
 import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import ReactTable from '@Components/reactTable';
-import { IntlMessages, formatNumber } from '@Helpers/Utils';
-import { FIELD_LABELS } from './useCashFlow';
+import { formatNumber } from '@Helpers/Utils';
+import { WEEK_FIELDS, AGING_FIELDS, FIELD_LABELS, weekSummaryRows, agingSummaryRows, banksWithoutAccount } from './cashFlowRules';
 
-const buildTotalsTable = (fields, rowsDef) => {
-  const columns = [
-    { text: '', dataField: 'label', headerStyle: { width: '15%' } },
-    ...fields.map((f) => ({ text: IntlMessages(FIELD_LABELS[f]), dataField: f, type: 'number' }))
-  ];
-  const data = rowsDef.map(([label, totals]) => {
-    const row = { label: IntlMessages(label) };
-    fields.forEach((f) => { row[f] = totals ? totals[f] : 0; });
-    return row;
-  });
-  return { columns, data };
-}
-
-// "Resumen" — legacy Page_hw1 de cont_flujoefect.sc2: saldo en bancos + comparativo
-// CxC/CxP/Diferencia por semana y por antigüedad de saldos.
-const ResumenTab = ({ summary, weekFields, agingFields }) => {
+// "Resumen" (Page_hw1 de cont_flujoefect.sc2): saldo en bancos, comparativo CxC / CxP / diferencia por semana y por antigüedad, y el saldo proyectado semana a semana (bancos + diferencia acumulada). Todo
+// viene calculado del back. Un solo `useIntl` (IntlMessages es un hook).
+const ResumenTab = ({ summary }) => {
+  const intl = useIntl();
+  const t = (id) => intl.formatMessage({ id });
   if (!summary) return null;
 
-  const bankColumns = [
-    { text: IntlMessages('table.column.code'), dataField: 'code', headerStyle: { width: '20%' } },
-    { text: IntlMessages('page.cashFlow.table.bank'), dataField: 'name', headerStyle: { width: '55%' } },
-    { text: IntlMessages('page.cashFlow.table.balance'), dataField: 'balance', type: 'number', headerStyle: { width: '25%' } }
-  ];
+  const totalsTable = (fields, rows) => ({
+    columns: [
+      { text: '', dataField: 'label', headerStyle: { width: '16%' } },
+      ...fields.map((f) => ({ text: t(FIELD_LABELS[f]), dataField: f, type: 'number' }))
+    ],
+    data: rows.map((r) => ({ label: t(r.label), ...Object.fromEntries(fields.map((f) => [f, r.totals[f]])) })),
+    options: { pageSize: 5 }
+  });
 
-  const weekTable = buildTotalsTable(weekFields, [
-    ['page.cashFlow.table.cxc', summary.cxcWeekTotals],
-    ['page.cashFlow.table.cxp', summary.cxpWeekTotals],
-    ['page.cashFlow.table.difference', summary.weekDiff]
-  ]);
-  const agingTable = buildTotalsTable(agingFields, [
-    ['page.cashFlow.table.cxc', summary.cxcAgingTotals],
-    ['page.cashFlow.table.cxp', summary.cxpAgingTotals],
-    ['page.cashFlow.table.difference', summary.agingDiff]
-  ]);
+  const bankColumns = [
+    { text: t('table.column.code'), dataField: 'code', headerStyle: { width: '15%' } },
+    { text: t('page.cashFlow.table.bank'), dataField: 'name', headerStyle: { width: '40%' } },
+    { text: t('page.cashFlow.table.accountNumber'), dataField: 'accountNumber', headerStyle: { width: '20%' } },
+    { text: t('page.cashFlow.table.balance'), dataField: 'balance', type: 'number', headerStyle: { width: '25%' } }
+  ];
+  const missing = banksWithoutAccount(summary.banks);
 
   return (
     <>
       <Row className="mb-3">
-        <Colxx xxs="12" md="6">
+        <Colxx xxs="12" md="7">
           <Card>
             <CardBody>
-              <h5>{IntlMessages('page.cashFlow.title.banks')}</h5>
+              <h5>{t('page.cashFlow.title.banks')}</h5>
               <ReactTable columns={bankColumns} data={summary.banks} options={{ pageSize: 10 }} />
+              {missing > 0 && <small className="text-danger" data-testid="missing-account">{t('page.cashFlow.msg.missingBankAccount')}</small>}
             </CardBody>
           </Card>
         </Colxx>
-        <Colxx xxs="12" md="6">
+        <Colxx xxs="12" md="5">
           <Card>
             <CardBody className="d-flex flex-column justify-content-center align-items-center h-100">
-              <h5>{IntlMessages('page.cashFlow.title.bankTotal')}</h5>
+              <h5>{t('page.cashFlow.title.bankTotal')}</h5>
               <h2>{formatNumber(summary.bankTotal)}</h2>
             </CardBody>
           </Card>
@@ -63,8 +54,9 @@ const ResumenTab = ({ summary, weekFields, agingFields }) => {
         <Colxx xxs="12">
           <Card>
             <CardBody>
-              <h5>{IntlMessages('page.cashFlow.title.weekSummary')}</h5>
-              <ReactTable {...weekTable} options={{ pageSize: 5 }} />
+              <h5>{t('page.cashFlow.title.weekSummary')}</h5>
+              <ReactTable {...totalsTable(WEEK_FIELDS, weekSummaryRows(summary))} />
+              <small className="text-muted">{t('page.cashFlow.msg.projectionNote')}</small>
             </CardBody>
           </Card>
         </Colxx>
@@ -73,14 +65,14 @@ const ResumenTab = ({ summary, weekFields, agingFields }) => {
         <Colxx xxs="12">
           <Card>
             <CardBody>
-              <h5>{IntlMessages('page.cashFlow.title.agingSummary')}</h5>
-              <ReactTable {...agingTable} options={{ pageSize: 5 }} />
+              <h5>{t('page.cashFlow.title.agingSummary')}</h5>
+              <ReactTable {...totalsTable(AGING_FIELDS, agingSummaryRows(summary))} />
             </CardBody>
           </Card>
         </Colxx>
       </Row>
     </>
   );
-}
+};
 
 export default ResumenTab;

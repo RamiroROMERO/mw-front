@@ -1,115 +1,119 @@
-import { useState } from 'react';
-import { IntlMessages } from '@Helpers/Utils';
-import DateHelper from '@Helpers/DateHelper';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, useExportExcel } from '@Hooks';
-import { request } from '@Helpers/core';
+import { request, notifyError } from '@Helpers/core';
+import createNotification from '@Containers/ui/Notifications';
 import ModalByType from './ModalByType';
-
-export const WEEK_FIELDS = ['week1', 'week2', 'week3', 'week4', 'week5', 'week6', 'week7', 'week8', 'weekTotal'];
-export const AGING_FIELDS = ['valCurr', 'val30', 'val60', 'val90', 'val120', 'val150', 'valMore', 'agingTotal'];
-export const FIELD_LABELS = {
-  week1: 'page.cashFlow.table.week1', week2: 'page.cashFlow.table.week2', week3: 'page.cashFlow.table.week3',
-  week4: 'page.cashFlow.table.week4', week5: 'page.cashFlow.table.week5', week6: 'page.cashFlow.table.week6',
-  week7: 'page.cashFlow.table.week7', week8: 'page.cashFlow.table.week8', weekTotal: 'table.column.total',
-  valCurr: 'page.cashFlow.table.current', val30: 'page.cashFlow.table.days30', val60: 'page.cashFlow.table.days60',
-  val90: 'page.cashFlow.table.days90', val120: 'page.cashFlow.table.days120', val150: 'page.cashFlow.table.days150',
-  valMore: 'page.cashFlow.table.daysMore', agingTotal: 'table.column.total'
-};
+import ModalDocuments from './ModalDocuments';
+import {
+  BASE_PATH, WEEK_FIELDS, todayLocal, validateQuery, buildQuery, buildExport, exportFileName, buildDocumentsQuery, normalizeSummary
+} from './cashFlowRules';
 
 const emptyByType = { open: false, title: '', rows: [], fields: WEEK_FIELDS };
+const emptyDocuments = { open: false, kind: '', entityName: '', rows: [], total: 0 };
 
+// Flujo de Efectivo (cont_flujoefect.sc2, SPEC v2-128-sr). Una sola consulta trae todo (bancos, cuentas por pagar y por cobrar, por semana y antigüedad, por tipo, diferencia y saldo proyectado) a la fecha
+// de corte; la pantalla no calcula nada. El detalle de un proveedor o cliente se pide aparte. PDF y Excel los arma el back con la misma fecha.
 export const useCashFlow = ({ setLoading }) => {
   const { fnExport } = useExportExcel(setLoading);
-  const { formState, onInputChange } = useForm({ date: DateHelper.format(DateHelper.now()) });
+  const { formState, onInputChange } = useForm({ date: todayLocal() });
   const { date } = formState;
+  const errors = useMemo(() => validateQuery({ date }), [date]);
 
   const [activeTab, setActiveTab] = useState('1');
+  const [sendForm, setSendForm] = useState(false);
   const [summary, setSummary] = useState(null);
-  const [payableRows, setPayableRows] = useState([]);
-  const [receivableRows, setReceivableRows] = useState([]);
   const [byType, setByType] = useState(emptyByType);
+  const [documents, setDocuments] = useState(emptyDocuments);
+  // Una respuesta vieja nunca pisa a una más nueva.
+  const requestId = useRef(0);
+
+  const load = (queryDate) => {
+    const id = requestId.current + 1;
+    requestId.current = id;
+    setLoading(true);
+    request.POST(BASE_PATH, buildQuery({ date: queryDate }), (resp) => {
+      if (id !== requestId.current) return;
+      setSummary(normalizeSummary(resp.data));
+      setLoading(false);
+    }, (err) => {
+      if (id !== requestId.current) return;
+      setLoading(false);
+      notifyError(err, 'page.cashFlow.msg.searchError');
+    }, false);
+  };
+
+  const validate = () => {
+    setSendForm(true);
+    if (Object.keys(errors).length > 0) {
+      createNotification('warning', Object.values(errors)[0], 'alert.warning.title');
+      return false;
+    }
+    return true;
+  };
 
   const fnSearch = () => {
+    if (!validate()) return;
+    load(date);
+  };
+
+  useEffect(() => {
+    load(date);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fnPrint = () => {
+    if (!validate()) return;
+    const body = { ...buildExport({ date }, activeTab), format: 'pdf' };
     setLoading(true);
-    Promise.all([
-      new Promise((resolve) => request.POST('accounting/process/cashFlow', { date }, (resp) => resolve(resp.data), () => resolve(null))),
-      new Promise((resolve) => request.POST('accounting/process/cashFlow/payable', { date }, (resp) => resolve(resp.data), () => resolve([]))),
-      new Promise((resolve) => request.POST('accounting/process/cashFlow/receivable', { date }, (resp) => resolve(resp.data), () => resolve([])))
-    ]).then(([summaryData, payableData, receivableData]) => {
-      setSummary(summaryData);
-      setPayableRows(payableData || []);
-      setReceivableRows(receivableData || []);
+    request.GETPdf(`${BASE_PATH}/export`, body, exportFileName(activeTab, 'pdf'), (err) => {
       setLoading(false);
-    });
-  }
+      notifyError(err, 'page.cashFlow.msg.exportError');
+    }, 'POST', () => setLoading(false));
+  };
 
-  const fnOpenByType = (rows, fields, title) => {
-    const grouped = {};
-    rows.forEach((row) => {
-      const key = row.typeName || '';
-      if (!grouped[key]) {
-        grouped[key] = { typeName: key };
-        fields.forEach((f) => { grouped[key][f] = 0; });
-      }
-      fields.forEach((f) => { grouped[key][f] += Number(row[f] || 0); });
-    });
-    setByType({ open: true, title, rows: Object.values(grouped), fields });
-  }
+  const fnExportXlsx = () => {
+    if (!validate()) return;
+    fnExport(`${BASE_PATH}/export`, { ...buildExport({ date }, activeTab), format: 'xlsx' }, exportFileName(activeTab, 'xlsx'));
+  };
 
+  // "Por Tipo": los datos ya vienen agrupados del back.
+  const fnOpenByType = (rows, fields, title) => setByType({ open: true, title, rows, fields });
   const setByTypeOpen = (open) => setByType((prev) => ({ ...prev, open }));
 
-  const fnPrintPayable = () => {
+  // "Ver documentos" de un proveedor o cliente: sus documentos con la semana y el rango de antigüedad de cada uno.
+  const fnOpenDocuments = (kind, row) => {
     setLoading(true);
-    request.GETPdf('accounting/process/cashFlow/payable/exportPDF', { date }, 'FlujoEfectivoDetalle.pdf', () => setLoading(false));
-    setLoading(false);
-  }
-  const fnExportPayableXlsx = () => fnExport('accounting/process/cashFlow/payable/exportXLSX', { date }, 'CuentaPorPagar.xlsx');
+    request.POST(`${BASE_PATH}/documents`, buildDocumentsQuery({ date: summary?.date || date }, kind, row.entityId), (resp) => {
+      setLoading(false);
+      setDocuments({ open: true, kind, entityName: resp.data?.entityName || row.entityName, rows: resp.data?.rows || [], total: Number(resp.data?.total || 0) });
+    }, (err) => {
+      setLoading(false);
+      notifyError(err, 'page.cashFlow.msg.documentsError');
+    }, false);
+  };
+  const setDocumentsOpen = (open) => setDocuments((prev) => ({ ...prev, open }));
 
-  const fnPrintReceivable = () => {
-    setLoading(true);
-    request.GETPdf('accounting/process/cashFlow/receivable/exportPDF', { date }, 'FlujoEfectivoDetalle.pdf', () => setLoading(false));
-    setLoading(false);
-  }
-  const fnExportReceivableXlsx = () => fnExport('accounting/process/cashFlow/receivable/exportXLSX', { date }, 'CuentaPorCobrar.xlsx');
+  const propsToHeader = { date, errors, sendForm, onInputChange, fnSearch, fnPrint, fnExportXlsx };
 
-  const fnPrintSummary = () => {
-    setLoading(true);
-    request.GETPdf('accounting/process/cashFlow/exportPDF', { date }, 'FlujoEfectivo.pdf', () => setLoading(false));
-    setLoading(false);
-  }
-  const fnExportSummaryXlsx = () => fnExport('accounting/process/cashFlow/exportXLSX', { date }, 'FlujoEfectivo.xlsx');
-
-  const propsToHeader = {
-    date,
-    onInputChange,
-    fnSearch,
-    fnPrintSummary,
-    fnExportSummaryXlsx
-  }
-
-  const propsToResumenTab = {
-    summary,
-    weekFields: WEEK_FIELDS,
-    agingFields: AGING_FIELDS
-  }
+  const propsToResumenTab = { summary };
 
   const propsToPayableTab = {
-    rows: payableRows,
-    nameField: 'providerName',
-    nameLabel: IntlMessages('page.cashFlow.table.provider'),
+    data: summary?.payable,
+    kind: 'payable',
+    nameField: 'entityName',
+    nameLabel: 'page.cashFlow.table.provider',
     fnOpenByType,
-    fnPrint: fnPrintPayable,
-    fnExportXlsx: fnExportPayableXlsx
-  }
+    fnOpenDocuments
+  };
 
   const propsToReceivableTab = {
-    rows: receivableRows,
-    nameField: 'customerName',
-    nameLabel: IntlMessages('page.cashFlow.table.customer'),
+    data: summary?.receivable,
+    kind: 'receivable',
+    nameField: 'entityName',
+    nameLabel: 'page.cashFlow.table.customer',
     fnOpenByType,
-    fnPrint: fnPrintReceivable,
-    fnExportXlsx: fnExportReceivableXlsx
-  }
+    fnOpenDocuments
+  };
 
   const propsToModalByType = {
     ModalContent: ModalByType,
@@ -118,7 +122,16 @@ export const useCashFlow = ({ setLoading }) => {
     setOpen: setByTypeOpen,
     maxWidth: 'lg',
     data: { rows: byType.rows, fields: byType.fields }
-  }
+  };
+
+  const propsToModalDocuments = {
+    ModalContent: ModalDocuments,
+    title: 'page.cashFlow.modal.documents.title',
+    open: documents.open,
+    setOpen: setDocumentsOpen,
+    maxWidth: 'xl',
+    data: { entityName: documents.entityName, rows: documents.rows, total: documents.total }
+  };
 
   return {
     activeTab,
@@ -127,6 +140,7 @@ export const useCashFlow = ({ setLoading }) => {
     propsToResumenTab,
     propsToPayableTab,
     propsToReceivableTab,
-    propsToModalByType
-  }
-}
+    propsToModalByType,
+    propsToModalDocuments
+  };
+};

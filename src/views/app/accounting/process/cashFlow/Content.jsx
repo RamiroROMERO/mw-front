@@ -9,8 +9,8 @@ import AgingTab from './AgingTab';
 import { useCashFlow } from './useCashFlow';
 
 const CashFlow = ({ setLoading }) => {
-  const { activeTab, setActiveTab, propsToHeader, propsToResumenTab, propsToPayableTab, propsToReceivableTab, propsToModalByType } = useCashFlow({ setLoading });
-  const { date, onInputChange, fnSearch, fnPrintSummary, fnExportSummaryXlsx } = propsToHeader;
+  const { activeTab, setActiveTab, propsToHeader, propsToResumenTab, propsToPayableTab, propsToReceivableTab, propsToModalByType, propsToModalDocuments } = useCashFlow({ setLoading });
+  const { date, errors, sendForm, onInputChange, fnSearch, fnPrint, fnExportXlsx } = propsToHeader;
 
   return (
     <>
@@ -25,13 +25,14 @@ const CashFlow = ({ setLoading }) => {
                     label="page.cashFlow.input.date"
                     value={date}
                     onChange={onInputChange}
+                    feedbackText={sendForm ? errors.date : ''}
                   />
                 </Colxx>
                 <Colxx xxs="12" md="8" lg="9" className="div-action-button-container align-items-end">
-                  <Button color="secondary" onClick={fnPrintSummary}>
+                  <Button color="secondary" onClick={fnPrint}>
                     <i className="iconsminds-printer" /> {IntlMessages('button.print')}
                   </Button>
-                  <Button color="secondary" onClick={fnExportSummaryXlsx}>
+                  <Button color="secondary" onClick={fnExportXlsx}>
                     <i className="bi bi-file-earmark-excel" /> {IntlMessages('button.exportXls')}
                   </Button>
                   <Button color="primary" onClick={fnSearch}>
@@ -72,7 +73,8 @@ const CashFlow = ({ setLoading }) => {
         </TabPane>
       </TabContent>
       <Modal {...propsToModalByType} />
+      <Modal {...propsToModalDocuments} />
     </>
   );
-}
+};
 export default CashFlow;
