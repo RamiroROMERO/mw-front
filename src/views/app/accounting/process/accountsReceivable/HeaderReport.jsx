@@ -3,9 +3,11 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import DateCalendar from '@Components/dateCalendar';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import { InputField } from '@Components/inputFields';
+import { RadioGroup } from '@Components/radioGroup';
 import { IntlMessages } from '@Helpers/Utils';
 
-const HeaderReport = ({ date, customerTypeId, search, listCustomerTypes, onInputChange, onSearchChange, fnSearch, fnPrint, fnExportXlsx }) => {
+// La fecha es la de corte (el saldo cuenta los pagos y notas solo hasta ella). La moneda solo se muestra si la empresa factura en Lempiras y Dólares (`hasDualCurrency`): por defecto, Lempiras.
+const HeaderReport = ({ date, customerTypeId, search, currency, hasDualCurrency, listCustomerTypes, errors = {}, sendForm = false, onInputChange, onSearchChange, fnSearch, fnPrint, fnExportXlsx }) => {
   return (
     <>
       <Row>
@@ -15,6 +17,7 @@ const HeaderReport = ({ date, customerTypeId, search, listCustomerTypes, onInput
             label="page.accountsReceivable.input.date"
             value={date}
             onChange={onInputChange}
+            feedbackText={sendForm ? errors.date : undefined}
           />
         </Colxx>
         <Colxx xxs="12" md="6" lg="3">
@@ -35,6 +38,20 @@ const HeaderReport = ({ date, customerTypeId, search, listCustomerTypes, onInput
             type="text"
           />
         </Colxx>
+        {hasDualCurrency && (
+          <Colxx xxs="12" md="6" lg="3">
+            <RadioGroup
+              label="page.invoicing.title.currency"
+              name="currency"
+              value={currency}
+              onChange={onInputChange}
+              options={[
+                { id: 1, label: 'page.invoicing.radio.lempira' },
+                { id: 2, label: 'page.invoicing.radio.dollar' }
+              ]}
+            />
+          </Colxx>
+        )}
       </Row>
       <Row>
         <Colxx xxs="12" className="div-action-button-container">
@@ -51,6 +68,6 @@ const HeaderReport = ({ date, customerTypeId, search, listCustomerTypes, onInput
       </Row>
     </>
   );
-}
+};
 
 export default HeaderReport;
