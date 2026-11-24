@@ -2862,6 +2862,7 @@ const enLang = {
   "page.taxSalesReport.button.exportDeclaration": "Fiscal Declaration",
   "page.taxSalesReport.button.exportSalesBook": "Sales Book",
   /* taxRetentionReport page in taxes reports */
+  "page.taxRetentionReport.msg.reportError": "The Retentions Report could not be generated.",
   "page.taxRetentionReport.table.title": "Retention Report for Fiscal Declaration",
   "page.taxRetentionReport.table.caiPurchase": "Purchase CAI",
   "page.taxRetentionReport.table.numberPurchase": "Purchase Number",
