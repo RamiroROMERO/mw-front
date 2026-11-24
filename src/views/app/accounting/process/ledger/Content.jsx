@@ -7,7 +7,7 @@ import SingleAccountMeta from './SingleAccountMeta';
 import { useLedger } from './useLedger';
 
 const Ledger = ({ setLoading }) => {
-  const { mode, table, propsToHeaderReport, propsToSingleAccountMeta, propsToModalViewEntry } = useLedger({ setLoading });
+  const { table, propsToHeaderReport, propsToTotals, propsToModalViewEntry } = useLedger({ setLoading });
 
   return (
     <>
@@ -20,24 +20,24 @@ const Ledger = ({ setLoading }) => {
           </Card>
         </Colxx>
       </Row>
-      <Row>
-        <Colxx xxs="12" className="mb-3">
-          <ReactTable {...table} />
-        </Colxx>
-      </Row>
-      {mode === 'single' && propsToSingleAccountMeta && (
+      {propsToTotals && (
         <Row>
-          <Colxx xxs="12">
+          <Colxx xxs="12" className="mb-3">
             <Card>
               <CardBody>
-                <SingleAccountMeta {...propsToSingleAccountMeta} />
+                <SingleAccountMeta {...propsToTotals} />
               </CardBody>
             </Card>
           </Colxx>
         </Row>
       )}
+      <Row>
+        <Colxx xxs="12" className="mb-3">
+          <ReactTable {...table} />
+        </Colxx>
+      </Row>
       <Modal {...propsToModalViewEntry} />
     </>
   );
-}
+};
 export default Ledger;

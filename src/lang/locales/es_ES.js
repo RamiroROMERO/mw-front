@@ -3117,6 +3117,9 @@ const esLang = {
   "page.ledger.totals.closingBalance": "Saldo Actual",
   "page.ledger.msg.missingAccount": "Debe seleccionar una Cuenta Contable",
   "page.ledger.msg.missingAccounts": "Debe seleccionar al menos una Cuenta Contable",
+  "page.ledger.msg.tooManyAccounts": "No se pueden consultar más de 50 cuentas a la vez",
+  "page.ledger.msg.searchError": "No se pudo consultar el Libro Mayor",
+  "page.ledger.msg.unknownType": "El tipo de la cuenta no es conocido: el saldo se calcula con naturaleza acreedora",
   /* 39.3 Cash Flow (Flujo de Efectivo) */
   "page.cashFlow.input.date": "Fecha",
   "page.cashFlow.tab.summary": "Resumen",

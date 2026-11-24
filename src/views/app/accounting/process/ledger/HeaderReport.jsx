@@ -7,8 +7,9 @@ import { InputLabel } from '@Components/inputLabel/InputLabel';
 import { RadioGroup } from '@Components/radioGroup';
 import { IntlMessages } from '@Helpers/Utils';
 
-const HeaderReport = ({ mode, modeOptions, onModeChange, dateStart, dateEnd, accountCode, listAccounts, onInputChange, onMultiAccountsChange, fnSearch, fnPrint, fnExportXlsx }) => {
-  const selectPlaceholder = IntlMessages("msg.select");
+// Solo Excel: este reporte no tiene PDF (SPEC v2-127-sr).
+const HeaderReport = ({ mode, modeValue, modeOptions, onModeChange, dateStart, dateEnd, accountCode, listAccounts, errors = {}, sendForm = false, onInputChange, onMultiAccountsChange, fnSearch, fnExportXlsx }) => {
+  const selectPlaceholder = IntlMessages('msg.select');
   return (
     <>
       <Row>
@@ -18,6 +19,7 @@ const HeaderReport = ({ mode, modeOptions, onModeChange, dateStart, dateEnd, acc
             label="select.dateStart"
             value={dateStart}
             onChange={onInputChange}
+            feedbackText={sendForm ? errors.dateStart : ''}
           />
         </Colxx>
         <Colxx xxs="12" md="6" lg="3">
@@ -26,6 +28,7 @@ const HeaderReport = ({ mode, modeOptions, onModeChange, dateStart, dateEnd, acc
             label="select.dateEnd"
             value={dateEnd}
             onChange={onInputChange}
+            feedbackText={sendForm ? errors.dateEnd : ''}
           />
         </Colxx>
         <Colxx xxs="12" md="6" lg="3">
@@ -40,16 +43,17 @@ const HeaderReport = ({ mode, modeOptions, onModeChange, dateStart, dateEnd, acc
       </Row>
       <Row>
         <Colxx xxs="12" md="8">
-          {mode === 'single' ? (
+          {modeValue === 'single' ? (
             <SearchSelect
               label="page.ledger.input.accountCode"
               name="accountCode"
               inputValue={accountCode}
               options={listAccounts}
               onChange={onInputChange}
+              feedbackText={sendForm ? errors.account : ''}
             />
           ) : (
-            <InputLabel label="page.ledger.input.accountCodes">
+            <InputLabel label="page.ledger.input.accountCodes" feedbackText={sendForm ? errors.accounts : ''}>
               <Select
                 className="react-select"
                 classNamePrefix="react-select"
@@ -62,19 +66,16 @@ const HeaderReport = ({ mode, modeOptions, onModeChange, dateStart, dateEnd, acc
           )}
         </Colxx>
         <Colxx xxs="12" md="4" className="div-action-button-container align-items-end">
-          <Button color="secondary" onClick={fnPrint}>
-            <i className="iconsminds-printer" /> {IntlMessages("button.print")}
-          </Button>
           <Button color="secondary" onClick={fnExportXlsx}>
-            <i className="bi bi-file-earmark-excel" /> {IntlMessages("button.exportXls")}
+            <i className="bi bi-file-earmark-excel" /> {IntlMessages('button.exportXls')}
           </Button>
           <Button color="primary" onClick={fnSearch}>
-            <i className="bi bi-search" /> {IntlMessages("button.search")}
+            <i className="bi bi-search" /> {IntlMessages('button.search')}
           </Button>
         </Colxx>
       </Row>
     </>
   );
-}
+};
 
 export default HeaderReport;

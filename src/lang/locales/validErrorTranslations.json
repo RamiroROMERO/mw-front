@@ -351,6 +351,8 @@
     "invoicePrint.delivery.fiscalRequired",
     "invoicePrint.typeChange.required",
     "journal.unbalanced",
+    "ledger.filter.invalid",
+    "ledger.rows.tooLarge",
     "line.applied.exceeded",
     "line.applied.invalid",
     "line.deduction.exceeded",

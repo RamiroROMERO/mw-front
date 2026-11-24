@@ -3085,6 +3085,9 @@ const enLang = {
   "page.ledger.totals.closingBalance": "Closing Balance",
   "page.ledger.msg.missingAccount": "You must select a Ledger Account",
   "page.ledger.msg.missingAccounts": "You must select at least one Ledger Account",
+  "page.ledger.msg.tooManyAccounts": "You cannot query more than 50 accounts at once",
+  "page.ledger.msg.searchError": "The General Ledger could not be queried",
+  "page.ledger.msg.unknownType": "The account type is unknown: the balance is calculated with credit nature",
   /* 39.3 Cash Flow */
   "page.cashFlow.input.date": "Date",
   "page.cashFlow.tab.summary": "Summary",

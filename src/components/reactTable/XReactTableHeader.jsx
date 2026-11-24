@@ -30,7 +30,8 @@ export const XReactTableHeader = ({ title, filtering, setFiltering, actions, tab
               </Label>
             </Form>
             :
-            <SearchBackend setSearch={setSearch} setCurrentPage={setCurrentPage} debounceMs={searchDebounceMs} fullWidth={searchFullWidth} autoFocus={searchAutoFocus} />
+            // Paginación en el servidor sin búsqueda (por ejemplo el Libro Mayor): sin cuadro de búsqueda.
+            (setSearch && <SearchBackend setSearch={setSearch} setCurrentPage={setCurrentPage} debounceMs={searchDebounceMs} fullWidth={searchFullWidth} autoFocus={searchAutoFocus} />)
           }
         </div>
         <div className="m-1 d-flex justify-content-end" style={{ flexGrow: 1, alignContent: "right", alignItems: 'right' }}>
