@@ -73,6 +73,8 @@
     "advance.value.required",
     "auxiliaries.customer.invalid",
     "auxiliaries.provider.invalid",
+    "balanceGeneral.filter.invalid",
+    "balanceGeneral.level.invalid",
     "bank.notFound",
     "bankAccount.accountMissing",
     "billing.period.closed.global",

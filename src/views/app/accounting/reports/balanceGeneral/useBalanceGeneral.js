@@ -1,66 +1,71 @@
 import { useEffect, useState } from 'react';
-import { IntlMessages, formatNumber } from '@Helpers/Utils';
+import { useIntl } from 'react-intl';
+import { formatNumber } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import { useForm, useExportExcel } from '@Hooks';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
+import { NotificationManager } from '@Components/common/react-notifications';
+import { BASE_PATH, buildQuery, defaultLevel, normalizeBalance, validateFilter } from './balanceGeneralRules';
 
-// Equivalente a cont_repo_bg.sc2 ("Balance General"). A diferencia de Estado de Resultado
-// (rango de fechas), corte a una sola fecha ("Hasta"). Ver BalanceGeneralService.js
-// (backend) para el detalle de la desviación confirmada vs legacy (rótulo "TOTAL
-// PATRIMONIO" desactualizado — hoy la cuenta se llama "CAPITAL" en el catálogo real) y el
-// hallazgo de que Cont_BalCTAGanancia está confirmada vacía hoy.
+// Balance General (cont_repo_bg.sc2, SPEC v2-136-sr). El back acumula los saldos al corte y devuelve filas, totales, la diferencia y los avisos que la explican; aquí solo se muestran, se imprimen y se exportan.
 export const useBalanceGeneral = ({ setLoading }) => {
+  const intl = useIntl();
   const { fnExport } = useExportExcel(setLoading);
-  const today = DateHelper.now();
-  const { formState, onInputChange } = useForm({
-    date: DateHelper.format(today),
-    level: 0
-  });
+  const { formState, onInputChange } = useForm({ date: DateHelper.format(DateHelper.now()), level: 0 });
   const { date, level } = formState;
 
   const [levels, setLevels] = useState([]);
-  const [rows, setRows] = useState([]);
-  const [totals, setTotals] = useState(null);
+  const [data, setData] = useState(normalizeBalance(undefined));
 
   useEffect(() => {
-    request.GET('accounting/reports/balanceGeneral/levels', (resp) => {
-      setLevels(resp.data);
+    request.GET(`${BASE_PATH}/levels`, (resp) => {
+      const list = Array.isArray(resp.data) ? resp.data : [];
+      setLevels(list);
+      const first = defaultLevel(list, 0);
+      if (first) onInputChange({ target: { name: 'level', value: first } });
     }, () => { });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fnSearch = () => {
-    if (!date || !Number(level)) return;
-    setLoading(true);
-    request.POST('accounting/reports/balanceGeneral', { date, level }, (resp) => {
-      setRows(resp.data.rows);
-      setTotals(resp.data.totals);
-      setLoading(false);
-    }, () => { setLoading(false); });
-  }
-
-  const fnPrint = () => {
-    if (!rows.length) return;
-    setLoading(true);
-    request.GETPdf('accounting/reports/balanceGeneral/exportPDF', { date, level }, 'BalanceGeneral.pdf', () => setLoading(false));
-    setLoading(false);
-  }
-
-  const fnExportXlsx = () => {
-    if (!rows.length) return;
-    fnExport('accounting/reports/balanceGeneral/exportXLSX', { date, level }, 'BalanceGeneral.xlsx');
-  }
-
-  const table = {
-    columns: [
-      { text: IntlMessages('page.balanceGeneral.table.account'), dataField: 'accountNumber', headerStyle: { width: '18%' } },
-      { text: IntlMessages('page.balanceGeneral.table.description'), dataField: 'accountName', headerStyle: { width: '46%' } },
-      { text: IntlMessages('page.balanceGeneral.table.value'), dataField: 'value', headerStyle: { width: '18%' } },
-      { text: IntlMessages('page.balanceGeneral.table.total'), dataField: 'total', headerStyle: { width: '18%' } }
-    ],
-    rows
+  const isValid = () => {
+    const error = validateFilter({ date, level });
+    if (error) NotificationManager.warning(intl.formatMessage({ id: error }), '', 4000, null, null, '');
+    return !error;
   };
 
-  const propsToHeader = { date, level, levels, onInputChange, fnSearch, fnPrint, fnExportXlsx }
+  const fnSearch = () => {
+    if (!isValid()) return;
+    setLoading(true);
+    request.GET(buildUrl(`${BASE_PATH}/report`, buildQuery({ date, level })), (resp) => {
+      setData(normalizeBalance(resp.data));
+      setLoading(false);
+    }, () => { setLoading(false); });
+  };
 
-  return { table, totals, propsToHeader, formatNumber }
-}
+  const fnPrint = () => {
+    if (!isValid()) return;
+    setLoading(true);
+    request.GETPdf(`${BASE_PATH}/exportPDF`, buildQuery({ date, level }), 'BalanceGeneral.pdf', () => setLoading(false), 'POST', () => setLoading(false));
+  };
+
+  const fnExportXlsx = () => {
+    if (!isValid()) return;
+    fnExport(`${BASE_PATH}/exportXLSX`, buildQuery({ date, level }), 'BalanceGeneral.xlsx');
+  };
+
+  const t = (id) => intl.formatMessage({ id });
+  const table = {
+    columns: [
+      { text: t('page.balanceGeneral.table.account'), dataField: 'accountNumber', headerStyle: { width: '14%' } },
+      { text: t('page.balanceGeneral.table.description'), dataField: 'accountName', headerStyle: { width: '38%' } },
+      { text: t('page.balanceGeneral.table.value'), dataField: 'detailValue', headerStyle: { width: '16%' } },
+      { text: t('page.balanceGeneral.table.group'), dataField: 'groupValue', headerStyle: { width: '16%' } },
+      { text: t('page.balanceGeneral.table.total'), dataField: 'totalValue', headerStyle: { width: '16%' } }
+    ],
+    rows: data.rows
+  };
+
+  const propsToHeader = { date, level, levels, onInputChange, fnSearch, fnPrint, fnExportXlsx };
+
+  return { table, totals: data.totals, notices: data.notices, resultsSince: data.resultsSince, propsToHeader, formatNumber, t };
+};

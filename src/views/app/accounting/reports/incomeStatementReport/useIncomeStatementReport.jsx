@@ -52,7 +52,7 @@ export const useIncomeStatementReport = ({ setLoading }) => {
   const fnPrint = () => {
     if (!isValid()) return;
     setLoading(true);
-    request.GETPdf(`${BASE_PATH}/exportPDF`, { ...buildQuery({ dateStart, dateEnd, level }), summaryOnly }, 'EstadoDeResultado.pdf', () => setLoading(false));
+    request.GETPdf(`${BASE_PATH}/exportPDF`, { ...buildQuery({ dateStart, dateEnd, level }), summaryOnly }, 'EstadoDeResultado.pdf', () => setLoading(false), 'POST', () => setLoading(false));
   };
 
   const fnExportXlsx = () => {
