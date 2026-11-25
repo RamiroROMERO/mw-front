@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { IntlMessages } from '@Helpers/Utils';
-import { request, buildUrl } from '@Helpers/core';
+import { request, buildUrl, notifyError } from '@Helpers/core';
+import { buildReportRequest } from './reportRequestRules';
 import { useForm } from '@Hooks';
 
 const ASSET_REPORT_TYPES = [
@@ -36,7 +37,8 @@ export const useReports = ({ setLoading }) => {
       { text: IntlMessages('input.name'), dataField: 'name' },
       { text: IntlMessages('page.fixedAssets.select.type'), dataField: 'typeName' },
       { text: IntlMessages('page.fixedAssets.input.valueIn'), dataField: 'valueIn', type: 'number' },
-      { text: IntlMessages('table.column.value'), dataField: 'valuePending', type: 'number' },
+      { text: IntlMessages('page.fixedAssets.table.accumulatedDepreciation'), dataField: 'valueApplied', type: 'number' },
+      { text: IntlMessages('page.fixedAssets.table.bookValue'), dataField: 'bookValue', type: 'number' },
       { text: IntlMessages('page.fixedAssets.select.responsible'), dataField: 'responsibleName' }
     ],
     2: [
@@ -44,14 +46,16 @@ export const useReports = ({ setLoading }) => {
       { text: IntlMessages('input.name'), dataField: 'name' },
       { text: IntlMessages('page.fixedAssets.select.responsible'), dataField: 'responsibleName' },
       { text: IntlMessages('page.fixedAssets.select.area'), dataField: 'areaName' },
-      { text: IntlMessages('table.column.value'), dataField: 'valuePending', type: 'number' }
+      { text: IntlMessages('page.fixedAssets.input.valueIn'), dataField: 'valueIn', type: 'number' },
+      { text: IntlMessages('page.fixedAssets.table.bookValue'), dataField: 'bookValue', type: 'number' }
     ],
     3: [
       { text: IntlMessages('page.fixedAssets.input.code'), dataField: 'code' },
       { text: IntlMessages('input.name'), dataField: 'name' },
       { text: IntlMessages('page.fixedAssets.select.area'), dataField: 'areaName' },
       { text: IntlMessages('page.fixedAssets.select.responsible'), dataField: 'responsibleName' },
-      { text: IntlMessages('table.column.value'), dataField: 'valuePending', type: 'number' }
+      { text: IntlMessages('page.fixedAssets.input.valueIn'), dataField: 'valueIn', type: 'number' },
+      { text: IntlMessages('page.fixedAssets.table.bookValue'), dataField: 'bookValue', type: 'number' }
     ],
     4: [
       { text: IntlMessages('table.column.date'), dataField: 'date', type: 'date' },
@@ -59,6 +63,7 @@ export const useReports = ({ setLoading }) => {
       { text: IntlMessages('input.name'), dataField: 'name' },
       { text: IntlMessages('page.fixedAssets.select.responsible'), dataField: 'responsibleName' },
       { text: IntlMessages('page.fixedAssets.select.area'), dataField: 'areaName' },
+      { text: IntlMessages('page.fixedAssets.title.status'), dataField: 'stateName' },
       { text: IntlMessages('page.fixedAssets.input.dateEnd'), dataField: 'dateEnd', type: 'date' }
     ],
     5: [
@@ -66,7 +71,8 @@ export const useReports = ({ setLoading }) => {
       { text: IntlMessages('page.fixedAssets.table.quantity'), dataField: 'quantity', type: 'number' },
       { text: IntlMessages('page.fixedAssets.input.valueBuy'), dataField: 'totalValueBuy', type: 'number' },
       { text: IntlMessages('page.fixedAssets.input.valueIn'), dataField: 'totalValueIn', type: 'number' },
-      { text: IntlMessages('table.column.value'), dataField: 'totalValuePending', type: 'number' }
+      { text: IntlMessages('page.fixedAssets.table.accumulatedDepreciation'), dataField: 'totalAccumulated', type: 'number' },
+      { text: IntlMessages('page.fixedAssets.table.bookValue'), dataField: 'totalBook', type: 'number' }
     ]
   };
 
@@ -78,7 +84,8 @@ export const useReports = ({ setLoading }) => {
     { text: IntlMessages('page.fixedAssets.table.totalPeriods'), dataField: 'totalPeriods' },
     { text: IntlMessages('page.fixedAssets.table.appliedPeriods'), dataField: 'appliedPeriods' },
     { text: IntlMessages('page.fixedAssets.table.accumulatedDepreciation'), dataField: 'accumulatedDepreciation', type: 'number' },
-    { text: IntlMessages('page.fixedAssets.table.pendingDepreciation'), dataField: 'pendingDepreciation', type: 'number' }
+    { text: IntlMessages('page.fixedAssets.table.pendingDepreciation'), dataField: 'pendingDepreciation', type: 'number' },
+    { text: IntlMessages('page.fixedAssets.table.bookValue'), dataField: 'bookValue', type: 'number' }
   ];
 
   const fnGenerateAssetsReport = () => {
@@ -101,6 +108,16 @@ export const useReports = ({ setLoading }) => {
     }, () => setLoading(false));
   }
 
+  // Descarga el MISMO reporte en PDF o Excel: el back lo arma de lo guardado (con los filtros elegidos) y lo envía en memoria. Los parámetros van en `data` (GETPdf los pone en la URL).
+  const fnDownload = (format) => {
+    const { url, params, fileName } = buildReportRequest({ category, reportType, typeId, responsibleId, areaId }, format);
+    setLoading(true);
+    request.GETPdf(url, params, fileName, (err) => {
+      setLoading(false);
+      notifyError(err, 'page.fixedAssets.msg.reportError');
+    }, 'GET', () => setLoading(false));
+  }
+
   const fnViewSchedule = (row) => {
     setScheduleAssetId(row.assetId);
     setOpenModalSchedule(true);
@@ -118,7 +135,7 @@ export const useReports = ({ setLoading }) => {
     request.GET('fixedAssets/settings/responsibles/getSL', (resp) => {
       setResponsibleList((resp.data || []).map((item) => ({ value: item.id, label: item.name })));
     }, () => { });
-    request.GET('fixedAssets/process/assign/areas', (resp) => {
+    request.GET('fixedAssets/reports/areas', (resp) => {
       setAreaList((resp.data || []).map((item) => ({ value: item.id, label: item.name })));
     }, () => { });
   }, []);
@@ -135,6 +152,7 @@ export const useReports = ({ setLoading }) => {
     table,
     fnGenerateAssetsReport,
     fnGenerateDeprecReport,
+    fnDownload,
     openModalSchedule,
     setOpenModalSchedule,
     scheduleAssetId

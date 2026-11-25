@@ -17,7 +17,7 @@ const Reports = ({ setLoading }) => {
   const {
     category, fnChangeCategory, formState, onInputChange, typeList, responsibleList, areaList,
     assetReportTypes, table, fnGenerateAssetsReport, fnGenerateDeprecReport, openModalSchedule,
-    setOpenModalSchedule, scheduleAssetId
+    setOpenModalSchedule, scheduleAssetId, fnDownload
   } = useReports({ setLoading });
 
   const { reportType, typeId, responsibleId, areaId } = formState;
@@ -103,6 +103,16 @@ const Reports = ({ setLoading }) => {
         </Row>
       )}
 
+      <Row className="mb-2">
+        <Colxx xxs="12" className="d-flex justify-content-end gap-2">
+          <Button color="secondary" size="sm" onClick={() => fnDownload('pdf')}>
+            <i className="bi bi-file-earmark-pdf" /> {IntlMessages('button.print')}
+          </Button>
+          <Button color="secondary" size="sm" onClick={() => fnDownload('xlsx')}>
+            <i className="bi bi-file-earmark-excel" /> {IntlMessages('button.export')}
+          </Button>
+        </Colxx>
+      </Row>
       <Row>
         <Colxx xxs="12">
           <ReactTable {...table} />

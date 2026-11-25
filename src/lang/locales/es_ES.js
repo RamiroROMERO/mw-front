@@ -4512,6 +4512,8 @@ const esLang = {
   "page.fixedAssets.msg.dateCalcBeforeEntry": "La fecha de cálculo no puede ser anterior al ingreso del activo",
   "page.fixedAssets.msg.useLifeInvalid": "La vida útil debe ser un entero de 1 a 99 años",
   "page.fixedAssets.msg.percentInvalid": "El porcentaje residual debe ser de 0 a 100 (hasta 2 decimales)",
+  "page.fixedAssets.table.bookValue": "Valor en libros",
+  "page.fixedAssets.msg.reportError": "No se pudo generar el reporte",
   "page.fixedAssets.msg.dateBuyInvalid": "La fecha de compra es incorrecta o es futura",
   "page.fixedAssets.msg.valueRequired": "El valor debe ser mayor a cero (hasta 2 decimales)",
   "page.fixedAssets.msg.tooLong": "El texto excede el máximo permitido",

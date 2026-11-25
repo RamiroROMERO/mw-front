@@ -4480,6 +4480,8 @@ const enLang = {
   "page.fixedAssets.msg.dateCalcBeforeEntry": "The calculation date cannot be before the asset entry date",
   "page.fixedAssets.msg.useLifeInvalid": "The useful life must be a whole number from 1 to 99 years",
   "page.fixedAssets.msg.percentInvalid": "The residual percentage must be from 0 to 100 (up to 2 decimals)",
+  "page.fixedAssets.table.bookValue": "Book value",
+  "page.fixedAssets.msg.reportError": "The report could not be generated",
   "page.fixedAssets.msg.dateBuyInvalid": "The purchase date is invalid or in the future",
   "page.fixedAssets.msg.valueRequired": "The value must be greater than zero (up to 2 decimals)",
   "page.fixedAssets.msg.tooLong": "The text exceeds the maximum allowed",
