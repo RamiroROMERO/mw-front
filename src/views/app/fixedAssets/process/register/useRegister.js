@@ -168,7 +168,7 @@ export const useRegister = ({ setLoading }) => {
   }
 
   useEffect(() => {
-    request.GET('fixedAssets/settings/types', (resp) => {
+    request.GET('fixedAssets/settings/types/getSL', (resp) => {
       setTypeList((resp.data || []).map((item) => ({ value: item.id, label: item.name })));
     }, () => { });
   }, []);

@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useForm } from '@Hooks';
-import { IntlMessagesFn, validInt } from '@Helpers/Utils';
+import { validInt } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
+import { buildTypePayload, validateType } from './typeRules';
+
+// Cada campo se valida con las mismas reglas del back (typeRules.js); el mensaje es la clave de traducción de la regla (la traduce el campo).
+const BASE = { code: 'A', name: 'abcde', userLife: 1, residualValue: 1, depreciationTypeId: 1, depreciationCtaCode: '1', costCtaCode: '1' };
+const rule = (field) => [(val) => validateType({ ...BASE, [field]: val })[field] === undefined, validateType({ ...BASE, [field]: '' })[field]];
 
 export const useTypes = ({ setLoading }) => {
   const [tableData, setTableData] = useState([]);
@@ -10,11 +15,13 @@ export const useTypes = ({ setLoading }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
 
   const validation = {
-    code: [(val) => val.length >= 3, IntlMessagesFn("page.fixedAssets.validation.code")],
-    name: [(val) => val.length >= 5, IntlMessagesFn("page.fixedAssets.validation.name")],
-    userLife: [(val) => validInt(val) !== 0, IntlMessagesFn("page.fixedAssets.validation.userLife")],
-    depreciationTypeId: [(val) => validInt(val) !== 0, IntlMessagesFn("page.fixedAssets.validation.depreciationTypeId")],
-    residualValue: [(val) => validInt(val) > 0 && validInt(val) <= 100, IntlMessagesFn("page.fixedAssets.validation.residualValuePercent")]
+    code: rule('code'),
+    name: rule('name'),
+    userLife: rule('userLife'),
+    depreciationTypeId: rule('depreciationTypeId'),
+    residualValue: rule('residualValue'),
+    depreciationCtaCode: rule('depreciationCtaCode'),
+    costCtaCode: rule('costCtaCode')
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
@@ -24,9 +31,9 @@ export const useTypes = ({ setLoading }) => {
     userLife: 0,
     currentCode: '',
     residualValue: 0,
-    depreciationTypeId: 0,
-    accDepreciation: '',
-    accCost: '',
+    depreciationTypeId: 1,
+    depreciationCtaCode: '',
+    costCtaCode: '',
     status: 1
   }, validation);
 
@@ -44,7 +51,7 @@ export const useTypes = ({ setLoading }) => {
     }
     setLoading(true);
     if (validInt(id) === 0) {
-      request.POST('fixedAssets/settings/types', formState, () => {
+      request.POST('fixedAssets/settings/types', buildTypePayload(formState), () => {
         setLoading(false);
         fnGetTableData();
         fnClear();
@@ -52,7 +59,7 @@ export const useTypes = ({ setLoading }) => {
         setLoading(false);
       })
     } else {
-      request.PUT(`fixedAssets/settings/types/${id}`, formState, () => {
+      request.PUT(`fixedAssets/settings/types/${id}`, buildTypePayload(formState), () => {
         setLoading(false);
         fnGetTableData();
         fnClear();
@@ -62,19 +69,17 @@ export const useTypes = ({ setLoading }) => {
     }
   };
 
-  const fnDisableDocument = () => {
+  // Eliminar borra el tipo solo si ningún activo lo usa (el back rechaza con su mensaje y el tipo se queda); "Activo" lo saca de los combos sin eliminarlo.
+  const fnRemoveDocument = () => {
     setOpenMsgQuestion(false);
-    const data = {
-      status: 0
-    }
     if (formState.id && formState.id > 0) {
       setLoading(true);
-      request.PUT(`fixedAssets/settings/types/${formState.id}`, data, () => {
+      request.DELETE(`fixedAssets/settings/types/${formState.id}`, () => {
         fnGetTableData();
         fnClear();
         setLoading(false);
-      }, (err) => {
-
+      }, () => {
+        fnClear();
         setLoading(false);
       });
     }
@@ -113,7 +118,7 @@ export const useTypes = ({ setLoading }) => {
     title: "alert.question.title",
     open: openMsgQuestion,
     setOpen: setOpenMsgQuestion,
-    fnOnOk: fnDisableDocument,
+    fnOnOk: fnRemoveDocument,
     fnOnNo: onResetForm
   };
 

@@ -16,7 +16,7 @@ export const useDetailTable = ({onBulkForm, setOpenMsgQuestion, tableData}) => {
     title: IntlMessages("menu.fixedAssets.responsibles"),
     columns: [
       { text: IntlMessages("input.name"), dataField: "name", headerStyle: { 'width': '40%' } },
-      { text: IntlMessages("pages.select.areaId"), dataField: "billingArea.name", headerStyle: { 'width': '30%' } },
+      { text: IntlMessages("pages.select.areaId"), dataField: "areaName", headerStyle: { 'width': '30%' } },
       {
         text: IntlMessages("check.status"), dataField: "status", headerStyle: { 'width': '10%' },
         cell: ({ row }) => (row.original.status === true || row.original.status === 1)

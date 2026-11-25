@@ -112,10 +112,10 @@ export const useReports = ({ setLoading }) => {
   }
 
   useEffect(() => {
-    request.GET('fixedAssets/settings/types', (resp) => {
+    request.GET('fixedAssets/settings/types/getSL', (resp) => {
       setTypeList((resp.data || []).map((item) => ({ value: item.id, label: item.name })));
     }, () => { });
-    request.GET('fixedAssets/settings/responsibles', (resp) => {
+    request.GET('fixedAssets/settings/responsibles/getSL', (resp) => {
       setResponsibleList((resp.data || []).map((item) => ({ value: item.id, label: item.name })));
     }, () => { });
     request.GET('fixedAssets/process/assign/areas', (resp) => {

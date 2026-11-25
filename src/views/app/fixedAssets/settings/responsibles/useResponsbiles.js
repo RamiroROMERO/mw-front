@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useForm } from '@Hooks';
-import { IntlMessagesFn, validInt } from '@Helpers/Utils';
+import { validInt } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
+import { buildResponsiblePayload, validateResponsible } from './responsibleRules';
+
+// Cada campo se valida con las mismas reglas del back (responsibleRules.js); el mensaje es la clave de traducción de la regla (la traduce el campo).
+const BASE = { name: 'abcdefghij', areaId: 1 };
+const rule = (field) => [(val) => validateResponsible({ ...BASE, [field]: val })[field] === undefined, validateResponsible({ ...BASE, [field]: '' })[field]];
 
 export const useResponsibles = ({ setLoading }) => {
 
@@ -11,8 +16,8 @@ export const useResponsibles = ({ setLoading }) => {
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
 
   const validation = {
-    areaId: [(val) => validInt(val) !== 0, IntlMessagesFn("page.validation.areaId")],
-    name: [(val) => val.length > 8, IntlMessagesFn("page.validation.name")]
+    areaId: rule('areaId'),
+    name: rule('name')
   };
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
@@ -36,7 +41,7 @@ export const useResponsibles = ({ setLoading }) => {
     }
     setLoading(true);
     if (validInt(id) === 0) {
-      request.POST('fixedAssets/settings/responsibles', formState, () => {
+      request.POST('fixedAssets/settings/responsibles', buildResponsiblePayload(formState), () => {
         setLoading(false);
         fnGetTableData();
         fnClear();
@@ -44,7 +49,7 @@ export const useResponsibles = ({ setLoading }) => {
         setLoading(false);
       })
     } else {
-      request.PUT(`fixedAssets/settings/responsibles/${id}`, formState, () => {
+      request.PUT(`fixedAssets/settings/responsibles/${id}`, buildResponsiblePayload(formState), () => {
         setLoading(false);
         fnGetTableData();
         fnClear();
@@ -54,32 +59,26 @@ export const useResponsibles = ({ setLoading }) => {
     }
   };
 
-  const fnDisableDocument = () => {
+  // Eliminar borra al responsable solo si no tiene activos asignados (el back rechaza con su mensaje y se queda); "Activo" lo saca de los combos sin eliminarlo.
+  const fnRemoveDocument = () => {
     setOpenMsgQuestion(false);
-    const data = {
-      status: 0
-    }
     if (formState.id && formState.id > 0) {
       setLoading(true);
-      request.PUT(`fixedAssets/settings/responsibles/${id}`, data, () => {
+      request.DELETE(`fixedAssets/settings/responsibles/${formState.id}`, () => {
         fnGetTableData();
         fnClear();
         setLoading(false);
-      }, (err) => {
+      }, () => {
+        fnClear();
         setLoading(false);
       });
     }
   }
 
   const fnGetData = () => {
-    request.getJSON("admin/areas", {}, (resp) => {
-      const { data } = resp;
-      const list = data.map(item => {
-        item.value = item.cta;
-        item.label = `${item.cta}-${item.nombre}`;
-        return item;
-      });
-      setAreaList(list);
+    // Departamentos activos de la empresa (admin_areas); el combo usa { id, name }.
+    request.getJSON('fixedAssets/settings/responsibles/areas', {}, (resp) => {
+      setAreaList((resp.data || []).map((item) => ({ id: item.id, name: item.name })));
     });
   }
 
@@ -103,7 +102,7 @@ export const useResponsibles = ({ setLoading }) => {
     title: "alert.question.title",
     open: openMsgQuestion,
     setOpen: setOpenMsgQuestion,
-    fnOnOk: fnDisableDocument,
+    fnOnOk: fnRemoveDocument,
     fnOnNo: onResetForm
   };
 

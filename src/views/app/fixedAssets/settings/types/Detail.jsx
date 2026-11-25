@@ -8,9 +8,9 @@ import { IntlMessages } from '@Helpers/Utils'
 
 export const Detail = ({formState, accountList, onInputChange, formValidation, fnSave, fnClear, sendForm}) => {
 
-  const {code,  name, userLife, currentCode, residualValue, depreciationTypeId, accDepreciation, accCost, status} = formState;
+  const {id, code,  name, userLife, currentCode, residualValue, depreciationTypeId, depreciationCtaCode, costCtaCode, status} = formState;
 
-  const {codeValid, nameValid, userLifeValid, depreciationTypeIdValid, residualValueValid} = formValidation;
+  const {codeValid, nameValid, userLifeValid, depreciationTypeIdValid, residualValueValid, depreciationCtaCodeValid, costCtaCodeValid} = formValidation;
 
   return (
     <>
@@ -23,6 +23,8 @@ export const Detail = ({formState, accountList, onInputChange, formValidation, f
           label="input.code"
           onChange = {onInputChange}
           value={code}
+          maxLength={4}
+          disabled={Number(id) > 0}
           invalid={sendForm && !!codeValid}
           feedbackText={sendForm && (codeValid || null)}
         />
@@ -52,6 +54,7 @@ export const Detail = ({formState, accountList, onInputChange, formValidation, f
           label="input.name"
           onChange={onInputChange}
           value={name}
+          maxLength={50}
           invalid={sendForm && !!nameValid}
           feedbackText={sendForm && (nameValid || null)}
         />
@@ -84,7 +87,7 @@ export const Detail = ({formState, accountList, onInputChange, formValidation, f
           label="page.fixedAssets.input.depreciationTypeId"
           onChange={onInputChange}
           value={depreciationTypeId}
-          options={[{id:'1', label:'page.fixedAssets.radio.straightLine'}, {id:2, label:'page.fixedAssets.radio.unitProduced'}]}
+          options={[{id:'1', label:'page.fixedAssets.radio.straightLine'}]}
           invalid={sendForm && !!depreciationTypeIdValid}
           feedbackText={sendForm && (depreciationTypeIdValid || null)}
         />
@@ -93,20 +96,24 @@ export const Detail = ({formState, accountList, onInputChange, formValidation, f
     <Row>
       <Colxx xxs={12} sm={6} md={12}>
         <SearchSelect
-          name="accDepreciation"
+          name="depreciationCtaCode"
           label="page.fixedAssets.input.accDeprecation"
           onChange={onInputChange}
-          inputValue={accDepreciation}
+          inputValue={depreciationCtaCode}
           options={accountList}
+          invalid={sendForm && !!depreciationCtaCodeValid}
+          feedbackText={sendForm && (depreciationCtaCodeValid || null)}
         />
       </Colxx>
       <Colxx xxs={12} sm={6} md={12}>
         <SearchSelect
-          name="accCost"
+          name="costCtaCode"
           label="page.fixedAssets.input.accCost"
           onChange={onInputChange}
-          inputValue={accCost}
+          inputValue={costCtaCode}
           options={accountList}
+          invalid={sendForm && !!costCtaCodeValid}
+          feedbackText={sendForm && (costCtaCodeValid || null)}
         />
       </Colxx>
     </Row>

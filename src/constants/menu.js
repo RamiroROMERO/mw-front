@@ -1298,12 +1298,6 @@ const data = [
           label: 'menu.fixedAssets.types',
           to: `${adminRoot}/fixedAssets/settings/types`,
         },
-        // {
-        //   id: 'fixedAssets-settings-areas',
-        //   icon: 'bi bi-card-checklist',
-        //   label: 'menu.fixedAssets.areas',
-        //   to: `${adminRoot}/fixedAssets/settings/areas`,
-        // },
         {
           id: 'fixedAssets-settings-resp',
           icon: 'bi bi-person-gear',
