@@ -7,6 +7,7 @@ import SearchSelect from '@Components/SearchSelect/SearchSelect';
 import DateCalendar from '@Components/dateCalendar';
 import { InputField } from '@Components/inputFields';
 import { IntlMessages } from '@Helpers/Utils';
+import { localToday } from '../register/registerRules';
 import { useAssign } from './useAssign';
 import { ModalSelectAsset } from './ModalSelectAsset';
 import { ModalViewAssign } from './ModalViewAssign';
@@ -16,8 +17,8 @@ const Content = ({ setLoading }) => {
   const {
     propsToControlPanel, formStateIndex, onInputChangeIndex, responsibleList, areaList, formValidationIndex,
     sendForm, isLocked, fnOpenAssetPicker, openModalAsset, setOpenModalAsset, assetList, fnSelectAsset,
-    openModalView, setOpenModalView, dataList, fnViewAssign, openModalFinish, setOpenModalFinish,
-    fnFinishAssign, propsToMsgDelete
+    openModalView, setOpenModalView, fnViewAssign, openModalFinish, setOpenModalFinish,
+    fnFinishAssign, propsToMsgDelete, assignDate
   } = useAssign({ setLoading });
 
   const {
@@ -42,7 +43,7 @@ const Content = ({ setLoading }) => {
     open: openModalView,
     setOpen: setOpenModalView,
     maxWidth: 'lg',
-    data: { dataList, fnViewAssign }
+    data: { fnViewAssign }
   }
 
   const propsToModalFinish = {
@@ -51,7 +52,7 @@ const Content = ({ setLoading }) => {
     open: openModalFinish,
     setOpen: setOpenModalFinish,
     maxWidth: 'md',
-    data: { fnFinishAssign }
+    data: { fnFinishAssign, assignDate }
   }
 
   return (
@@ -64,8 +65,8 @@ const Content = ({ setLoading }) => {
               <hr />
               <Row>
                 <Colxx xxs="12" md="3">
-                  <DateCalendar name="date" label="select.date" value={date} onChange={onInputChangeIndex}
-                    invalid={sendForm && !!dateValid} feedbackText={sendForm && (dateValid || null)} disabled={isLocked} />
+                  <DateCalendar name="date" label="select.date" value={date} onChange={onInputChangeIndex} maxDate={localToday()}
+                    feedbackText={sendForm && (dateValid || null)} disabled={isLocked} />
                 </Colxx>
                 <Colxx xxs="12" md="7">
                   <InputField name="assetName" label="page.fixedAssets.title.asset" value={assetName} disabled
@@ -109,10 +110,10 @@ const Content = ({ setLoading }) => {
               </Row>
               <Row>
                 <Colxx xxs="12" md="6">
-                  <InputField name="others" label="page.fixedAssets.input.othersAdded" type="textarea" value={others} onChange={onInputChangeIndex} disabled={isLocked} />
+                  <InputField name="others" label="page.fixedAssets.input.othersAdded" type="textarea" value={others} onChange={onInputChangeIndex} disabled={isLocked} maxLength={2000} />
                 </Colxx>
                 <Colxx xxs="12" md="6">
-                  <InputField name="notes" label="page.fixedAssets.input.notes" type="textarea" value={notes} onChange={onInputChangeIndex} disabled={isLocked} />
+                  <InputField name="notes" label="page.fixedAssets.input.notes" type="textarea" value={notes} onChange={onInputChangeIndex} disabled={isLocked} maxLength={2000} />
                 </Colxx>
               </Row>
               {dateEnd && (

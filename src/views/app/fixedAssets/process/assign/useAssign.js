@@ -2,24 +2,28 @@ import { useEffect, useState } from 'react';
 import { useForm } from '@Hooks';
 import { request } from '@Helpers/core';
 import { printDocument } from '@Helpers/printDocument';
+import { assignState, buildAssignPayload, validateAssign } from './assignRules';
+
+// Cada campo se valida con las mismas reglas del back (assignRules.js); el mensaje es la clave de traducción de la regla (la traduce el campo).
+const BASE = { date: '2000-01-01', assetId: 1, assetValue: 1, responsibleId: 1, areaId: 1 };
+const rule = (field) => [(val) => validateAssign({ ...BASE, [field]: val })[field] === undefined, validateAssign({ ...BASE, [field]: '' })[field]];
 
 export const useAssign = ({ setLoading }) => {
   const [assetList, setAssetList] = useState([]);
   const [responsibleList, setResponsibleList] = useState([]);
   const [areaList, setAreaList] = useState([]);
   const [openModalView, setOpenModalView] = useState(false);
-  const [dataList, setDataList] = useState([]);
   const [openModalAsset, setOpenModalAsset] = useState(false);
   const [openModalFinish, setOpenModalFinish] = useState(false);
   const [openMsgDelete, setOpenMsgDelete] = useState(false);
   const [sendForm, setSendForm] = useState(false);
 
   const validAssign = {
-    date: [(val) => (val || '') !== '', 'msg.required.select.date'],
-    assetId: [(val) => Number(val) > 0, 'page.fixedAssets.msg.assetRequired'],
-    assetValue: [(val) => Number(val) > 0, 'page.fixedAssets.msg.assetValueRequired'],
-    responsibleId: [(val) => Number(val) > 0, 'page.fixedAssets.msg.responsibleRequired'],
-    areaId: [(val) => Number(val) > 0, 'page.fixedAssets.msg.areaRequired']
+    date: rule('date'),
+    assetId: rule('assetId'),
+    assetValue: rule('assetValue'),
+    responsibleId: rule('responsibleId'),
+    areaId: rule('areaId')
   }
 
   const {
@@ -30,8 +34,9 @@ export const useAssign = ({ setLoading }) => {
     assetValue: 0, responsibleId: '', areaId: '', others: '', notes: '', isApplied: 0, dateEnd: '', notesEnd: ''
   }, validAssign);
 
-  const { id, isApplied } = formStateIndex;
-  const isLocked = Number(isApplied) !== 0;
+  const { id } = formStateIndex;
+  const state = assignState(formStateIndex);
+  const isLocked = state.locked;
 
   const fnNewAssign = () => {
     setSendForm(false);
@@ -52,14 +57,7 @@ export const useAssign = ({ setLoading }) => {
     fnLoadAssign(row.id);
   }
 
-  const fnSearchAssign = () => {
-    setLoading(true);
-    request.GET('fixedAssets/process/assign/search', (resp) => {
-      setDataList(resp.data);
-      setOpenModalView(true);
-      setLoading(false);
-    }, () => setLoading(false));
-  }
+  const fnSearchAssign = () => setOpenModalView(true);
 
   const fnOpenAssetPicker = () => {
     setLoading(true);
@@ -84,12 +82,12 @@ export const useAssign = ({ setLoading }) => {
 
     setLoading(true);
     if (id > 0) {
-      request.PUT(`fixedAssets/process/assign/${id}`, { header: formStateIndex }, () => {
+      request.PUT(`fixedAssets/process/assign/${id}`, { header: buildAssignPayload(formStateIndex) }, () => {
         fnLoadAssign(id);
         setLoading(false);
       }, () => setLoading(false));
     } else {
-      request.POST('fixedAssets/process/assign', { header: formStateIndex }, (resp) => {
+      request.POST('fixedAssets/process/assign', { header: buildAssignPayload(formStateIndex) }, (resp) => {
         fnLoadAssign(resp.data.id);
         setLoading(false);
       }, () => setLoading(false));
@@ -97,7 +95,7 @@ export const useAssign = ({ setLoading }) => {
   }
 
   const fnApplyAssign = () => {
-    if (!(id > 0)) return;
+    if (!state.canApply) return;
     setLoading(true);
     request.POST(`fixedAssets/process/assign/${id}/apply`, {}, () => {
       fnLoadAssign(id);
@@ -106,7 +104,7 @@ export const useAssign = ({ setLoading }) => {
   }
 
   const fnOpenFinish = () => {
-    if (!(id > 0) || !isLocked) return;
+    if (!state.canFinish) return;
     setOpenModalFinish(true);
   }
 
@@ -120,7 +118,7 @@ export const useAssign = ({ setLoading }) => {
   }
 
   const fnAskDelete = () => {
-    if (!(id > 0) || isLocked) return;
+    if (!state.canDelete) return;
     setOpenMsgDelete(true);
   }
 
@@ -189,8 +187,8 @@ export const useAssign = ({ setLoading }) => {
     fnSelectAsset,
     openModalView,
     setOpenModalView,
-    dataList,
     fnViewAssign,
+    assignDate: formStateIndex.date,
     openModalFinish,
     setOpenModalFinish,
     fnFinishAssign,

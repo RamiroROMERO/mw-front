@@ -1,7 +1,6 @@
 {
   "translated": [
     "affiliate.noCustomer",
-    "alreadyFinished",
     "auxiliaries.paymentsApplied",
     "bankAccount.code.duplicate",
     "bankAccount.code.inUse",
@@ -71,6 +70,15 @@
     "advance.mustCancelFirst",
     "advance.provider.required",
     "advance.value.required",
+    "afAssign.area.invalid",
+    "afAssign.asset.alreadyAssigned",
+    "afAssign.asset.invalid",
+    "afAssign.date.beforeEntry",
+    "afAssign.finish.already",
+    "afAssign.finish.invalid",
+    "afAssign.finish.notApplied",
+    "afAssign.locked",
+    "afAssign.responsible.invalid",
     "afRegister.change.invalid",
     "afRegister.code.exhausted",
     "afRegister.code.immutable",
