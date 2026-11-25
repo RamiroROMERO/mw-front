@@ -427,6 +427,8 @@
     "otherPurchase.void.hasAdvances",
     "otherPurchase.void.hasPayments",
     "otherPurchase.workOrder.invalid",
+    "otherReceivableReport.filter.invalid",
+    "otherReceivableReport.rows.tooLarge",
     "otherSales.average.invalid",
     "otherSales.currency.unavailable",
     "otherSales.pdf.tooWide",

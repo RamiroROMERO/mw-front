@@ -1,15 +1,13 @@
-import classnames from 'classnames';
-import { Card, CardBody, Nav, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
+import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
-import ReactTable from '@Components/reactTable';
-import { SimpleSelect } from '@Components/simpleSelect';
-import { IntlMessages } from '@Helpers/Utils';
 import HeaderReport from './HeaderReport';
 import { useOtherReceivableReports } from './useOtherReceivableReports';
 
+// Tabla plana (no ReactTable): el estado de cuenta lleva un subtotal después de los documentos de cada cliente y un total general; el orden de las filas es parte del documento.
 const OtherReceivableReports = ({ setLoading }) => {
-  const { activeTab, setActiveTab, propsToHeader, propsToAgingHeader, statementTable, agingTable } = useOtherReceivableReports({ setLoading });
-  const { bucket, bucketOptions, onInputChange } = propsToAgingHeader;
+  const { propsToHeader, rows, totals, counts, formatNumber, formatDate, statusText, t } = useOtherReceivableReports({ setLoading });
+  const num = (value) => formatNumber(value);
+  const columns = ['customer', 'document', 'date', 'originalValue', 'payments', 'creditNotes', 'debitNotes', 'balance', 'dueDate', 'status'];
 
   return (
     <>
@@ -22,37 +20,61 @@ const OtherReceivableReports = ({ setLoading }) => {
           </Card>
         </Colxx>
       </Row>
-      <Nav tabs className="separator-tabs ms-0 mb-2">
-        <NavItem>
-          <NavLink className={classnames({ active: activeTab === '1', 'nav-link': true })} onClick={() => setActiveTab('1')}>
-            {IntlMessages('page.otherReceivableReports.tab.statement')}
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink className={classnames({ active: activeTab === '2', 'nav-link': true })} onClick={() => setActiveTab('2')}>
-            {IntlMessages('page.otherReceivableReports.tab.aging')}
-          </NavLink>
-        </NavItem>
-      </Nav>
-      <TabContent activeTab={activeTab}>
-        <TabPane tabId="1">
-          <ReactTable {...statementTable} />
-        </TabPane>
-        <TabPane tabId="2">
-          <Row className="mb-2">
-            <Colxx xxs="12" md="4" lg="3">
-              <SimpleSelect
-                name="bucket"
-                label="page.otherReceivableReports.input.bucket"
-                value={bucket}
-                onChange={onInputChange}
-                options={bucketOptions}
-              />
-            </Colxx>
-          </Row>
-          <ReactTable {...agingTable} />
-        </TabPane>
-      </TabContent>
+      <Row>
+        <Colxx xxs="12" md="4" lg="2"><Card className="mb-3"><CardBody><p className="text-muted mb-1">{t('page.otherReceivableReports.summary.customers')}</p><h6>{counts.customers}</h6></CardBody></Card></Colxx>
+        <Colxx xxs="12" md="4" lg="2"><Card className="mb-3"><CardBody><p className="text-muted mb-1">{t('page.otherReceivableReports.summary.documents')}</p><h6>{counts.documents}</h6></CardBody></Card></Colxx>
+        <Colxx xxs="12" md="4" lg="3"><Card className="mb-3"><CardBody><p className="text-muted mb-1">{t('page.otherReceivableReports.table.balance')}</p><h6>{num(totals.balance)}</h6></CardBody></Card></Colxx>
+      </Row>
+      <Row>
+        <Colxx xxs="12">
+          <Card>
+            <CardBody>
+              <table className="table table-bordered table-sm">
+                <thead>
+                  <tr>{columns.map((c) => <th key={c}>{t(`page.otherReceivableReports.table.${c}`)}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {rows.map((r, i) => (r.kind === 'subtotal' ? (
+                    <tr key={`s-${r.customerId}-${i}`} className="fw-bold">
+                      <td colSpan={3}>{`${t('page.otherReceivableReports.table.total')} ${r.customerName}`}</td>
+                      <td className="text-end">{num(r.originalValue)}</td>
+                      <td className="text-end">{num(r.payments)}</td>
+                      <td className="text-end">{num(r.creditNotes)}</td>
+                      <td className="text-end">{num(r.debitNotes)}</td>
+                      <td className="text-end">{num(r.balance)}</td>
+                      <td colSpan={2} />
+                    </tr>
+                  ) : (
+                    <tr key={`d-${r.id}`}>
+                      <td>{`${r.customerId} - ${r.customerName}`}</td>
+                      <td>{r.documentCode}</td>
+                      <td>{r.date ? formatDate(r.date) : ''}</td>
+                      <td className="text-end">{num(r.originalValue)}</td>
+                      <td className="text-end">{num(r.payments)}</td>
+                      <td className="text-end">{num(r.creditNotes)}</td>
+                      <td className="text-end">{num(r.debitNotes)}</td>
+                      <td className="text-end">{num(r.balance)}</td>
+                      <td>{r.dueDate ? formatDate(r.dueDate) : ''}</td>
+                      <td>{statusText(r)}</td>
+                    </tr>
+                  )))}
+                  {rows.length > 0 && (
+                    <tr className="fw-bold">
+                      <td colSpan={3}>{t('page.otherReceivableReports.table.grandTotal')}</td>
+                      <td className="text-end">{num(totals.originalValue)}</td>
+                      <td className="text-end">{num(totals.payments)}</td>
+                      <td className="text-end">{num(totals.creditNotes)}</td>
+                      <td className="text-end">{num(totals.debitNotes)}</td>
+                      <td className="text-end">{num(totals.balance)}</td>
+                      <td colSpan={2} />
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </CardBody>
+          </Card>
+        </Colxx>
+      </Row>
     </>
   );
 }
