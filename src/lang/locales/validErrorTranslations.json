@@ -50,6 +50,8 @@
     "account.type.invalid",
     "accounting.period.closed.global",
     "accounting.period.closed.module",
+    "accountingReport.filter.invalid",
+    "accountingReport.level.invalid",
     "accounts.not.found",
     "accountsPayable.comment.invalid",
     "accountsPayable.filter.invalid",
