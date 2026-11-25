@@ -164,6 +164,7 @@ const esLang = {
   "msg.required.input.valueInvoice": "Por favor ingrese el valor a facturar",
   "msg.required.input.valueFactor": "Por favor ingrese un factor de conversión",
   "msg.required.input.codeInit": "Por favor ingrese un código inicial",
+  "msg.invalid.input.phone": "El teléfono debe tener de 7 a 15 dígitos!",
   "msg.required.input.phone": "Por favor ingrese un número de teléfono",
   "msg.required.input.idProvider": "Por favor guarde los datos generales del proveedor para poder agregar cuentas bancarias!",
   "msg.required.input.accountNum": "Por favor ingrese el número de cuenta bancaria!",

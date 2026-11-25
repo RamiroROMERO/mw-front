@@ -3,6 +3,10 @@ import { IntlMessages, validInt } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import { formatDate } from '@Helpers/Utils';
+import { printDocument } from '@Helpers/printDocument';
+import notification from '@Containers/ui/Notifications';
+import { isValidDni, isValidBirthDate, validatePhones, printFileOptions } from './patientRules';
+import DateHelper from '@Helpers/DateHelper';
 
 export const usePatientFiles = ({ setLoading }) => {
   const [listNationalities, setListNationalities] = useState([]);
@@ -19,10 +23,10 @@ export const usePatientFiles = ({ setLoading }) => {
 
   const validation = {
     dateIn: [(val) => val !== "", IntlMessages("msg.required.input.date")],
-    dni: [(val) => val.length > 12 && val.length <= 16, IntlMessages("msg.required.input.dni")],
-    firstName: [(val) => val.length > 5, IntlMessages("msg.required.input.firstName")],
-    lastName: [(val) => val.length > 5, IntlMessages("msg.required.input.lastName")],
-    birthDay: [(val) => val !== "", IntlMessages("msg.required.input.birthDay")],
+    dni: [(val) => isValidDni(val), IntlMessages("msg.required.input.dni")],
+    firstName: [(val) => String(val).trim().length >= 1, IntlMessages("msg.required.input.firstName")],
+    lastName: [(val) => String(val).trim().length >= 1, IntlMessages("msg.required.input.lastName")],
+    birthDay: [(val) => isValidBirthDate(val, DateHelper.format(DateHelper.now())), IntlMessages("msg.required.input.birthDay")],
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
@@ -116,7 +120,12 @@ export const usePatientFiles = ({ setLoading }) => {
       return;
     }
 
-    formState.name = `${firstName} ${secondName} ${lastName} ${secondLastName}`;
+    // Al menos un teléfono (el nombre completo lo arma el back).
+    const phoneProblem = validatePhones(formState);
+    if (phoneProblem) {
+      notification('warning', phoneProblem, 'alert.warning.title');
+      return;
+    }
 
     setLoading(true);
     if (validInt(id) === 0) {
@@ -139,9 +148,8 @@ export const usePatientFiles = ({ setLoading }) => {
       return;
     }
 
-    request.GETPdf('hospital/process/expedients/exportPDFFile', { idPatientFile: id }, 'Expediente de Paciente.pdf', (err) => {
-      setLoading(false);
-    });
+    // GET en memoria (antes POST: exigía fnCreate y escribía un archivo compartido en el servidor).
+    printDocument({ ...printFileOptions(id), setLoading });
   }
 
   const fnDeleteDocument = () => {

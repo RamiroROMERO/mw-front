@@ -3,6 +3,8 @@ import { useForm } from '@Hooks';
 import { validInt } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 import notification from '@Containers/ui/Notifications';
+import { printDocument } from '@Helpers/printDocument';
+import { printEventOptions } from './patientRules';
 
 export const useNewEvent = ({ IntlMessages, idPatientFile, setLoading, fnGetEvents, setOpen, currentItem, listPatients, codeFile }) => {
   const [sendForm, setSendForm] = useState(false);
@@ -68,13 +70,7 @@ export const useNewEvent = ({ IntlMessages, idPatientFile, setLoading, fnGetEven
     if (idEvent === 0) {
       return
     }
-    const dataPrint = {
-      idPatientFile: fatherId,
-      idEvent
-    }
-    request.GETPdf('hospital/process/expedients/exportPDFFileEvent', dataPrint, 'Registro de Atencion.pdf', (err) => {
-      setLoading(false);
-    });
+    printDocument({ ...printEventOptions(fatherId, idEvent), setLoading });
   }
 
   useEffect(() => {

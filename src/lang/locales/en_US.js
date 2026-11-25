@@ -164,6 +164,7 @@ const enLang = {
   "msg.required.input.valueInvoice": "Please enter the value to invoice",
   "msg.required.input.valueFactor": "Please enter a conversion factor!",
   "msg.required.input.codeInit": "Please enter an initial code",
+  "msg.invalid.input.phone": "The phone must have 7 to 15 digits!",
   "msg.required.input.phone": "Please enter a phone number!",
   "msg.required.input.idProvider": "Please save the general data of the provider to be able to add bank accounts!",
   "msg.required.input.accountNum": "Please enter a bank account number!",
