@@ -5169,6 +5169,18 @@ const enLang = {
   // 90.2 Scheduled Appointments
   "page.appointments.modal.title": "Scheduled Appointment",
   "page.appointments.alert.cancel.title": "Are you sure you want to cancel this appointment?",
+  "button.printList": "Print List",
+  "button.rescheduleAppointment": "Reschedule",
+  "select.specialtyId": "Specialty",
+  "input.turnNumber": "Turn",
+  "page.appointments.type.patient": "Patient with file",
+  "page.appointments.type.free": "Person without file",
+  "page.appointments.input.printDate": "List date",
+  "page.appointments.msg.nameShort": "The name must have at least 5 characters!",
+  "page.appointments.msg.datePast": "The date is not valid or is before today!",
+  "page.appointments.msg.timeInvalid": "The time must have the HH:mm format!",
+  "page.appointments.msg.turnAssigned": "The turn number is",
+  "page.appointments.msg.printError": "The appointments list could not be printed.",
   // 91. Company Information
   "page.companyInformation.check.hasDualCurrency": "Dollar Billing",
   "page.companyInformation.check.sellerMenu": "Billing",

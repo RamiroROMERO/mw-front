@@ -3,6 +3,8 @@ import { IntlMessages, validInt } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
 import { detailPath, isClosed, buildUpdatePayload, validateUpdate } from './eventDetailRules';
 import notification from '@Containers/ui/Notifications';
+import { printDocument } from '@Helpers/printDocument';
+import { printEventOptions } from '../patientFiles/patientRules';
 
 export const useModalDetail = ({ setLoading, currentItem }) => {
   const [openModalAddProduct, setOpenModalAddProduct] = useState(false);
@@ -121,15 +123,9 @@ export const useModalDetail = ({ setLoading, currentItem }) => {
     setOpenModalAddService(true);
   }
 
+  // El registro de atención se imprime por GET desde lo guardado (SPEC v2-150-sr); la ruta vieja `exportPDFFileEvent` ya no existe.
   const fnPrintDocument = () => {
-    setLoading(true);
-    const dataPrint = {
-      idPatientFile: currentItem.fatherId,
-      idEvent: currentItem.id
-    }
-    request.GETPdf('hospital/process/expedients/exportPDFFileEvent', dataPrint, 'Registro de Atencion.pdf', (err) => {
-      setLoading(false);
-    });
+    printDocument({ ...printEventOptions(currentItem.fatherId, currentItem.id), setLoading });
   }
 
   useEffect(() => {

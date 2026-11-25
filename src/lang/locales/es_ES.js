@@ -5200,6 +5200,18 @@ const esLang = {
   // 90.2 Scheduled Appointments
   "page.appointments.modal.title": "Cita Programada",
   "page.appointments.alert.cancel.title": "¿Esta seguro que desea cancelar esta cita?",
+  "button.printList": "Imprimir Listado",
+  "button.rescheduleAppointment": "Reprogramar",
+  "select.specialtyId": "Especialidad",
+  "input.turnNumber": "Turno",
+  "page.appointments.type.patient": "Paciente con expediente",
+  "page.appointments.type.free": "Persona sin expediente",
+  "page.appointments.input.printDate": "Fecha del listado",
+  "page.appointments.msg.nameShort": "El nombre debe tener al menos 5 caracteres!",
+  "page.appointments.msg.datePast": "La fecha no es válida ni puede ser anterior a hoy!",
+  "page.appointments.msg.timeInvalid": "La hora debe tener el formato HH:mm!",
+  "page.appointments.msg.turnAssigned": "El número de turno es",
+  "page.appointments.msg.printError": "No se pudo imprimir el listado de citas.",
   // 91. Company Information
   "page.companyInformation.check.hasDualCurrency": "Factuación en Dolares",
   "page.companyInformation.check.sellerMenu": "Facturación",

@@ -1,4 +1,6 @@
 import { Card, CardBody, Row } from 'reactstrap';
+import DateCalendar from '@Components/dateCalendar';
+import { visibleRange } from './appointmentRules';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { Separator } from '@Components/common/CustomBootstrap';
 import ControlPanel from '@Components/controlPanel';
@@ -15,7 +17,7 @@ const Content = (props) => {
   const { setLoading } = props;
 
   const {
-    propsToControlPanel, listAppointments, specialistId, listDoctors, onSpecialistChange,
+    propsToControlPanel, listAppointments, specialistId, listDoctors, printDate, setPrintDate, onSpecialistChange, onDatesSet,
     fnAddAppointmentOnDate, fnViewAppointment, openModalAppointment, setOpenModalAppointment,
     dataModalAppointment
   } = useScheduledAppointments({ setLoading });
@@ -47,12 +49,16 @@ const Content = (props) => {
                     label="select.doctorId"
                   />
                 </Colxx>
+                <Colxx xxs={12} sm={6} md={4} xl={3}>
+                  <DateCalendar name="printDate" value={printDate} label="page.appointments.input.printDate" onChange={(e) => setPrintDate(e.target.value)} />
+                </Colxx>
               </Row>
               <FullCalendar
                 locale={esLocale}
                 plugins={[dayGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
                 events={listAppointments}
+                datesSet={({ start, end }) => onDatesSet(visibleRange({ start, end }))}
                 dateClick={fnAddAppointmentOnDate}
                 eventClick={fnViewAppointment}
               />

@@ -1,32 +1,43 @@
-import { useEffect, useState } from 'react'
-import { request, buildUrl } from '@Helpers/core';
+import { useEffect, useRef, useState } from 'react'
+import { request, buildUrl, notifyError } from '@Helpers/core';
 import DateHelper from '@Helpers/DateHelper';
+import { toCalendarEvent, printParams } from './appointmentRules';
 
+const today = () => DateHelper.format(DateHelper.now());
+
+// SPEC v2-153-sr: el calendario pide al back solo las citas PROGRAMADAS del rango visible (las canceladas no se muestran) y recarga al cambiar de mes o de médico. Los nombres del paciente y del
+// médico vienen en la respuesta. El listado del día se imprime por GET, en memoria.
 export const useScheduledAppointments = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
   const [openModalAppointment, setOpenModalAppointment] = useState(false);
   const [specialistId, setSpecialistId] = useState(0);
   const [listDoctors, setListDoctors] = useState([]);
   const [listPatients, setListPatients] = useState([]);
-  const [listReasons, setListReasons] = useState([]);
+  const [listSpecialties, setListSpecialties] = useState([]);
   const [listAppointments, setListAppointments] = useState([]);
+  const [printDate, setPrintDate] = useState(today());
+  const range = useRef(null);
+  const lastRequest = useRef(0);
 
-  const fnGetData = (filterSpecialistId = specialistId) => {
+  const fnGetData = (filterSpecialistId = specialistId, visible = range.current) => {
+    if (!visible) return;
+    const requestId = lastRequest.current + 1;
+    lastRequest.current = requestId;
     setLoading(true);
-    request.GET(buildUrl('hospital/process/appointments', { specialistId: Number(filterSpecialistId) || undefined }), (resp) => {
-      const data = resp.data.map((item) => {
-        return {
-          id: item.id,
-          title: `${item.hospExpedient?.name || ''} - ${item.specialist?.name || ''}`,
-          start: `${DateHelper.format(item.date, 'YYYY-MM-DD')}T${item.time || '00:00'}`,
-          extendedProps: item
-        }
-      });
-      setListAppointments(data);
+    const params = { ...visible, ...(Number(filterSpecialistId) > 0 ? { specialistId: Number(filterSpecialistId) } : {}) };
+    request.GET(buildUrl('hospital/process/appointments', params), (resp) => {
+      // Una respuesta vieja nunca pisa a una más nueva (se cambió de mes o de médico mientras llegaba).
+      if (requestId === lastRequest.current) setListAppointments(resp.data.map(toCalendarEvent));
       setLoading(false);
-    }, err => {
+    }, () => {
       setLoading(false);
     });
+  }
+
+  // `datesSet` de FullCalendar: el rango visible cambió.
+  const onDatesSet = (visible) => {
+    range.current = visible;
+    fnGetData(specialistId, visible);
   }
 
   const onSpecialistChange = (e) => {
@@ -41,7 +52,7 @@ export const useScheduledAppointments = ({ setLoading }) => {
   }
 
   const fnAddAppointmentOnDate = (dateInfo) => {
-    setCurrentItem({ date: dateInfo.dateStr });
+    setCurrentItem({ date: dateInfo.dateStr.slice(0, 10) });
     setOpenModalAppointment(true);
   }
 
@@ -50,47 +61,19 @@ export const useScheduledAppointments = ({ setLoading }) => {
     setOpenModalAppointment(true);
   }
 
+  const fnPrintList = () => {
+    setLoading(true);
+    request.GETPdf('hospital/process/appointments/print', printParams({ date: printDate, specialistId }), `Citas ${printDate}.pdf`, (err) => {
+      setLoading(false);
+      notifyError(err, 'page.appointments.msg.printError');
+    }, 'GET', () => setLoading(false));
+  }
+
   useEffect(() => {
-    fnGetData(0);
-
-    setLoading(true);
-    request.GET('hospital/settings/specialists/getSL', (resp) => {
-      const data = resp.data.map((item) => {
-        item.value = item.id
-        item.label = item.name
-        return item;
-      });
-      setListDoctors(data);
-      setLoading(false);
-    }, err => {
-      setLoading(false);
-    });
-
-    setLoading(true);
-    request.GET('hospital/process/expedients/getSL', (resp) => {
-      const data = resp.data.map((item) => {
-        item.value = item.id
-        item.label = `${item.dni} | ${item.name}`
-        return item;
-      });
-      setListPatients(data);
-      setLoading(false);
-    }, err => {
-      setLoading(false);
-    });
-
-    setLoading(true);
-    request.GET('hospital/settings/reasons/getSL', (resp) => {
-      const data = resp.data.map((item) => {
-        item.value = item.id
-        item.label = item.name
-        return item;
-      });
-      setListReasons(data);
-      setLoading(false);
-    }, err => {
-      setLoading(false);
-    });
+    const asOptions = (resp) => resp.data.map((item) => ({ ...item, value: item.id, label: item.name }));
+    request.GET('hospital/settings/specialists/getSL', (resp) => setListDoctors(asOptions(resp)), () => {});
+    request.GET('hospital/process/expedients/getSL', (resp) => setListPatients(resp.data.map((item) => ({ ...item, value: item.id, label: `${item.dni} | ${item.name}` }))), () => {});
+    request.GET('hospital/settings/specialties/getSL', (resp) => setListSpecialties(asOptions(resp)), () => {});
   }, []);
 
   const propsToControlPanel = {
@@ -99,6 +82,11 @@ export const useScheduledAppointments = ({ setLoading }) => {
         title: "button.newAppointment",
         icon: "bi bi-calendar-plus",
         onClick: fnNewAppointment
+      },
+      {
+        title: "button.printList",
+        icon: "iconsminds-printer",
+        onClick: fnPrintList
       }
     ],
     disableTab: [false, true, true]
@@ -109,7 +97,7 @@ export const useScheduledAppointments = ({ setLoading }) => {
     currentItem,
     listDoctors,
     listPatients,
-    listReasons,
+    listSpecialties,
     fnGetData
   }
 
@@ -119,7 +107,10 @@ export const useScheduledAppointments = ({ setLoading }) => {
       listAppointments,
       specialistId,
       listDoctors,
+      printDate,
+      setPrintDate,
       onSpecialistChange,
+      onDatesSet,
       fnAddAppointmentOnDate,
       fnViewAppointment,
       openModalAppointment,
