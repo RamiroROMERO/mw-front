@@ -313,6 +313,8 @@
     "incomeStatement.account.duplicated",
     "incomeStatement.account.invalid",
     "incomeStatement.account.overlap",
+    "incomeStatement.filter.invalid",
+    "incomeStatement.level.invalid",
     "incomeStatement.rows.required",
     "invalid.id",
     "inventory.period.closed.global",

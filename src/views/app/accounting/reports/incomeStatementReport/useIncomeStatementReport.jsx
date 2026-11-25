@@ -1,18 +1,16 @@
 import { useEffect, useState } from 'react';
-import { IntlMessages, formatNumber } from '@Helpers/Utils';
+import { useIntl } from 'react-intl';
+import { formatNumber } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import { useForm, useExportExcel } from '@Hooks';
-import { request } from '@Helpers/core';
+import { request, buildUrl } from '@Helpers/core';
+import { NotificationManager } from '@Components/common/react-notifications';
+import { BASE_PATH, buildQuery, defaultLevel, normalizeStatement, validateFilter } from './incomeStatementRules';
 
-// Equivalente a cont_repo_er.sc2 ("Estado de Resultado"). Reporte independiente del
-// Estado de Resultado — DISTINTO de settings/incomeStatement (solo administra la lista de
-// cuentas por Tipo) y de accountingClosures (calcula una Utilidad Neta interna para
-// generar partidas de cierre reales, nunca la muestra, y no incluye Tipo=7). Ver
-// IncomeStatementReportService.js (backend) para el detalle completo de las 3 columnas
-// del reporte (Detalle/Acumulados/Totales, ninguna es basura) y qué sí es código muerto
-// del legacy (el cálculo "año a la fecha", comentado en las 6 ramas, nunca llegó a tener
-// columna propia).
+// Estado de Resultado (cont_repo_er.sc2, SPEC v2-135-sr). El back arma el estado con la estructura de `cont_eer` (cada cuenta cuenta una sola vez, en el grupo más específico) y devuelve filas, totales y avisos;
+// aquí solo se muestran, se imprimen (PDF completo o solo resumen) y se exportan. Los reportes anuales de ingresos y costos/gastos pasaron a "Reportes Contables".
 export const useIncomeStatementReport = ({ setLoading }) => {
+  const intl = useIntl();
   const { fnExport } = useExportExcel(setLoading);
   const today = DateHelper.now();
   const { formState, onInputChange } = useForm({
@@ -24,59 +22,56 @@ export const useIncomeStatementReport = ({ setLoading }) => {
   const { dateStart, dateEnd, level, summaryOnly } = formState;
 
   const [levels, setLevels] = useState([]);
-  const [rows, setRows] = useState([]);
-  const [totals, setTotals] = useState(null);
+  const [data, setData] = useState(normalizeStatement(undefined));
 
   useEffect(() => {
-    request.GET('accounting/reports/incomeStatementReport/levels', (resp) => {
-      setLevels(resp.data);
+    request.GET(`${BASE_PATH}/levels`, (resp) => {
+      const list = Array.isArray(resp.data) ? resp.data : [];
+      setLevels(list);
+      const first = defaultLevel(list, 0);
+      if (first) onInputChange({ target: { name: 'level', value: first } });
     }, () => { });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fnSearch = () => {
-    if (!dateStart || !dateEnd || !Number(level)) return;
-    setLoading(true);
-    request.POST('accounting/reports/incomeStatementReport', { dateStart, dateEnd, level }, (resp) => {
-      setRows(resp.data.rows);
-      setTotals(resp.data.totals);
-      setLoading(false);
-    }, () => { setLoading(false); });
-  }
-
-  const fnPrint = () => {
-    if (!rows.length) return;
-    setLoading(true);
-    request.GETPdf('accounting/reports/incomeStatementReport/exportPDF', { dateStart, dateEnd, level, summaryOnly }, 'EstadoDeResultado.pdf', () => setLoading(false));
-    setLoading(false);
-  }
-
-  const fnExportXlsx = () => {
-    if (!rows.length) return;
-    fnExport('accounting/reports/incomeStatementReport/exportXLSX', { dateStart, dateEnd, level }, 'EstadoDeResultado.xlsx');
-  }
-
-  const fnExportAnnual = (kind) => {
-    if (!dateStart || !Number(level)) return;
-    const year = DateHelper.getYear(dateStart);
-    fnExport('accounting/reports/incomeStatementReport/annual/exportXLSX', { year, level, kind }, kind === 'income' ? 'ReporteIngresosAnual.xlsx' : 'ReporteCostosGastosMensual.xlsx');
-  }
-
-  const table = {
-    columns: [
-      { text: IntlMessages('page.incomeStatementReport.table.description'), dataField: 'description', headerStyle: { width: '52%' } },
-      { text: IntlMessages('page.incomeStatementReport.table.detail'), dataField: 'detailValue', headerStyle: { width: '16%' } },
-      { text: IntlMessages('page.incomeStatementReport.table.group'), dataField: 'groupValue', headerStyle: { width: '16%' } },
-      { text: IntlMessages('page.incomeStatementReport.table.total'), dataField: 'totalValue', headerStyle: { width: '16%' } }
-    ],
-    rows
+  const isValid = () => {
+    const error = validateFilter({ dateStart, dateEnd, level });
+    if (error) NotificationManager.warning(intl.formatMessage({ id: error }), '', 4000, null, null, '');
+    return !error;
   };
 
-  const propsToHeader = {
-    dateStart, dateEnd, level, levels, summaryOnly, onInputChange,
-    fnSearch, fnPrint, fnExportXlsx,
-    fnExportAnnualIncome: () => fnExportAnnual('income'),
-    fnExportAnnualExpenses: () => fnExportAnnual('expenses')
-  }
+  const fnSearch = () => {
+    if (!isValid()) return;
+    setLoading(true);
+    request.GET(buildUrl(`${BASE_PATH}/report`, buildQuery({ dateStart, dateEnd, level })), (resp) => {
+      setData(normalizeStatement(resp.data));
+      setLoading(false);
+    }, () => { setLoading(false); });
+  };
 
-  return { table, totals, propsToHeader, formatNumber }
-}
+  const fnPrint = () => {
+    if (!isValid()) return;
+    setLoading(true);
+    request.GETPdf(`${BASE_PATH}/exportPDF`, { ...buildQuery({ dateStart, dateEnd, level }), summaryOnly }, 'EstadoDeResultado.pdf', () => setLoading(false));
+  };
+
+  const fnExportXlsx = () => {
+    if (!isValid()) return;
+    fnExport(`${BASE_PATH}/exportXLSX`, buildQuery({ dateStart, dateEnd, level }), 'EstadoDeResultado.xlsx');
+  };
+
+  const t = (id) => intl.formatMessage({ id });
+  const table = {
+    columns: [
+      { text: t('page.incomeStatementReport.table.description'), dataField: 'description', headerStyle: { width: '52%' } },
+      { text: t('page.incomeStatementReport.table.detail'), dataField: 'detailValue', headerStyle: { width: '16%' } },
+      { text: t('page.incomeStatementReport.table.group'), dataField: 'groupValue', headerStyle: { width: '16%' } },
+      { text: t('page.incomeStatementReport.table.total'), dataField: 'totalValue', headerStyle: { width: '16%' } }
+    ],
+    rows: data.rows
+  };
+
+  const propsToHeader = { dateStart, dateEnd, level, levels, summaryOnly, onInputChange, fnSearch, fnPrint, fnExportXlsx };
+
+  return { table, notices: data.notices, propsToHeader, formatNumber, t };
+};

@@ -4,10 +4,7 @@ import DateCalendar from '@Components/dateCalendar';
 import { SimpleSelect } from '@Components/simpleSelect';
 import { IntlMessages } from '@Helpers/Utils';
 
-const HeaderReport = ({
-  dateStart, dateEnd, level, levels, summaryOnly, onInputChange,
-  fnSearch, fnPrint, fnExportXlsx, fnExportAnnualIncome, fnExportAnnualExpenses
-}) => {
+const HeaderReport = ({ dateStart, dateEnd, level, levels, summaryOnly, onInputChange, fnSearch, fnPrint, fnExportXlsx }) => {
   return (
     <>
       <Row>
@@ -63,16 +60,10 @@ const HeaderReport = ({
           <Button color="secondary" onClick={fnPrint}>
             <i className="iconsminds-printer" /> {IntlMessages('button.print')}
           </Button>
-          <Button color="info" onClick={fnExportAnnualIncome}>
-            <i className="bi bi-file-earmark-excel" /> {IntlMessages('page.incomeStatementReport.button.annualIncome')}
-          </Button>
-          <Button color="info" onClick={fnExportAnnualExpenses}>
-            <i className="bi bi-file-earmark-excel" /> {IntlMessages('page.incomeStatementReport.button.annualExpenses')}
-          </Button>
         </Colxx>
       </Row>
     </>
   );
-}
+};
 
 export default HeaderReport;

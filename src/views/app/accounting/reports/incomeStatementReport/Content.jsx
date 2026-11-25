@@ -2,13 +2,15 @@ import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import HeaderReport from './HeaderReport';
 import { useIncomeStatementReport } from './useIncomeStatementReport';
+import { activeNotices } from './incomeStatementRules';
 
 // Tabla plana (no ReactTable): un Estado de Resultado es un documento ESTRUCTURADO donde
 // el orden de las filas (secciones/subtotales) importa — paginar o reordenar rompería su
 // sentido, a diferencia de un listado tabular normal. Mismo criterio ya usado para los
 // modales de detalle de partida (ModalPdaDetail/ModalViewEntry).
 const IncomeStatementReport = ({ setLoading }) => {
-  const { table, propsToHeader, formatNumber } = useIncomeStatementReport({ setLoading });
+  const { table, notices, propsToHeader, formatNumber, t } = useIncomeStatementReport({ setLoading });
+  const shownNotices = activeNotices(notices);
 
   return (
     <>
@@ -48,7 +50,18 @@ const IncomeStatementReport = ({ setLoading }) => {
           </Card>
         </Colxx>
       </Row>
+      {shownNotices.length > 0 && (
+        <Row>
+          <Colxx xxs="12" className="mt-3">
+            {shownNotices.map((n) => (
+              <div key={n.key} className="alert alert-warning mb-2">
+                {t(`page.incomeStatementReport.notice.${n.key}`)} {n.count} {n.key === 'nonResultAccounts' ? `(${n.lines} ${t('page.incomeStatementReport.notice.lines')})` : ''} | {t('page.incomeStatementReport.notice.debit')} {formatNumber(n.debit)} | {t('page.incomeStatementReport.notice.credit')} {formatNumber(n.credit)}
+              </div>
+            ))}
+          </Colxx>
+        </Row>
+      )}
     </>
   );
-}
+};
 export default IncomeStatementReport;
