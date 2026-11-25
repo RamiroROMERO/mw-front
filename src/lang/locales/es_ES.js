@@ -3705,6 +3705,13 @@ const esLang = {
   "page.budgetExecution.table.executed": "Ejecutado",
   "page.budgetExecution.table.variation": "Variación",
   "page.budgetExecution.table.percent": "%",
+  "page.budgetExecution.input.summaryOnly": "Solo resumen (PDF)",
+  "page.budgetExecution.msg.yearInvalid": "Indique un año de 4 dígitos (2000 a 2100)",
+  "page.budgetExecution.msg.monthInvalid": "Seleccione un mes válido",
+  "page.budgetExecution.msg.rangeInverted": "El mes inicial no puede ser mayor al final",
+  "page.budgetExecution.notice.missingAccounts": "Cuentas enlazadas que no existen en el catálogo o están eliminadas (no cuentan):",
+  "page.budgetExecution.notice.otherTypeAccounts": "Cuentas enlazadas de un tipo que no es de balance ni de resultados (su saldo no cuenta):",
+
   "page.cxpPaymentHistory.table.title": "Histórico de Pagos a Proveedores",
   "page.cxpPaymentHistory.input.provider": "Proveedor",
   "page.cxpPaymentHistory.table.provider": "Proveedor",

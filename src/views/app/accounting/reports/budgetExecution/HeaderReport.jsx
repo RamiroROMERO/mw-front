@@ -5,7 +5,7 @@ import { SimpleSelect } from '@Components/simpleSelect';
 import { RadioGroup } from '@Components/radioGroup';
 import { IntlMessages } from '@Helpers/Utils';
 
-const HeaderReport = ({ mode, modeOptions, onModeChange, year, month, monthEnd, months, onInputChange, fnSearch, fnPrint, fnExportXlsx }) => {
+const HeaderReport = ({ mode, modeOptions, onModeChange, year, month, monthEnd, months, summaryOnly, onInputChange, fnSearch, fnPrint, fnExportXlsx }) => {
   return (
     <>
       <Row>
@@ -60,6 +60,19 @@ const HeaderReport = ({ mode, modeOptions, onModeChange, year, month, monthEnd, 
           <Button color="secondary" onClick={fnExportXlsx}>
             <i className="bi bi-file-earmark-excel" /> {IntlMessages('button.exportXls')}
           </Button>
+          <span className="form-check ms-2 me-1 d-inline-flex align-items-center">
+            <input
+              className="form-check-input me-1"
+              type="checkbox"
+              name="summaryOnly"
+              id="summaryOnly"
+              checked={summaryOnly}
+              onChange={onInputChange}
+            />
+            <label className="form-check-label" htmlFor="summaryOnly">
+              {IntlMessages('page.budgetExecution.input.summaryOnly')}
+            </label>
+          </span>
           <Button color="secondary" onClick={fnPrint}>
             <i className="iconsminds-printer" /> {IntlMessages('button.print')}
           </Button>

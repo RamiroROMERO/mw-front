@@ -97,6 +97,7 @@
     "budget.line.hasAccounts",
     "budget.line.notDetail",
     "budget.order.invalid",
+    "budgetExecution.filter.invalid",
     "cai.required",
     "calendar.closed",
     "cancellation.account.required",
@@ -408,7 +409,6 @@
     "moduleIO.id.invalid",
     "moduleIO.period.invalid",
     "moduleIO.status.invalid",
-    "month.range",
     "monthlySalesCustomer.currency.unavailable",
     "monthlySalesCustomer.rows.tooLarge",
     "monthlySalesCustomer.year.invalid",
@@ -761,7 +761,6 @@
     "withholdingReceipt.type.invalid",
     "withholdingReceipt.voided",
     "withholdingType.account.invalid",
-    "withholdingType.reportType.invalid",
-    "year.invalid"
+    "withholdingType.reportType.invalid"
   ]
 }

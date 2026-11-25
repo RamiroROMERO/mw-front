@@ -3673,6 +3673,13 @@ const enLang = {
   "page.budgetExecution.table.executed": "Executed",
   "page.budgetExecution.table.variation": "Variation",
   "page.budgetExecution.table.percent": "%",
+  "page.budgetExecution.input.summaryOnly": "Summary only (PDF)",
+  "page.budgetExecution.msg.yearInvalid": "Enter a 4-digit year (2000 to 2100)",
+  "page.budgetExecution.msg.monthInvalid": "Select a valid month",
+  "page.budgetExecution.msg.rangeInverted": "The start month cannot be after the end month",
+  "page.budgetExecution.notice.missingAccounts": "Linked accounts that do not exist in the catalog or were removed (not counted):",
+  "page.budgetExecution.notice.otherTypeAccounts": "Linked accounts of a type that is neither balance nor result (their balance is not counted):",
+
   "page.cxpPaymentHistory.table.title": "Provider Payment History",
   "page.cxpPaymentHistory.input.provider": "Provider",
   "page.cxpPaymentHistory.table.provider": "Provider",

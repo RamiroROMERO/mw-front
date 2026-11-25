@@ -2,9 +2,11 @@ import { Card, CardBody, Row } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import HeaderReport from './HeaderReport';
 import { useBudgetExecution } from './useBudgetExecution';
+import { activeNotices, noticeItemText, percentText } from './budgetExecutionRules';
 
 const BudgetExecution = ({ setLoading }) => {
-  const { table, propsToHeader, formatNumber } = useBudgetExecution({ setLoading });
+  const { table, notices, propsToHeader, formatNumber, t } = useBudgetExecution({ setLoading });
+  const shownNotices = activeNotices(notices);
 
   return (
     <>
@@ -36,7 +38,7 @@ const BudgetExecution = ({ setLoading }) => {
                       <td className="text-end">{r.isChild ? '' : formatNumber(r.budgeted)}</td>
                       <td className="text-end">{r.isChild ? formatNumber(r.value) : formatNumber(r.real)}</td>
                       <td className="text-end">{r.isChild ? '' : formatNumber(r.diff)}</td>
-                      <td className="text-end">{r.isChild ? '' : `${formatNumber(r.percExecuted)}%`}</td>
+                      <td className="text-end">{r.isChild ? '' : percentText(r.percExecuted, formatNumber)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -45,6 +47,17 @@ const BudgetExecution = ({ setLoading }) => {
           </Card>
         </Colxx>
       </Row>
+      {shownNotices.length > 0 && (
+        <Row>
+          <Colxx xxs="12" className="mt-3">
+            {shownNotices.map((n) => (
+              <div key={n.key} className="alert alert-warning mb-2">
+                {t(`page.budgetExecution.notice.${n.key}`)} {n.items.map(noticeItemText).join('; ')}
+              </div>
+            ))}
+          </Colxx>
+        </Row>
+      )}
     </>
   );
 }
