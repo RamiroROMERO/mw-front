@@ -1,29 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useIntl } from 'react-intl';
 import { IntlMessages, formatNumber, formatDate } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import { useForm, useExportExcel } from '@Hooks';
 import { request, buildUrl } from '@Helpers/core';
+import { NotificationManager } from '@Components/common/react-notifications';
+import { BASE_PATH, buildRangeQuery, normalizeProviderHistory, validateProviderHistory } from '../cxpShared/cxpReportsRules';
+import { useCxpProviders } from '../cxpShared/useCxpProviders';
 import ModalTrace from '../cxpInvoiceTrace/ModalTrace';
 
-// Equivalente a cont_cxpdeta03.sc2 ("Historial de Cuentas por Proveedor"). Muestra TODOS
-// los documentos de un proveedor (Contado y Crédito mezclados, pagados y pendientes) en
-// un rango de fechas — a diferencia de la pantalla principal de CxP, que solo trae
-// pendientes tipo Crédito. El doble-click del legacy sobre una fila abre
-// `cont_cxp_deta_view_payments`, que reproduce el mismo desglose de pagos que ya
-// construimos para "Rastreo de Cuentas por Pagar" — se reutiliza ese mismo modal acá en
-// vez de duplicarlo. El segundo botón "Imprimir" del legacy (reporte
-// "Detalle de Movimiento por Proveedor", toggle "Por Facturas"/"Por Saldos") se omite
-// por redundante: la misma información ya la cubre esta grilla + el drill-down de pagos.
-// NOTA: para facturas "Contado", el saldo calculado puede no ser 0 aunque ya se hayan
-// pagado en efectivo al momento de la compra (nunca pasan por cont_pda2) — es una
-// réplica fiel de cómo el propio legacy calcula este mismo reporte, no un bug nuevo.
+// Historial de Cuentas por Proveedor (cont_cxpdeta03.sc2, SPEC v2-133-sr): TODOS los documentos de un proveedor (Contado y Crédito, pagados y pendientes) con fecha de factura en el rango, con el saldo a hoy
+// calculado por el back (misma fórmula de Cuentas por Pagar). El ojo abre el rastreo del documento (mismo modal que "Rastreo de Cuentas por Pagar"). Para una factura de Contado el saldo puede no ser 0 aunque se haya
+// pagado en efectivo al comprar: así lo calcula también el legacy.
 const AGING_BUCKETS_LABEL_UNTIL_DUE = 'page.cxpProviderHistory.table.daysUntilDue';
 const AGING_BUCKETS_LABEL_OVERDUE = 'page.cxpProviderHistory.table.daysOverdue';
 
 export const useCxPProviderHistory = ({ setLoading }) => {
   const location = useLocation();
+  const intl = useIntl();
   const { fnExport } = useExportExcel(setLoading);
+  const listProviders = useCxpProviders();
   const { formState, onInputChange } = useForm({
     providerId: location.state?.providerId || 0,
     dateStart: DateHelper.format(DateHelper.startOf(DateHelper.now(), 'year')),
@@ -31,8 +28,7 @@ export const useCxPProviderHistory = ({ setLoading }) => {
   });
   const { providerId, dateStart, dateEnd } = formState;
 
-  const [allRows, setAllRows] = useState([]);
-  const [listProviders, setListProviders] = useState([]);
+  const [data, setData] = useState(normalizeProviderHistory(undefined));
   const [openTrace, setOpenTrace] = useState(false);
   const [traceData, setTraceData] = useState(null);
 
@@ -40,53 +36,47 @@ export const useCxPProviderHistory = ({ setLoading }) => {
   const daysUntilDueLabel = IntlMessages(AGING_BUCKETS_LABEL_UNTIL_DUE);
   const daysOverdueLabel = IntlMessages(AGING_BUCKETS_LABEL_OVERDUE);
 
-  const fnLoadProviders = () => {
-    if (listProviders.length > 0) return;
-    request.GET(buildUrl('inventory/process/providers', { status: 1 }), (resp) => {
-      setListProviders(resp.data.map((item) => ({ label: `${item.id} | ${item.name}`, value: item.id })));
-    }, () => { });
-  }
+  const isValid = () => {
+    const error = validateProviderHistory({ providerId, dateStart, dateEnd });
+    if (error) NotificationManager.warning(intl.formatMessage({ id: error }), '', 4000, null, null, '');
+    return !error;
+  };
 
   const fnSearch = () => {
-    if (Number(providerId) === 0 || !dateStart || !dateEnd) return;
+    if (!isValid()) return;
     setLoading(true);
-    request.GET(buildUrl('accounting/process/accountsPayable/historyByProvider', { providerId, dateStart, dateEnd }), (resp) => {
-      const today = DateHelper.now();
-      let accumulated = 0;
-      const rows = resp.data.map((row) => {
-        const balance = Number(row.balance || 0);
-        accumulated += balance;
-        const applied = Number(row.originalValue || 0) + Number(row.debitNoteValue || 0) - Number(row.creditNoteValue || 0) - balance;
-        let estado = paidLabel;
-        if (balance !== 0) {
-          const numDays = row.dueDate ? DateHelper.diff(row.dueDate, today, 'day') : 0;
-          estado = numDays >= 0 ? `${numDays} ${daysUntilDueLabel}` : `${Math.abs(numDays)} ${daysOverdueLabel}`;
-        }
-        return { ...row, balance, applied, accumulated, estado };
-      });
-      setAllRows(rows);
+    request.GET(buildUrl(`${BASE_PATH}/providerHistory`, buildRangeQuery({ providerId, dateStart, dateEnd })), (resp) => {
+      setData(normalizeProviderHistory(resp.data));
       setLoading(false);
     }, () => { setLoading(false); });
-  }
+  };
 
-  // Soporta el drill-down desde "Saldos y Pagos" (cxpPeriodSummary), que navega acá con un
-  // providerId ya elegido (`navigate(..., { state: { providerId } })`) — carga la lista de
-  // proveedores (para que el SearchSelect muestre el nombre) y dispara la búsqueda de una vez.
+  // Soporta el drill-down desde "Saldos y Pagos", que navega acá con un proveedor ya elegido.
   useEffect(() => {
-    if (location.state?.providerId) {
-      fnLoadProviders();
-      fnSearch();
-    }
+    if (location.state?.providerId) fnSearch();
   }, []);
+
+  const today = DateHelper.now();
+  let accumulated = 0;
+  const rows = data.rows.map((row) => {
+    const balance = Number(row.balance || 0);
+    accumulated += balance;
+    let estado = paidLabel;
+    if (balance !== 0) {
+      const numDays = row.dueDate ? DateHelper.diff(row.dueDate, today, 'day') : 0;
+      estado = numDays >= 0 ? `${numDays} ${daysUntilDueLabel}` : `${Math.abs(numDays)} ${daysOverdueLabel}`;
+    }
+    return { ...row, applied: Number(row.payments || 0), accumulated, estado };
+  });
 
   const fnOpenTrace = (row) => {
     setLoading(true);
-    request.GET(buildUrl('accounting/process/accountsPayable/documentTrace', { cxpId: row.id }), (resp) => {
+    request.GET(buildUrl(`${BASE_PATH}/documentTrace`, { cxpId: row.id }), (resp) => {
       setTraceData(resp.data);
       setOpenTrace(true);
       setLoading(false);
     }, () => { setLoading(false); });
-  }
+  };
 
   const table = {
     title: IntlMessages('page.cxpProviderHistory.table.title'),
@@ -121,24 +111,24 @@ export const useCxPProviderHistory = ({ setLoading }) => {
         )
       }
     ],
-    data: allRows,
+    data: rows,
     options: { pageSize: 10, pageSizeOptions: [10, 20, 50] }
   };
 
   const totals = {
-    totalValue: formatNumber(allRows.reduce((sum, r) => sum + Number(r.originalValue || 0), 0)),
-    totalCreditNote: formatNumber(allRows.reduce((sum, r) => sum + Number(r.creditNoteValue || 0), 0)),
-    totalDebitNote: formatNumber(allRows.reduce((sum, r) => sum + Number(r.debitNoteValue || 0), 0)),
-    totalBalance: formatNumber(allRows.reduce((sum, r) => sum + Number(r.balance || 0), 0))
+    totalValue: formatNumber(data.totals.originalValue),
+    totalCreditNote: formatNumber(data.totals.creditNoteValue),
+    totalDebitNote: formatNumber(data.totals.debitNoteValue),
+    totalBalance: formatNumber(data.totals.balance)
   };
 
   const fnExportXlsx = () => {
-    if (Number(providerId) === 0) return;
+    if (!isValid()) return;
     const provider = listProviders.find((p) => p.value === Number(providerId));
-    fnExport('accounting/process/accountsPayable/historyByProvider/exportXLSX', { providerId, dateStart, dateEnd, providerName: provider?.label }, 'HistorialCuentasPorProveedor.xlsx');
-  }
+    fnExport(`${BASE_PATH}/providerHistory/exportXLSX`, { ...buildRangeQuery({ providerId, dateStart, dateEnd }), providerName: provider?.label }, 'HistorialCuentasPorProveedor.xlsx');
+  };
 
-  const propsToHeader = { providerId, dateStart, dateEnd, listProviders, onInputChange, fnSearch, fnExportXlsx, fnLoadProviders };
+  const propsToHeader = { providerId, dateStart, dateEnd, listProviders, onInputChange, fnSearch, fnExportXlsx, fnLoadProviders: () => { } };
 
   const propsToModalTrace = {
     ModalContent: ModalTrace,
@@ -147,7 +137,7 @@ export const useCxPProviderHistory = ({ setLoading }) => {
     setOpen: setOpenTrace,
     maxWidth: 'lg',
     data: { trace: traceData, formatNumber, formatDate }
-  }
+  };
 
-  return { table, totals, propsToHeader, propsToModalTrace }
-}
+  return { table, totals, propsToHeader, propsToModalTrace };
+};

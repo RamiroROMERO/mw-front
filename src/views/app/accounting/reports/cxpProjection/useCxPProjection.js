@@ -1,58 +1,50 @@
 import { useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { IntlMessages } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import { useForm, useExportExcel } from '@Hooks';
 import { request, buildUrl } from '@Helpers/core';
+import { NotificationManager } from '@Components/common/react-notifications';
+import { BASE_PATH, buildAsOfQuery, normalizeProjection, validateAsOfDate } from '../cxpShared/cxpReportsRules';
+import { useCxpProviders } from '../cxpShared/useCxpProviders';
 
-// Equivalente a cont_cxpdeta_comercial.sc2 ("Proyección Cuentas por Pagar") — espejo de
-// cxcProjection, lado proveedores. NO es un análogo 1:1: el legacy de esta pantalla llama
-// `getCurrentCxP` (controles_hw.vc2, mismo query ya replicado como CXP_BALANCE_JOINS/EXPR),
-// con providerId opcional (0 = todos) en vez del filtro cliente+tipoCliente de CxC. Los 7
-// rangos de antigüedad (Corriente/1-30/31-60/61-90/91-120/121-150/>150) son los mismos ya
-// usados en cxcProjection/Cash Flow — se calculan acá en el cliente sobre `date` (fecha de
-// corte editable, Textbox_hw2 en el legacy), igual patrón que el resto de esta migración.
-const AGING_BUCKETS = [
-  { field: 'current', label: 'page.cxpProjection.table.current', test: (d) => d <= 0 },
-  { field: 'days30', label: 'page.cxpProjection.table.days30', test: (d) => d >= 1 && d <= 30 },
-  { field: 'days60', label: 'page.cxpProjection.table.days60', test: (d) => d >= 31 && d <= 60 },
-  { field: 'days90', label: 'page.cxpProjection.table.days90', test: (d) => d >= 61 && d <= 90 },
-  { field: 'days120', label: 'page.cxpProjection.table.days120', test: (d) => d >= 91 && d <= 120 },
-  { field: 'days150', label: 'page.cxpProjection.table.days150', test: (d) => d >= 121 && d <= 150 },
-  { field: 'daysMore', label: 'page.cxpProjection.table.daysMore', test: (d) => d > 150 }
+// Proyección de Cuentas por Pagar (cont_cxpdeta_comercial.sc2, SPEC v2-133-sr). El saldo y los 7 rangos de antigüedad los calcula el back A LA FECHA DE CORTE (misma fórmula histórica de Cuentas por Pagar);
+// aquí solo se muestran. Proveedor 0 = todos.
+const AGING_COLUMNS = [
+  { field: 'valCurr', label: 'page.cxpProjection.table.current' },
+  { field: 'val30', label: 'page.cxpProjection.table.days30' },
+  { field: 'val60', label: 'page.cxpProjection.table.days60' },
+  { field: 'val90', label: 'page.cxpProjection.table.days90' },
+  { field: 'val120', label: 'page.cxpProjection.table.days120' },
+  { field: 'val150', label: 'page.cxpProjection.table.days150' },
+  { field: 'valMore', label: 'page.cxpProjection.table.daysMore' }
 ];
 
 export const useCxPProjection = ({ setLoading }) => {
+  const intl = useIntl();
   const { fnExport } = useExportExcel(setLoading);
+  const listProviders = useCxpProviders();
   const { formState, onInputChange } = useForm({ date: DateHelper.format(DateHelper.now()), providerId: 0 });
   const { date, providerId } = formState;
 
-  const [allRows, setAllRows] = useState([]);
-  const [listProviders, setListProviders] = useState([]);
+  const [data, setData] = useState(normalizeProjection(undefined));
+
+  const isValid = () => {
+    const error = validateAsOfDate(date);
+    if (error) NotificationManager.warning(intl.formatMessage({ id: error }), '', 4000, null, null, '');
+    return !error;
+  };
 
   const fnSearch = () => {
+    if (!isValid()) return;
     setLoading(true);
-    const providerFilter = Number(providerId) === 0 ? undefined : providerId;
-    request.GET(buildUrl('accounting/process/accountsPayable/projection', { providerId: providerFilter }), (resp) => {
-      const rows = resp.data.map((row) => {
-        const numDays = row.dueDate ? DateHelper.diff(date, row.dueDate, 'day') : 0;
-        const bucketRow = AGING_BUCKETS.reduce((acc, b) => {
-          acc[b.field] = b.test(numDays) ? Number(row.balance || 0) : 0;
-          return acc;
-        }, {});
-        return { ...row, numDays, ...bucketRow };
-      });
-      setAllRows(rows);
+    request.GET(buildUrl(`${BASE_PATH}/projection`, buildAsOfQuery({ date, providerId })), (resp) => {
+      setData(normalizeProjection(resp.data));
       setLoading(false);
     }, () => { setLoading(false); });
-  }
+  };
 
-  useEffect(() => {
-    request.GET(buildUrl('inventory/process/providers', { status: 1 }), (resp) => {
-      setListProviders(resp.data.map((item) => ({ label: `${item.id} | ${item.name}`, value: item.id })));
-    }, () => { });
-    fnSearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => { fnSearch(); }, []);
 
   const table = {
     title: IntlMessages('page.cxpProjection.table.title'),
@@ -62,10 +54,10 @@ export const useCxPProjection = ({ setLoading }) => {
       { text: IntlMessages('page.cxpProjection.table.provider'), dataField: 'providerName', headerStyle: { width: '17%' } },
       { text: IntlMessages('page.cxpProjection.table.balance'), dataField: 'balance', type: 'number', headerStyle: { width: '8%' } },
       { text: IntlMessages('page.cxpProjection.table.dueDate'), dataField: 'dueDate', type: 'date', headerStyle: { width: '8%' } },
-      ...AGING_BUCKETS.map((b) => ({ text: IntlMessages(b.label), dataField: b.field, type: 'number', headerStyle: { width: '7%' } })),
+      ...AGING_COLUMNS.map((b) => ({ text: IntlMessages(b.label), dataField: b.field, type: 'number', headerStyle: { width: '7%' } })),
       { text: IntlMessages('page.cxpProjection.table.days'), dataField: 'numDays', headerStyle: { width: '6%' } }
     ],
-    data: allRows,
+    data: data.rows,
     options: { pageSize: 10, pageSizeOptions: [10, 20, 50] }
   };
 
@@ -75,24 +67,16 @@ export const useCxPProjection = ({ setLoading }) => {
       { text: IntlMessages('page.cxpProjection.table.balance'), dataField: 'total', type: 'number', headerStyle: { width: '30%' } },
       { text: '%', dataField: 'percent', headerStyle: { width: '30%' } }
     ],
-    data: (() => {
-      const grandTotal = allRows.reduce((sum, r) => sum + Number(r.balance || 0), 0);
-      const rows = AGING_BUCKETS.map((b) => {
-        const total = allRows.reduce((sum, r) => sum + Number(r[b.field] || 0), 0);
-        return { label: IntlMessages(b.label), total, percent: grandTotal !== 0 ? `${((total / grandTotal) * 100).toFixed(2)}%` : '0.00%' };
-      });
-      rows.push({ label: IntlMessages('page.cxpProjection.table.total'), total: grandTotal, percent: '100.00%' });
-      return rows;
-    })(),
+    data: [
+      ...AGING_COLUMNS.map((b) => ({ label: IntlMessages(b.label), total: data.totals[b.field], percent: `${Number(data.percents[b.field] || 0).toFixed(2)}%` })),
+      { label: IntlMessages('page.cxpProjection.table.total'), total: data.totals.total, percent: '100.00%' }
+    ],
     options: { pageSize: 10 }
   };
 
-  const fnExportXlsx = () => {
-    const providerFilter = Number(providerId) === 0 ? undefined : providerId;
-    fnExport('accounting/process/accountsPayable/projection/exportXLSX', { providerId: providerFilter }, 'ProyeccionCuentasPorPagar.xlsx');
-  }
+  const fnExportXlsx = () => { if (isValid()) fnExport(`${BASE_PATH}/projection/exportXLSX`, buildAsOfQuery({ date, providerId }), 'ProyeccionCuentasPorPagar.xlsx'); };
 
-  const propsToHeader = { date, providerId, listProviders, onInputChange, fnSearch, fnExportXlsx }
+  const propsToHeader = { date, providerId, listProviders, onInputChange, fnSearch, fnExportXlsx };
 
-  return { table, totalsTable, propsToHeader }
-}
+  return { table, totalsTable, propsToHeader };
+};

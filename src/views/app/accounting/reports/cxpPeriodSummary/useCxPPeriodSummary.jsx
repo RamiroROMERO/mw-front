@@ -1,31 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useIntl } from 'react-intl';
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import DateHelper from '@Helpers/DateHelper';
 import { useForm, useExportExcel } from '@Hooks';
 import { request, buildUrl } from '@Helpers/core';
 import { adminRoot } from '@Constants/defaultValues';
+import { NotificationManager } from '@Components/common/react-notifications';
+import { BASE_PATH, buildRangeQuery, normalizePeriod, validateRange } from '../cxpShared/cxpReportsRules';
 
-// Equivalente a cont_cxp_week_report.sc2 ("Saldos y Pagos"). Genuinamente distinto de
-// cualquier reporte "Semanal" de CxC (advertencia del usuario: no asumir que espeja a
-// CxC) — no es un aging de 8 semanas, es un resumen de MOVIMIENTO por proveedor en un
-// rango [Desde, Hasta]: saldo acumulado ANTES de Desde (corte histórico) + facturas
-// nuevas creadas DENTRO del rango (valor completo, no saldo) + pagos registrados DENTRO
-// del rango (sin importar a qué factura se aplicaron). Ver findPeriodSummaryByProvider
-// en el backend para el detalle completo de la fórmula, incluyendo el quirk fiel del
-// legacy donde un proveedor que SOLO pagó en el período (sin saldo previo ni facturas
-// nuevas) queda fuera del reporte.
-// El botón "..." del legacy abre `cont_cxp_detail.sc2` (un historial de proveedor SIN
-// rango de fechas, con notas por proveedor/factura vía cont_cxp_comment — tabla con solo
-// 2 filas reales en todo el sistema, feature esencialmente sin uso) — en vez de duplicar
-// esa pantalla casi idéntica a la ya construida `cxpProviderHistory`, este botón navega
-// ahí con el proveedor pre-seleccionado (mismo patrón de reutilización ya usado en toda
-// la familia CxC/CxP). El checkbox de selección por fila del legacy (Column9, usado para
-// filtrar qué providers salen en el reporte IMPRESO) y el botón "Imprimir" no se migran,
-// mismo criterio aplicado a toda pantalla de reportes de esta sesión (no se replican
-// reportes .frx nativos, solo Exportar XLS).
+// Saldos y Pagos (cont_cxp_week_report.sc2, SPEC v2-133-sr): resumen de MOVIMIENTO por proveedor en un rango [Desde, Hasta]: saldo acumulado a la víspera de Desde (fórmula histórica de Cuentas por Pagar) +
+// facturas a crédito nuevas del rango (valor completo) = total; menos los pagos del rango = saldo. Un proveedor que solo pagó en el período también aparece. Los pagos que no corresponden a ninguna cuenta por pagar
+// no se suman: se avisan debajo de la tabla. El botón "ver" abre el historial del proveedor.
 export const useCxPPeriodSummary = ({ setLoading }) => {
   const navigate = useNavigate();
+  const intl = useIntl();
   const { fnExport } = useExportExcel(setLoading);
   const { formState, onInputChange } = useForm({
     dateStart: DateHelper.format(DateHelper.startOf(DateHelper.now(), 'month')),
@@ -33,22 +22,28 @@ export const useCxPPeriodSummary = ({ setLoading }) => {
   });
   const { dateStart, dateEnd } = formState;
 
-  const [rows, setRows] = useState([]);
+  const [data, setData] = useState(normalizePeriod(undefined));
+
+  const isValid = () => {
+    const error = validateRange({ dateStart, dateEnd });
+    if (error) NotificationManager.warning(intl.formatMessage({ id: error }), '', 4000, null, null, '');
+    return !error;
+  };
 
   const fnSearch = () => {
-    if (!dateStart || !dateEnd) return;
+    if (!isValid()) return;
     setLoading(true);
-    request.GET(buildUrl('accounting/process/accountsPayable/periodSummary', { dateStart, dateEnd }), (resp) => {
-      setRows(resp.data);
+    request.GET(buildUrl(`${BASE_PATH}/periodSummary`, buildRangeQuery({ dateStart, dateEnd })), (resp) => {
+      setData(normalizePeriod(resp.data));
       setLoading(false);
     }, () => setLoading(false));
-  }
+  };
 
   useEffect(() => { fnSearch(); }, []);
 
   const fnViewProvider = (row) => {
     navigate(`${adminRoot}/accounting/reports/cxpProviderHistory`, { state: { providerId: row.providerId } });
-  }
+  };
 
   const table = {
     title: IntlMessages('page.cxpPeriodSummary.table.title'),
@@ -72,23 +67,23 @@ export const useCxPPeriodSummary = ({ setLoading }) => {
         )
       }
     ],
-    data: rows,
+    data: data.rows,
     options: { pageSize: 10, pageSizeOptions: [10, 20, 50] }
   };
 
   const totals = {
-    totalAccumulated: formatNumber(rows.reduce((sum, r) => sum + Number(r.accumulated || 0), 0)),
-    totalAdded: formatNumber(rows.reduce((sum, r) => sum + Number(r.added || 0), 0)),
-    totalTotal: formatNumber(rows.reduce((sum, r) => sum + Number(r.total || 0), 0)),
-    totalPaid: formatNumber(rows.reduce((sum, r) => sum + Number(r.paid || 0), 0)),
-    totalBalance: formatNumber(rows.reduce((sum, r) => sum + Number(r.balance || 0), 0))
+    totalAccumulated: formatNumber(data.totals.accumulated),
+    totalAdded: formatNumber(data.totals.added),
+    totalTotal: formatNumber(data.totals.total),
+    totalPaid: formatNumber(data.totals.paid),
+    totalBalance: formatNumber(data.totals.balance)
   };
 
-  const fnExportXlsx = () => {
-    fnExport('accounting/process/accountsPayable/periodSummary/exportXLSX', { dateStart, dateEnd }, 'CuentasPorPagarSaldosYPagos.xlsx');
-  }
+  const orphans = { count: data.orphans.count, total: formatNumber(data.orphans.total) };
+
+  const fnExportXlsx = () => { if (isValid()) fnExport(`${BASE_PATH}/periodSummary/exportXLSX`, buildRangeQuery({ dateStart, dateEnd }), 'CuentasPorPagarSaldosYPagos.xlsx'); };
 
   const propsToHeader = { dateStart, dateEnd, onInputChange, fnSearch, fnExportXlsx };
 
-  return { table, totals, propsToHeader };
-}
+  return { table, totals, orphans, propsToHeader };
+};

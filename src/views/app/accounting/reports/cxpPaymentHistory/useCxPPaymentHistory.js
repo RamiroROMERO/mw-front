@@ -1,30 +1,40 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useIntl } from 'react-intl';
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import { useForm, useExportExcel } from '@Hooks';
 import { request, buildUrl } from '@Helpers/core';
+import { NotificationManager } from '@Components/common/react-notifications';
+import { BASE_PATH, buildHistoryQuery, normalizeHistory, validateHistoryFilter } from '../cxpShared/cxpReportsRules';
+import { useCxpProviders } from '../cxpShared/useCxpProviders';
 
-// Equivalente a cont_cxp_history.sc2 ("Histórico de Pagos a Proveedores"). Ver
-// AccountsPayableService.findPaymentHistory (backend) para el detalle de por qué difiere
-// de CxC (cxcPaymentHistory): 3 fuentes de pago unidas (cheque/transferencia + Partida de
-// Diario + Retenciones fiscales aplicadas), no 2 — las retenciones no tienen equivalente
-// del lado CxC. Igual que CxC, sin fetch automático al montar: el usuario debe filtrar y
-// presionar Buscar.
+// Histórico de pagos a proveedores (cont_cxp_history.sc2, SPEC v2-133-sr). No consulta al abrir: exige un proveedor o un rango COMPLETO de fechas de FACTURA (así los pagos de esas facturas salen completos y el
+// saldo corrido es correcto). Muestra pagos por cheque o transferencia, partidas, retenciones, anticipos aplicados y notas de crédito; el valor de la factura solo en su primera fila. La Caja Chica no se muestra.
+// El back limita a 20,000 filas.
 export const useCxPPaymentHistory = ({ setLoading }) => {
+  const intl = useIntl();
   const { fnExport } = useExportExcel(setLoading);
+  const listProviders = useCxpProviders();
   const { formState, onInputChange } = useForm({ providerId: 0, dateStart: '', dateEnd: '' });
   const { providerId, dateStart, dateEnd } = formState;
 
-  const [allRows, setAllRows] = useState([]);
-  const [listProviders, setListProviders] = useState([]);
+  const [data, setData] = useState(normalizeHistory(undefined));
+
+  const isValid = () => {
+    const error = validateHistoryFilter({ providerId, dateStart, dateEnd });
+    if (error) NotificationManager.warning(intl.formatMessage({ id: error }), '', 4000, null, null, '');
+    return !error;
+  };
 
   const fnSearch = () => {
+    if (!isValid()) return;
     setLoading(true);
-    const providerFilter = Number(providerId) === 0 ? undefined : providerId;
-    request.GET(buildUrl('accounting/process/accountsPayable/paymentHistory', { providerId: providerFilter, dateStart: dateStart || undefined, dateEnd: dateEnd || undefined }), (resp) => {
-      setAllRows(resp.data);
+    request.GET(buildUrl(`${BASE_PATH}/paymentHistory`, buildHistoryQuery({ providerId, dateStart, dateEnd })), (resp) => {
+      setData(normalizeHistory(resp.data));
       setLoading(false);
     }, () => { setLoading(false); });
-  }
+  };
+
+  const fnExportXlsx = () => { if (isValid()) fnExport(`${BASE_PATH}/paymentHistory/exportXLSX`, buildHistoryQuery({ providerId, dateStart, dateEnd }), 'HistoricoPagosProveedores.xlsx'); };
 
   const table = {
     title: IntlMessages('page.cxpPaymentHistory.table.title'),
@@ -42,24 +52,12 @@ export const useCxPPaymentHistory = ({ setLoading }) => {
       { text: IntlMessages('page.cxpPaymentHistory.table.paidValue'), dataField: 'paidValue', type: 'number', headerStyle: { width: '9%' } },
       { text: IntlMessages('page.cxpPaymentHistory.table.balance'), dataField: 'balance', type: 'number', headerStyle: { width: '9%' } }
     ],
-    data: allRows,
+    data: data.rows,
     options: { pageSize: 10, pageSizeOptions: [10, 20, 50] }
   };
 
-  const totals = {
-    totalDocuments: formatNumber(allRows.reduce((sum, r) => sum + Number(r.originalValue || 0), 0)),
-    totalPaid: formatNumber(allRows.reduce((sum, r) => sum + Number(r.paidValue || 0), 0))
-  };
+  const totals = { totalDocuments: formatNumber(data.totals.totalDocuments), totalPaid: formatNumber(data.totals.totalPaid) };
+  const propsToHeader = { providerId, dateStart, dateEnd, listProviders, onInputChange, fnSearch, fnExportXlsx };
 
-  const fnExportXlsx = () => fnExport('accounting/process/accountsPayable/paymentHistory/exportXLSX', { providerId: Number(providerId) === 0 ? undefined : providerId, dateStart: dateStart || undefined, dateEnd: dateEnd || undefined }, 'HistoricoPagosProveedores.xlsx');
-
-  useEffect(() => {
-    request.GET(buildUrl('inventory/process/providers', { status: 1 }), (resp) => {
-      setListProviders(resp.data.map((item) => ({ label: `${item.id} | ${item.name}`, value: item.id })));
-    }, () => { });
-  }, []);
-
-  const propsToHeader = { providerId, dateStart, dateEnd, listProviders, onInputChange, fnSearch, fnExportXlsx }
-
-  return { table, totals, propsToHeader }
-}
+  return { table, totals, propsToHeader };
+};

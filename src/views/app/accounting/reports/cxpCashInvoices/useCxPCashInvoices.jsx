@@ -1,25 +1,19 @@
 import { useEffect, useState } from 'react';
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
-import DateHelper from '@Helpers/DateHelper';
 import { useExportExcel } from '@Hooks';
 import { request } from '@Helpers/core';
+import { BASE_PATH, normalizeCash } from '../cxpShared/cxpReportsRules';
 
-// Equivalente a cont_cxp_detail_cash.sc2 ("Detalle Facturas de Contado"). A diferencia de
-// cont_cxpdeta03 (un proveedor, rango de fechas), esta pantalla trae TODOS los documentos
-// "Contado" (cxp.type_fp = 1 — filtro OPUESTO al de la pantalla principal de CxP, que
-// EXCLUYE Contado) de TODOS los proveedores con saldo pendiente, sin filtro alguno — el
-// legacy carga todo al abrir el formulario (Init), factible (407 filas reales). El único
-// botón por fila ("Camb.") reclasifica el documento de Contado a Crédito
-// (cont_cxp_deta_cashd.sc2, Commandbutton_hw2.Click) tras confirmar; el otro botón de esa
-// fila ("Distribuir", Column12) está oculto en el legacy (Visible = .F.) y nunca es
-// alcanzable por el usuario — no se migra.
+// Detalle Facturas de Contado (cont_cxp_detail_cash.sc2, SPEC v2-133-sr): TODOS los documentos "Contado" (el filtro opuesto al de la pantalla de Cuentas por Pagar) de todos los proveedores con saldo pendiente a hoy,
+// con la misma fórmula de saldo de Cuentas por Pagar; el estado respecto del vencimiento lo calcula el back (`numDays`: días de vencido, negativo si aún no vence). El único botón por fila ("Camb.") reclasifica el
+// documento de Contado a Crédito tras confirmar (privilegio 99.02.010); el otro botón del legacy ("Distribuir") está oculto allá y no se migra.
 const noDueDateLabel = 'page.cxpCashInvoices.table.noDueDate';
 const overdueLabel = 'page.cxpCashInvoices.table.overdue';
 const dueInLabel = 'page.cxpCashInvoices.table.dueIn';
 
 export const useCxPCashInvoices = ({ setLoading }) => {
   const { fnExport } = useExportExcel(setLoading);
-  const [rows, setRows] = useState([]);
+  const [data, setData] = useState(normalizeCash(undefined));
   const [openConfirm, setOpenConfirm] = useState(false);
   const [rowToChange, setRowToChange] = useState(null);
 
@@ -29,38 +23,37 @@ export const useCxPCashInvoices = ({ setLoading }) => {
 
   const fnSearch = () => {
     setLoading(true);
-    request.GET('accounting/process/accountsPayable/pendingCashInvoices', (resp) => {
-      const today = DateHelper.now();
-      const data = resp.data
-        .map((row) => {
-          const numDays = row.dueDate ? DateHelper.diff(row.dueDate, today, 'day') : null;
-          const estado = numDays === null ? noDueDate : (numDays < 0 ? `${Math.abs(numDays)} ${overdueText}` : `${numDays} ${dueInText}`);
-          return { ...row, numDays: numDays ?? 0, estado };
-        })
-        .sort((a, b) => a.numDays - b.numDays);
-      setRows(data);
+    request.GET(`${BASE_PATH}/cashInvoices`, (resp) => {
+      setData(normalizeCash(resp.data));
       setLoading(false);
     }, () => setLoading(false));
-  }
+  };
 
   useEffect(() => { fnSearch(); }, []);
+
+  const rows = data.rows
+    .map((row) => {
+      const numDays = row.numDays === null || row.numDays === undefined ? null : row.numDays;
+      const estado = numDays === null ? noDueDate : (numDays > 0 ? `${numDays} ${overdueText}` : `${Math.abs(numDays)} ${dueInText}`);
+      return { ...row, estado };
+    })
+    .sort((a, b) => (b.numDays ?? -Infinity) - (a.numDays ?? -Infinity));
 
   const fnAskChange = (row) => {
     setRowToChange(row);
     setOpenConfirm(true);
-  }
+  };
 
   const fnOkChange = () => {
     setOpenConfirm(false);
     setLoading(true);
-    request.PUT('accounting/process/accountsPayable/pendingCashInvoices/changeToCredit', {
+    request.PUT(`${BASE_PATH}/cashInvoices/changeToCredit`, {
       providerId: rowToChange.providerId,
       documentCode: rowToChange.documentCode
     }, () => {
-      setRows((prev) => prev.filter((r) => r.id !== rowToChange.id));
-      setLoading(false);
+      fnSearch();
     }, () => setLoading(false));
-  }
+  };
 
   const table = {
     title: IntlMessages('page.cxpCashInvoices.table.title'),
@@ -88,16 +81,16 @@ export const useCxPCashInvoices = ({ setLoading }) => {
     options: { pageSize: 10, pageSizeOptions: [10, 20, 50] }
   };
 
-  const totalBalance = formatNumber(rows.reduce((sum, r) => sum + Number(r.balance || 0), 0));
+  const totalBalance = formatNumber(data.totals.balance);
 
-  const fnExportXlsx = () => fnExport('accounting/process/accountsPayable/pendingCashInvoices/exportXLSX', {}, 'FacturasDeContado.xlsx');
+  const fnExportXlsx = () => fnExport(`${BASE_PATH}/cashInvoices/exportXLSX`, {}, 'FacturasDeContado.xlsx');
 
   const propsToConfirm = {
     open: openConfirm,
     setOpen: setOpenConfirm,
     fnOnOk: fnOkChange,
     title: 'page.cxpCashInvoices.msg.changeToCredit.title'
-  }
+  };
 
   return { table, totalBalance, fnExportXlsx, propsToConfirm };
-}
+};

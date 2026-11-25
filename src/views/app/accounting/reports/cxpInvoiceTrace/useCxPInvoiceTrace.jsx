@@ -1,50 +1,48 @@
 import { useState } from 'react';
+import { useIntl } from 'react-intl';
 import { IntlMessages, formatNumber, formatDate } from '@Helpers/Utils';
 import { useForm } from '@Hooks';
 import { request, buildUrl } from '@Helpers/core';
+import { NotificationManager } from '@Components/common/react-notifications';
+import { BASE_PATH, validateSearch } from '../cxpShared/cxpReportsRules';
+import { useCxpProviders } from '../cxpShared/useCxpProviders';
 import ModalTrace from './ModalTrace';
 
-// Equivalente a cont_cxprast.sc2 ("Rastreo de Cuentas por Pagar"). El legacy carga su
-// picker de búsqueda con TODO cont_cxp sin filtro (impracticable acá) — se exige al
-// menos un filtro (documento o proveedor), igual que el backend (searchDocuments
-// devuelve [] sin filtros). A diferencia de su espejo en CxC, acá el botón "Eliminar
-// Pago" del legacy SÍ es funcional de verdad (no código muerto) — de todas formas no se
-// migra, mismo criterio ya aplicado a "Eliminar Documento" en toda esta familia:
-// utilitario destructivo solo-admin, fuera de alcance para una pantalla de solo lectura.
+// Rastreo de Cuentas por Pagar (cont_cxprast.sc2, SPEC v2-133-sr). El legacy carga su picker con TODO cont_cxp sin filtro (impracticable): se exige un proveedor o al menos 3 caracteres del documento, igual que el back
+// (que escapa los comodines y devuelve hasta 100). El modal muestra la composición de la compra (si la hay) y TODOS los pagos del mismo proveedor y documento (la Caja Chica incluida), notas de crédito y de débito.
+// "Eliminar Pago" del legacy no se migra: utilitario destructivo solo-admin fuera de una pantalla de lectura.
 export const useCxPInvoiceTrace = ({ setLoading }) => {
+  const intl = useIntl();
   const { formState, onInputChange } = useForm({ documentCode: '', providerId: 0 });
   const { documentCode, providerId } = formState;
 
+  const listProviders = useCxpProviders();
   const [allRows, setAllRows] = useState([]);
-  const [listProviders, setListProviders] = useState([]);
   const [openTrace, setOpenTrace] = useState(false);
   const [traceData, setTraceData] = useState(null);
 
-  const fnLoadProviders = () => {
-    if (listProviders.length > 0) return;
-    request.GET(buildUrl('inventory/process/providers', { status: 1 }), (resp) => {
-      setListProviders(resp.data.map((item) => ({ label: `${item.id} | ${item.name}`, value: item.id })));
-    }, () => { });
-  }
-
   const fnSearch = () => {
-    const providerFilter = Number(providerId) === 0 ? undefined : providerId;
-    if (!documentCode && !providerFilter) return;
+    const error = validateSearch({ providerId, documentCode });
+    if (error) {
+      NotificationManager.warning(intl.formatMessage({ id: error }), '', 4000, null, null, '');
+      return;
+    }
     setLoading(true);
-    request.GET(buildUrl('accounting/process/accountsPayable/searchDocuments', { documentCode: documentCode || undefined, providerId: providerFilter }), (resp) => {
-      setAllRows(resp.data);
+    const providerFilter = Number(providerId) === 0 ? undefined : providerId;
+    request.GET(buildUrl(`${BASE_PATH}/searchDocuments`, { documentCode: documentCode.trim() || undefined, providerId: providerFilter }), (resp) => {
+      setAllRows(Array.isArray(resp.data) ? resp.data : []);
       setLoading(false);
     }, () => { setLoading(false); });
-  }
+  };
 
   const fnOpenTrace = (row) => {
     setLoading(true);
-    request.GET(buildUrl('accounting/process/accountsPayable/documentTrace', { cxpId: row.cxpId }), (resp) => {
+    request.GET(buildUrl(`${BASE_PATH}/documentTrace`, { cxpId: row.cxpId }), (resp) => {
       setTraceData(resp.data);
       setOpenTrace(true);
       setLoading(false);
     }, () => { setLoading(false); });
-  }
+  };
 
   const table = {
     title: IntlMessages('page.cxpInvoiceTrace.table.title'),
@@ -71,7 +69,7 @@ export const useCxPInvoiceTrace = ({ setLoading }) => {
     options: { pageSize: 10, pageSizeOptions: [10, 20, 50] }
   };
 
-  const propsToHeader = { documentCode, providerId, listProviders, onInputChange, fnSearch, fnLoadProviders };
+  const propsToHeader = { documentCode, providerId, listProviders, onInputChange, fnSearch, fnLoadProviders: () => { } };
 
   const propsToModalTrace = {
     ModalContent: ModalTrace,
@@ -80,7 +78,7 @@ export const useCxPInvoiceTrace = ({ setLoading }) => {
     setOpen: setOpenTrace,
     maxWidth: 'lg',
     data: { trace: traceData, formatNumber, formatDate }
-  }
+  };
 
-  return { table, propsToHeader, propsToModalTrace }
-}
+  return { table, propsToHeader, propsToModalTrace };
+};
