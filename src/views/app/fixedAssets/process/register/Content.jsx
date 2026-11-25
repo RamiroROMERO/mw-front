@@ -1,4 +1,5 @@
 import { Row, Card, CardBody, CardHeader, Table, Button } from 'reactstrap';
+import { localToday } from './registerRules';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import ControlPanel from '@Components/controlPanel';
 import Modal from '@Components/modal';
@@ -17,8 +18,8 @@ const ACTIVE_OPTIONS = [{ value: 1, label: 'page.fixedAssets.select.active' }, {
 const Content = ({ setLoading }) => {
   const {
     propsToControlPanel, formStateIndex, onInputChangeIndex, typeList, conditionOptions, formValidationIndex,
-    sendForm, lines, fnGenerateCode, fnOpenAddChange, fnOpenEditChange, openModalChange, setOpenModalChange,
-    editingLine, fnSaveChangeLine, openModalView, setOpenModalView, dataList, fnViewRegister,
+    sendForm, lines, codePreview, valueLocked, fnOpenAddChange, fnOpenEditChange, openModalChange, setOpenModalChange,
+    editingLine, fnSaveChangeLine, openModalView, setOpenModalView, fnViewRegister,
     openModalDepreciation, setOpenModalDepreciation, assetId
   } = useRegister({ setLoading });
 
@@ -27,7 +28,8 @@ const Content = ({ setLoading }) => {
     invoiceNumber, valueBuy, valueIn, description, notes, isActive
   } = formStateIndex;
 
-  const { typeIdValid, conditionValid, codeValid, nameValid, dateInValid } = formValidationIndex;
+  const { typeIdValid, conditionValid, nameValid, dateInValid, dateBuyValid, valueBuyValid, valueInValid } = formValidationIndex;
+  const today = localToday();
 
   const propsToModalView = {
     ModalContent: ModalViewRegister,
@@ -35,7 +37,7 @@ const Content = ({ setLoading }) => {
     open: openModalView,
     setOpen: setOpenModalView,
     maxWidth: 'lg',
-    data: { dataList, fnViewRegister }
+    data: { fnViewRegister }
   }
 
   const propsToModalChange = {
@@ -74,22 +76,13 @@ const Content = ({ setLoading }) => {
                     options={typeList}
                     getOptionValue={(o) => o.value}
                     getOptionLabel={(o) => o.label}
+                    disabled={Number(assetId) > 0}
                     invalid={sendForm && !!typeIdValid}
                     feedbackText={sendForm && (typeIdValid || null)}
                   />
                 </Colxx>
                 <Colxx xxs={12} md={4}>
-                  <Row>
-                    <Colxx xxs={8}>
-                      <InputField name="code" label="page.fixedAssets.input.code" value={code} disabled
-                        invalid={sendForm && !!codeValid} feedbackText={sendForm && (codeValid || null)} />
-                    </Colxx>
-                    <Colxx xxs={4} className="d-flex align-items-end">
-                      <Button color="primary" size="sm" className="mb-3" onClick={fnGenerateCode}>
-                        <i className="bi bi-magic" />
-                      </Button>
-                    </Colxx>
-                  </Row>
+                  <InputField name="code" label="page.fixedAssets.input.code" value={Number(assetId) > 0 ? code : codePreview} disabled />
                 </Colxx>
                 <Colxx xxs={12} md={4}>
                   <SimpleSelect
@@ -110,6 +103,7 @@ const Content = ({ setLoading }) => {
                     label="input.name"
                     value={name}
                     onChange={onInputChangeIndex}
+                    maxLength={100}
                     invalid={sendForm && !!nameValid}
                     feedbackText={sendForm && (nameValid || null)}
                   />
@@ -130,41 +124,44 @@ const Content = ({ setLoading }) => {
                   />
                 </Colxx>
                 <Colxx xxs={12} md={3}>
-                  <InputField name="trademark" label="page.fixedAssets.input.trademark" value={trademark} onChange={onInputChangeIndex} />
+                  <InputField name="trademark" label="page.fixedAssets.input.trademark" value={trademark} onChange={onInputChangeIndex} maxLength={50} />
                 </Colxx>
                 <Colxx xxs={12} md={3}>
-                  <InputField name="model" label="page.fixedAssets.input.model" value={model} onChange={onInputChangeIndex} />
+                  <InputField name="model" label="page.fixedAssets.input.model" value={model} onChange={onInputChangeIndex} maxLength={50} />
                 </Colxx>
                 <Colxx xxs={12} md={3}>
-                  <InputField name="serial1" label="page.fixedAssets.input.serial1" value={serial1} onChange={onInputChangeIndex} />
+                  <InputField name="serial1" label="page.fixedAssets.input.serial1" value={serial1} onChange={onInputChangeIndex} maxLength={50} />
                 </Colxx>
               </Row>
               <Row>
                 <Colxx xxs={12} md={3}>
-                  <InputField name="serial2" label="page.fixedAssets.input.serial2" value={serial2} onChange={onInputChangeIndex} />
+                  <InputField name="serial2" label="page.fixedAssets.input.serial2" value={serial2} onChange={onInputChangeIndex} maxLength={50} />
                 </Colxx>
                 <Colxx xxs={12} md={3}>
-                  <DateCalendar name="dateBuy" label="page.fixedAssets.input.dateBuy" value={dateBuy} onChange={onInputChangeIndex} />
+                  <DateCalendar name="dateBuy" label="page.fixedAssets.input.dateBuy" value={dateBuy} onChange={onInputChangeIndex} maxDate={today}
+                    feedbackText={sendForm && (dateBuyValid || null)} />
                 </Colxx>
                 <Colxx xxs={12} md={3}>
-                  <DateCalendar name="dateIn" label="page.fixedAssets.input.dateIn" value={dateIn} onChange={onInputChangeIndex}
-                    invalid={sendForm && !!dateInValid} feedbackText={sendForm && (dateInValid || null)} />
+                  <DateCalendar name="dateIn" label="page.fixedAssets.input.dateIn" value={dateIn} onChange={onInputChangeIndex} maxDate={today}
+                    disabled={valueLocked} feedbackText={sendForm && (dateInValid || null)} />
                 </Colxx>
               </Row>
               <Row>
                 <Colxx xxs={12} md={6}>
-                  <InputField name="providerName" label="page.fixedAssets.input.providerName" value={providerName} onChange={onInputChangeIndex} />
+                  <InputField name="providerName" label="page.fixedAssets.input.providerName" value={providerName} onChange={onInputChangeIndex} maxLength={100} />
                 </Colxx>
                 <Colxx xxs={12} md={3}>
-                  <InputField name="invoiceNumber" label="page.fixedAssets.input.invoiceNumber" value={invoiceNumber} onChange={onInputChangeIndex} />
+                  <InputField name="invoiceNumber" label="page.fixedAssets.input.invoiceNumber" value={invoiceNumber} onChange={onInputChangeIndex} maxLength={20} />
                 </Colxx>
                 <Colxx xxs={12} md={3}>
-                  <InputField name="valueBuy" label="page.fixedAssets.input.valueBuy" type="text" value={valueBuy} onChange={onInputChangeIndex} />
+                  <InputField name="valueBuy" label="page.fixedAssets.input.valueBuy" type="text" value={valueBuy} onChange={onInputChangeIndex}
+                    invalid={sendForm && !!valueBuyValid} feedbackText={sendForm && (valueBuyValid || null)} />
                 </Colxx>
               </Row>
               <Row>
                 <Colxx xxs={12} md={3} className="ms-auto">
-                  <InputField name="valueIn" label="page.fixedAssets.input.valueIn" type="text" value={valueIn} onChange={onInputChangeIndex} />
+                  <InputField name="valueIn" label="page.fixedAssets.input.valueIn" type="text" value={valueIn} onChange={onInputChangeIndex} disabled={valueLocked}
+                    invalid={sendForm && !!valueInValid} feedbackText={sendForm && (valueInValid || null)} />
                 </Colxx>
               </Row>
               <Row>

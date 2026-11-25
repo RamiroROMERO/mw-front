@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { useForm } from '@Hooks';
 import DateHelper from '@Helpers/DateHelper';
 import { request } from '@Helpers/core';
-import notification from '@Containers/ui/Notifications';
+import { buildHeaderPayload, NULL_DATE, validateRegister } from './registerRules';
+
+// Cada campo se valida con las mismas reglas del back (registerRules.js); el mensaje es la clave de traducción de la regla (la traduce el campo).
+const BASE = { typeId: 1, condition: 'Nuevo', name: 'a', dateIn: '2000-01-01', valueBuy: 1, valueIn: 1 };
+const rule = (field) => [(val) => validateRegister({ ...BASE, [field]: val })[field] === undefined, validateRegister({ ...BASE, [field]: '' })[field] ?? 'page.fixedAssets.msg.tooLong'];
 
 const CONDITION_OPTIONS = [
   { value: 'Nuevo', label: 'Nuevo' },
@@ -16,18 +20,21 @@ export const useRegister = ({ setLoading }) => {
   const [typeList, setTypeList] = useState([]);
   const [lines, setLines] = useState([]);
   const [openModalView, setOpenModalView] = useState(false);
-  const [dataList, setDataList] = useState([]);
+  const [codePreview, setCodePreview] = useState('');
+  const [valueLocked, setValueLocked] = useState(false);
   const [openModalChange, setOpenModalChange] = useState(false);
   const [editingLine, setEditingLine] = useState(null);
   const [openModalDepreciation, setOpenModalDepreciation] = useState(false);
   const [sendForm, setSendForm] = useState(false);
 
   const validRegister = {
-    typeId: [(val) => Number(val) > 0, 'page.fixedAssets.msg.typeRequired'],
-    condition: [(val) => (val || '') !== '', 'page.fixedAssets.msg.conditionRequired'],
-    code: [(val) => (val || '') !== '', 'page.fixedAssets.msg.codeRequired'],
-    name: [(val) => (val || '').trim() !== '', 'page.fixedAssets.msg.nameRequired'],
-    dateIn: [(val) => (val || '') !== '', 'page.fixedAssets.msg.dateInRequired']
+    typeId: rule('typeId'),
+    condition: rule('condition'),
+    name: rule('name'),
+    dateIn: rule('dateIn'),
+    dateBuy: rule('dateBuy'),
+    valueBuy: rule('valueBuy'),
+    valueIn: rule('valueIn')
   }
 
   const {
@@ -60,14 +67,16 @@ export const useRegister = ({ setLoading }) => {
     setSendForm(false);
     onResetFormIndex();
     setLines([]);
+    setValueLocked(false);
   };
 
   const fnLoadRegister = (registerId) => {
     setLoading(true);
     request.GET(`fixedAssets/process/fixedAssets/${registerId}`, (resp) => {
-      const { header, lines: lineData } = resp.data;
-      setBulkFormIndex(header);
+      const { header, lines: lineData, valueLocked: locked } = resp.data;
+      setBulkFormIndex({ ...header, dateBuy: String(header.dateBuy || '').slice(0, 10) === NULL_DATE ? '' : header.dateBuy });
       setLines(lineData);
+      setValueLocked(!!locked);
       setSendForm(false);
       setLoading(false);
     }, () => setLoading(false));
@@ -78,27 +87,14 @@ export const useRegister = ({ setLoading }) => {
     fnLoadRegister(row.id);
   }
 
-  const fnSearchRegister = () => {
-    setLoading(true);
-    request.GET('fixedAssets/process/fixedAssets/search', (resp) => {
-      setDataList(resp.data);
-      setOpenModalView(true);
-      setLoading(false);
-    }, () => setLoading(false));
-  }
+  const fnSearchRegister = () => setOpenModalView(true);
 
-  const fnGenerateCode = () => {
-    if (formStateIndex.code) return;
-    if (!(Number(typeId) > 0)) {
-      notification('warning', 'page.fixedAssets.msg.selectTypeFirst', 'alert.warning.title');
-      return;
-    }
-    setLoading(true);
-    request.GET(`fixedAssets/process/fixedAssets/generateCode?typeId=${typeId}`, (resp) => {
-      setBulkFormIndex({ code: resp.data.code });
-      setLoading(false);
-    }, () => setLoading(false));
-  }
+  // El código lo asigna el back al guardar (con el correlativo del tipo); aquí solo se muestra el siguiente número, sin consumirlo.
+  useEffect(() => {
+    setCodePreview('');
+    if (id > 0 || !(Number(typeId) > 0)) return;
+    request.GET(`fixedAssets/process/fixedAssets/generateCode?typeId=${typeId}`, (resp) => setCodePreview(resp.data.code), () => { });
+  }, [typeId, id]);
 
   const fnSaveRegister = () => {
     setSendForm(true);
@@ -106,12 +102,12 @@ export const useRegister = ({ setLoading }) => {
 
     setLoading(true);
     if (id > 0) {
-      request.PUT(`fixedAssets/process/fixedAssets/${id}`, { header: formStateIndex }, () => {
+      request.PUT(`fixedAssets/process/fixedAssets/${id}`, { header: buildHeaderPayload(formStateIndex) }, () => {
         fnLoadRegister(id);
         setLoading(false);
       }, () => setLoading(false));
     } else {
-      request.POST('fixedAssets/process/fixedAssets', { header: formStateIndex }, (resp) => {
+      request.POST('fixedAssets/process/fixedAssets', { header: buildHeaderPayload(formStateIndex) }, (resp) => {
         fnLoadRegister(resp.data.id);
         setLoading(false);
       }, () => setLoading(false));
@@ -182,7 +178,8 @@ export const useRegister = ({ setLoading }) => {
     formValidationIndex,
     sendForm,
     lines,
-    fnGenerateCode,
+    codePreview,
+    valueLocked,
     fnOpenAddChange,
     fnOpenEditChange,
     openModalChange,
@@ -191,7 +188,6 @@ export const useRegister = ({ setLoading }) => {
     fnSaveChangeLine,
     openModalView,
     setOpenModalView,
-    dataList,
     fnViewRegister,
     openModalDepreciation,
     setOpenModalDepreciation,

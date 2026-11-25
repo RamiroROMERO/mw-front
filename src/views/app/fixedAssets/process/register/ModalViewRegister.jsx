@@ -1,45 +1,30 @@
-import { useState } from 'react';
-import { Button, ModalBody, ModalFooter, Row } from 'reactstrap';
-import { Colxx } from '@Components/common/CustomBootstrap';
-import { IntlMessages } from '@Helpers/Utils';
-import ReactTable from '@Components/reactTable';
-import DateHelper from '@Helpers/DateHelper';
+import { useMemo } from 'react';
+import { IntlMessages, formatDate } from '@Helpers/Utils';
+import { ModalSearchContent } from '@Components/modalSearch';
+
+// Buscar activo: páginas de 50 con búsqueda en el servidor (código, nombre o series). La tabla, la búsqueda y la paginación son el modal compartido
+// `@Components/modalSearch`; aquí solo se configura.
+const REGISTER_URL = 'fixedAssets/process/fixedAssets/search';
+
+const mapRow = (item) => ({ ...item, dateText: formatDate(item.dateIn) });
 
 export const ModalViewRegister = ({ data, setOpen }) => {
-  const { dataList, fnViewRegister } = data;
+  const { fnViewRegister } = data;
 
-  const [table] = useState({
-    columns: [
-      { text: IntlMessages('page.fixedAssets.input.code'), dataField: 'code', headerStyle: { width: '25%' } },
-      { text: IntlMessages('input.name'), dataField: 'name', headerStyle: { width: '40%' } },
-      { text: IntlMessages('page.fixedAssets.input.serial1'), dataField: 'serial1', headerStyle: { width: '20%' } },
-      {
-        text: IntlMessages('page.fixedAssets.input.dateIn'), dataField: 'dateIn', headerStyle: { width: '15%' },
-        cell: ({ row }) => DateHelper.format(row.original.dateIn)
-      }
-    ],
-    actions: [{
-      color: 'warning',
-      icon: 'eye',
-      toolTip: 'button.edit',
-      onClick: fnViewRegister
-    }]
-  });
+  // IntlMessages es un hook: se llama aquí arriba, no dentro de useMemo.
+  const textCode = IntlMessages('page.fixedAssets.input.code');
+  const textName = IntlMessages('input.name');
+  const textSerial = IntlMessages('page.fixedAssets.input.serial1');
+  const textDate = IntlMessages('page.fixedAssets.input.dateIn');
 
-  return (
-    <>
-      <ModalBody>
-        <Row>
-          <Colxx xxs="12">
-            <ReactTable {...table} data={dataList || []} />
-          </Colxx>
-        </Row>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="danger" onClick={() => setOpen(false)}>
-          <i className="bi bi-box-arrow-right" />{` ${IntlMessages('button.exit')}`}
-        </Button>
-      </ModalFooter>
-    </>
-  );
-}
+  const columns = useMemo(() => [
+    { text: textCode, dataField: 'code', headerStyle: { width: '25%' } },
+    { text: textName, dataField: 'name', headerStyle: { width: '40%' } },
+    { text: textSerial, dataField: 'serial1', headerStyle: { width: '20%' } },
+    { text: textDate, dataField: 'dateText', headerStyle: { width: '15%' } }
+  ], [textCode, textName, textSerial, textDate]);
+
+  const config = useMemo(() => ({ url: REGISTER_URL, columns, onSelect: fnViewRegister, mapRow }), [columns, fnViewRegister]);
+
+  return <ModalSearchContent data={config} setOpen={setOpen} />;
+};
