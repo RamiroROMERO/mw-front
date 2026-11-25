@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { IntlMessages, formatDate } from '@Helpers/Utils';
-import { request, buildUrl } from '@Helpers/core';
+import { request } from '@Helpers/core';
 import DateHelper from '@Helpers/DateHelper';
+import { daysStay } from '../events/eventRules';
 
 export const useHospitalizations = ({ setLoading }) => {
   const [currentItem, setCurrentItem] = useState({});
@@ -29,7 +30,7 @@ export const useHospitalizations = ({ setLoading }) => {
 
   const fnOkDischarge = () => {
     setLoading(true);
-    request.PUT(`hospital/process/events/${currentItem.id}`, { status: 2, dateOut: DateHelper.getDateOnly() }, (resp) => {
+    request.POST(`hospital/process/hospitalizations/${currentItem.id}/discharge`, { dateOut: DateHelper.format(DateHelper.now()) }, (resp) => {
       setLoading(false);
       setOpenMsgDischarge(false);
       fnGetData();
@@ -79,13 +80,13 @@ export const useHospitalizations = ({ setLoading }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(buildUrl('hospital/process/events/getTable', { typeId: 2 }), (resp) => {
+    request.GET('hospital/process/hospitalizations', (resp) => {
       const data = resp.data.map((item) => {
         item.patient = item.hospExpedient?.name || '';
         item.room = item.hospRoom?.name || '';
         item.doctor = item.responsibleSpecialist?.name || item.attendingSpecialist?.name || '';
-        item.dateEvent = formatDate(item.date);
-        item.daysStay = DateHelper.diff(DateHelper.now(), item.date, 'day');
+        item.dateEvent = formatDate(item.dateIn || item.date);
+        item.daysStay = daysStay(item, DateHelper.format(DateHelper.now()));
         return item;
       });
       setTable({ ...table, data });

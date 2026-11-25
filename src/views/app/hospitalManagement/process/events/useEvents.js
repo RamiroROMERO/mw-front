@@ -42,11 +42,8 @@ export const useEvents = ({ setLoading }) => {
 
   const fnOkCloseEvent = () => {
 
-    const newData = {
-      status: 2
-    }
-
-    request.PUT(`hospital/process/events/${currentItem.id}`, newData, (resp) => {
+    setLoading(true);
+    request.POST(`hospital/process/events/${currentItem.id}/close`, {}, (resp) => {
       setLoading(false);
       setOpenMsgCloseEvent(false);
       fnGetData();

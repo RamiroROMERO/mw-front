@@ -1,25 +1,27 @@
 import { useState } from 'react'
 import { useForm } from '@Hooks';
 import { request } from '@Helpers/core';
-import { IntlMessages, validInt } from '@Helpers/Utils';
+import DateHelper from '@Helpers/DateHelper';
+import notification from '@Containers/ui/Notifications';
+import { IntlMessages } from '@Helpers/Utils';
+import { validateHospitalization, buildHospitalizePayload, warningMessages } from './eventRules';
 
 export const useHospitalization = ({ currentItem, setLoading, fnGetData, setOpen }) => {
   const [sendForm, setSendForm] = useState(false);
 
-  const validation = {
-    admissionSpecialistId: [(val) => validInt(val) !== 0, IntlMessages("msg.required.select.specialistId")],
-    responsibleSpecialistId: [(val) => validInt(val) !== 0, IntlMessages("msg.required.select.specialistId")]
-  }
-
-  const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
+  const { formState, onInputChange } = useForm({
     id: currentItem?.id || 0,
-    typeId: 2,
+    dateIn: DateHelper.format(DateHelper.now()),
     admissionSpecialistId: 0,
     responsibleSpecialistId: 0,
     reasonId: 0,
-    roomId: 0,
-    status: 1
-  }, validation);
+    roomId: 0
+  });
+
+  // Mismas reglas del back: fecha de ingreso no futura ni anterior a la del evento, dos médicos y la habitación.
+  const problems = validateHospitalization(formState, { today: DateHelper.format(DateHelper.now()), eventDate: currentItem?.date });
+  const formValidation = Object.fromEntries(Object.entries(problems).map(([field, key]) => [`${field}Valid`, IntlMessages(key)]));
+  const isFormValid = Object.keys(problems).length === 0;
 
   const fnSaveDocument = () => {
     setSendForm(true);
@@ -27,11 +29,15 @@ export const useHospitalization = ({ currentItem, setLoading, fnGetData, setOpen
       return;
     }
 
-    request.PUT(`hospital/process/events/${currentItem.id}`, formState, (resp) => {
+    setLoading(true);
+    request.POST(`hospital/process/events/${currentItem.id}/hospitalize`, buildHospitalizePayload(formState), (resp) => {
       setLoading(false);
+      // Una habitación ocupada solo avisa.
+      warningMessages(resp.data?.warnings).forEach((key) => notification('warning', key, 'alert.warning.title'));
       fnGetData();
       setOpen(false);
     }, (err) => {
+      setLoading(false);
       setLoading(false);
     });
   }

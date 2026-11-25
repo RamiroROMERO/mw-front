@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useForm } from '@Hooks';
 import { request } from '@Helpers/core';
 import { IntlMessages, validInt } from '@Helpers/Utils';
+import notification from '@Containers/ui/Notifications';
+import { warningMessages } from '../events/eventRules';
 
 export const useChangeRoom = ({ currentItem, setLoading, fnGetData, setOpen }) => {
   const [sendForm, setSendForm] = useState(false);
@@ -22,8 +24,9 @@ export const useChangeRoom = ({ currentItem, setLoading, fnGetData, setOpen }) =
     }
 
     setLoading(true);
-    request.PUT(`hospital/process/events/${currentItem.id}`, { roomId: formState.roomId }, (resp) => {
+    request.PUT(`hospital/process/hospitalizations/${currentItem.id}/room`, { roomId: formState.roomId }, (resp) => {
       setLoading(false);
+      warningMessages(resp.data?.warnings).forEach((key) => notification('warning', key, 'alert.warning.title'));
       fnGetData();
       setOpen(false);
     }, (err) => {

@@ -12,9 +12,9 @@ const ModalHospitalization = ({data, setOpen}) => {
 
   const {formState, formValidation, sendForm, onInputChange, fnSaveDocument} = useHospitalization({currentItem, setLoading, fnGetData, setOpen});
 
-  const {admissionSpecialistId, responsibleSpecialistId, reasonId, roomId} = formState
+  const {dateIn, admissionSpecialistId, responsibleSpecialistId, reasonId, roomId} = formState
 
-  const {admissionSpecialistIdValid, responsibleSpecialistIdValid} = formValidation;
+  const {dateInValid, admissionSpecialistIdValid, responsibleSpecialistIdValid, roomIdValid} = formValidation;
 
   return (
     <>
@@ -63,11 +63,12 @@ const ModalHospitalization = ({data, setOpen}) => {
               <Row>
                 <Colxx xxs={12} xs={6} xl={4}>
                   <DateCalendar
-                    name="date"
-                    value={currentItem.date}
-                    label='input.date'
+                    name="dateIn"
+                    value={dateIn}
+                    label='page.hospitalizations.input.dateIn'
                     onChange={onInputChange}
-                    disabled
+                    invalid={sendForm && !!dateInValid}
+                    feedbackText={sendForm && (dateInValid || null)}
                   />
                 </Colxx>
                 <Colxx xss={12} sm={6}>
@@ -108,6 +109,8 @@ const ModalHospitalization = ({data, setOpen}) => {
                     onChange={onInputChange}
                     options={listRooms}
                     label="select.roomId"
+                    invalid={sendForm && !!roomIdValid}
+                    feedbackText={sendForm && (roomIdValid || null)}
                   />
                 </Colxx>
               </Row>
