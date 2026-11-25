@@ -298,6 +298,7 @@
     "deposit.difference.account.invalid",
     "deposit.difference.account.required",
     "deposit.shortage.exceeded",
+    "depreciation.account.invalid",
     "depreciation.accounts.missing",
     "depreciation.month.future",
     "depreciation.month.invalid",
