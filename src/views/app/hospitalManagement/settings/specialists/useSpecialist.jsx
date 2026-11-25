@@ -12,7 +12,7 @@ export const useSpecialist = ({ setLoading }) => {
     setLoading(true);
     request.GET('hospital/settings/specialists', (resp) => {
       const data = resp.data.map((item) => {
-        item.specialty = item.hospSpecialty?.name || ''
+        item.specialty = item.specialtyName || ''
         item.statusIcon = validBool(item.status) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;
       });

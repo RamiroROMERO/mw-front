@@ -4,6 +4,7 @@ import { InputField } from '@Components/inputFields';
 import { Checkbox } from '@Components/checkbox';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
+import { isValidPercentSum } from '../hospitalCatalogRules';
 import { useDetail } from './useDetail'
 
 const Detail = ({currentItem, fnGetData, setLoading, setCurrentItem, listSpecialties}) => {
@@ -12,7 +13,8 @@ const Detail = ({currentItem, fnGetData, setLoading, setCurrentItem, listSpecial
 
   const {specialtyId, dni, name, licenceNumber, phone, email, address, attendMonday, attendMondayHour, attendTuesday, attendTuesdayHour, attendWednesday, attendWednesdayHour, attendThursday, attendThursdayHour, attendFriday, attendFridayHour, attendSaturday, attendSaturdayHour, attendSunday, attendSundayHour, hospitalPercent, specialistPercent, status} = formState;
 
-  const {specialtyIdValid, dniValid, nameValid} = formValidation;
+  const {specialtyIdValid, dniValid, nameValid, hospitalPercentValid, specialistPercentValid} = formValidation;
+  const percentSumInvalid = sendForm && !hospitalPercentValid && !specialistPercentValid && !isValidPercentSum(hospitalPercent, specialistPercent);
 
   return (
     <Card className='mb-3'>
@@ -35,6 +37,7 @@ const Detail = ({currentItem, fnGetData, setLoading, setCurrentItem, listSpecial
               label="input.dni"
               onChange={onInputChange}
               value={dni}
+              maxLength={20}
               invalid={sendForm && !!dniValid}
               feedbackText={sendForm && (dniValid || null)}
             />
@@ -45,6 +48,7 @@ const Detail = ({currentItem, fnGetData, setLoading, setCurrentItem, listSpecial
               label="input.name"
               onChange={onInputChange}
               value={name}
+              maxLength={50}
               invalid={sendForm && !!nameValid}
               feedbackText={sendForm && (nameValid || null)}
             />
@@ -212,6 +216,8 @@ const Detail = ({currentItem, fnGetData, setLoading, setCurrentItem, listSpecial
                     label="input.hospitalPercent"
                     onChange={onInputChange}
                     value={hospitalPercent}
+                    invalid={sendForm && !!hospitalPercentValid}
+                    feedbackText={sendForm && (hospitalPercentValid || null)}
                   />
                 </Colxx>
                 <Colxx xxs={12} xs={6} md={12}>
@@ -220,6 +226,8 @@ const Detail = ({currentItem, fnGetData, setLoading, setCurrentItem, listSpecial
                     label="input.specialistPercent"
                     onChange={onInputChange}
                     value={specialistPercent}
+                    invalid={(sendForm && !!specialistPercentValid) || percentSumInvalid}
+                    feedbackText={(sendForm && specialistPercentValid) || (percentSumInvalid ? IntlMessages("msg.invalid.sum.percent") : null)}
                   />
                 </Colxx>
               </Row>

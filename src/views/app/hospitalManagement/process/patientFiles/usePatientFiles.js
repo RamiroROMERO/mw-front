@@ -273,7 +273,7 @@ export const usePatientFiles = ({ setLoading }) => {
     });
 
     setLoading(true);
-    request.GET('hospital/settings/specialists', (resp) => {
+    request.GET('hospital/settings/specialists/getSL', (resp) => {
       const data = resp.data.map((item) => {
         item.value = item.id
         item.label = item.name

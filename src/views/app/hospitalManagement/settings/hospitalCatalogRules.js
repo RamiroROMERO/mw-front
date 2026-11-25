@@ -20,3 +20,15 @@ export const isValidPrice = (value) => {
   if (text === '') return true;
   return /^\d+(\.\d{1,2})?$/.test(text) && Number(text) <= MAX_PRICE;
 };
+
+// Especialistas (SPEC v2-148-sr). El DNI es opcional (máximo 20); los porcentajes van de 0 a 100 con 2 decimales y su suma no pasa de 100.
+export const MAX_SPECIALIST = { name: 50, dni: 20, licenceNumber: 30, phone: 30, email: 150, hour: 20 };
+
+export const isValidSpecialistDni = (value) => String(value ?? '').trim().length <= MAX_SPECIALIST.dni;
+
+export const isValidPercent = (value) => {
+  const text = String(value ?? '').trim();
+  return text === '' || (/^\d+(\.\d{1,2})?$/.test(text) && Number(text) <= 100);
+};
+
+export const isValidPercentSum = (hospitalPercent, specialistPercent) => (Number(hospitalPercent) || 0) + (Number(specialistPercent) || 0) <= 100;

@@ -141,6 +141,9 @@ const esLang = {
   "msg.required.select.deductionTypeId": "Por favor seleccione un tipo de deduccion!",
   /* Require Input */
   "msg.required.input.price": "Por favor ingrese un precio!",
+  "msg.invalid.input.dni": "La identidad no puede pasar de 20 caracteres!",
+  "msg.invalid.input.percent": "El porcentaje debe estar entre 0 y 100, con máximo 2 decimales!",
+  "msg.invalid.sum.percent": "La suma de los porcentajes del hospital y del especialista no puede pasar de 100!",
   "msg.required.input.dni": "Por favor ingrese una identidad valida, sin guiones ni espacios!",
   "msg.required.input.date": "Por favor seleccione una fecha!",
   "msg.required.input.time": "Por favor seleccione una hora!",

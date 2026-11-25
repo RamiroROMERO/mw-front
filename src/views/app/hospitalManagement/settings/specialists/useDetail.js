@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
+import { isValidName, isValidSpecialistDni, isValidPercent, isValidPercentSum, MAX_SPECIALIST } from '../hospitalCatalogRules';
 import { IntlMessages, validInt } from '@Helpers/Utils';
 
 export const useDetail = ({ currentItem, fnGetData, setLoading, setCurrentItem }) => {
@@ -8,8 +9,10 @@ export const useDetail = ({ currentItem, fnGetData, setLoading, setCurrentItem }
 
   const validation = {
     specialtyId: [(val) => validInt(val) !== 0, IntlMessages("msg.required.select.specialtyId")],
-    dni: [(val) => val.length > 12 && val.length <= 16, IntlMessages("msg.required.input.dni")],
-    name: [(val) => val.length > 5, IntlMessages("msg.required.input.name")]
+    dni: [(val) => isValidSpecialistDni(val), IntlMessages("msg.invalid.input.dni")],
+    name: [(val) => isValidName(val, MAX_SPECIALIST.name), IntlMessages("msg.required.input.name")],
+    hospitalPercent: [(val) => isValidPercent(val), IntlMessages("msg.invalid.input.percent")],
+    specialistPercent: [(val) => isValidPercent(val), IntlMessages("msg.invalid.input.percent")]
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({

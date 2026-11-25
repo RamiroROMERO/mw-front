@@ -141,6 +141,9 @@ const enLang = {
   "msg.required.select.deductionTypeId": "Please select the deduction type!",
   /* Require Input */
   "msg.required.input.price": "Please enter a price!",
+  "msg.invalid.input.dni": "The ID cannot be longer than 20 characters!",
+  "msg.invalid.input.percent": "The percentage must be between 0 and 100, with at most 2 decimals!",
+  "msg.invalid.sum.percent": "The hospital and specialist percentages cannot add up to more than 100!",
   "msg.required.input.dni": "Please enter a valid ID, no dashes or spaces!!",
   "msg.required.input.date": "Please select a date!",
   "msg.required.input.time": "Please select a time!",

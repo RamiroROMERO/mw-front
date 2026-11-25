@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { isValidName, isValidRoomCode, isValidPrice, MAX_NAME } from './hospitalCatalogRules';
+import { isValidName, isValidRoomCode, isValidPrice, isValidSpecialistDni, isValidPercent, isValidPercentSum, MAX_NAME } from './hospitalCatalogRules';
 
 describe('isValidName', () => {
   test('3 caracteres es válido (Ana, Eli, Mia) y 2 no', () => {
@@ -31,5 +31,24 @@ describe('habitaciones', () => {
     expect(isValidPrice('12.345')).toBe(false);
     expect(isValidPrice('-1')).toBe(false);
     expect(isValidPrice('abc')).toBe(false);
+  });
+});
+
+describe('especialistas', () => {
+  test('el DNI es opcional y llega a 20', () => {
+    expect(isValidSpecialistDni('')).toBe(true);
+    expect(isValidSpecialistDni('02')).toBe(true);
+    expect(isValidSpecialistDni('x'.repeat(20))).toBe(true);
+    expect(isValidSpecialistDni('x'.repeat(21))).toBe(false);
+  });
+  test('porcentajes de 0 a 100 con 2 decimales y suma máxima de 100', () => {
+    expect(isValidPercent('')).toBe(true);
+    expect(isValidPercent('80.5')).toBe(true);
+    expect(isValidPercent('101')).toBe(false);
+    expect(isValidPercent('-1')).toBe(false);
+    expect(isValidPercent('1.234')).toBe(false);
+    expect(isValidPercentSum(80, 20)).toBe(true);
+    expect(isValidPercentSum('70', '40')).toBe(false);
+    expect(isValidPercentSum('', '')).toBe(true);
   });
 });
