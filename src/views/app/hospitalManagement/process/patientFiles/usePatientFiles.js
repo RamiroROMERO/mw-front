@@ -260,7 +260,7 @@ export const usePatientFiles = ({ setLoading }) => {
     });
 
     setLoading(true);
-    request.GET('admin/areas', (resp) => {
+    request.GET('hospital/settings/areas/getSL', (resp) => {
       const data = resp.data.map((item) => {
         item.value = item.id
         item.label = item.name

@@ -2,19 +2,19 @@ import { useEffect, useState } from 'react'
 import { IntlMessages, validInt } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
+import { isValidName, MAX_NAME } from '../hospitalCatalogRules';
 
 export const useDetail = ({ currentItem, fnGetData, setLoading, setCurrentItem }) => {
   const [sendForm, setSendForm] = useState(false);
 
   const validation = {
-    name: [(val) => val.length > 5, IntlMessages("msg.required.input.name")]
+    name: [(val) => isValidName(val, MAX_NAME.areas), IntlMessages("msg.required.input.name")]
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
     id: 0,
     name: '',
-    status: true,
-    isHospital: true
+    status: true
   }, validation);
 
   const { id } = formState;
@@ -27,7 +27,7 @@ export const useDetail = ({ currentItem, fnGetData, setLoading, setCurrentItem }
 
     setLoading(true);
     if (validInt(id) === 0) {
-      request.POST('admin/areas', formState, (resp) => {
+      request.POST('hospital/settings/areas', formState, (resp) => {
         setLoading(false);
         fnGetData();
         fnClear();
@@ -35,7 +35,7 @@ export const useDetail = ({ currentItem, fnGetData, setLoading, setCurrentItem }
         setLoading(false);
       })
     } else {
-      request.PUT(`admin/areas/${id}`, formState, (resp) => {
+      request.PUT(`hospital/settings/areas/${id}`, formState, (resp) => {
         setLoading(false);
         fnGetData();
         fnClear();

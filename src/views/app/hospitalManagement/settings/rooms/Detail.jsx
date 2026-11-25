@@ -7,9 +7,9 @@ import { useDetail } from './useDetail';
 const Detail = ({currentItem, fnGetData, setLoading, setCurrentItem}) => {
   const {formState, onInputChange, formValidation, sendForm, fnSaveDocument, IntlMessages, fnClear} = useDetail({currentItem, fnGetData, setLoading, setCurrentItem});
 
-  const {code, name, descrip, price, status} = formState;
+  const {code, name, description, price, status} = formState;
 
-  const {codeValid, nameValid} = formValidation;
+  const {codeValid, nameValid, priceValid} = formValidation;
 
   return (
     <Card className='mb-3'>
@@ -21,6 +21,7 @@ const Detail = ({currentItem, fnGetData, setLoading, setCurrentItem}) => {
               label="input.code"
               onChange={onInputChange}
               value={code}
+              maxLength={10}
               invalid={sendForm && !!codeValid}
               feedbackText={sendForm && (codeValid || null)}
             />
@@ -31,16 +32,17 @@ const Detail = ({currentItem, fnGetData, setLoading, setCurrentItem}) => {
               label="input.name"
               onChange={onInputChange}
               value={name}
+              maxLength={50}
               invalid={sendForm && !!nameValid}
               feedbackText={sendForm && (nameValid || null)}
             />
           </Colxx>
           <Colxx xxs={12}>
             <InputField
-              name="descrip"
+              name="description"
               label="input.description"
               onChange={onInputChange}
-              value={descrip}
+              value={description}
               type="textarea"
             />
           </Colxx>
@@ -51,6 +53,8 @@ const Detail = ({currentItem, fnGetData, setLoading, setCurrentItem}) => {
               onChange={onInputChange}
               value={price}
               type="number"
+              invalid={sendForm && !!priceValid}
+              feedbackText={sendForm && (priceValid || null)}
             />
           </Colxx>
           <Colxx xxs={12} align="right">

@@ -2,20 +2,22 @@ import { useEffect, useState } from 'react'
 import { IntlMessages, validInt } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
 import { useForm } from '@Hooks';
+import { isValidName, isValidRoomCode, isValidPrice, MAX_NAME } from '../hospitalCatalogRules';
 
 export const useDetail = ({ currentItem, fnGetData, setLoading, setCurrentItem }) => {
   const [sendForm, setSendForm] = useState(false);
 
   const validation = {
-    code: [(val) => val.length > 1, IntlMessages("msg.required.input.code")],
-    name: [(val) => val.length > 5, IntlMessages("msg.required.input.name")]
+    code: [(val) => isValidRoomCode(val), IntlMessages("msg.required.input.code")],
+    name: [(val) => isValidName(val, MAX_NAME.rooms), IntlMessages("msg.required.input.name")],
+    price: [(val) => isValidPrice(val), IntlMessages("msg.required.input.price")]
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
     id: 0,
     code: '',
     name: '',
-    descrip: '',
+    description: '',
     price: 0,
     status: true
   }, validation);

@@ -22,6 +22,7 @@ const Detail = ({currentItem, fnGetData, setLoading, setCurrentItem}) => {
               label="input.name"
               onChange={onInputChange}
               value={name}
+              maxLength={100}
               invalid={sendForm && !!nameValid}
               feedbackText={sendForm && (nameValid || null)}
             />

@@ -99,7 +99,7 @@ export const useHospitalizations = ({ setLoading }) => {
     fnGetData();
 
     setLoading(true);
-    request.GET('admin/areas/getSL?isHospital=1', (resp) => {
+    request.GET('hospital/settings/areas/getSL', (resp) => {
       const data = resp.data.map((item) => {
         item.value = item.id
         item.label = item.name

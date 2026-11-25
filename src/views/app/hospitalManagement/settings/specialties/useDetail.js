@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { useForm } from '@Hooks';
 import { IntlMessages, validInt } from '@Helpers/Utils';
 import { request } from '@Helpers/core';
+import { isValidName, MAX_NAME } from '../hospitalCatalogRules';
 
 export const useDetail = ({ currentItem, fnGetData, setLoading, setCurrentItem }) => {
   const [sendForm, setSendForm] = useState(false);
 
   const validation = {
-    name: [(val) => val.length > 5, IntlMessages("msg.required.input.name")]
+    name: [(val) => isValidName(val, MAX_NAME.specialties), IntlMessages("msg.required.input.name")]
   }
 
   const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({

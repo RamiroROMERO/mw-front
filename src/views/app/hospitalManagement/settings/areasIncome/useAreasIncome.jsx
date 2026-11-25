@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { request, buildUrl } from '@Helpers/core';
+import { request } from '@Helpers/core';
 import { IntlMessages, validInt, validBool } from '@Helpers/Utils';
 
 export const useAreasIncome = ({ setLoading }) => {
@@ -9,7 +9,7 @@ export const useAreasIncome = ({ setLoading }) => {
 
   const fnGetData = () => {
     setLoading(true);
-    request.GET(buildUrl('admin/areas', { isHospital: 1 }), (resp) => {
+    request.GET('hospital/settings/areas', (resp) => {
       const data = resp.data.map((item) => {
         item.statusIcon = validBool(item.status) ? <i className="medium-icon bi bi-check2-square" /> : <i className="medium-icon bi bi-square" />
         return item;
@@ -36,7 +36,7 @@ export const useAreasIncome = ({ setLoading }) => {
       return;
     }
     setLoading(true);
-    request.PUT(`admin/areas/${idRecord}`, { status: 0 }, (resp) => {
+    request.DELETE(`hospital/settings/areas/${idRecord}`, (resp) => {
       setLoading(false);
       setIdRecord(0);
       fnGetData();
