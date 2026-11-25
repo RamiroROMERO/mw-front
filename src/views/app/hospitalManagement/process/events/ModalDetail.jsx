@@ -1,5 +1,5 @@
 import { Button, ModalBody, ModalFooter, Row } from 'reactstrap'
-import { formatNumber, IntlMessages, validFloat } from '@Helpers/Utils'
+import { formatNumber, IntlMessages } from '@Helpers/Utils'
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { InputField } from '@Components/inputFields';
@@ -12,16 +12,14 @@ import ModalEditProduct from './ModalEditProduct';
 import ModalEditService from './ModalEditService';
 
 const ModalDetail = ({data, setOpen}) => {
-  const {currentItem, setLoading, listAreas, listStores} = data;
+  const {currentItem, setLoading, listStores} = data;
 
   const {
-    table, fnAddProduct, fnAddService, fnPrintDocument, openModalAddProduct, setOpenModalAddProduct,
+    table, totals, listBillingAreas, closed, canEditPrice, fnAddProduct, fnAddService, fnPrintDocument, openModalAddProduct, setOpenModalAddProduct,
     openModalAddService, setOpenModalAddService, openModalEditProduct, setOpenModalEditProduct,
     openModalEditService, setOpenModalEditService,
     currentDetailItem, fnSaveEditProduct, propsToMsgDelete, fnGetDataDetail
   } = useModalDetail({setLoading, currentItem});
-
-  const totalGeneral = table.data.reduce((sum, item) => sum + validFloat(item.total), 0);
 
   const propsToModalAddProduct = {
     ModalContent: ModalAddProduct,
@@ -31,7 +29,7 @@ const ModalDetail = ({data, setOpen}) => {
     maxWidth: 'lg',
     data: {
       setLoading,
-      listAreas,
+      listAreas: listBillingAreas,
       listStores,
       currentItem,
       fnGetDataDetail,
@@ -47,7 +45,7 @@ const ModalDetail = ({data, setOpen}) => {
     maxWidth: 'lg',
     data: {
       setLoading,
-      listAreas,
+      listAreas: listBillingAreas,
       listStores,
       currentItem,
       fnGetDataDetail,
@@ -63,6 +61,7 @@ const ModalDetail = ({data, setOpen}) => {
     maxWidth: 'sm',
     data: {
       currentItem: currentDetailItem,
+      canEditPrice,
       fnSave: fnSaveEditProduct
     }
   }
@@ -75,7 +74,9 @@ const ModalDetail = ({data, setOpen}) => {
     maxWidth: 'lg',
     data: {
       currentItem: currentDetailItem,
-      setLoading
+      event: currentItem,
+      setLoading,
+      fnGetDataDetail
     }
   }
 
@@ -124,10 +125,10 @@ const ModalDetail = ({data, setOpen}) => {
         </Row>
         <Row className="mb-3">
           <Colxx xxs={12} className="div-action-button-container">
-            <Button color="primary" onClick={fnAddProduct}>
+            <Button color="primary" onClick={fnAddProduct} disabled={closed}>
               <i className="bi bi-bag-plus"/> {IntlMessages("button.addProduct")}
             </Button>
-            <Button color="info" onClick={fnAddService}>
+            <Button color="info" onClick={fnAddService} disabled={closed}>
               <i className="bi bi-clipboard-plus"/> {IntlMessages("button.addService")}
             </Button>
             <Button color="secondary" onClick={fnPrintDocument}>
@@ -142,7 +143,9 @@ const ModalDetail = ({data, setOpen}) => {
         </Row>
         <Row>
           <Colxx xxs={12}>
-            <h5 className="text-end">{`${IntlMessages("table.column.total")}: ${formatNumber(totalGeneral, '', 2)}`}</h5>
+            <h6 className="text-end">{`${IntlMessages("page.events.totals.consumption")}: ${formatNumber(totals.total, '', 2)}`}</h6>
+            <h6 className="text-end">{`${IntlMessages("page.events.totals.advances")}: ${formatNumber(totals.advances, '', 2)}`}</h6>
+            <h5 className="text-end">{`${IntlMessages("page.events.totals.balance")}: ${formatNumber(totals.balance, '', 2)}`}</h5>
           </Colxx>
         </Row>
       </ModalBody>

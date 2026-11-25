@@ -12,7 +12,7 @@ const today = () => DateHelper.format(DateHelper.now());
 
 // SPEC v2-151-sr: el evento se valida con las mismas reglas del back (fecha no futura, área y médico) y, con aseguradora privada, la aseguradora, los términos y el tipo de asegurado. Al
 // back solo viajan los campos del evento (el estado, el tipo y la factura cambian con sus acciones).
-export const useNewEvent = ({ IntlMessages, idPatientFile, setLoading, fnGetEvents, setOpen, currentItem, listPatients, codeFile }) => {
+export const useNewEvent = ({ idPatientFile, setLoading, fnGetEvents, setOpen, currentItem, listPatients, codeFile }) => {
   const [sendForm, setSendForm] = useState(false);
   const [idEvent, setIdEvent] = useState(currentItem?.id || 0);
   const [codeFilePhysic, setCodeFilePhysic] = useState(codeFile);
@@ -40,9 +40,9 @@ export const useNewEvent = ({ IntlMessages, idPatientFile, setLoading, fnGetEven
 
   const { fatherId } = formState;
 
-  // Traduce los problemas a los `xxxValid` que ya leen los modales (clave de traducción -> texto).
+  // Los problemas se exponen como los `xxxValid` que ya leen los modales: son claves de traducción (el campo las traduce; IntlMessages es un hook y no va en una condición).
   const problems = validateEvent(formState, today());
-  const formValidation = Object.fromEntries(Object.entries(problems).map(([field, key]) => [`${field}Valid`, IntlMessages(key)]));
+  const formValidation = Object.fromEntries(Object.entries(problems).map(([field, key]) => [`${field}Valid`, key]));
   const isFormValid = Object.keys(problems).length === 0;
 
   const onPatientChange = e => {

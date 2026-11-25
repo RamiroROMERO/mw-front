@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { IntlMessages, validInt } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
+import { detailPath, isClosed, buildUpdatePayload, validateUpdate } from './eventDetailRules';
+import notification from '@Containers/ui/Notifications';
 
 export const useModalDetail = ({ setLoading, currentItem }) => {
   const [openModalAddProduct, setOpenModalAddProduct] = useState(false);
@@ -10,6 +12,12 @@ export const useModalDetail = ({ setLoading, currentItem }) => {
   const [currentDetailItem, setCurrentDetailItem] = useState({});
   const [idRecordToDelete, setIdRecordToDelete] = useState(0);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
+  const [totals, setTotals] = useState({ subtotal: 0, discount: 0, tax: 0, total: 0, advances: 0, balance: 0 });
+  const [canEditPrice, setCanEditPrice] = useState(false);
+  // Los consumos llevan el área de FACTURACIÓN de hospital (`fac_areasfact` con la marca de hospital), no el área de ingreso del evento.
+  const [listBillingAreas, setListBillingAreas] = useState([]);
+  // Un evento cerrado no admite cambios en sus consumos (el back lo rechaza igual).
+  const closed = isClosed(currentItem);
 
   const fnEditItem = (item) => {
     // Materia Prima queda pendiente de implementar.
@@ -33,7 +41,7 @@ export const useModalDetail = ({ setLoading, currentItem }) => {
       return;
     }
     setLoading(true);
-    request.DELETE(`hospital/process/eventDetails/${idRecordToDelete}`, (resp) => {
+    request.DELETE(`${detailPath(currentItem)}/${idRecordToDelete}`, (resp) => {
       setLoading(false);
       setIdRecordToDelete(0);
       fnGetDataDetail();
@@ -74,23 +82,29 @@ export const useModalDetail = ({ setLoading, currentItem }) => {
 
   const fnGetDataDetail = () => {
     setLoading(true);
-    request.GET(buildUrl('hospital/process/eventDetails', { fatherId: currentItem.id }), (resp) => {
+    request.GET(buildUrl(detailPath(currentItem), { fatherId: currentItem.id }), (resp) => {
       const data = resp.data.map((item) => {
-        item.description = item.invProduct?.name || '';
-        item.typeName = item.invProduct?.type === 1 ? 'Producto' : (item.invProduct?.type === 2 ? 'Servicio' : 'Materia Prima')
+        item.typeName = item.productType === 1 ? 'Producto' : (item.productType === 2 ? 'Servicio' : 'Materia Prima')
+        item.invProduct = { name: item.description, type: item.productType };
         return item;
       });
-      setTable({ ...table, data });
+      setTable((prev) => ({ ...prev, data, actions: closed ? [] : prev.actions }));
       setLoading(false);
     }, err => {
       setLoading(false);
     });
+    // Total consumo, adelantos sin cerrar del paciente y lo que falta por pagar: los calcula el back.
+    request.GET(buildUrl(`${detailPath(currentItem)}/totals`, { fatherId: currentItem.id }), (resp) => setTotals(resp.data), () => {});
   }
 
   const fnSaveEditProduct = (formState) => {
-    const { id, quantity, price, discPercent, discount, taxPercent, taxValue, total } = formState;
+    const { id } = formState;
+    if (Object.keys(validateUpdate(formState, canEditPrice)).length) {
+      notification('warning', 'page.events.msg.quantityInvalid', 'alert.warning.title');
+      return;
+    }
     setLoading(true);
-    request.PUT(`hospital/process/eventDetails/${id}`, { quantity, price, discPercent, discount, taxPercent, taxValue, total }, (resp) => {
+    request.PUT(`${detailPath(currentItem)}/${id}`, buildUpdatePayload(formState, canEditPrice), (resp) => {
       setLoading(false);
       setOpenModalEditProduct(false);
       fnGetDataDetail();
@@ -120,6 +134,8 @@ export const useModalDetail = ({ setLoading, currentItem }) => {
 
   useEffect(() => {
     fnGetDataDetail();
+    request.GET(`${detailPath(currentItem)}/settings`, (resp) => setCanEditPrice(Boolean(resp.data?.canEditPrice)), () => {});
+    request.GET('admin/areas/getSL?isHospital=1', (resp) => setListBillingAreas(resp.data.map((item) => ({ ...item, value: item.id, label: item.name }))), () => {});
   }, []);
 
   const propsToMsgDelete = {
@@ -133,6 +149,10 @@ export const useModalDetail = ({ setLoading, currentItem }) => {
   return (
     {
       table,
+      totals,
+      listBillingAreas,
+      closed,
+      canEditPrice,
       fnAddProduct,
       fnAddService,
       fnPrintDocument,

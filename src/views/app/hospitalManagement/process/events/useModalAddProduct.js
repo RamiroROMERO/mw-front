@@ -1,23 +1,24 @@
 import { useState } from 'react'
 import { useForm } from '@Hooks';
-import { IntlMessages, validFloat, validInt } from '@Helpers/Utils';
+import { IntlMessages, validFloat } from '@Helpers/Utils';
 import { request, buildUrl } from '@Helpers/core';
+import notification from '@Containers/ui/Notifications';
+import { detailPath, buildCreatePayload, validateCreate, warningTexts } from './eventDetailRules';
 
+// SPEC v2-152-sr: un solo POST por lote. El cliente manda solo producto y cantidad por línea (más área y almacén); precio, impuesto, unidad, costo y totales los calcula el back.
 export const useModalAddProduct = ({ setLoading, currentItem, fnGetDataDetail, setOpen, type = 1 }) => {
   const [sendForm, setSendForm] = useState(false);
   const [dataProducts, setDataProducts] = useState([]);
 
-  const validation = {
-    areaId: [(val) => validInt(val) !== 0, IntlMessages("msg.required.select.areaId")],
-    ...(type === 1 ? { storeId: [(val) => validInt(val) !== 0, IntlMessages("msg.required.select.storeId")] } : {})
-  }
-
-  const { formState, onInputChange, onResetForm, onBulkForm, formValidation, isFormValid } = useForm({
-    areaId: 0,
-    storeId: 0
-  }, validation);
-
+  const { formState, onInputChange } = useForm({ areaId: 0, storeId: 0 });
   const { storeId, areaId } = formState;
+
+  // Mismas reglas del back: se muestran por campo (clave de traducción: el campo la traduce) y no se llama al back si fallan.
+  const problems = validateCreate({ kind: type, areaId, storeId, rows: dataProducts });
+  const formValidation = {
+    areaIdValid: problems.areaId || null,
+    storeIdValid: problems.storeId || null
+  };
 
   const [table, setTable] = useState({
     title: IntlMessages(type === 2 ? "page.events.modalAddService.table.title" : "page.events.modalAddProduct.table.title"),
@@ -42,13 +43,13 @@ export const useModalAddProduct = ({ setLoading, currentItem, fnGetDataDetail, s
 
   const fnSearchProduct = () => {
     setSendForm(true);
-    if (!isFormValid) {
+    if (problems.areaId || problems.storeId) {
       return;
     }
 
     setLoading(true);
-    // Los servicios (type 2) no tienen bodega/existencia real: se buscan con
-    // getServices (siempre todos), los productos con getStocks filtrado por bodega.
+    // Los servicios (type 2) no tienen bodega/existencia real: se buscan con getServices (siempre todos), los productos con getStocks filtrado por bodega.
+    // El precio y el impuesto de la tabla son solo informativos: el back los vuelve a calcular al guardar.
     const url = type === 2
       ? 'inventory/process/stocks/getServices'
       : buildUrl('inventory/process/stocks/getStocks', { storeId, typeId: type });
@@ -56,55 +57,34 @@ export const useModalAddProduct = ({ setLoading, currentItem, fnGetDataDetail, s
     request.GET(url, (resp) => {
       const data = resp.data.map((item) => {
         item.price = validFloat(item.localMedPrice)
-        item.subTotal = validFloat(item.localMedPrice)
-        item.taxPercent = item.percentTax
         item.tax = (validFloat(item.percentTax) * validFloat(item.localMedPrice)) / 100
-        item.total = ((validFloat(item.percentTax) * validFloat(item.localMedPrice)) / 100) + validFloat(item.localMedPrice)
         item.qty = 0
         return item;
       });
-      setTable({ ...table, data });
+      setDataProducts(data);
+      setTable((prev) => ({ ...prev, data }));
       setLoading(false);
     }, (err) => {
-
       setLoading(false);
     });
   }
 
-  const fnSaveProducts = async () => {
-    const filterProducts = dataProducts.filter(item => validFloat(item.qty) > 0);
+  const fnSaveProducts = () => {
+    setSendForm(true);
+    if (Object.keys(problems).length) {
+      if (problems.lines) notification('warning', problems.lines, 'alert.warning.title');
+      return;
+    }
 
-    if (filterProducts.length === 0) { return; }
-
-    const newData = filterProducts.map(item => {
-      return {
-        fatherId: currentItem.id,
-        date: currentItem.date,
-        areaId: areaId,
-        storeId: storeId,
-        productCode: item.productCode,
-        quantity: validFloat(item.qty),
-        price: item.price,
-        taxPercent: validFloat(item.taxPercent),
-        taxValue: (validFloat(item.taxPercent) * validFloat(item.price * item.qty)) / 100,
-        total: ((validFloat(item.taxPercent) * validFloat(item.price * item.qty)) / 100) + validFloat(item.price * item.qty),
-        outputUnit: item.undoutName,
-        outputQty: validFloat(item.valChange),
-        productCost: validFloat(item.costValue),
-        status: 1
-      }
-    });
-
-    newData.forEach((detailEvent, idx) => {
-      request.POST('hospital/process/eventDetails', detailEvent, (resp) => {
-        setLoading(false);
-        if (newData.length === (idx + 1)) {
-          fnGetDataDetail();
-          setOpen(false);
-        }
-      }, (err) => {
-        setLoading(false);
-      });
+    setLoading(true);
+    request.POST(detailPath(currentItem), buildCreatePayload({ event: currentItem, kind: type, areaId, storeId, rows: dataProducts }), (resp) => {
+      setLoading(false);
+      // La existencia insuficiente solo avisa: el kardex lo mueve la factura.
+      warningTexts(resp.data?.warnings).forEach((w) => notification('warning', 'alert.warning.title', { text: `${IntlMessages(w.id)}: ${w.productCode} (${w.available})` }));
+      fnGetDataDetail();
+      setOpen(false);
+    }, (err) => {
+      setLoading(false);
     });
   }
 

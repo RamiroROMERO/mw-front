@@ -1,14 +1,48 @@
-import { useEffect, useState } from 'react'
-import { IntlMessages, validInt } from '@Helpers/Utils';
-import { request, buildUrl } from '@Helpers/core';
+import { useState } from 'react'
+import { IntlMessages } from '@Helpers/Utils';
+import { request } from '@Helpers/core';
+import notification from '@Containers/ui/Notifications';
+import { detailPath, validateProviders, buildProvidersPayload, splitProvider } from './eventDetailRules';
 
-export const useModalEditService = ({ setLoading, currentItem }) => {
+// SPEC v2-152-sr: los honorarios del servicio se editan en pantalla y se guardan JUNTOS con un solo PUT (el back reemplaza todos, como el legacy). La suma de los totales de los
+// proveedores debe ser el valor del servicio (cantidad x precio).
+export const useModalEditService = ({ setLoading, currentItem, event, fnGetDataDetail }) => {
+  const [providers, setProviders] = useState(() => (currentItem?.providers || []).map((p) => ({ ...p })));
   const [openModalProvider, setOpenModalProvider] = useState(false);
   const [currentProviderItem, setCurrentProviderItem] = useState({});
-  const [idRecordToDelete, setIdRecordToDelete] = useState(0);
-  const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
+  const [editIndex, setEditIndex] = useState(-1);
 
-  const [table, setTable] = useState({
+  const rows = providers.map((p) => ({ ...p, ...splitProvider(p), providerName: p.providerName || '' }));
+
+  const fnOpenProvider = (index) => {
+    setEditIndex(index);
+    setCurrentProviderItem(index >= 0 ? providers[index] : { providerId: 0, quantity: currentItem.quantity, price: currentItem.price, hospValue: 0 });
+    setOpenModalProvider(true);
+  };
+
+  const fnSaveProvider = (row) => {
+    setProviders((prev) => (editIndex >= 0 ? prev.map((p, i) => (i === editIndex ? row : p)) : [...prev, row]));
+    setOpenModalProvider(false);
+  };
+
+  const fnRemoveProvider = (index) => setProviders((prev) => prev.filter((_, i) => i !== index));
+
+  const fnSave = () => {
+    const problem = validateProviders(providers, currentItem);
+    if (problem) {
+      notification('warning', problem, 'alert.warning.title');
+      return;
+    }
+    setLoading(true);
+    request.PUT(`${detailPath(event)}/${currentItem.id}/providers`, buildProvidersPayload(providers), () => {
+      setLoading(false);
+      fnGetDataDetail();
+    }, () => {
+      setLoading(false);
+    });
+  };
+
+  const table = {
     title: '',
     columns: [
       { text: IntlMessages("table.column.provider"), dataField: "providerName", headerStyle: { 'width': '30%' } },
@@ -18,89 +52,14 @@ export const useModalEditService = ({ setLoading, currentItem }) => {
       { text: IntlMessages("input.provValue"), dataField: "provValue", headerStyle: { 'width': '15%' } },
       { text: IntlMessages("table.column.total"), dataField: "total", headerStyle: { 'width': '10%' } }
     ],
-    data: [],
-    options: {
-      columnActions: 'options'
-    },
+    data: rows,
+    options: { columnActions: 'options' },
     actions: [
-      {
-        color: 'warning',
-        icon: 'pencil',
-        onClick: (item) => {
-          setCurrentProviderItem(item);
-          setOpenModalProvider(true);
-        },
-        toolTip: IntlMessages("button.edit")
-      },
-      {
-        color: 'danger',
-        icon: 'trash',
-        onClick: (item) => {
-          setIdRecordToDelete(item.id);
-          setOpenMsgQuestion(true);
-        },
-        toolTip: IntlMessages("button.delete")
-      },
-      {
-        color: 'primary',
-        icon: 'plus',
-        onClick: () => {
-          setCurrentProviderItem({ id: 0, fatherId: currentItem.id, providerId: 0, quantity: 1, price: 0, discPercent: 0, taxPercent: 0, hospPercent: 0, provPercent: 0 });
-          setOpenModalProvider(true);
-        },
-        title: IntlMessages("button.add"),
-        isFreeAction: true
-      }
+      { color: 'warning', icon: 'pencil', onClick: (item) => fnOpenProvider(rows.indexOf(item)), toolTip: IntlMessages("button.edit") },
+      { color: 'danger', icon: 'trash', onClick: (item) => fnRemoveProvider(rows.indexOf(item)), toolTip: IntlMessages("button.delete") },
+      { color: 'primary', icon: 'plus', onClick: () => fnOpenProvider(-1), title: IntlMessages("button.add"), isFreeAction: true }
     ]
-  });
-
-  const fnGetProviders = () => {
-    setLoading(true);
-    request.GET(buildUrl('hospital/process/eventDetailsProviders', { fatherId: currentItem.id }), (resp) => {
-      const data = resp.data.map((item) => {
-        item.providerName = item.provider?.name || '';
-        return item;
-      });
-      setTable((prevTable) => ({ ...prevTable, data }));
-      setLoading(false);
-    }, (err) => {
-      setLoading(false);
-    });
-  }
-
-  const fnOkDelete = () => {
-    setOpenMsgQuestion(false);
-    if (validInt(idRecordToDelete) === 0) {
-      return;
-    }
-    setLoading(true);
-    request.DELETE(`hospital/process/eventDetailsProviders/${idRecordToDelete}`, (resp) => {
-      setLoading(false);
-      setIdRecordToDelete(0);
-      fnGetProviders();
-    }, (err) => {
-      setLoading(false);
-    });
-  }
-
-  useEffect(() => {
-    fnGetProviders();
-  }, []);
-
-  const propsToMsgDelete = {
-    title: "alert.question.title",
-    open: openMsgQuestion,
-    setOpen: setOpenMsgQuestion,
-    fnOnOk: fnOkDelete,
-    fnOnNo: () => { setIdRecordToDelete(0) }
   };
 
-  return {
-    table,
-    openModalProvider,
-    setOpenModalProvider,
-    currentProviderItem,
-    propsToMsgDelete,
-    fnGetProviders
-  }
+  return { table, openModalProvider, setOpenModalProvider, currentProviderItem, fnSaveProvider, fnSave };
 }

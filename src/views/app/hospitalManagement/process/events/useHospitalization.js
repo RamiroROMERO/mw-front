@@ -3,7 +3,6 @@ import { useForm } from '@Hooks';
 import { request } from '@Helpers/core';
 import DateHelper from '@Helpers/DateHelper';
 import notification from '@Containers/ui/Notifications';
-import { IntlMessages } from '@Helpers/Utils';
 import { validateHospitalization, buildHospitalizePayload, warningMessages } from './eventRules';
 
 export const useHospitalization = ({ currentItem, setLoading, fnGetData, setOpen }) => {
@@ -20,7 +19,7 @@ export const useHospitalization = ({ currentItem, setLoading, fnGetData, setOpen
 
   // Mismas reglas del back: fecha de ingreso no futura ni anterior a la del evento, dos médicos y la habitación.
   const problems = validateHospitalization(formState, { today: DateHelper.format(DateHelper.now()), eventDate: currentItem?.date });
-  const formValidation = Object.fromEntries(Object.entries(problems).map(([field, key]) => [`${field}Valid`, IntlMessages(key)]));
+  const formValidation = Object.fromEntries(Object.entries(problems).map(([field, key]) => [`${field}Valid`, key]));
   const isFormValid = Object.keys(problems).length === 0;
 
   const fnSaveDocument = () => {
