@@ -1370,11 +1370,12 @@ const data = [
         label: 'menu.customerTypes',
         to: `${adminRoot}/settings/customerTypes`,
       },
-      {
-        icon: 'iconsminds-building',
-        label: 'menu.intercompanies',
-        to: `${adminRoot}/settings/intercompanies`,
-      },
+      // Intercompañías oculto hasta que se necesite (la pantalla es un cascarón sin funciones): descomentar para mostrarlo de nuevo.
+      // {
+      //   icon: 'iconsminds-building',
+      //   label: 'menu.intercompanies',
+      //   to: `${adminRoot}/settings/intercompanies`,
+      // },
       {
         icon: 'simple-icon-people',
         label: 'menu.userAccounts',

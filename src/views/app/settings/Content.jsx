@@ -73,18 +73,19 @@ const Production = (props) => {
         { replace: true }
       );
     }
-  },
-  {
-    id: 7,
-    icon: "large-icon iconsminds-building",
-    title: "menu.intercompanies",
-    fnOnclick: () => {
-      history(
-        `${adminRoot}/settings/intercompanies`,
-        { replace: true }
-      );
-    }
   }
+  // Intercompañías oculto hasta que se necesite: descomentar (y agregar la coma de la tarjeta anterior) para mostrarlo de nuevo.
+  // {
+  //   id: 7,
+  //   icon: "large-icon iconsminds-building",
+  //   title: "menu.intercompanies",
+  //   fnOnclick: () => {
+  //     history(
+  //       `${adminRoot}/settings/intercompanies`,
+  //       { replace: true }
+  //     );
+  //   }
+  // }
   ]
   return (
     <>
