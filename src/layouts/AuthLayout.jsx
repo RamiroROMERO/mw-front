@@ -16,7 +16,7 @@ const AuthLayout = ({ children }) => {
   }, []);
 
   if (currentUser) {
-    return <Navigate to={adminRoot} />
+    return <Navigate to={adminRoot || '/'} />
   }
 
   return (

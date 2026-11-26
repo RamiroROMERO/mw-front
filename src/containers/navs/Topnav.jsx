@@ -244,7 +244,7 @@ const TopNav = ({
           </UncontrolledDropdown>
         </div>
       </div>
-      <NavLink className="navbar-logo" to={adminRoot}>
+      <NavLink className="navbar-logo" to={adminRoot || "/"}>
         <span className="logo d-none d-md-block" />
         <span className="logo-mobile d-block d-md-none" />
       </NavLink>
