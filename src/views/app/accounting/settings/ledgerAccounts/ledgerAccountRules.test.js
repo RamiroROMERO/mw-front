@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { INITIAL_ACCOUNT_FORM, buildAccountPayload, levelOf, mapAccountToForm, normalizeCode, validateAccount } from './ledgerAccountRules';
+import { INITIAL_ACCOUNT_FORM, buildAccountPayload, formatAccountCode, levelOf, mapAccountToForm, normalizeCode, validateAccount } from './ledgerAccountRules';
 
 const LEVELS = [1, 3, 5, 7, 10];
 const valid = { ...INITIAL_ACCOUNT_FORM, code: '1010101009', name: 'CAJA NUEVA', accountTypeId: 1, expenseTypeId: 4 };
@@ -56,5 +56,22 @@ describe('buildAccountPayload / mapAccountToForm', () => {
   });
   test('las banderas y los ids llegan como el formulario los usa', () => {
     expect(mapAccountToForm({ id: 3, code: ' 101 ', name: 'X', accountTypeId: '1', opera: 1, status: 0, useForeignCurrency: 1 })).toMatchObject({ code: '101', accountTypeId: 1, opera: true, status: false, useForeignCurrency: true });
+  });
+});
+
+describe('formatAccountCode: el formato de cuentas según el largo de cada código', () => {
+  const FORMAT = '#####-##-###';
+  test.each([
+    ['1', '1'], ['101', '101'], ['10101', '10101'], ['1010101', '10101-01'], ['1010101001', '10101-01-001']
+  ])('el código %s se muestra como %s', (code, expected) => {
+    expect(formatAccountCode(code, FORMAT)).toBe(expected);
+  });
+
+  test('sin formato devuelve el código; con dígitos de sobra los agrega; acepta separadores en la entrada y nulos', () => {
+    expect(formatAccountCode('1010101', '')).toBe('1010101');
+    expect(formatAccountCode('101010100123', FORMAT)).toBe('10101-01-001' + '23');
+    expect(formatAccountCode('10101-01', FORMAT)).toBe('10101-01');
+    expect(formatAccountCode(null, FORMAT)).toBe('');
+    expect(formatAccountCode('', FORMAT)).toBe('');
   });
 });

@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { IntlMessages } from "@Helpers/Utils";
 import { request, notifyError } from '@Helpers/core';
 import { useForm } from '@Hooks';
-import { INITIAL_ACCOUNT_FORM, buildAccountPayload, mapAccountToForm, validateAccount } from './ledgerAccountRules';
+import { INITIAL_ACCOUNT_FORM, buildAccountPayload, formatAccountCode, mapAccountToForm, validateAccount } from './ledgerAccountRules';
 
 // Cuentas Contables (cont_ccc*.sc2, SPEC v2-119-sr). Validación por campo con las mismas reglas del back (ledgerAccountRules.js): un formulario inválido se marca y NO llama al back.
 // El nivel lo calcula el back con el formato de cuentas (`GET .../accountants/format` da el largo de cada nivel y el formato). "Eliminar" es una baja lógica con bloqueo por uso
@@ -37,10 +37,16 @@ export const useContent = ({ setLoading }) => {
     setOpenMsgQuestion(true);
   }
 
+  // Formato de cuentas para mostrar el código en la tabla (la celda lo lee de la ref: la columna se define una sola vez).
+  const codeFormatRef = useRef('');
+
   const [table, setTable] = useState({
     title: IntlMessages("page.ledgerAccounts.table.title"),
     columns: [
-      { text: IntlMessages("page.ledgerAccounts.table.ledgerAccount"), dataField: "code", headerStyle: { 'width': '15%' } },
+      {
+        text: IntlMessages("page.ledgerAccounts.table.ledgerAccount"), dataField: "code", headerStyle: { 'width': '15%' },
+        cell: ({ row }) => formatAccountCode(row.original.code, codeFormatRef.current)
+      },
       { text: IntlMessages("page.ledgerAccounts.table.name"), dataField: "name", headerStyle: { 'width': '40%' } },
       {
         text: IntlMessages("page.ledgerAccounts.table.posteable"), dataField: "opera", headerStyle: { 'width': '15%' },
@@ -134,6 +140,8 @@ export const useContent = ({ setLoading }) => {
     request.GET('accounting/settings/accountants/format', (resp) => {
       setLevels(resp.data?.levels || []);
       setCodeFormat(resp.data?.format || '');
+      codeFormatRef.current = resp.data?.format || '';
+      setTable((prev) => ({ ...prev, columns: [...prev.columns] })); // vuelve a dibujar la tabla con el formato
     }, () => { });
 
     fnGetData();
