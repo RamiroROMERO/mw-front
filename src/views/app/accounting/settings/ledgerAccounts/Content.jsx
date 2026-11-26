@@ -15,7 +15,7 @@ import { useContent } from './useContent';
 const LedgerAccounts = (props) => {
   const { setLoading } = props;
 
-  const { listTypeAccount, listTypeSpent, listCurrency, formState, errors, codeFormat, isEdit, onInputChange, sendForm, table, fnClearInputs, fnSave, fnExport, propsToMsgDelete, isSystemAdmin, formatConfig, openFormatModal, setOpenFormatModal, fnLoadFormat } = useContent({ setLoading });
+  const { listTypeAccount, listTypeSpent, listCurrency, formState, errors, codeFormat, isEdit, onInputChange, sendForm, table, fnClearInputs, fnSave, fnExport, propsToMsgDelete, formatConfig, openFormatModal, setOpenFormatModal, fnLoadFormat } = useContent({ setLoading });
 
   const propsToModalFormat = {
     ModalContent: ModalAccountFormat,
@@ -152,7 +152,6 @@ const LedgerAccounts = (props) => {
               <hr />
               <Row>
                 <Colxx xxs="12" className="div-action-button-container">
-                  {isSystemAdmin && <Button color="warning" onClick={() => setOpenFormatModal(true)}><i className="bi bi-gear" /> {IntlMessages("page.ledgerAccounts.button.settings")}</Button>}
                   <Button color="secondary" onClick={fnClearInputs}><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
                   <Button color="info" onClick={fnExport}><i className="bi bi-file-earmark-excel" /> {IntlMessages("button.export")}</Button>
                   <Button color="primary" onClick={fnSave}><i className="iconsminds-save" /> {IntlMessages("button.save")}</Button>

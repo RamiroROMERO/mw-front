@@ -61,7 +61,14 @@ export const useContent = ({ setLoading }) => {
       },
     ],
     data: [],
-    actions: [{
+    actions: [...(isSystemAdmin ? [{
+      // Acción libre (botón del encabezado de la tabla): la configuración de cuentas solo la abre un administrador del sistema.
+      color: 'warning',
+      icon: 'gear',
+      isFreeAction: true,
+      onClick: () => setOpenFormatModal(true),
+      title: IntlMessages('page.ledgerAccounts.button.settings')
+    }] : []), {
       color: 'warning',
       icon: 'pencil',
       toolTip: 'button.edit',
