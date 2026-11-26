@@ -232,22 +232,24 @@ const Detail = ({formState, listTaxDoc, onInputChange, onColorChange, colorHex, 
           </Colxx>
         </Row>
         <Row>
-          <Colxx xxs="12">
+          <Colxx xxs="12" md="6">
             <InputField
               value={notes1}
               name="notes1"
               onChange={onInputChange}
               type="text"
-              label="page.itemsCodes.input.notes"
+              maxLength={100}
+              label="page.itemsCodes.input.notes1"
             />
           </Colxx>
-          <Colxx xxs="12" className="div-content-right">
+          <Colxx xxs="12" md="6">
             <InputField
               value={notes2}
               name="notes2"
               onChange={onInputChange}
               type="text"
-              label="page.itemsCodes.input.notes"
+              maxLength={100}
+              label="page.itemsCodes.input.notes2"
             />
           </Colxx>
         </Row>

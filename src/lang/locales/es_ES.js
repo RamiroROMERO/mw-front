@@ -2308,6 +2308,8 @@ const esLang = {
   "page.itemsCodes.table.correlative": "Correlativo",
   "page.itemsCodes.select.companyId": "Empresa",
   "page.itemsCodes.select.taxDocumentItem": "Documento Fiscal",
+  "page.itemsCodes.input.notes1": "Primera Nota",
+  "page.itemsCodes.input.notes2": "Segunda Nota",
   "page.itemsCodes.input.notes": "Notas",
   /* 25. billingAreas page in  */
   "page.billingAreas.input.description": "Descripcion",

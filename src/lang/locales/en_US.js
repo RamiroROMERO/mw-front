@@ -2276,6 +2276,8 @@ const enLang = {
   "page.itemsCodes.table.correlative": "Correlative",
   "page.itemsCodes.select.companyId": "Business",
   "page.itemsCodes.select.taxDocumentItem": "Tax Document",
+  "page.itemsCodes.input.notes1": "First Note",
+  "page.itemsCodes.input.notes2": "Second Note",
   "page.itemsCodes.input.notes": "Notes",
   /* 25. billingAreas page in  */
   "page.billingAreas.input.description": "Description",
