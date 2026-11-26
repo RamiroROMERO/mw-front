@@ -1663,6 +1663,7 @@ const esLang = {
   "page.users.profile.tab.privileges.general": "Generales",
   "page.users.profile.tab.privileges.admin": "Administrativos",
   "page.users.profile.tab.config.changePass": "Cambiar Contraseña",
+  "page.users.profile.tab.config.seller": "Vendedor",
   "page.users.profile.tab.config.options": "Opciones",
   "page.users.profile.input.signIn": "Inicia Sesión",
   "page.users.profile.input.isCashier": "Cajero",

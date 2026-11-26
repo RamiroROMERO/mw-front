@@ -1652,6 +1652,7 @@ const enLang = {
   "page.users.profile.tab.privileges.general": "Generals",
   "page.users.profile.tab.privileges.admin": "Administratives",
   "page.users.profile.tab.config.changePass": "Change Password",
+  "page.users.profile.tab.config.seller": "Seller",
   "page.users.profile.tab.config.options": "Options",
   "page.users.privileges.table.title": " ",
   "page.users.privileges.table.code": "Code",

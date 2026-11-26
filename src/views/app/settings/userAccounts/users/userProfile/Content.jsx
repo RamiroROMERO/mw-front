@@ -550,6 +550,17 @@ const UserProfile = (props) => {
                     {IntlMessages("page.users.profile.tab.config.options")}
                   </NavLink>
                 </NavItem>
+                <NavItem>
+                  <NavLink
+                    className={classnames({
+                      active: activeTabConfig === '3',
+                      'nav-link': true,
+                    })}
+                    onClick={() => setActiveTabConfig('3')}
+                  >
+                    {IntlMessages("page.users.profile.tab.config.seller")}
+                  </NavLink>
+                </NavItem>
               </Nav>
               <TabContent activeTab={activeTabConfig}>
                 <TabPane tabId="1">
@@ -596,7 +607,7 @@ const UserProfile = (props) => {
                 </TabPane>
                 <TabPane tabId="2">
                   <Row>
-                    <Colxx xxs={12} sm={4}>
+                    <Colxx xxs={12} sm={6}>
                       <Checkbox
                         label="page.users.profile.input.signIn"
                         name="isLogIn"
@@ -609,14 +620,8 @@ const UserProfile = (props) => {
                         value={isCashier}
                         onChange={onInputChangeSettings}
                       />
-                      <Checkbox
-                        label="page.users.profile.input.isSeller"
-                        name="isSeller"
-                        value={isSeller}
-                        onChange={onInputChangeSettings}
-                      />
                     </Colxx>
-                    <Colxx xxs={12} sm={4}>
+                    <Colxx xxs={12} sm={6}>
                       <RadioGroup
                         label="page.users.profile.input.chasierType"
                         name="cashierType"
@@ -659,6 +664,24 @@ const UserProfile = (props) => {
                         onChange={onInputChangeSettings}
                       /> */}
                     </Colxx>
+                  </Row>
+                  <hr />
+                  <Row>
+                    <Colxx>
+                      <Button color="primary" onClick={fnSaveSettings}><i className="iconsminds-save" /> {IntlMessages("button.save")}</Button>
+                    </Colxx>
+                  </Row>
+                </TabPane>
+                <TabPane tabId="3">
+                  <Row className='mt-4'>
+                    <Colxx xxs={12} sm={4}>
+                      <Checkbox
+                        label="page.users.profile.input.isSeller"
+                        name="isSeller"
+                        value={isSeller}
+                        onChange={onInputChangeSettings}
+                      />
+                    </Colxx>
                     <Colxx xxs={12} sm={4}>
                       <Checkbox
                         label="page.users.profile.input.sellerIsSupervisor"
@@ -666,47 +689,57 @@ const UserProfile = (props) => {
                         value={sellerIsSupervisor}
                         onChange={onInputChangeSettings}
                       />
+                    </Colxx>
+                    <Colxx xxs={12} sm={4}>
                       <InputField
                         label="page.users.profile.input.sellerCode"
                         name="sellerCode"
                         value={sellerCode}
                         onChange={onInputChangeSettings}
                       />
-                      <Colxx xxs={12}>
-                        <ContainerWithLabel label="page.users.profile.sellerComissions">
-                          <InputField
-                            label="page.users.profile.input.seller.minComissionPercent"
-                            name="sellerMinPercentCommiss"
-                            value={sellerMinPercentCommiss}
-                            onChange={onInputChangeSettings}
-                          />
-                          <InputField
-                            label="page.users.profile.input.seller.medComissionPercent"
-                            name="sellerMedPercentCommiss"
-                            value={sellerMedPercentCommiss}
-                            onChange={onInputChangeSettings}
-                          />
-                          <InputField
-                            label="page.users.profile.input.seller.maxComissionPercent"
-                            name="sellerMaxPercentCommiss"
-                            value={sellerMaxPercentCommiss}
-                            onChange={onInputChangeSettings}
-                          />
-                        </ContainerWithLabel>
-                      </Colxx>
-                      <Colxx xxs={12}>
-                        <RadioGroup
-                          label="page.users.profile.input.seller.applyCommiss"
-                          name="sellerApplyCommiss"
-                          value={sellerApplyCommiss}
+                    </Colxx>
+                  </Row>
+                  <ContainerWithLabel label="page.users.profile.sellerComissions">
+                    <Row>
+                      <Colxx xxs={12} sm={4}>
+                        <InputField
+                          label="page.users.profile.input.seller.minComissionPercent"
+                          name="sellerMinPercentCommiss"
+                          value={sellerMinPercentCommiss}
                           onChange={onInputChangeSettings}
-                          options={[
-                            { id: 1, label: "page.users.profile.input.seller.applyCommiss.all" },
-                            { id: 2, label: "page.users.profile.input.seller.applyCommiss.cash" },
-                            { id: 3, label: "page.users.profile.input.seller.applyCommiss.credit" }
-                          ]}
                         />
                       </Colxx>
+                      <Colxx xxs={12} sm={4}>
+                        <InputField
+                          label="page.users.profile.input.seller.medComissionPercent"
+                          name="sellerMedPercentCommiss"
+                          value={sellerMedPercentCommiss}
+                          onChange={onInputChangeSettings}
+                        />
+                      </Colxx>
+                      <Colxx xxs={12} sm={4}>
+                        <InputField
+                          label="page.users.profile.input.seller.maxComissionPercent"
+                          name="sellerMaxPercentCommiss"
+                          value={sellerMaxPercentCommiss}
+                          onChange={onInputChangeSettings}
+                        />
+                      </Colxx>
+                    </Row>
+                  </ContainerWithLabel>
+                  <Row className='mt-3'>
+                    <Colxx xxs={12}>
+                      <RadioGroup
+                        label="page.users.profile.input.seller.applyCommiss"
+                        name="sellerApplyCommiss"
+                        value={sellerApplyCommiss}
+                        onChange={onInputChangeSettings}
+                        options={[
+                          { id: 1, label: "page.users.profile.input.seller.applyCommiss.all" },
+                          { id: 2, label: "page.users.profile.input.seller.applyCommiss.cash" },
+                          { id: 3, label: "page.users.profile.input.seller.applyCommiss.credit" }
+                        ]}
+                      />
                     </Colxx>
                   </Row>
                   <hr />
