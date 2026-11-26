@@ -2,8 +2,11 @@ import { Alert, Row, Button } from 'reactstrap';
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { IntlMessages } from "@Helpers/Utils";
 
+// Ancho de la modal: por defecto 480px (CSS); `size` 'lg' (680px) o 'xl' (860px) para preguntas con textos largos. Nunca pasa del ancho de la ventana.
+const SIZES = { lg: '680px', xl: '860px' };
+
 const Confirmation = (props) => {
-  const { open, setOpen, fnOnOk, title = "alert.question.title", textLegend = '', setCurrentItem, fnOnNo } = props;
+  const { open, setOpen, fnOnOk, title = "alert.question.title", textLegend = '', setCurrentItem, fnOnNo, size = '' } = props;
 
   const onDismiss = () => {
     if (setCurrentItem) {
@@ -18,7 +21,7 @@ const Confirmation = (props) => {
     <>
     {/* Atenúa el resto de la pantalla para que el usuario se enfoque en la pregunta; no cierra al hacer clic (evita descartar la acción sin querer). */}
     {open && <div className="confirmation-backdrop" />}
-    <div className="confirmation-container lg">
+    <div className="confirmation-container lg" style={SIZES[size] ? { width: SIZES[size] } : undefined}>
       <Alert className="notification-primary" isOpen={open}>
         <Row>
           <Colxx xxs="2">

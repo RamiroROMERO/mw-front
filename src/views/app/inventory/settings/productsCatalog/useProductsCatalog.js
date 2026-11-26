@@ -608,6 +608,7 @@ const useProductsCatalog = ({ setLoading, canEditCosts = false, canRefreshStock 
     open: openMsgGenerateCode,
     setOpen: setOpenMsgGenerateCode,
     fnOnOk: fnGenerateCode,
+    size: 'lg',
     title: "msg.required.select.classification"
   }
 
