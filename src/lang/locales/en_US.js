@@ -2006,7 +2006,7 @@ const enLang = {
   /* 21.LedgerAccounts page in accounting module */
   "page.ledgerAccounts.input.code": "Code",
   "page.ledgerAccounts.table.title": "Ledger Account Table",
-  "page.ledgerAccounts.table.ledgerAccount": "Ledger Account",
+  "page.ledgerAccounts.table.ledgerAccount": "Account No.",
   "page.ledgerAccounts.table.name": "Name",
   "page.ledgerAccounts.table.level": "Level",
   "page.ledgerAccounts.table.posteable": "Posteable",

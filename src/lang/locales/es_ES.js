@@ -2038,7 +2038,7 @@ const esLang = {
   /* 21.LedgerAccounts page in accounting module */
   "page.ledgerAccounts.input.code": "Codigo",
   "page.ledgerAccounts.table.title": "Tabla de Cuentas Contables",
-  "page.ledgerAccounts.table.ledgerAccount": "Cuentas Contables",
+  "page.ledgerAccounts.table.ledgerAccount": "No. Cuenta",
   "page.ledgerAccounts.table.name": "Nombre",
   "page.ledgerAccounts.table.level": "Nivel",
   "page.ledgerAccounts.table.posteable": "Posteable",
