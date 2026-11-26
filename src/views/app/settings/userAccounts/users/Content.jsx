@@ -14,6 +14,38 @@ import DataTable from "@Components/reactTable";
 import { PATH_FILES } from '/src/helpers/pathFiles';
 import envs from '@Helpers/envs';
 
+// Iniciales del nombre: la primera letra de las dos primeras palabras ("Ana Pérez" -> "AP"); con una sola palabra, sus dos primeras letras.
+const getInitials = (name = '') => {
+  const words = String(name).trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return '?';
+  const letters = words.length === 1 ? words[0].slice(0, 2) : `${words[0][0]}${words[1][0]}`;
+  return letters.toUpperCase();
+};
+
+// Foto del usuario; sin foto (o si no carga) muestra un círculo con sus iniciales en lugar del nombre completo.
+const UserAvatar = ({ name, src }) => {
+  const [failed, setFailed] = useState(false);
+  if (!src || failed) {
+    return (
+      <span
+        className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center font-weight-bold align-self-center"
+        style={{ width: 40, height: 40, fontSize: '0.9rem' }}
+        title={name}
+      >
+        {getInitials(name)}
+      </span>
+    );
+  }
+  return (
+    <img
+      alt=""
+      src={src}
+      onError={() => setFailed(true)}
+      className="img-thumbnail border-0 rounded-circle list-thumbnail align-self-center small"
+    />
+  );
+};
+
 const Users = (props) => {
   const { setLoading } = props;
   const history = useNavigate();
@@ -69,10 +101,9 @@ const Users = (props) => {
         text: IntlMessages("page.users.table.img"), dataField: "imgUser", headerStyle: { 'width': '15%' },
         cell: ({ row }) => {
           return (
-            <img
-              alt={row.original.name}
-              src={row.original.img !== "" ? `${urlGetProfiles}${row.original.img}` : `${urlGetProfiles}usuario.png`}
-              className="img-thumbnail border-0 rounded-circle list-thumbnail align-self-center small"
+            <UserAvatar
+              name={row.original.name}
+              src={row.original.img ? `${urlGetProfiles}${row.original.img}` : ''}
             />
           );
         }
