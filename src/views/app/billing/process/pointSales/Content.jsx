@@ -12,6 +12,9 @@ import Modal from "@Components/modal";
 import ModalSeekProducts from './ModalSeekProducts';
 import ModalSeekPosInvoices from './ModalSeekPosInvoices';
 import ModalImportInvoice from './ModalImportInvoice';
+import ModalHospitalEvents from './ModalHospitalEvents';
+import ModalHospitalCheckout from './ModalHospitalCheckout';
+import { isHospitalEnabled, SETTINGS_PATH } from './posHospitalRules';
 import { fromSearchRow } from './posCaptureRules';
 import ModalChangePrice from '../invoicing/ModalChangePrice';
 import ModalCashOpening from './ModalCashOpening';
@@ -74,6 +77,11 @@ const PointSales = (props) => {
   const [openModalChangeProduct, setOpenModalChangeProduct] = useState(false);
   const [selectedChangeLine, setSelectedChangeLine] = useState(null);
   const [openModalPayment, setOpenModalPayment] = useState(false);
+  // Facturar un evento hospitalario (SPEC v2-154-sr): solo con el módulo hospitalario activo.
+  const [hospitalEnabled, setHospitalEnabled] = useState(false);
+  const [openModalHospitalEvents, setOpenModalHospitalEvents] = useState(false);
+  const [openModalHospitalCheckout, setOpenModalHospitalCheckout] = useState(false);
+  const [hospitalEvent, setHospitalEvent] = useState(null);
   const [sendFormIndex, setSendFormIndex] = useState(false);
   const [sendFormDetail, setSendFormDetail] = useState(false);
 
@@ -403,6 +411,32 @@ const PointSales = (props) => {
 
   const fnImportSuccess = (resultData) => {
     setImportInvoice(null);
+    fnViewInvoice({ id: resultData.id });
+    fnOpenPosInvoicePdf(resultData.id);
+  }
+
+  // Facturar un evento (SPEC v2-154-sr): se elige el evento abierto, el servidor calcula el copago y la parte de la aseguradora y el cajero cobra solo el copago.
+  const fnHospitalEvent = () => {
+    if (!dataCashBox || !(Number(dataCashBox.sessionId) > 0)) {
+      notification('warning', 'msg.required.cashOpening', 'alert.warning.title');
+      return;
+    }
+    if (id && id > 0) {
+      notification('warning', 'msg.alert.invoice.saved', 'alert.warning.title');
+      return;
+    }
+    setOpenModalHospitalEvents(true);
+  }
+
+  const fnHospitalSelect = (row) => {
+    setHospitalEvent(row);
+    setListTypePayments(listTypePayments.map((item) => ({ ...item, value: 0 })));
+    setOpenModalHospitalEvents(false);
+    setOpenModalHospitalCheckout(true);
+  }
+
+  const fnHospitalSuccess = (resultData) => {
+    setHospitalEvent(null);
     fnViewInvoice({ id: resultData.id });
     fnOpenPosInvoicePdf(resultData.id);
   }
@@ -909,6 +943,7 @@ const PointSales = (props) => {
       setLoading(false);
     });
     request.GET('admin/discounts/getSL', (resp) => setDiscountOptions(resp.data.map((item) => ({ ...item, name: `${item.name} (${Number(item.percentValue)}%)` }))), () => { });
+    request.GET(SETTINGS_PATH, (resp) => setHospitalEnabled(isHospitalEnabled(resp.data)), () => { });
     setLoading(true);
     request.GET('admin/users/getCashiers', (resp) => {
       const cashiers = resp.data.map((item) => {
@@ -1029,7 +1064,12 @@ const PointSales = (props) => {
         title: "button.importInvoice",
         icon: "bi bi-box-arrow-in-down",
         onClick: fnImport
-      }
+      },
+      ...(hospitalEnabled ? [{
+        title: "button.hospitalEvent",
+        icon: "bi bi-hospital",
+        onClick: fnHospitalEvent
+      }] : [])
     ],
     buttonsOptions: [
       { title: "button.deliveryDoc", icon: "bi bi-truck", onClick: fnPrintDelivery },
@@ -1119,6 +1159,31 @@ const PointSales = (props) => {
       invoiceHeader: {},
       invoiceDetail: [],
       fnCheckoutSuccess: fnImportSuccess
+    }
+  }
+
+  const propsToModalHospitalEvents = {
+    ModalContent: ModalHospitalEvents,
+    title: "page.pointSales.hospital.events.title",
+    open: openModalHospitalEvents,
+    setOpen: setOpenModalHospitalEvents,
+    maxWidth: 'lg',
+    data: { fnSelect: fnHospitalSelect }
+  }
+
+  const propsToModalHospitalCheckout = {
+    ModalContent: ModalHospitalCheckout,
+    title: "page.pointSales.hospital.checkout.title",
+    open: openModalHospitalCheckout,
+    setOpen: setOpenModalHospitalCheckout,
+    maxWidth: 'lg',
+    data: {
+      event: hospitalEvent,
+      sessionId: dataCashBox ? dataCashBox.sessionId : 0,
+      listTypePayments,
+      setListTypePayments,
+      setLoading,
+      fnCheckoutSuccess: fnHospitalSuccess
     }
   }
 
@@ -1385,6 +1450,8 @@ const PointSales = (props) => {
       <Modal {...propsToModalInvoices} />
       <Modal {...propsToModalImport} />
       <Modal {...propsToImportPayment} />
+      <Modal {...propsToModalHospitalEvents} />
+      {hospitalEvent && <Modal {...propsToModalHospitalCheckout} />}
       <Modal {...propsToModalCashOpening} />
       <Modal {...propsToModalCashClose} />
       <Modal {...propsToModalCashOut} />
