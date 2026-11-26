@@ -21,6 +21,8 @@ const Detail = ({formState, listTaxDoc, onInputChange, onColorChange, colorHex, 
             <InputField
               value={code}
               name="code"
+              maxLength={3}
+              disabled={formState.id > 0}
               onChange={onInputChange}
               type="text"
               label="page.itemsCodes.input.code"
@@ -43,6 +45,7 @@ const Detail = ({formState, listTaxDoc, onInputChange, onColorChange, colorHex, 
             <InputField
               value={title}
               name="title"
+              maxLength={50}
               onChange={onInputChange}
               type="text"
               label="page.itemsCodes.input.title"
