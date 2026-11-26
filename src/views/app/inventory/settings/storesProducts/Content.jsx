@@ -68,8 +68,8 @@ const StoresProducts = (props) => {
   return (
     <>
       <Row>
-        <Colxx xxs="12">
-          <Card className="mb-5">
+        <Colxx xxs="12" lg="9">
+          <Card className="mb-3">
             <CardBody>
               <Form>
                 <Row>
@@ -156,18 +156,23 @@ const StoresProducts = (props) => {
                   </Colxx>
                 </Row>
                 <Row>
-                  <Colxx xxs="12" sm={6}>
-                    <Button style={{ marginRight: '5px' }} color="primary" onClick={() => setOpenModalAddLocation(true)}><i className="bi bi-compass" /> {IntlMessages("button.locations")}</Button>
-                    <Button style={{ marginRight: '5px' }} color="success" onClick={fnOpenSearchProduct} disabled={isEditing} title="F1"><i className="bi bi-search" /> {IntlMessages("button.search")}</Button>
-                    <Button style={{ marginRight: '5px' }} color="info" onClick={() => setOpenModalAddxLotes(true)}><i className="bi bi-card-checklist" /> {IntlMessages("button.lots")}</Button>
-                    <Button color="secondary" onClick={fnRefreshStock}><i className="bi bi-arrow-clockwise" /> {IntlMessages("button.refreshStock")}</Button>
-                  </Colxx>
-                  <Colxx xxs="12" sm={6} className="div-action-button-container">
+                  <Colxx xxs="12" className="div-action-button-container">
                     <Button color="secondary" onClick={fnClearInputs}><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>
                     <Button color="primary" onClick={fnSave}><i className="iconsminds-save" /> {IntlMessages("button.save")}</Button>
                   </Colxx>
                 </Row>
               </Form>
+            </CardBody>
+          </Card>
+        </Colxx>
+        <Colxx xxs="12" lg="3">
+          <Card className="mb-3">
+            <CardBody>
+              <div className="d-grid gap-2">
+                <Button color="primary" onClick={() => setOpenModalAddLocation(true)}><i className="bi bi-compass" /> {IntlMessages("button.locations")}</Button>
+                <Button color="info" onClick={() => setOpenModalAddxLotes(true)}><i className="bi bi-card-checklist" /> {IntlMessages("button.lots")}</Button>
+                <Button color="secondary" onClick={fnRefreshStock}><i className="bi bi-arrow-clockwise" /> {IntlMessages("button.refreshStock")}</Button>
+              </div>
             </CardBody>
           </Card>
         </Colxx>
