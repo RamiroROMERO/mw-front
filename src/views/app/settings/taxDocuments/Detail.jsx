@@ -204,7 +204,7 @@ const Detail = ({ formState, onInputChange, formValidation, fnSave, fnClearInput
               options={listDepartments}
             />
           </Colxx>
-          <Colxx xxs="12" xs="4" sm="3" lg="3">
+          <Colxx xxs="12" xs="8" sm="6" lg="5">
             <SimpleSelect
               label="select.municipality"
               name="codeMunic"
@@ -213,7 +213,7 @@ const Detail = ({ formState, onInputChange, formValidation, fnSave, fnClearInput
               options={listMunicipalities}
             />
           </Colxx>
-          <Colxx xxs="12" xs="12" sm="6" lg="3">
+          <Colxx xxs="12" xs="12" sm="12" lg="4">
             <Checkbox
               onChange={onInputChange}
               name="autoCorrelative"
