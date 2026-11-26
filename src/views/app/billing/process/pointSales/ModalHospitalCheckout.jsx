@@ -10,6 +10,7 @@ import { EditValuesTable } from "@Components/editValuesTable";
 import { request, buildUrl, notifyError } from "@Helpers/core";
 import createNotification from "@Containers/ui/Notifications";
 import { formatCents, receivedAndChange } from "./posPaymentRules";
+import { ADVANCES_PATH, advanceParams, applySummary, pendingParams, toggleSelection } from "./posAdvanceRules";
 import {
   CHECKOUT_PATH, INSURERS_PATH, PREVIEW_DEBOUNCE_MS, buildHospitalCheckoutPayload, buildHospitalRows, buildPreviewParams, previewPath, validateHospitalCheckout
 } from "./posHospitalRules";
@@ -33,6 +34,8 @@ const ModalHospitalCheckout = (props) => {
   });
   const [insurers, setInsurers] = useState([]);
   const [preview, setPreview] = useState(null);
+  const [advances, setAdvances] = useState([]);
+  const [selectedAdvances, setSelectedAdvances] = useState([]);
   const latest = useRef(0);
   const { saleType, insuranceId, gne, deductible, discountPercent, receivedValue, notes } = formState;
   const isCash = Number(saleType) === SALE_CASH;
@@ -41,15 +44,21 @@ const ModalHospitalCheckout = (props) => {
     request.GET(INSURERS_PATH, (resp) => setInsurers(resp.data || []), () => { });
   }, []);
 
+  // Adelantos pendientes del paciente (SPEC v2-155-sr): solo en Contado se pueden aplicar.
+  useEffect(() => {
+    if (!(Number(event?.patientId) > 0)) return;
+    request.GET(buildUrl(ADVANCES_PATH, pendingParams(event.patientId)), (resp) => setAdvances(resp.data || []), () => { });
+  }, [event?.patientId]);
+
   // Vista previa del servidor con retraso; una respuesta vieja nunca pisa a una más nueva. Al llegar, el efectivo se prellena con el copago.
   useEffect(() => {
     latest.current += 1;
     const requestId = latest.current;
     const timer = setTimeout(() => {
-      request.GET(buildUrl(previewPath(event.id), buildPreviewParams({ insuranceId, gne, deductible, discountPercent, sessionId })), (resp) => {
+      request.GET(buildUrl(previewPath(event.id), { ...buildPreviewParams({ insuranceId, gne, deductible, discountPercent, sessionId }), ...advanceParams(isCash ? selectedAdvances : []) }), (resp) => {
         if (requestId !== latest.current) return;
         setPreview(resp.data);
-        setListTypePayments((current) => buildHospitalRows(current, resp.data.copayment));
+        setListTypePayments((current) => buildHospitalRows(current, resp.data.toPay ?? resp.data.copayment));
       }, (err) => {
         if (requestId !== latest.current) return;
         setPreview(null);
@@ -58,9 +67,10 @@ const ModalHospitalCheckout = (props) => {
     }, PREVIEW_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [event?.id, insuranceId, gne, deductible, discountPercent]);
+  }, [event?.id, insuranceId, gne, deductible, discountPercent, selectedAdvances, saleType]);
 
-  const amounts = receivedAndChange(receivedValue, preview?.copayment ?? 0);
+  const amounts = receivedAndChange(receivedValue, preview?.toPay ?? preview?.copayment ?? 0);
+  const summary = applySummary({ copayment: preview?.copayment ?? 0, advances, selectedIds: isCash ? selectedAdvances : [] });
   const changeText = amounts ? formatCents(amounts.changeCents) : '0.00';
 
   const fnAccept = () => {
@@ -68,13 +78,17 @@ const ModalHospitalCheckout = (props) => {
       createNotification('warning', 'msg.required.cashOpening', 'alert.warning.title');
       return;
     }
-    const error = validateHospitalCheckout({ event, form: formState, preview, rows: listTypePayments });
+    if (summary.exceeds) {
+      createNotification('warning', 'page.pointSales.advance.msg.exceeds', 'alert.warning.title');
+      return;
+    }
+    const error = validateHospitalCheckout({ event, form: formState, preview: { ...preview, copayment: preview?.toPay ?? preview?.copayment }, rows: listTypePayments });
     if (error) {
       createNotification('warning', error, 'alert.warning.title');
       return;
     }
     setLoading(true);
-    request.POST(CHECKOUT_PATH, buildHospitalCheckoutPayload({ sessionId, event, form: formState, rows: listTypePayments }), (resp) => {
+    request.POST(CHECKOUT_PATH, { ...buildHospitalCheckoutPayload({ sessionId, event, form: formState, rows: listTypePayments }), advanceIds: isCash ? selectedAdvances : [] }, (resp) => {
       setLoading(false);
       setOpen(false);
       fnCheckoutSuccess(resp.data);
@@ -94,6 +108,9 @@ const ModalHospitalCheckout = (props) => {
   };
   const pendingText = IntlMessages('page.pointSales.hospital.msg.previewPending');
   const acceptText = IntlMessages('button.accept');
+  const advancesTitle = IntlMessages('page.pointSales.advance.apply.title');
+  const advancesApplied = IntlMessages('page.pointSales.advance.apply.applied');
+  const advancesToPay = IntlMessages('page.pointSales.advance.apply.toPay');
   const figures = preview ? ['subtotal', 'discount', 'tax', 'total', 'copayment', 'insurerPart'] : [];
 
   return (
@@ -147,6 +164,27 @@ const ModalHospitalCheckout = (props) => {
             </Table>
           </Colxx>
         </Row>
+        {isCash && advances.length > 0 && (
+          <Row>
+            <Colxx xxs="12">
+              <h6>{advancesTitle}</h6>
+              <Table size="sm" bordered className="mb-2">
+                <tbody>
+                  {advances.map((advance) => (
+                    <tr key={advance.id}>
+                      <td style={{ width: '1%' }}><input type="checkbox" checked={selectedAdvances.includes(advance.id)} onChange={() => setSelectedAdvances((current) => toggleSelection(current, advance.id))} /></td>
+                      <td>{`${advance.documentCode}-${advance.documentId}`}</td>
+                      <td>{advance.payments.map((payment) => payment.name).join(', ')}</td>
+                      <td style={{ textAlign: 'right' }}>{formatNumber(advance.value)}</td>
+                    </tr>
+                  ))}
+                  <tr style={{ fontWeight: 'bold' }}><td colSpan={3}>{advancesApplied}</td><td style={{ textAlign: 'right' }}>{formatNumber(summary.applied)}</td></tr>
+                  <tr style={{ fontWeight: 'bold' }}><td colSpan={3}>{advancesToPay}</td><td style={{ textAlign: 'right' }}>{formatNumber(summary.toPay)}</td></tr>
+                </tbody>
+              </Table>
+            </Colxx>
+          </Row>
+        )}
         {isCash && (
           <>
             <Row>

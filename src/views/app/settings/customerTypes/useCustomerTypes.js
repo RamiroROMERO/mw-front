@@ -28,7 +28,8 @@ export const useCustomerTypes = ({ setLoading }) => {
     idCtaBon: '',
     idCtaIva: '',
     idCtaFlete: '',
-    idCtaOther: ''
+    idCtaOther: '',
+    advanceCtaCode: ''
   }, customerTypesValid);
 
   const fnGetData = () => {

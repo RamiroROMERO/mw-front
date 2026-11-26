@@ -14,6 +14,8 @@ import ModalSeekPosInvoices from './ModalSeekPosInvoices';
 import ModalImportInvoice from './ModalImportInvoice';
 import ModalHospitalEvents from './ModalHospitalEvents';
 import ModalHospitalCheckout from './ModalHospitalCheckout';
+import ModalAdvancePatients from './ModalAdvancePatients';
+import ModalAdvances from './ModalAdvances';
 import { isHospitalEnabled, SETTINGS_PATH } from './posHospitalRules';
 import { fromSearchRow } from './posCaptureRules';
 import ModalChangePrice from '../invoicing/ModalChangePrice';
@@ -82,6 +84,9 @@ const PointSales = (props) => {
   const [openModalHospitalEvents, setOpenModalHospitalEvents] = useState(false);
   const [openModalHospitalCheckout, setOpenModalHospitalCheckout] = useState(false);
   const [hospitalEvent, setHospitalEvent] = useState(null);
+  const [openModalAdvancePatients, setOpenModalAdvancePatients] = useState(false);
+  const [openModalAdvances, setOpenModalAdvances] = useState(false);
+  const [advanceCustomer, setAdvanceCustomer] = useState(null);
   const [sendFormIndex, setSendFormIndex] = useState(false);
   const [sendFormDetail, setSendFormDetail] = useState(false);
 
@@ -426,6 +431,21 @@ const PointSales = (props) => {
       return;
     }
     setOpenModalHospitalEvents(true);
+  }
+
+  // Adelantos de pacientes (SPEC v2-155-sr): se elige el paciente y se ven, registran, imprimen y anulan sus adelantos.
+  const fnAdvances = () => {
+    if (!dataCashBox || !(Number(dataCashBox.sessionId) > 0)) {
+      notification('warning', 'msg.required.cashOpening', 'alert.warning.title');
+      return;
+    }
+    setOpenModalAdvancePatients(true);
+  }
+
+  const fnAdvancePatientSelect = (row) => {
+    setAdvanceCustomer(row);
+    setOpenModalAdvancePatients(false);
+    setOpenModalAdvances(true);
   }
 
   const fnHospitalSelect = (row) => {
@@ -1069,6 +1089,10 @@ const PointSales = (props) => {
         title: "button.hospitalEvent",
         icon: "bi bi-hospital",
         onClick: fnHospitalEvent
+      }, {
+        title: "button.patientAdvances",
+        icon: "bi bi-cash-coin",
+        onClick: fnAdvances
       }] : [])
     ],
     buttonsOptions: [
@@ -1169,6 +1193,24 @@ const PointSales = (props) => {
     setOpen: setOpenModalHospitalEvents,
     maxWidth: 'lg',
     data: { fnSelect: fnHospitalSelect }
+  }
+
+  const propsToModalAdvancePatients = {
+    ModalContent: ModalAdvancePatients,
+    title: "page.pointSales.advance.patients.title",
+    open: openModalAdvancePatients,
+    setOpen: setOpenModalAdvancePatients,
+    maxWidth: 'lg',
+    data: { fnSelect: fnAdvancePatientSelect }
+  }
+
+  const propsToModalAdvances = {
+    ModalContent: ModalAdvances,
+    title: "page.pointSales.advance.title",
+    open: openModalAdvances,
+    setOpen: setOpenModalAdvances,
+    maxWidth: 'lg',
+    data: { customer: advanceCustomer, sessionId: dataCashBox ? dataCashBox.sessionId : 0, listTypePayments, setLoading }
   }
 
   const propsToModalHospitalCheckout = {
@@ -1451,6 +1493,8 @@ const PointSales = (props) => {
       <Modal {...propsToModalImport} />
       <Modal {...propsToImportPayment} />
       <Modal {...propsToModalHospitalEvents} />
+      <Modal {...propsToModalAdvancePatients} />
+      {advanceCustomer && openModalAdvances && <Modal {...propsToModalAdvances} />}
       {hospitalEvent && <Modal {...propsToModalHospitalCheckout} />}
       <Modal {...propsToModalCashOpening} />
       <Modal {...propsToModalCashClose} />

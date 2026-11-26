@@ -7,7 +7,7 @@ import { Button, Card, CardBody, Row } from 'reactstrap'
 
 export const Detail = ({formState, listAccount, onInputChange, formValidation, fnSave, fnClearInputs, sendForm}) => {
 
-  const { name, status, descrip, isCash, idCtaIng, idCtaCxp, idCtaDesc, idCtaBon, idCtaIva, idCtaFlete, idCtaOther } = formState;
+  const { name, status, descrip, isCash, idCtaIng, idCtaCxp, idCtaDesc, idCtaBon, idCtaIva, idCtaFlete, idCtaOther, advanceCtaCode } = formState;
 
   const { nameValid, idCtaIngValid, idCtaCxpValid, idCtaDescValid, idCtaIvaValid } = formValidation;
 
@@ -106,6 +106,15 @@ export const Detail = ({formState, listAccount, onInputChange, formValidation, f
               label="page.customerTypes.select.idCtaOther"
               name="idCtaOther"
               inputValue={idCtaOther}
+              onChange={onInputChange}
+              options={listAccount}
+            />
+          </Colxx>
+          <Colxx xss="12" xs="12" sm="6" lg="12">
+            <SearchSelect
+              label="page.customerTypes.select.advanceCtaCode"
+              name="advanceCtaCode"
+              inputValue={advanceCtaCode}
               onChange={onInputChange}
               options={listAccount}
             />
