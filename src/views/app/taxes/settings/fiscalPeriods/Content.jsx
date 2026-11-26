@@ -45,7 +45,7 @@ const FiscalPeriods = (props) => {
                   />
                   {sendForm && activeValid && <div className="text-danger small">{intl.formatMessage({ id: activeValid })}</div>}
                 </Colxx>
-                <Colxx xxs="12" xs="6">
+                <Colxx xxs="6">
                   <DateCalendar
                     name="dateIn"
                     value={dateIn}
@@ -55,7 +55,7 @@ const FiscalPeriods = (props) => {
                     feedbackText={sendForm && (dateInValid || null)}
                   />
                 </Colxx>
-                <Colxx xxs="12" xs="6">
+                <Colxx xxs="6">
                   <DateCalendar
                     name="dateOut"
                     value={dateOut}
