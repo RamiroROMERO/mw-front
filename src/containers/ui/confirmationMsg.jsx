@@ -24,7 +24,7 @@ const Confirmation = (props) => {
     <div className="confirmation-container lg" style={SIZES[size] ? { width: SIZES[size] } : undefined}>
       <Alert className="notification-primary" isOpen={open}>
         <Row>
-          <Colxx xxs="2">
+          <Colxx xxs="2" className="confirmation-icon-col">
             <i className="notification-icon bi bi-question-circle" />
           </Colxx>
           <Colxx xxs="10">

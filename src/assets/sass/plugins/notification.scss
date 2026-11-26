@@ -247,6 +247,19 @@
   overflow-y: auto;
 }
 
+// Icono de la pregunta: centrado en su columna y con aire arriba (el estilo general de .notification-icon lo pega a la izquierda con un margen negativo).
+.confirmation-container .confirmation-icon-col {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 0.6rem;
+
+  .notification-icon {
+    margin-left: 0 !important;
+    margin-top: 0.4rem;
+  }
+}
+
 .notification {
   box-sizing: border-box;
   padding: 15px 15px 15px 15px;
