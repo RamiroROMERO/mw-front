@@ -309,6 +309,7 @@ const esLang = {
   "msg.required.radio.type": "Por favor seleccione un tipo de producto!",
   "msg.required.radio.typeRequest": "Por favor seleccione un tipo de solicitud!",
   "msg.required.radio.providerType": "Seleccione tipo de Proveedor",
+  "msg.users.assignAccess.forbidden": "No tiene el acceso 'Asignar/Re-Asignar Accesos': no puede ver ni cambiar los accesos de ningún usuario",
   "msg.required.list.privileges": "Por favor seleccione al menos un privilegio",
   "msg.required.check.useArea": "Por favor seleccione almenos una area de uso",
   "msg.required.select.taxDocumentId": "Por favor seleccione un tipo de documento fiscal",

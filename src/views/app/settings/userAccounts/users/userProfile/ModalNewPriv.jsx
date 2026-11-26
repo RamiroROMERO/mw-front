@@ -61,22 +61,14 @@ const ModalNewPriv = (props) => {
       }
     }
 
-    const newData = [];
-
-    listPrivSelected.forEach((item) => {
-      newData.push({
-        userId: userData.id,
-        moduleId: item.moduleId,
-        code: item.code,
-        fnCreate,
-        fnUpdate,
-        fnDelete,
-        active: 1
-      });
-    });
+    // SPEC v2-164-sr: un solo cuerpo { userId, items }; el módulo y el nombre de cada acceso los toma el back del catálogo.
+    const newData = {
+      userId: userData.id,
+      items: listPrivSelected.map((item) => ({ code: item.code, fnCreate, fnUpdate, fnDelete, active: 1 }))
+    };
 
     setLoading(true);
-    request.POST('admin/userModules/createMany', newData, (resp) => {
+    request.POST('admin/userModules', newData, (resp) => {
       fnGetData();
       setOpen(false);
       setLoading(false);

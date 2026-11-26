@@ -31,6 +31,14 @@
     "void.paymentsApplied"
   ],
   "descriptionOnly": [
+    "access.code.duplicated",
+    "access.code.invalid",
+    "access.flag.invalid",
+    "access.items.required",
+    "access.items.tooMany",
+    "access.lastAssigner",
+    "access.user.invalid",
+    "access.user.required",
     "account.blocked",
     "account.code.duplicate",
     "account.code.immutable",

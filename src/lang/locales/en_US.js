@@ -308,6 +308,7 @@ const enLang = {
   "msg.required.radio.type": "Please select a product type!",
   "msg.required.radio.typeRequest": "Please select a type request!",
   "msg.required.radio.providerType": "Please Select Provider Type",
+  "msg.users.assignAccess.forbidden": "You do not have the 'Assign/Re-Assign Access' permission: you cannot view or change any user's access",
   "msg.required.list.privileges": "Please select at least one privilege",
   "msg.required.check.useArea": "Please select at least one area of use",
   "msg.required.select.taxDocumentId": "Please select a fiscal document type",

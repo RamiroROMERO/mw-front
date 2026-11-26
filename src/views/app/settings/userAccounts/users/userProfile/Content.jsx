@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Card, CardBody, CardTitle, Row, Button, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import classnames from 'classnames';
-import { IntlMessages, validInt, getCurrentUser } from "@Helpers/Utils";
+import { IntlMessages, validInt, getCurrentUser, getPrivilegeData } from "@Helpers/Utils";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { adminRoot } from '@Constants/defaultValues';
 import { InputField } from '@Components/inputFields';
@@ -289,6 +289,12 @@ const UserProfile = (props) => {
   }
 
   const fnGetData = () => {
+    // Ver o cambiar accesos exige "Asignar/Re-Asignar Accesos" (99.20.011), también para los propios (SPEC v2-164-sr).
+    if (!getPrivilegeData('99.20.011')?.active) {
+      notification('warning', 'msg.users.assignAccess.forbidden', 'alert.warning.title');
+      setLoading(false);
+      return;
+    }
     request.GET('admin/modules', (resp) => {
       const modules = resp.data;
       setListModules(modules);
