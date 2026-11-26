@@ -77,9 +77,8 @@ const ModalEditPriv = (props) => {
               {IntlMessages("page.users.privileges.modal.editPrivileges.input.privilegeName")}
             </span>
             <h6 className="d-inline">
-              {currentItemPriv?.name || currentItemPriv?.adminModulesDetail?.name || currentItemPriv?.code}
+              {[currentItemPriv?.code, currentItemPriv?.name || currentItemPriv?.adminModulesDetail?.name].filter(Boolean).join(' - ')}
             </h6>
-            {currentItemPriv?.code ? <span className="text-muted text-small ms-2">{currentItemPriv.code}</span> : null}
           </Colxx>
         </Row>
         <Row>
