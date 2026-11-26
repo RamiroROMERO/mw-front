@@ -4,6 +4,7 @@ import { Colxx } from '@Components/common/CustomBootstrap';
 import { InputField } from '@Components/inputFields';
 import { SimpleSelect } from '@Components/simpleSelect';
 import { Checkbox } from '@Components/checkbox';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
 import Modal from "@Components/modal";
 import ReactTable from "@Components/reactTable";
 import SearchSelect from '@Components/SearchSelect/SearchSelect';
@@ -72,7 +73,9 @@ const StoresProducts = (props) => {
             <CardBody>
               <Form>
                 <Row>
-                  <Colxx xxs="12" md="6" lg="5" xl="4">
+                  <Colxx xxs="12" lg="8">
+                    <Row>
+                  <Colxx xxs="12" md="6">
                     <SearchSelect
                       name="storeId"
                       inputValue={storeId}
@@ -84,7 +87,7 @@ const StoresProducts = (props) => {
                       feedbackText={showError('storeId')}
                     />
                   </Colxx>
-                  <Colxx xxs="12" md="6" lg="7" xl="5" onKeyDown={onProductKeyDown}>
+                  <Colxx xxs="12" md="6" onKeyDown={onProductKeyDown}>
                     <SearchSelect
                       name="productCode"
                       inputValue={productCode}
@@ -98,7 +101,7 @@ const StoresProducts = (props) => {
                       feedbackText={showError('productCode')}
                     />
                   </Colxx>
-                  <Colxx xxs="12" md="6" lg="3" xl="3">
+                  <Colxx xxs="12" md="6">
                     <SimpleSelect
                       name="locationId"
                       onChange={onInputChange}
@@ -109,47 +112,47 @@ const StoresProducts = (props) => {
                       feedbackText={showError('locationId')}
                     />
                   </Colxx>
-                  <Colxx xxs="12" xs="6" sm="4" md="3">
-                    <InputField
-                      value={stock}
-                      name="stock"
-                      onChange={onInputChange}
-                      type="text"
-                      disabled
-                      label="page.storesProducts.input.currentExistence"
-                    />
-                  </Colxx>
-                  <Colxx xxs="12" xs="6" sm="4" md="3">
-                    <InputField
-                      value={qtyMin}
-                      name="qtyMin"
-                      onChange={onInputChange}
-                      type="text"
-                      maxLength={15}
-                      invalid={sendForm && !!errors.qtyMin}
-                      feedbackText={showError('qtyMin')}
-                      label="page.storesProducts.input.qtyMin"
-                    />
-                  </Colxx>
-                  <Colxx xxs="12" xs="6" sm="4" md="3">
-                    <InputField
-                      value={qtyMax}
-                      name="qtyMax"
-                      onChange={onInputChange}
-                      type="text"
-                      maxLength={15}
-                      invalid={sendForm && !!errors.qtyMax}
-                      feedbackText={showError('qtyMax')}
-                      label="page.storesProducts.input.qtyMax"
-                    />
-                  </Colxx>
-                  <Colxx xxs="12" xs="6" xl="3">
+                  <Colxx xxs="12" md="6">
                     <Checkbox
                       onChange={onInputChange}
                       name="status"
                       value={status}
                       label="page.storesProducts.check.status"
                     />
+                  </Colxx>
+                    </Row>
+                  </Colxx>
+                  <Colxx xxs="12" lg="4">
+                    <ContainerWithLabel>
+                      <InputField
+                        value={stock}
+                        name="stock"
+                        onChange={onInputChange}
+                        type="text"
+                        disabled
+                        label="page.storesProducts.input.currentExistence"
+                      />
+                      <InputField
+                        value={qtyMin}
+                        name="qtyMin"
+                        onChange={onInputChange}
+                        type="text"
+                        maxLength={15}
+                        invalid={sendForm && !!errors.qtyMin}
+                        feedbackText={showError('qtyMin')}
+                        label="page.storesProducts.input.qtyMin"
+                      />
+                      <InputField
+                        value={qtyMax}
+                        name="qtyMax"
+                        onChange={onInputChange}
+                        type="text"
+                        maxLength={15}
+                        invalid={sendForm && !!errors.qtyMax}
+                        feedbackText={showError('qtyMax')}
+                        label="page.storesProducts.input.qtyMax"
+                      />
+                    </ContainerWithLabel>
                   </Colxx>
                 </Row>
                 <Row>
