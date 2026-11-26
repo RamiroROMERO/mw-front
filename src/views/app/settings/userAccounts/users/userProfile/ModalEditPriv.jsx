@@ -12,7 +12,7 @@ const ModalEditPriv = (props) => {
   const [optCreate, setOptCreate] = useState(currentItemPriv ? currentItemPriv.fnCreate : false);
   const [optUpdate, setOptUpdate] = useState(currentItemPriv ? currentItemPriv.fnUpdate : false);
   const [optDelete, setOptDelete] = useState(currentItemPriv ? currentItemPriv.fnDelete : false);
-  const [status, setStatus] = useState(currentItemPriv.active ? (currentItemPriv.active === 1) : false);
+  const [status, setStatus] = useState(currentItemPriv.active === true || Number(currentItemPriv.active) === 1);
   const [showOptions, setShowOptions] = useState('block');
 
   const mapSetValue = {
