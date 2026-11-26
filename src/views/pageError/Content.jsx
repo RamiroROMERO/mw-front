@@ -18,7 +18,7 @@ const Content = (props) => {
             </p> */}
             <p className="display-1 fw-bold mb-5">500</p>
             <NavLink
-              to={adminRoot}
+              to={adminRoot || '/'}
               className="btn btn-primary btn-shadow btn-lg"
             >
               <IntlMessages id="pages.go-back-home" />
