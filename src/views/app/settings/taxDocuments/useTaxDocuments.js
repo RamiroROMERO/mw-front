@@ -1,4 +1,4 @@
-import { request } from '@Helpers/core';
+import { buildUrl, request } from '@Helpers/core';
 import DateHelper from '@Helpers/DateHelper';
 import { useForm } from '@Hooks/useForms';
 import { useEffect, useState } from 'react'
@@ -8,6 +8,8 @@ export const useTaxDocuments = ({ setLoading }) => {
   const [tableData, setTableData] = useState([]);
   const [openMsgQuestion, setOpenMsgQuestion] = useState(false);
   const [sendForm, setSendForm] = useState(false);
+  const [listDepartments, setListDepartments] = useState([]);
+  const [listMunicipalities, setListMunicipalities] = useState([]);
 
   const taxDocumentsValid = {
     name: [(val) => val.length > 5, "msg.required.input.name"],
@@ -62,8 +64,32 @@ export const useTaxDocuments = ({ setLoading }) => {
     });
   }
 
+  // Los municipios dependen del departamento elegido (admin_deptos / admin_munic).
+  const onMunicRefresh = (deptoCode) => {
+    if (!deptoCode) {
+      setListMunicipalities([]);
+      return;
+    }
+    request.GET(buildUrl('admin/locateMunic/getSL', { codeDepto: deptoCode }), (resp) => {
+      setListMunicipalities(resp.data.map((item) => ({ id: item.code, name: item.name })));
+    }, () => { });
+  }
+
+  const onDeptoChange = ({ target }) => {
+    const { value } = target;
+    onBulkForm({ ...formState, codeDepto: value, codeMunic: '' });
+    onMunicRefresh(value);
+  }
+
+  // Al elegir un documento de la tabla se cargan también los municipios de su departamento.
+  const onBulkFormWithMunic = (item) => {
+    onBulkForm(item);
+    onMunicRefresh(item?.codeDepto);
+  }
+
   const fnClearInputs = () => {
     onResetForm();
+    setListMunicipalities([]);
     setSendForm(false);
   }
 
@@ -115,6 +141,9 @@ export const useTaxDocuments = ({ setLoading }) => {
 
   useEffect(() => {
     fnGetData();
+    request.GET('admin/locateDeptos/getSL', (resp) => {
+      setListDepartments(resp.data.map((item) => ({ id: item.code, name: item.name })));
+    }, () => { });
 
 
   }, []);
@@ -123,7 +152,7 @@ export const useTaxDocuments = ({ setLoading }) => {
 
   const propsToDetailTable = {
     tableData,
-    onBulkForm,
+    onBulkForm: onBulkFormWithMunic,
     setOpenMsgQuestion
   }
 
@@ -134,7 +163,10 @@ export const useTaxDocuments = ({ setLoading }) => {
     sendForm,
     onInputChange,
     fnSave,
-    fnClearInputs
+    fnClearInputs,
+    listDepartments,
+    listMunicipalities,
+    onDeptoChange
   };
 
   return (

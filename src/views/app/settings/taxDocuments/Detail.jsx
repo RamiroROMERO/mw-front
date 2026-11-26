@@ -3,11 +3,12 @@ import { Colxx } from '@Components/common/CustomBootstrap'
 import { ContainerWithLabel } from '@Components/containerWithLabel'
 import DateCalendar from '@Components/dateCalendar'
 import { InputField } from '@Components/inputFields'
+import { SimpleSelect } from '@Components/simpleSelect'
 import { IntlMessages } from '@Helpers/Utils'
 // import ReactInputMask from 'react-input-mask'
 import { Button, Card, CardBody, Row } from 'reactstrap'
 
-const Detail = ({ formState, onInputChange, formValidation, fnSave, fnClearInputs, sendForm }) => {
+const Detail = ({ formState, onInputChange, formValidation, fnSave, fnClearInputs, sendForm, listDepartments, listMunicipalities, onDeptoChange }) => {
 
   const { name, description, cai1, cai2, cai3, cai4, cai5, cai6, ndoc1, ndoc2, ndoc3, ndoc4, limitDate, noRange, minDoctos, status,
     codeDepto, codeMunic, autoCorrelative, modifyInventory, internalCorrelative } = formState;
@@ -195,21 +196,21 @@ const Detail = ({ formState, onInputChange, formValidation, fnSave, fnClearInput
             />
           </Colxx>
           <Colxx xxs="12" xs="4" sm="3" lg="3">
-            <InputField
-              value={codeDepto}
+            <SimpleSelect
+              label="select.department"
               name="codeDepto"
-              onChange={onInputChange}
-              type="text"
-              label="page.taxDocument.input.codeDepto"
+              value={codeDepto}
+              onChange={onDeptoChange}
+              options={listDepartments}
             />
           </Colxx>
           <Colxx xxs="12" xs="4" sm="3" lg="3">
-            <InputField
-              value={codeMunic}
+            <SimpleSelect
+              label="select.municipality"
               name="codeMunic"
+              value={codeMunic}
               onChange={onInputChange}
-              type="text"
-              label="page.taxDocument.input.codeMunic"
+              options={listMunicipalities}
             />
           </Colxx>
           <Colxx xxs="12" xs="4" sm="3" lg="3">
