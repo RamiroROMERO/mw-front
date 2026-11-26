@@ -48,8 +48,6 @@ export const useTaxDocuments = ({ setLoading }) => {
     codeDepto: '',
     codeMunic: '',
     autoCorrelative: false,
-    modifyInventory: false,
-    internalCorrelative: '',
     status: true
   }, taxDocumentsValid);
 
