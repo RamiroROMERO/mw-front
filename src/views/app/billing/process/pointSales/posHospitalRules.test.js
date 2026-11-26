@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import {
-  isHospitalEnabled, buildPreviewParams, validateExtras, buildHospitalRows, validateHospitalCheckout, buildHospitalCheckoutPayload, previewPath, EVENTS_PATH, CHECKOUT_PATH, SETTINGS_PATH
+  isHospitalEnabled, buildPreviewParams, validateExtras, buildHospitalRows, validateHospitalCheckout, buildHospitalCheckoutPayload, previewPath, EVENTS_PATH, CHECKOUT_PATH, SETTINGS_PATH, hospitalPrintRequest, canPrintHospital, HOSPITAL_PRINT_FORMATS
 } from './posHospitalRules';
 
 const rows = [{ id: 1, name: 'Efectivo', isDefault: true, value: '', reference: '' }, { id: 2, name: 'Tarjeta', isDefault: false, value: '', reference: '' }];
@@ -69,5 +69,16 @@ describe('posHospitalRules', () => {
     });
     expect(Object.keys(payload)).not.toEqual(expect.arrayContaining(['total', 'copayment', 'details']));
     expect(buildHospitalCheckoutPayload({ sessionId: 9, event, form: form({ saleType: 2 }), rows: paid }).payments).toEqual([]);
+  });
+});
+
+describe('formatos hospitalarios de la factura (v2-158-sr)', () => {
+  test('la petición es un GET con el formato y solo se imprime una factura guardada con un formato válido', () => {
+    expect(HOSPITAL_PRINT_FORMATS).toEqual([2, 3, 4]);
+    expect(hospitalPrintRequest({ id: 7, format: '3' })).toEqual({ url: 'billing/process/pointSales/hospital/invoices/7/print', params: { format: 3 } });
+    expect(canPrintHospital(7, 2)).toBe(true);
+    expect(canPrintHospital(0, 2)).toBe(false);
+    expect(canPrintHospital(7, 1)).toBe(false);
+    expect(canPrintHospital(7, 5)).toBe(false);
   });
 });

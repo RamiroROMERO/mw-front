@@ -67,3 +67,8 @@ export const buildHospitalCheckoutPayload = ({ sessionId, event, form, rows }) =
     ? (rows || []).filter((row) => (toCents(row.value) || 0) > 0).map((row) => ({ paymentTypeDetailId: row.id, amount: Number(row.value), reference: row.reference || '' }))
     : []
 });
+
+// Formatos hospitalarios de la factura (SPEC v2-158-sr): 2 = aseguradora agrupada por tipo, 3 = consulta médica y 4 = resumida. El formato 1 es la impresión común del POS.
+export const HOSPITAL_PRINT_FORMATS = [2, 3, 4];
+export const hospitalPrintRequest = ({ id, format }) => ({ url: `${HOSPITAL_PATH}/invoices/${id}/print`, params: { format: Number(format) } });
+export const canPrintHospital = (id, format) => Number(id) > 0 && HOSPITAL_PRINT_FORMATS.includes(Number(format));

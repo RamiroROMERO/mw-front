@@ -18,7 +18,7 @@ import ModalAdvancePatients from './ModalAdvancePatients';
 import ModalAdvances from './ModalAdvances';
 import ModalHonorariumEvents from './ModalHonorariumEvents';
 import ModalHonorariums from './ModalHonorariums';
-import { isHospitalEnabled, SETTINGS_PATH } from './posHospitalRules';
+import { isHospitalEnabled, SETTINGS_PATH, hospitalPrintRequest, canPrintHospital } from './posHospitalRules';
 import { fromSearchRow } from './posCaptureRules';
 import ModalChangePrice from '../invoicing/ModalChangePrice';
 import ModalCashOpening from './ModalCashOpening';
@@ -503,6 +503,24 @@ const PointSales = (props) => {
       return;
     }
     fnOpenPosInvoicePdf(id, 'delivery');
+  }
+
+  // Formatos hospitalarios 2 a 4 de la factura cargada (SPEC v2-158-sr): se ven en el visor de PDF, como la impresión común.
+  const fnPrintHospital = (format) => {
+    if (!canPrintHospital(id, format)) {
+      notification('warning', 'msg.print.saveFirst', 'alert.warning.title');
+      return;
+    }
+    const { url, params } = hospitalPrintRequest({ id, format });
+    setLoading(true);
+    request.GETPdfUrl(url, params, (resp) => {
+      setDocumentPath(resp);
+      setOpenViewFile(true);
+      setLoading(false);
+    }, (err) => {
+      notifyError(err, 'msg.print.error');
+      setLoading(false);
+    }, 'GET');
   }
 
   const fnCancelInvoicing = () => {
@@ -1121,6 +1139,11 @@ const PointSales = (props) => {
     ],
     buttonsOptions: [
       { title: "button.deliveryDoc", icon: "bi bi-truck", onClick: fnPrintDelivery },
+      ...(hospitalEnabled ? [
+        { title: "button.hospitalInsurerInvoice", icon: "bi bi-hospital", onClick: () => fnPrintHospital(2) },
+        { title: "button.hospitalConsultInvoice", icon: "bi bi-file-medical", onClick: () => fnPrintHospital(3) },
+        { title: "button.hospitalSummaryInvoice", icon: "bi bi-file-text", onClick: () => fnPrintHospital(4) }
+      ] : []),
       ...(editInfoControl.fnUpdate && canEditPosted ? [
         { title: "button.editInfo", icon: "bi bi-pencil-square", onClick: fnEditInfo },
         { title: "button.editCostDistribution", icon: "bi bi-diagram-3", onClick: fnEditCostDist }
