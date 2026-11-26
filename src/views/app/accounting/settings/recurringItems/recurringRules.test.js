@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isValidAmount, toCents, validateHeader, validateLine, validateDocument } from './recurringRules';
+import { describeLineAccount, isValidAmount, toCents, validateHeader, validateLine, validateDocument } from './recurringRules';
 
 const line = (extra = {}) => ({ idCtaAccount: '1010101', name: 'Sinopsis', valDebe: 100, valHaber: 0, referenceCode: '', ...extra });
 const header = (extra = {}) => ({ name: 'Alquiler', descrip: 'Mensual', dayRun: '5', ...extra });
@@ -49,5 +49,20 @@ describe('recurringRules (mismos casos que RecurringItemDTO del back)', () => {
 
   it('una línea inválida dentro del documento se reporta antes del cuadre', () => {
     expect(validateDocument({ header: header(), lines: [line({ name: '' })] }).documentError).toContain('missingSynopsis');
+  });
+});
+
+describe('describeLineAccount', () => {
+  it('código y descripción juntos, sin repetir el código de la etiqueta del combo', () => {
+    expect(describeLineAccount({ idCtaAccount: '1010101', accountName: 'CAJA GENERAL' })).toBe('1010101 - CAJA GENERAL');
+    expect(describeLineAccount({ idCtaAccount: '1010101', accountName: '1010101 - CAJA GENERAL' })).toBe('1010101 - CAJA GENERAL');
+    expect(describeLineAccount({ idCtaAccount: '1010101', accountName: '' })).toBe('1010101');
+    expect(describeLineAccount({ idCtaAccount: '1010101', accountName: '1010101' })).toBe('1010101');
+    expect(describeLineAccount({ idCtaAccount: '', accountName: 'SOLO NOMBRE' })).toBe('SOLO NOMBRE');
+    expect(describeLineAccount(null)).toBe('');
+    // con el formato de cuentas el número sale formateado según su largo
+    expect(describeLineAccount({ idCtaAccount: '1010101', accountName: 'CAJA GENERAL' }, '#####-##-###')).toBe('10101-01 - CAJA GENERAL');
+    expect(describeLineAccount({ idCtaAccount: '1010101001', accountName: '1010101001 - BANCO' }, '#####-##-###')).toBe('10101-01-001 - BANCO');
+    expect(describeLineAccount({ idCtaAccount: '101', accountName: '' }, '#####-##-###')).toBe('101');
   });
 });

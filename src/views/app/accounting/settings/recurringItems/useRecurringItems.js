@@ -13,6 +13,7 @@ import { PRIVILEGE_SCREEN, validateLine, validateDocument } from './recurringRul
 export const useRecurringItems = ({ setLoading }) => {
   const [lines, setLines] = useState([]);
   const [listAccounts, setListAccounts] = useState([]);
+  const [accountFormat, setAccountFormat] = useState('');
   const [openSearchModal, setOpenSearchModal] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [openEditLineModal, setOpenEditLineModal] = useState(false);
@@ -48,6 +49,8 @@ export const useRecurringItems = ({ setLoading }) => {
   const { id, name, descrip, dayRun, status } = formState;
 
   useEffect(() => {
+    // Formato de cuentas (cont_ctas_set) para mostrar el número de cuenta formateado en el detalle.
+    request.GET('accounting/settings/accountants/format', (resp) => setAccountFormat(resp.data?.format || ''), () => { });
     request.GET('accounting/settings/accountants/getSL', (resp) => {
       setListAccounts(resp.data.map((item) => ({ label: `${item.cta} - ${item.nombre}`, value: item.cta, name: item.nombre })));
     }, () => { });
@@ -216,7 +219,7 @@ export const useRecurringItems = ({ setLoading }) => {
 
   return {
     formState, onInputChange, errors, privileges,
-    lines, totals, listAccounts,
+    lines, totals, listAccounts, accountFormat,
     fnNew, fnSave, fnOpenSearch, fnSelectEntry,
     fnAddLine, fnEditLine, fnUpdateLine, fnAskDeleteLine, fnUpdateAllLinesDescription,
     fnAskDeleteDoc,

@@ -1,3 +1,4 @@
+import { formatAccountCode } from '@Helpers/accountFormat';
 // Reglas de Partidas Recurrentes (cont_pdas_pre.sc2, SPEC v2-121-sr): las MISMAS del RecurringItemDTO y del servicio del back, para avisar por campo sin llamar al back.
 // Los textos son ids de traducción (el componente los traduce).
 export const PRIVILEGE_SCREEN = '03.01.014';
@@ -57,4 +58,15 @@ export const validateDocument = ({ header, lines }) => {
     if (debit !== credit) documentError = 'page.recurringItems.msg.unbalanced';
   }
   return { headerErrors, documentError };
+};
+
+// Cuenta de una línea del detalle: "código - descripción". Las líneas que vienen del back traen solo el nombre y las agregadas en pantalla ya traen "código - nombre" (la etiqueta del combo): se
+// quita el código repetido para no mostrarlo dos veces.
+export const describeLineAccount = (line, format = '') => {
+  const code = String(line?.idCtaAccount ?? '').trim();
+  let name = String(line?.accountName ?? '').trim();
+  if (code && name.startsWith(code)) name = name.slice(code.length).replace(/^\s*-\s*/, '').trim();
+  const shown = formatAccountCode(code, format);
+  if (!code) return name;
+  return name && name !== code ? `${shown} - ${name}` : shown;
 };

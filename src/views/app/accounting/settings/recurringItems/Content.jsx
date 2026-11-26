@@ -9,7 +9,7 @@ import ControlPanel from '@Components/controlPanel';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import { useRecurringItems } from './useRecurringItems';
-import { MAX_NAME, MAX_REFERENCE } from './recurringRules';
+import { MAX_NAME, MAX_REFERENCE, describeLineAccount } from './recurringRules';
 import ModalEditLine from './ModalEditLine';
 import ModalSearchEntry from './ModalSearchEntry';
 
@@ -27,7 +27,7 @@ const RecurringItems = ({ setLoading }) => {
     fnAskDeleteDoc,
     openSearchModal, setOpenSearchModal, searchResults,
     openEditLineModal, setOpenEditLineModal, editingLine,
-    propsToMsgDeleteLine, propsToMsgDeleteDoc
+    propsToMsgDeleteLine, propsToMsgDeleteDoc, accountFormat
   } = useRecurringItems({ setLoading });
 
   const { name, descrip, dayRun, status } = formState;
@@ -137,7 +137,7 @@ const RecurringItems = ({ setLoading }) => {
           <tbody>
             {lines.map((line, idx) => (
               <tr key={line.id || line.tempId || idx}>
-                <td>{line.accountName || line.idCtaAccount}</td>
+                <td>{describeLineAccount(line, accountFormat)}</td>
                 <td>{line.referenceCode}</td>
                 <td align="right">{formatNumber(line.valDebe)}</td>
                 <td align="right">{formatNumber(line.valHaber)}</td>
