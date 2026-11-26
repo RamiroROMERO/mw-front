@@ -10,6 +10,13 @@ import menuTesting from '@Constants/menu';
 
 const fnValidMenuItems = (menuItems) => {
 
+  // El menú de Ajustes solo lo ve un administrador del sistema (el back igual exige los privilegios de cada pantalla).
+  let currentUser = null;
+  try { currentUser = JSON.parse(localStorage.getItem('mw_current_user')); } catch { currentUser = null; }
+  if (Number(currentUser?.isSystemAdmin) !== 1) {
+    menuItems = menuItems.filter(menu => menu.id !== 'settings');
+  }
+
   const companyData = JSON.parse(localStorage.getItem('mw_current_company'));
   if (companyData) {
     const { enableBankMenu, enableContabMenu, enableFixedAssetsMenu, enableHospitalMenu, enableInventoryMenu, enableInvoiceMenu,
