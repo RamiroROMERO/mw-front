@@ -10,7 +10,8 @@ const CompanyInformation = React.lazy(() => import('@Views/app/settings/companyI
 const Currency = React.lazy(() => import('@Views/app/settings/currency'));
 const ProviderTypes = React.lazy(() => import('@Views/app/settings/providerTypes'));
 const CustomerTypes = React.lazy(() => import('@Views/app/settings/customerTypes'));
-const Intercompanies = React.lazy(() => import('@Views/app/settings/intercompanies'));
+// Intercompañías oculto hasta que se necesite: descomentar este import y su ruta para mostrarlo de nuevo.
+// const Intercompanies = React.lazy(() => import('@Views/app/settings/intercompanies'));
 const UserAccounts = React.lazy(() => import('@Views/app/settings/userAccounts'));
 const Users = React.lazy(() => import('@Views/app/settings/userAccounts/users'));
 const UserProfile = React.lazy(() => import('@Views/app/settings/userAccounts/users/userProfile'));
@@ -53,9 +54,11 @@ const SettingsRoutes = (props) => {
     <Route
       path={`/customerTypes`}
       element={<CustomerTypes {...props} setLoading={setLoading} match={{ isExact: true, params: {} }} />} />
+    {/* Intercompañías: oculto hasta que se necesite (hoy cae en "página no encontrada").
     <Route
       path={`/intercompanies`}
       element={<Intercompanies {...props} setLoading={setLoading} match={{ isExact: true, params: {} }} />} />
+    */}
     <Route
       path={`/format`}
       element={<Format {...props} setLoading={setLoading} match={{ isExact: true, params: {} }} />} />
