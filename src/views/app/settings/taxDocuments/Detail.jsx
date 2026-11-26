@@ -11,7 +11,7 @@ import { Button, Card, CardBody, Row } from 'reactstrap'
 const Detail = ({ formState, onInputChange, formValidation, fnSave, fnClearInputs, sendForm, listDepartments, listMunicipalities, onDeptoChange }) => {
 
   const { name, description, cai1, cai2, cai3, cai4, cai5, cai6, ndoc1, ndoc2, ndoc3, ndoc4, limitDate, noRange, minDoctos, status,
-    codeDepto, codeMunic, autoCorrelative } = formState;
+    codeDepto, codeMunic } = formState;
 
   const { nameValid, descriptionValid, cai1Valid, cai2Valid, cai3Valid, cai4Valid, cai5Valid, cai6Valid,
     ndoc1Valid, ndoc2Valid, ndoc3Valid, ndoc4Valid, limitDateValid, noRangeValid } = formValidation;
@@ -211,14 +211,6 @@ const Detail = ({ formState, onInputChange, formValidation, fnSave, fnClearInput
               value={codeMunic}
               onChange={onInputChange}
               options={listMunicipalities}
-            />
-          </Colxx>
-          <Colxx xxs="12" xs="12" sm="12" lg="4">
-            <Checkbox
-              onChange={onInputChange}
-              name="autoCorrelative"
-              value={autoCorrelative}
-              label="page.taxDocument.check.autoCorrelative"
             />
           </Colxx>
           <Colxx xxs="12" className="div-content-right">

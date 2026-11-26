@@ -47,7 +47,6 @@ export const useTaxDocuments = ({ setLoading }) => {
     minDoctos: '',
     codeDepto: '',
     codeMunic: '',
-    autoCorrelative: false,
     status: true
   }, taxDocumentsValid);
 
