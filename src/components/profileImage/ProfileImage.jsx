@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Card,
   CardBody,
-  CardImg,
   Button,
   Input,
 } from 'reactstrap';
@@ -43,18 +42,16 @@ const ProfileImage = ({ initialImage, onUploadFiles = null }) => {
         <div
           style={{
             width: '100%',
-            paddingTop: '100%', // cuadrado perfecto
-            position: 'relative',
+            aspectRatio: '1 / 1', // cuadrado perfecto: el círculo no se ovala con fotos que no son cuadradas
             marginBottom: '10px',
           }}
         >
-          <CardImg
+          {/* <img> simple: las reglas de .card-img del tema alteraban el alto y la imagen salía ovalada */}
+          <img
             src={image || 'https://via.placeholder.com/150'}
             alt="Sin Imagen"
             style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
+              display: 'block',
               width: '100%',
               height: '100%',
               objectFit: 'cover',
