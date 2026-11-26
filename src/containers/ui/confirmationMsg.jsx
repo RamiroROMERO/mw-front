@@ -30,6 +30,7 @@ const Confirmation = (props) => {
           </Colxx>
         </Row>
         {(textLegend !== '' && textLegend !== '') && <Row><Colxx xxs={12}><p>{textLegend}</p></Colxx></Row>}
+        <hr className="my-3" />
         <Row>
           <Colxx xxs="12" className="div-action-button-container">
             <Button outline color="danger" onClick={fnOnOk}><i className="bi bi-check-lg" /> {IntlMessages("alert.question.yes")}</Button>
