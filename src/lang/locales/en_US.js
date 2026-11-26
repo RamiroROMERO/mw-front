@@ -1662,6 +1662,7 @@ const enLang = {
   "page.users.privileges.table.delete": "Delete",
   "page.users.privileges.table.status": "Active",
   "page.users.privileges.modal.addPrivileges.title": "Assign privileges",
+  "page.users.privileges.modal.editPrivileges.input.privilegeName": "Privilege",
   "page.users.privileges.modal.addPrivileges.input.moduleName": "Module",
   "page.users.privileges.modal.addPrivileges.privileges.title": "Privileges",
   "page.users.privileges.modal.addPrivileges.options.title": "Options",

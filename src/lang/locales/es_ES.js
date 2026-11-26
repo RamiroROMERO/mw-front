@@ -1693,6 +1693,7 @@ const esLang = {
   "page.users.privileges.table.delete": "Eliminar",
   "page.users.privileges.table.status": "Activo",
   "page.users.privileges.modal.addPrivileges.title": "Asignar privilegios",
+  "page.users.privileges.modal.editPrivileges.input.privilegeName": "Privilegio",
   "page.users.privileges.modal.addPrivileges.input.moduleName": "Módulo",
   "page.users.privileges.modal.addPrivileges.privileges.title": "Privilegios",
   "page.users.privileges.modal.addPrivileges.options.title": "Opciones",

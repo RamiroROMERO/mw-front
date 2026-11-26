@@ -72,6 +72,15 @@ const ModalEditPriv = (props) => {
               {moduleName}
             </h6>
           </Colxx>
+          <Colxx xxs="12" xs="12" sm="7" md="7" lg="7">
+            <span className="text-muted text-small d-block">
+              {IntlMessages("page.users.privileges.modal.editPrivileges.input.privilegeName")}
+            </span>
+            <h6 className="d-inline">
+              {currentItemPriv?.name || currentItemPriv?.adminModulesDetail?.name || currentItemPriv?.code}
+            </h6>
+            {currentItemPriv?.code ? <span className="text-muted text-small ms-2">{currentItemPriv.code}</span> : null}
+          </Colxx>
         </Row>
         <Row>
           <Colxx xxs="3" style={{ display: showOptions }}>
