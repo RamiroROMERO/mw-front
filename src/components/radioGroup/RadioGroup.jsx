@@ -7,7 +7,8 @@ export const RadioGroup = ({ label, name, value, onChange, options = [], feedbac
     lengths[a] = IntlMessagesFn(options[a].label).length;
   }
   lengths = lengths.sort((a, b) => { return a - b });
-  const maxlength = lengths[lengths.length - 1] * 15;
+  // Ancho de cada opción en horizontal: el botón y su espacio (~45px) más el texto más largo (~9px por letra), con un mínimo para etiquetas cortas como Sí/No (antes 15px por letra: con 2 letras eran 30px y las opciones se montaban).
+  const maxlength = Math.max((lengths[lengths.length - 1] || 0) * 9 + 45, 90);
   return (
     <>
       <div className={`shadow-sm ${feedbackText ? 'div-label-border mb-1' : 'div-label-border'}`}>
