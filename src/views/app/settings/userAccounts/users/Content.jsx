@@ -27,7 +27,7 @@ const Users = (props) => {
     name: [(val) => val !== "", "msg.required.input.name"],
     email: [(val) => val !== "", "msg.required.input.email"],
     typeId: [(val) => validInt(val) > 0, "msg.required.select.userType"],
-    pass: [(val) => val !== "", "msg.required.input.password"],
+    pass: [(val) => val === "" || val.length >= 6, "msg.required.input.password"],
     userName: [(val) => val !== "", "msg.required.input.userName"]
   }
 
@@ -132,11 +132,13 @@ const Users = (props) => {
       return;
     }
 
+    // La contraseña es obligatoria solo al crear; al editar se deja vacía (SPEC v2-163-sr: se cambia con su propia opción).
+    if (id === 0 && pass === '') return;
     const data = {
       name,
       userName,
       email,
-      pass,
+      ...(id === 0 ? { password: pass } : {}),
       typeId,
       status,
       img: "usuario.png"
@@ -242,8 +244,8 @@ const Users = (props) => {
                       onChange={onInputChange}
                       type="password"
                       label="page.users.input.password"
-                      invalid={sendForm && !!passValid}
-                      feedbackText={sendForm && (passValid || null)}
+                      invalid={sendForm && (!!passValid || (id === 0 && pass === ''))}
+                      feedbackText={sendForm && (passValid || (id === 0 && pass === '' ? 'msg.required.input.password' : null))}
                     />
                   </Colxx>
                   <Colxx xxs="12" xs="12" sm="12" md="6" lg="6" xl="12">

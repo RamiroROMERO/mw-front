@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Card, CardBody, CardTitle, Row, Button, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import classnames from 'classnames';
-import { IntlMessages, validInt } from "@Helpers/Utils";
+import { IntlMessages, validInt, getCurrentUser } from "@Helpers/Utils";
 import { Colxx } from '@Components/common/CustomBootstrap';
 import { adminRoot } from '@Constants/defaultValues';
 import { InputField } from '@Components/inputFields';
@@ -398,7 +398,9 @@ const UserProfile = (props) => {
 
   const fnChangePass = () => {
     setSendFormPass(true);
-    if (!isFormValidPass) {
+    // La contraseña propia se cambia con la actual; la de otro usuario la restablece un administrador (SPEC v2-163-sr).
+    const isOwn = validInt(userData.id) === validInt(getCurrentUser()?.id);
+    if (isOwn ? !isFormValidPass : (newPassword.length < 6 || validNewPassword.length < 6)) {
       return;
     }
     if (newPassword !== validNewPassword) {
@@ -410,7 +412,7 @@ const UserProfile = (props) => {
       newPassword,
       validNewPassword
     }
-    request.PUT(`admin/users/changePassword/${userData.id}`, dataPass, (resp) => {
+    request.PUT(isOwn ? `admin/users/changePassword/${userData.id}` : `admin/users/resetPassword/${userData.id}`, isOwn ? dataPass : { newPassword }, (resp) => {
       setSendFormPass(false);
       onResetFormPass();
       setLoading(false);
