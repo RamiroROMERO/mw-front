@@ -3159,6 +3159,7 @@ const esLang = {
   "page.recurringItems.input.name": "Nombre",
   "page.recurringItems.input.dayRun": "Día de Ejecución",
   "page.recurringItems.input.description": "Descripción",
+  "page.recurringItems.container.addLine": "Agregar Item",
   "page.recurringItems.input.account": "Cuenta Contable",
   "page.recurringItems.input.reference": "Referencia",
   "page.recurringItems.input.debit": "Debe",

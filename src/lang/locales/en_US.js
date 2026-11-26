@@ -3127,6 +3127,7 @@ const enLang = {
   "page.recurringItems.input.name": "Name",
   "page.recurringItems.input.dayRun": "Run Day",
   "page.recurringItems.input.description": "Description",
+  "page.recurringItems.container.addLine": "Add Item",
   "page.recurringItems.input.account": "Ledger Account",
   "page.recurringItems.input.reference": "Reference",
   "page.recurringItems.input.debit": "Debit",

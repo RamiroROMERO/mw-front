@@ -9,9 +9,13 @@ import ControlPanel from '@Components/controlPanel';
 import Confirmation from '@Containers/ui/confirmationMsg';
 import { IntlMessages, formatNumber } from '@Helpers/Utils';
 import { useRecurringItems } from './useRecurringItems';
+import { ContainerWithLabel } from '@Components/containerWithLabel';
 import { MAX_NAME, MAX_REFERENCE, describeLineAccount } from './recurringRules';
 import ModalEditLine from './ModalEditLine';
 import ModalSearchEntry from './ModalSearchEntry';
+
+// El atributo `align` de th/td no se respeta en todos los temas: la alineación a la derecha de los importes va por estilo.
+const RIGHT = { textAlign: 'right' };
 
 const emptyLine = { idCtaAccount: '', referenceCode: '', valDebe: 0, valHaber: 0 };
 
@@ -98,8 +102,9 @@ const RecurringItems = ({ setLoading }) => {
 
         <hr />
 
+        <ContainerWithLabel label="page.recurringItems.container.addLine">
         <Row className="align-items-end">
-          <Colxx xxs="12" sm="5">
+          <Colxx xxs="12" sm="4">
             <SearchSelect
               label="page.recurringItems.input.account"
               name="idCtaAccount"
@@ -114,7 +119,7 @@ const RecurringItems = ({ setLoading }) => {
           <Colxx xxs="6" sm="2">
             <InputField name="valDebe" label="page.recurringItems.input.debit" value={newLine.valDebe} onChange={onNewLineChange} type="text" />
           </Colxx>
-          <Colxx xxs="6" sm="1">
+          <Colxx xxs="6" sm="2">
             <InputField name="valHaber" label="page.recurringItems.input.credit" value={newLine.valHaber} onChange={onNewLineChange} type="text" />
           </Colxx>
           <Colxx xxs="12" sm="2" className="div-action-button-container align-items-end">
@@ -123,14 +128,15 @@ const RecurringItems = ({ setLoading }) => {
             </Button>
           </Colxx>
         </Row>
+        </ContainerWithLabel>
 
         <Table bordered hover size="sm" className="mt-3">
           <thead>
             <tr>
               <th>{IntlMessages('page.recurringItems.input.account')}</th>
               <th>{IntlMessages('page.recurringItems.input.reference')}</th>
-              <th align="right">{IntlMessages('page.recurringItems.input.debit')}</th>
-              <th align="right">{IntlMessages('page.recurringItems.input.credit')}</th>
+              <th style={RIGHT}>{IntlMessages('page.recurringItems.input.debit')}</th>
+              <th style={RIGHT}>{IntlMessages('page.recurringItems.input.credit')}</th>
               <th>{IntlMessages('page.invoicing.options')}</th>
             </tr>
           </thead>
@@ -139,9 +145,9 @@ const RecurringItems = ({ setLoading }) => {
               <tr key={line.id || line.tempId || idx}>
                 <td>{describeLineAccount(line, accountFormat)}</td>
                 <td>{line.referenceCode}</td>
-                <td align="right">{formatNumber(line.valDebe)}</td>
-                <td align="right">{formatNumber(line.valHaber)}</td>
-                <td align="right">
+                <td style={RIGHT}>{formatNumber(line.valDebe)}</td>
+                <td style={RIGHT}>{formatNumber(line.valHaber)}</td>
+                <td style={RIGHT}>
                   <Button type="button" className="btn-circle-table" color="primary" title="Editar" onClick={() => fnEditLine(line)}>
                     <i className="bi bi-pencil" />
                   </Button>
@@ -155,11 +161,11 @@ const RecurringItems = ({ setLoading }) => {
           </tbody>
           <tfoot>
             <tr>
-              <th align="right">{IntlMessages('page.recurringItems.input.totals')}</th>
+              <th style={RIGHT}>{IntlMessages('page.recurringItems.input.totals')}</th>
               <th />
-              <th align="right">{formatNumber(totals.totalDebit)}</th>
-              <th align="right">{formatNumber(totals.totalCredit)}</th>
-              <th align="right">{totals.diff !== 0 ? formatNumber(totals.diff) : ''}</th>
+              <th style={RIGHT}>{formatNumber(totals.totalDebit)}</th>
+              <th style={RIGHT}>{formatNumber(totals.totalCredit)}</th>
+              <th style={RIGHT}>{totals.diff !== 0 ? formatNumber(totals.diff) : ''}</th>
             </tr>
           </tfoot>
         </Table>
