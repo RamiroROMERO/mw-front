@@ -75,7 +75,7 @@ const StoresProducts = (props) => {
                 <Row>
                   <Colxx xxs="12" lg="8">
                     <Row>
-                  <Colxx xxs="12" md="6">
+                  <Colxx xxs="12">
                     <SearchSelect
                       name="storeId"
                       inputValue={storeId}
@@ -87,7 +87,7 @@ const StoresProducts = (props) => {
                       feedbackText={showError('storeId')}
                     />
                   </Colxx>
-                  <Colxx xxs="12" md="6" onKeyDown={onProductKeyDown}>
+                  <Colxx xxs="12" onKeyDown={onProductKeyDown}>
                     <SearchSelect
                       name="productCode"
                       inputValue={productCode}
