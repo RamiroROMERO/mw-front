@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { IntlMessages } from "@Helpers/Utils";
+import { IntlMessages, getCurrentUser } from "@Helpers/Utils";
 import { request, notifyError } from '@Helpers/core';
 import { useForm } from '@Hooks';
 import { INITIAL_ACCOUNT_FORM, buildAccountPayload, formatAccountCode, mapAccountToForm, validateAccount } from './ledgerAccountRules';
@@ -39,6 +39,10 @@ export const useContent = ({ setLoading }) => {
 
   // Formato de cuentas para mostrar el código en la tabla (la celda lo lee de la ref: la columna se define una sola vez).
   const codeFormatRef = useRef('');
+  const [formatConfig, setFormatConfig] = useState(null);
+  const [openFormatModal, setOpenFormatModal] = useState(false);
+  // La configuración de cuentas (formato y niveles) solo la abre un administrador del sistema (el back lo vuelve a comprobar).
+  const isSystemAdmin = Number(getCurrentUser()?.isSystemAdmin) === 1;
 
   const [table, setTable] = useState({
     title: IntlMessages("page.ledgerAccounts.table.title"),
@@ -129,6 +133,17 @@ export const useContent = ({ setLoading }) => {
     }, 'GET', stop);
   }
 
+  // Formato de cuentas (cont_ctas_set): formato del código (placeholder) y largo de cada nivel. Sin él no se valida el nivel en pantalla (lo decide el back). También se llama al guardar la configuración.
+  const fnLoadFormat = () => {
+    request.GET('accounting/settings/accountants/format', (resp) => {
+      setLevels(resp.data?.levels || []);
+      setCodeFormat(resp.data?.format || '');
+      setFormatConfig(resp.data || null);
+      codeFormatRef.current = resp.data?.format || '';
+      setTable((prev) => ({ ...prev, columns: [...prev.columns] })); // vuelve a dibujar la tabla con el formato
+    }, () => { });
+  };
+
   useEffect(() => {
     request.GET('accounting/settings/accountTypes', (resp) => {
       setlistTypeAcount(resp.data.map((item) => ({ id: item.id, name: item.name })));
@@ -136,14 +151,7 @@ export const useContent = ({ setLoading }) => {
     request.GET('accounting/settings/accountExpenseTypes', (resp) => {
       setlistTypeSpent(resp.data.map((item) => ({ id: item.id, name: item.name })));
     }, () => { });
-    // Formato de cuentas (cont_ctas_set): formato del código (placeholder) y largo de cada nivel. Sin él no se valida el nivel en pantalla (lo decide el back).
-    request.GET('accounting/settings/accountants/format', (resp) => {
-      setLevels(resp.data?.levels || []);
-      setCodeFormat(resp.data?.format || '');
-      codeFormatRef.current = resp.data?.format || '';
-      setTable((prev) => ({ ...prev, columns: [...prev.columns] })); // vuelve a dibujar la tabla con el formato
-    }, () => { });
-
+    fnLoadFormat();
     fnGetData();
   }, []);
 
@@ -163,6 +171,11 @@ export const useContent = ({ setLoading }) => {
     fnSave,
     fnExport,
     table,
-    propsToMsgDelete
+    propsToMsgDelete,
+    isSystemAdmin,
+    formatConfig,
+    openFormatModal,
+    setOpenFormatModal,
+    fnLoadFormat
   }
 }
