@@ -21,6 +21,7 @@ export const SimpleSelect = ({
   return (
     <InputLabel label={label} feedbackText={feedbackText}>
       <Input className='form-control'
+        bsSize="sm" // misma altura que InputField
         name={name}
         value={value}
         onChange={onChange}
