@@ -138,6 +138,7 @@ const TypeProducts = (props) => {
                     />
                   </Colxx>
                 </Row>
+                <hr />
                 <Row>
                   <Colxx xxs="12" className="div-action-button-container">
                     <Button color="success" onClick={fnExport}><i className="bi bi-file-earmark-excel" /> {IntlMessages("button.export")}</Button>

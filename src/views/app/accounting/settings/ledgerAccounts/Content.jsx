@@ -138,6 +138,7 @@ const LedgerAccounts = (props) => {
                   />
                 </Colxx>
               </Row>
+              <hr />
               <Row>
                 <Colxx xxs="12" className="div-action-button-container">
                   <Button color="secondary" onClick={fnClearInputs}><i className="bi bi-stars" /> {IntlMessages("button.clear")}</Button>

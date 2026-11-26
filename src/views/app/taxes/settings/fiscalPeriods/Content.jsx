@@ -74,6 +74,7 @@ const FiscalPeriods = (props) => {
                   />
                 </Colxx>
               </Row>
+              <hr />
               <Row>
                 <Colxx xxs="12" className="div-action-button-container">
                   <Button

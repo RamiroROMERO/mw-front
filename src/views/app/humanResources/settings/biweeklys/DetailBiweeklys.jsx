@@ -68,6 +68,7 @@ const DetailBiweeklys = ({dateIn, dateOut, noBiweekly, noYear, status, onInputCh
             />
           </Colxx>
         </Row>
+        <hr />
         <Row>
           <Colxx xxs="12" className="div-action-button-container">
             <Button color="secondary" onClick={fnClearInputs}>
