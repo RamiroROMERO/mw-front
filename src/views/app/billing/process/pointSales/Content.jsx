@@ -16,6 +16,8 @@ import ModalHospitalEvents from './ModalHospitalEvents';
 import ModalHospitalCheckout from './ModalHospitalCheckout';
 import ModalAdvancePatients from './ModalAdvancePatients';
 import ModalAdvances from './ModalAdvances';
+import ModalHonorariumEvents from './ModalHonorariumEvents';
+import ModalHonorariums from './ModalHonorariums';
 import { isHospitalEnabled, SETTINGS_PATH } from './posHospitalRules';
 import { fromSearchRow } from './posCaptureRules';
 import ModalChangePrice from '../invoicing/ModalChangePrice';
@@ -87,6 +89,9 @@ const PointSales = (props) => {
   const [openModalAdvancePatients, setOpenModalAdvancePatients] = useState(false);
   const [openModalAdvances, setOpenModalAdvances] = useState(false);
   const [advanceCustomer, setAdvanceCustomer] = useState(null);
+  const [openModalHonorariumEvents, setOpenModalHonorariumEvents] = useState(false);
+  const [openModalHonorariums, setOpenModalHonorariums] = useState(false);
+  const [honorariumEvent, setHonorariumEvent] = useState(null);
   const [sendFormIndex, setSendFormIndex] = useState(false);
   const [sendFormDetail, setSendFormDetail] = useState(false);
 
@@ -440,6 +445,21 @@ const PointSales = (props) => {
       return;
     }
     setOpenModalAdvancePatients(true);
+  }
+
+  // Recibo de honorarios (SPEC v2-156-sr): se elige el evento y se ven, registran y anulan sus recibos.
+  const fnHonorariums = () => {
+    if (!dataCashBox || !(Number(dataCashBox.sessionId) > 0)) {
+      notification('warning', 'msg.required.cashOpening', 'alert.warning.title');
+      return;
+    }
+    setOpenModalHonorariumEvents(true);
+  }
+
+  const fnHonorariumEventSelect = (row) => {
+    setHonorariumEvent(row);
+    setOpenModalHonorariumEvents(false);
+    setOpenModalHonorariums(true);
   }
 
   const fnAdvancePatientSelect = (row) => {
@@ -1093,6 +1113,10 @@ const PointSales = (props) => {
         title: "button.patientAdvances",
         icon: "bi bi-cash-coin",
         onClick: fnAdvances
+      }, {
+        title: "button.honorariumReceipt",
+        icon: "bi bi-receipt",
+        onClick: fnHonorariums
       }] : [])
     ],
     buttonsOptions: [
@@ -1211,6 +1235,24 @@ const PointSales = (props) => {
     setOpen: setOpenModalAdvances,
     maxWidth: 'lg',
     data: { customer: advanceCustomer, sessionId: dataCashBox ? dataCashBox.sessionId : 0, listTypePayments, setLoading }
+  }
+
+  const propsToModalHonorariumEvents = {
+    ModalContent: ModalHonorariumEvents,
+    title: "page.pointSales.honorarium.events.title",
+    open: openModalHonorariumEvents,
+    setOpen: setOpenModalHonorariumEvents,
+    maxWidth: 'lg',
+    data: { fnSelect: fnHonorariumEventSelect }
+  }
+
+  const propsToModalHonorariums = {
+    ModalContent: ModalHonorariums,
+    title: "page.pointSales.honorarium.title",
+    open: openModalHonorariums,
+    setOpen: setOpenModalHonorariums,
+    maxWidth: 'lg',
+    data: { event: honorariumEvent, sessionId: dataCashBox ? dataCashBox.sessionId : 0, setLoading }
   }
 
   const propsToModalHospitalCheckout = {
@@ -1495,6 +1537,8 @@ const PointSales = (props) => {
       <Modal {...propsToModalHospitalEvents} />
       <Modal {...propsToModalAdvancePatients} />
       {advanceCustomer && openModalAdvances && <Modal {...propsToModalAdvances} />}
+      <Modal {...propsToModalHonorariumEvents} />
+      {honorariumEvent && openModalHonorariums && <Modal {...propsToModalHonorariums} />}
       {hospitalEvent && <Modal {...propsToModalHospitalCheckout} />}
       <Modal {...propsToModalCashOpening} />
       <Modal {...propsToModalCashClose} />
