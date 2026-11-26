@@ -9,7 +9,7 @@ import DateCalendar from '@Components/dateCalendar';
 
 const Detail = ({formState, onInputChange, formValidation, fnSave, fnClearInputs, sendForm, checkActive, listAccount, listProducts, checkChange, onViewInternalOptions, onViewMailOptions}) => {
 
-  const {dni, name, name2, address1, address2, address3, phone, email, webSite, accountantName, managerName, paymentAccountCode, defaultProductCode, seatAccForSales,seatAccForSalesCost, seatAccForPurchase, seatAccForInventory, seatAccForBanks, seatAccForDebitNotes, seatAccForCreditNotes, hasStoreControl, hasStockControl, hasDateOutControl, hasProductOneManyControl, hasSellerControl, isDefault, lastCloseDate, status, hasDualCurrency, declaresTaxes, salesIncludeTax, roundInPos, hasTipsInPos, auxContainerControl, farmsActivitiesControl } = formState;
+  const {dni, name, name2, address1, address2, address3, phone, email, website, accountantName, managerName, paymentAccountCode, defaultProductCode, seatAccForSales,seatAccForSalesCost, seatAccForPurchase, seatAccForInventory, seatAccForBanks, seatAccForDebitNotes, seatAccForCreditNotes, hasStoreControl, hasStockControl, hasDateOutControl, hasProductOneManyControl, hasSellerControl, isDefault, lastCloseDate, status, hasDualCurrency, declaresTaxes, salesIncludeTax, roundInPos, hasTipsInPos, auxContainerControl, farmsActivitiesControl } = formState;
 
   const { dniValid, nameValid, address1Valid, phoneValid, emailValid } = formValidation;
 
@@ -101,8 +101,8 @@ const Detail = ({formState, onInputChange, formValidation, fnSave, fnClearInputs
               </Colxx>
               <Colxx xxs="12" xl="6">
                 <InputField
-                  value={webSite}
-                  name="webSite"
+                  value={website}
+                  name="website"
                   onChange={onInputChange}
                   type="text"
                   label="page.companyInformation.input.webPage"

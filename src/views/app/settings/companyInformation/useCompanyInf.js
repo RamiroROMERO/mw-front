@@ -32,7 +32,7 @@ export const useCompanyInf = ({ setLoading }) => {
     address3: '',
     phone: '',
     email: '',
-    webSite: '',
+    website: '',
     accountantName: '',
     managerName: '',
     paymentAccountCode: '',
@@ -106,14 +106,8 @@ export const useCompanyInf = ({ setLoading }) => {
         setLoading(false);
       });
     } else {
-      setLoading(true);
-      request.POST('admin/companies', formState, () => {
-        fnClearInputs();
-        fnGetData();
-        setLoading(false);
-      }, (err) => {
-        setLoading(false);
-      });
+      // Hay una sola empresa por base: no se crean nuevas (SPEC v2-162-sr).
+      createNotification('warning', "msg.required.select.companyId", 'alert.warning.title');
     }
   }
 

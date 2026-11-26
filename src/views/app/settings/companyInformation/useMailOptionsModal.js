@@ -76,7 +76,7 @@ export const useMailOptionsModal = ({ data, setOpen }) => {
       createNotification('warning', 'msg.required.input.mailEmail', 'alert.warning.title');
       return;
     }
-    if (!formState.mailPass) {
+    if (!formState.mailPass && !formState.hasMailPass) {
       createNotification('warning', 'msg.required.input.mailPass', 'alert.warning.title');
       return;
     }
