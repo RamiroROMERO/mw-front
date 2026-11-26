@@ -5,6 +5,10 @@ import { useState, useEffect } from 'react'
 import createNotification from '@Containers/ui/Notifications';
 import { NotificationManager } from '@Components/common/react-notifications';
 
+// Solo los campos de correo: las opciones internas se guardan desde su propio modal (SPEC v2-162-sr).
+const MAIL_FIELDS = ['id', 'companyId', 'mailServer', 'mailPort', 'mailSsl', 'mailEmail', 'mailUser', 'mailPass', 'mailCopy1', 'mailCopy2', 'mailCopy3', 'sendMailGenInvoice', 'sendMailGenOC', 'sendMailGenProvPayment'];
+const onlyMail = (form) => Object.fromEntries(Object.entries(form).filter(([key]) => MAIL_FIELDS.includes(key)));
+
 export const useMailOptionsModal = ({ data, setOpen }) => {
   const { companyId, setLoading } = data;
   const [sendingTest, setSendingTest] = useState(false);
@@ -49,7 +53,7 @@ export const useMailOptionsModal = ({ data, setOpen }) => {
     setLoading(true);
     if (validInt(formState.id) === 0) {
 
-      request.POST('admin/companyInternalSettings', formState, res => {
+      request.POST('admin/companyInternalSettings', onlyMail(formState), res => {
         setOpen(false);
         setLoading(false);
       }, err => {
@@ -57,7 +61,7 @@ export const useMailOptionsModal = ({ data, setOpen }) => {
         setLoading(false);
       });
     } else {
-      request.PUT(`admin/companyInternalSettings/${formState.id}`, formState, res => {
+      request.PUT(`admin/companyInternalSettings/${formState.id}`, onlyMail(formState), res => {
         setOpen(false)
         setLoading(false);
       }, err => {

@@ -3,6 +3,10 @@ import { request } from '@Helpers/core';
 import { validInt } from '@Helpers/Utils';
 import { useForm } from '@Hooks/useForms';
 
+// Los campos del servidor de correo se guardan solo desde su propio modal (SPEC v2-162-sr): aquí no se reenvían.
+const MAIL_FIELDS = ['mailServer', 'mailPort', 'mailSsl', 'mailEmail', 'mailUser', 'mailPass', 'mailCopy1', 'mailCopy2', 'mailCopy3', 'sendMailGenInvoice', 'sendMailGenOC', 'sendMailGenProvPayment', 'hasMailPass'];
+const withoutMail = (form) => Object.fromEntries(Object.entries(form).filter(([key]) => !MAIL_FIELDS.includes(key)));
+
 export const useInternalOptions = ({ companyId, setLoading, setOpen }) => {
 
   const { formState, onInputChange, onBulkForm } = useForm({
@@ -55,7 +59,7 @@ export const useInternalOptions = ({ companyId, setLoading, setOpen }) => {
     setLoading(true);
     if (validInt(formState.id) === 0) {
 
-      request.POST('admin/companyInternalSettings', formState, res => {
+      request.POST('admin/companyInternalSettings', withoutMail(formState), res => {
         setOpen(false);
         setLoading(false);
       }, err => {
@@ -63,7 +67,7 @@ export const useInternalOptions = ({ companyId, setLoading, setOpen }) => {
         setLoading(false);
       });
     } else {
-      request.PUT(`admin/companyInternalSettings/${formState.id}`, formState, res => {
+      request.PUT(`admin/companyInternalSettings/${formState.id}`, withoutMail(formState), res => {
         setOpen(false)
         setLoading(false);
       }, err => {
